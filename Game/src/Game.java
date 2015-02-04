@@ -9,9 +9,11 @@ public class Game {
 	            @Override
 	            public void run() {
 	               //the main game as jframe
+	            	System.out.println("hello world!");
 	            }
 	        });
-		System.out.println("hello world!");
+		
 		while(true);
 	}
+	
 }
