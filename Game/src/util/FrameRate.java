@@ -1,3 +1,5 @@
+package util;
+
 public class FrameRate {
 	private String frameRate;
 	private long lastTime;
