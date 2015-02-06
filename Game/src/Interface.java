@@ -19,6 +19,7 @@ public class Interface {
 	private Point position = new Point(0,0);
 	ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
 	public Window window;
+	public Point windowPosition = new Point(0,0);
 	public Dimension dim = new Dimension(100,100);
 	public boolean usesWindow = false;
 	public Interface()
@@ -49,19 +50,19 @@ public class Interface {
 	{
 		if(usesWindow)
 		{
-			window.drawWindow(g,position.x,position.y, dim.width, dim.height, obj);
+			window.drawWindow(g,position.x+windowPosition.x,position.y+windowPosition.y, dim.width, dim.height, obj);
 		}
 		g.setColor(Color.BLACK);
 		for(MenuItem item:menuItems)
 		{
 			if(item.isImage)
 			{
-				g.drawImage(getTexture(item.getTag()),item.getBounds().x,item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
+				g.drawImage(getTexture(item.getTag()),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
 			}
 			else
 			{
 				g.setFont(new Font("Arial", Font.PLAIN, 20)); 
-				g.drawString(item.getTag(),item.getBounds().x+5,item.getBounds().y+15);
+				g.drawString(item.getTag(),position.x+item.getBounds().x+5,position.y+item.getBounds().y+15);
 			}
 		}
 	}
@@ -69,7 +70,7 @@ public class Interface {
 	{
 		for(MenuItem item:menuItems)
 		{
-			if(item.isClickable()&&item.getBounds().intersects(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1))&&mouse.buttonDownOnce(1))
+			if(item.isClickable()&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height))&&mouse.buttonDownOnce(1))
 			{
 				item.isClicked = true;
 				break;

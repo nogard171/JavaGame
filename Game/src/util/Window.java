@@ -1,6 +1,7 @@
 package util;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -19,8 +20,12 @@ public class Window
 		this.texture = ImageLoader.getImageFromResources("\\resources\\image\\menuset.png");
 	}
 	//this draws the window
-	public void drawWindow(Graphics g, int x, int y, int width, int height,ImageObserver obj)
+	public void drawCustomWindow(Graphics bg, int x, int y, int width, int height,ImageObserver obj)
 	{
+		BufferedImage off_Image = new BufferedImage(800,600,
+				                    BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = off_Image.createGraphics();
+		
 		//calculate the width of the window based on the tile size being 7.
 		int tileWidth = (int)(((float)width/(float)7)-1);
 		//calculate the height of the window based on the tile size being 7.
@@ -56,44 +61,14 @@ public class Window
 		}
 		//draw the bottom right
 		g.drawImage(this.texture.getSubimage(120,120,7,7), x+((tileWidth+1)*7), y+((tileHeight+1)*7), obj);
+		
+		
+		bg.drawImage(off_Image, 0,0, obj);
 	}
-	//this draws the window
-		public void drawWindow(Graphics g,ImageObserver obj)
-		{
-			//calculate the width of the window based on the tile size being 7.
-			int tileWidth = (int)(((float)bounds.width/(float)7)-1);
-			//calculate the height of the window based on the tile size being 7.
-			int tileHeight = (int)(((float)bounds.height/(float)7)-2);
-			//draw the top left part first
-			g.drawImage(this.texture.getSubimage(0, 0, 7, 7), bounds.x, bounds.y, obj);
-			//loop to draw the top middle part.
-			for(int i =0;i<tileWidth;i++)
-			{
-				g.drawImage(this.texture.getSubimage(7,0, 7, 7), bounds.x+((i+1)*7), bounds.y, obj);
-			}
-			//draw the top right corner
-			g.drawImage(this.texture.getSubimage(120,0,7,7), bounds.x+((tileWidth+1)*7), bounds.y, obj);
-			//loop the total height
-			for(int j =0;j<tileHeight;j++)
-			{
-				//draw the left middle part
-				g.drawImage(this.texture.getSubimage(0, 7, 7, 7), bounds.x, bounds.y+((j+1)*7), obj);
-				//loop the middle parts
-				for(int i =0;i<tileWidth;i++)
-				{
-					g.drawImage(this.texture.getSubimage(7,7, 7, 7), bounds.x+((i+1)*7), bounds.y+((j+1)*7), obj);
-				}
-				//draw the middle left part
-				g.drawImage(this.texture.getSubimage(120,7,7,7), bounds.x+((tileWidth+1)*7), bounds.y+((j+1)*7), obj);
-			}
-			//draw the bottom left part
-			g.drawImage(this.texture.getSubimage(0, 120, 7, 7), bounds.x, bounds.y+((tileHeight+1)*7), obj);
-			//draw the bottom middle part
-			for(int i =0;i<tileWidth;i++)
-			{
-				g.drawImage(this.texture.getSubimage(7,120, 7, 7), bounds.x+((i+1)*7), bounds.y+((tileHeight+1)*7), obj);
-			}
-			//draw the bottom right
-			g.drawImage(this.texture.getSubimage(120,120,7,7), bounds.x+((tileWidth+1)*7), bounds.y+((tileHeight+1)*7), obj);
-		}
+	public void drawWindow(Graphics g, int x, int y, int width, int height,ImageObserver obj)
+	{
+		//draw the bottom right
+		g.drawImage(this.texture.getSubimage(0,0,128,128), x, y, width, height,obj);
+		
+	}
 }

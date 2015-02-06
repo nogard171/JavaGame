@@ -165,8 +165,29 @@ public class Game extends JFrame implements Runnable{
 		items.add(exit);
 		menu.usesWindow = true;
 		menu.dim = new Dimension(75,90);
+		menu.setPosition(new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height));
 		menu.onLoad(items);		
+		
+		ArrayList<MenuItem> uiItems = new ArrayList<MenuItem>();
+		MenuItem bag = new MenuItem();
+		bag.setTag("bag");
+		bag.setBounds(new Rectangle(0,0,32,32));
+		uiItems.add(bag);
+		ui.dim = new Dimension(32*6,32*7);
+		ui.windowPosition = new Point(32,-(32*6));
+		ui.usesWindow = true;
+		ui.setPosition(new Point(0,(height)-uiItems.size()*32));
+		ui.onLoad(uiItems);
+
+		Item item = new Item();
+		item.setCount(1);
+		item.setName("test");
+		item.setPosition(0, 0);
+		item.setType(ItemType.Log);
+		item.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\itemset.png").getSubimage(0, 32, 32, 32));
+		inventory.add(item);
 	}
+	ArrayList<Item> inventory = new ArrayList<Item>();
 	boolean menuShown = false;
 	public void gameLoop()
 	{
@@ -218,59 +239,63 @@ public class Game extends JFrame implements Runnable{
 	public void processInput()
 	{
 		mouse.poll();
-		
-		if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
-			player.moveRight();
+
+		if(!menuShown)
+		{
+			if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
+				player.moveRight();
+				
+			}
+			else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
+				player.moveLeft();
+			}
+			else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
+				player.moveUp();
+				
+			}
+			else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
+				player.moveDown();
+				
+			}
 			
-		}
-		else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
-			player.moveLeft();
-		}
-		else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
-			player.moveUp();
 			
-		}
-		else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
-			player.moveDown();
-			
-		}
-		
-		
-		if(keyboard.isKeyDown(KeyEvent.VK_0))
-		{
-			season=0;		
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_1))
-		{
-			season=1;		
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_2))
-		{
-			season=2;		
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_3))
-		{
-			season=3;		
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
-		{
-			player.dash();	
+			if(keyboard.isKeyDown(KeyEvent.VK_0))
+			{
+				season=0;		
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_1))
+			{
+				season=1;		
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_2))
+			{
+				season=2;		
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_3))
+			{
+				season=3;		
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
+			{
+				player.dash();	
+			}
+			else
+			{
+				player.stopDashing();
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
+			{
+				keyboard.currentKey=-1;			
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_F1))
+			{
+				debug = !debug;
+			}
+			ui.onInput(mouse);
 		}
 		else
 		{
-			player.stopDashing();
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
-		{
-			keyboard.currentKey=-1;			
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_F1))
-		{
-			debug = !debug;
-		}
-		if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
-		{
-			menuShown = true;	
+			menu.onInput(mouse);
 		}
 		for(MenuItem item:menu.menuItems)
 		{
@@ -278,9 +303,16 @@ public class Game extends JFrame implements Runnable{
 			{
 				shutdown();
 			}
+			if(item.isClicked&&item.getTag()=="resume")
+			{
+				menuShown = false;
+			}
 		}
-		ui.onInput(mouse);
-		menu.onInput(mouse);
+
+		if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
+		{
+			menuShown = true;	
+		}
 	}
 	boolean debug = false;
 	Player player = new Player();
@@ -291,10 +323,13 @@ public class Game extends JFrame implements Runnable{
 		map.onPaint(g, this);
 		player.draw(g, this);
 		map.onUpperPaint(g, this);
-
+		//inventory.get(0).draw(g, this, ui.window);
 		ui.onPaint(g,this);
 		if(menuShown)
 		{
+			g.setColor(new Color(0,0,0,128));
+			g.fillRect(0, 0, width, height);
+			
 			menu.onPaint(g,this);
 		}
 		if(debug)
@@ -314,8 +349,6 @@ public class Game extends JFrame implements Runnable{
 		g.setColor(Color.white);
 		g.drawString(frameRate.getFrameRate(), 0,10);
 		g.drawString("Seconds Running" + time.getSeconds(), 0,20);
-		g.drawString("Exit", 0,30);
-		g.drawRect(rec.x, rec.y, rec.width, rec.height);
 	}
 	public void onClose()
 	{
