@@ -35,7 +35,7 @@ public class Player
     //the players frameCycle
     private int frameCycle = 1; 
     //the max cycles for the player
-    private int maxCycles = 6;
+    private int maxCycles = 4;
  	//this is the players steps
     private int steps = 0;
     //the players position
@@ -111,7 +111,7 @@ public class Player
     {
     	if(action==0)
     	{
-    		this.bounds.x+=speed;
+    		this.bounds.x+=this.velocity.x;
     		this.direction = Direction.Right;
     		moving = true;
     	}
@@ -121,7 +121,7 @@ public class Player
     {
     	if(action==0)
     	{
-    		this.bounds.x-=speed;
+    		this.bounds.x-=this.velocity.x;
     		this.direction = Direction.Left;
     		moving = true;
     	}
@@ -131,7 +131,7 @@ public class Player
     {
     	if(action==0)
     	{
-    		this.bounds.y-=speed;
+    		this.bounds.y-=this.velocity.y;
     		this.direction = Direction.Up;
     		moving = true;
     	}
@@ -141,7 +141,7 @@ public class Player
     {
     	if(action==0)
     	{
-    		this.bounds.y+=speed;
+    		this.bounds.y+=this.velocity.y;
     		this.direction = Direction.Down;
     		moving = true;
     	}
@@ -154,35 +154,26 @@ public class Player
     	if(this.moving&&this.stamina>0&&!this.colliding&&action==0)
     	{
     		dashing = true;
-    		//if the direction is right, move right more
-    		if(this.direction==Direction.Right)
-    		{
-    			this.moveRight();
-    		}
-    		//if the direction is left, move left more
-    		else if(this.direction==Direction.Left)
-    		{
-    			this.moveLeft();
-    		}
-    		//if the direction is up, move up more.
-    		else if(this.direction==Direction.Up)
-    		{
-    			this.moveUp();
-    		}
-    		//if the direction is down, move down more.
-    		else if(this.direction==Direction.Down)
-    		{
-    			this.moveDown();
-    		}
+    		this.velocity.x =6;
+    		this.velocity.y =6;
     		//minus stamina from the current stamina
     		this.stamina -=0.5f;
     	}
     	else
     	{
+    		this.velocity.x =2;
+    		this.velocity.y =2;
     		//turn dashing off
     		dashing = false;
     	}
 	
+    }
+    public void stopDashing()
+    {
+		this.velocity.x =2;
+		this.velocity.y =2;
+		//turn dashing off
+		dashing = false;
     }
     //this returns the players stamina
     public double getStamina()
@@ -220,7 +211,7 @@ public class Player
     	if(frameCycle>=maxCycles)
     	{
     		String workingDir = System.getProperty("user.dir");
-    		frameCycle=1;
+    		frameCycle=0;
     		audioPlayer.play(workingDir+audioFilePath[selectedWalking]);
     	}
     	else if(delta%5==1)
@@ -305,16 +296,10 @@ public class Player
     	{
     	    //get the current working directory
     	    String workingDir = System.getProperty("user.dir");
-    	    //if count modulus of 7(is a multipuly of 7)
-    	    //then play the walking sound
-    	    if(delta%20==1)
-    	    {
-    	    	
-    	    	
-    	    }
+
     	    //else if count modulus of 4(is a multipuly of 4)
     	    //and dashing is true, then play the walking sound faster
-    	    else if(dashing&&count%10==1)
+    	   if(dashing&&count%10==1)
     	    {
     	    	audioPlayer.play(workingDir+audioFilePath[selectedWalking]);
     	    }
@@ -323,7 +308,8 @@ public class Player
     	    //set the framepoints.x based on the maxCycles and frameCycles
     	    //math: maxCycles/2 which gets the total number of steps for one cycle
     	    //frameCycle/(maxCycles/2) gets the current cycle the player is on
-    	    framePoints.x = (frameCycle/(maxCycles/2));
+    	    framePoints.x = frameCycle/2;
+    	    System.out.println(framePoints.x);
     	    if(!this.networked)
     	    {
     	    	//this sends the players points to the server
@@ -376,6 +362,8 @@ public class Player
 	}
 	public void onCollide(Object recThree) {
 		
+		isColliding = true;	
+		moving = false;
 		// TODO Auto-generated method stub
 		if(this.direction ==Direction.Up)
 		{
@@ -392,9 +380,7 @@ public class Player
 		else if(this.direction ==Direction.Right)
 		{
 			this.bounds.x= this.bounds.x-this.velocity.x;
-		}	
-		isColliding = true;	
-		moving = false;
+		}
 	}
 	public void draw(Graphics bbg, ImageObserver obj)
 	{

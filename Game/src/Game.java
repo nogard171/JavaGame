@@ -21,6 +21,7 @@ import objects.Object;
 import util.FrameRate;
 import util.ImageLoader;
 import util.KeyboardInput;
+import util.MouseInput;
 import util.Time;
 
 
@@ -29,6 +30,9 @@ public class Game extends JFrame implements Runnable{
 	public Game()
 	{
 		keyboard = new KeyboardInput(this);
+		mouse = new MouseInput();
+		ui = new Interface();
+		menu = new Interface();
 		frameRate = new FrameRate();
 	}
 	int width = 832;
@@ -36,6 +40,9 @@ public class Game extends JFrame implements Runnable{
 	boolean fullscreen = false;
 	FrameRate frameRate;
 	KeyboardInput keyboard;
+	MouseInput mouse;
+	Interface ui;
+	Interface menu;
 	private GraphicsDevice graphicsDevice;
 	private DisplayMode currentDisplayMode;
 	private BufferStrategy bs;
@@ -73,7 +80,9 @@ public class Game extends JFrame implements Runnable{
 					}
 				}
 			});
-		
+			addKeyListener(keyboard);
+			addMouseListener(mouse);
+			addMouseMotionListener(mouse);
 			graphicsDevice.setFullScreenWindow(this);
 			
 			createBufferStrategy(2);
@@ -84,6 +93,9 @@ public class Game extends JFrame implements Runnable{
 		{
 			Canvas canvas = new Canvas();
 			canvas.setSize(width, height);
+			canvas.addKeyListener(keyboard);
+			canvas.addMouseListener(mouse);
+			canvas.addMouseMotionListener(mouse);
 			getContentPane().add(canvas);
 			pack();
 			setVisible(true);
@@ -101,16 +113,20 @@ public class Game extends JFrame implements Runnable{
 		try
 		{
 			running = false;
-			gameThread.join();
 			System.out.println("Game Loop Stopped.");
-			graphicsDevice.setDisplayMode(this.currentDisplayMode);
-			graphicsDevice.setFullScreenWindow(null);
-			System.out.println("Display Restored.");
+			if(fullscreen)
+			{
+				gameThread.join();				
+				graphicsDevice.setDisplayMode(this.currentDisplayMode);
+				graphicsDevice.setFullScreenWindow(null);
+				System.out.println("Display Restored.");
+			}			
 		}
 		catch(InterruptedException e)
 		{
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
 	public DisplayMode getDisplayMode()
 	{
@@ -127,13 +143,31 @@ public class Game extends JFrame implements Runnable{
 		{
 			gameLoop();
 		}
-		
 	}
 	public void onSetup() 
 	{
 		onTextureLoading();
-		
+		ArrayList<MenuItem> items = new ArrayList<MenuItem>();
+		MenuItem resume = new MenuItem();
+		resume.setTag("resume");
+		resume.isImage = false;
+		resume.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y,70,15));
+		items.add(resume);
+		MenuItem options = new MenuItem();
+		options.setTag("options");
+		options.isImage = false;
+		options.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y+20,70,15));
+		items.add(options);
+		MenuItem exit = new MenuItem();
+		exit.setTag("exit");
+		exit.isImage = false;
+		exit.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y+40,70,15));
+		items.add(exit);
+		menu.usesWindow = true;
+		menu.dim = new Dimension(75,90);
+		menu.onLoad(items);		
 	}
+	boolean menuShown = false;
 	public void gameLoop()
 	{
 		do
@@ -152,7 +186,6 @@ public class Game extends JFrame implements Runnable{
 				g.clearRect(0, 0, getWidth(), getHeight());
 				onUpdate();
 				onPaint(g);
-			
 			}while(bs.contentsLost());
 			bs.show();
 		}while(bs.contentsLost());
@@ -170,7 +203,22 @@ public class Game extends JFrame implements Runnable{
 		//System.out.println("looping");
 		player.onUpdate();
 		// TODO Auto-generated method stub
-
+		map.checkCollision(player);
+		time.onUpdate();
+		map.onUpdate();
+		
+		processInput();
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void processInput()
+	{
+		mouse.poll();
+		
 		if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
 			player.moveRight();
 			
@@ -188,43 +236,54 @@ public class Game extends JFrame implements Runnable{
 		}
 		
 		
-		if(keyboard.currentKey == KeyEvent.VK_0)
+		if(keyboard.isKeyDown(KeyEvent.VK_0))
 		{
 			season=0;		
 		}
-		if(keyboard.currentKey == KeyEvent.VK_1)
+		if(keyboard.isKeyDown(KeyEvent.VK_1))
 		{
 			season=1;		
 		}
-		if(keyboard.currentKey == KeyEvent.VK_2)
+		if(keyboard.isKeyDown(KeyEvent.VK_2))
 		{
 			season=2;		
 		}
-		if(keyboard.currentKey == KeyEvent.VK_3)
+		if(keyboard.isKeyDown(KeyEvent.VK_3))
 		{
 			season=3;		
 		}
-		if(keyboard.currentKey == KeyEvent.VK_SHIFT)
+		if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
 		{
 			player.dash();	
 		}
-		if(keyboard.currentKey == KeyEvent.VK_SPACE)
+		else
+		{
+			player.stopDashing();
+		}
+		if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
 		{
 			keyboard.currentKey=-1;			
 		}
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(keyboard.isKeyDown(KeyEvent.VK_F1))
+		{
+			debug = !debug;
 		}
-		map.checkCollision(player);
-		time.onUpdate();
-		map.onUpdate();
+		if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
+		{
+			menuShown = true;	
+		}
+		for(MenuItem item:menu.menuItems)
+		{
+			if(item.isClicked&&item.getTag()=="exit")
+			{
+				shutdown();
+			}
+		}
+		ui.onInput(mouse);
+		menu.onInput(mouse);
 	}
-	
+	boolean debug = false;
 	Player player = new Player();
-	Object recThree = new Object(new Rectangle(200,100,32,32));
 	public void onPaint(Graphics g)
 	{
 		frameRate.calculate();
@@ -232,11 +291,20 @@ public class Game extends JFrame implements Runnable{
 		map.onPaint(g, this);
 		player.draw(g, this);
 		map.onUpperPaint(g, this);
-		
-		onDebug(g);
+
+		ui.onPaint(g,this);
+		if(menuShown)
+		{
+			menu.onPaint(g,this);
+		}
+		if(debug)
+		{
+			onDebug(g);
+		}
 		repaint();
 	}
 	Map map = new Map();
+	Rectangle rec = new Rectangle(0,20,50,10);
 	public void onDebug(Graphics g)
 	{
 		int width =150;
@@ -246,6 +314,8 @@ public class Game extends JFrame implements Runnable{
 		g.setColor(Color.white);
 		g.drawString(frameRate.getFrameRate(), 0,10);
 		g.drawString("Seconds Running" + time.getSeconds(), 0,20);
+		g.drawString("Exit", 0,30);
+		g.drawRect(rec.x, rec.y, rec.width, rec.height);
 	}
 	public void onClose()
 	{
