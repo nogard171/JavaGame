@@ -125,16 +125,26 @@ public class Game extends JFrame{
 	public void onPaint(Graphics g)
 	{
 		frameRate.calculate();
-		g.setColor(Color.black);
-		g.drawString(frameRate.getFrameRate(), 0,10);
-		g.drawString("Seconds Running" + time.getSeconds(), 0,20);
+		
 		map.onPaint(g, this);
 		recOne.onPaint(g, this);
+		g.drawRect(recOne.bounds.x, recOne.bounds.y,recOne.bounds.width,recOne.bounds.height);
 		map.onUpperPaint(g, this);
+		
+		onDebug(g);
 		repaint();
 	}
 	Map map = new Map();
-	
+	public void onDebug(Graphics g)
+	{
+		int width =150;
+		int height = 30;
+		g.setColor(new Color(0,0,0,128));
+		g.fillRect(0, 0, width, height);
+		g.setColor(Color.white);
+		g.drawString(frameRate.getFrameRate(), 0,10);
+		g.drawString("Seconds Running" + time.getSeconds(), 0,20);
+	}
 	public void onClose()
 	{
 		System.out.println("Closing");

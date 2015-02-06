@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -26,10 +27,9 @@ public void generateObjects(ArrayList<Object> objs, objects.Type type)
 	{
 		Object obj = new Object();
 		obj.lowerType = type;
-		obj.bounds = new Rectangle(100+(x*32),y*32,32,32);
-		obj.upperBounds = new Rectangle(-16,-96,64,128);
+		obj.bounds = new Rectangle((x*64),y*64,64,64);
 		obj.setTexture(objects.Type.getTexture(texture,obj.upperType), objects.Type.getTexture(texture,obj.lowerType));
-		if(x>=10)
+		if(x>=9)
 		{
 			y++;
 			x=0;
@@ -60,10 +60,10 @@ public void generateRandomObjects(ArrayList<Object> objs)
 		{
 			obj.passable = false;
 		}
-		obj.bounds = new Rectangle(100+(x*32),y*32,32,32);
-		obj.upperBounds = new Rectangle(-16,-96,64,128);
+		obj.bounds = new Rectangle((x*64),(y*64),32-obj.specialDimensions.width,32-obj.specialDimensions.height);
+		obj.upperBounds = new Rectangle(0,-80,64,128);
 		obj.setTexture(objects.Type.getTexture(texture,obj.upperType), objects.Type.getTexture(texture,obj.lowerType));
-		if(x>=10)
+		if(x>=9)
 		{
 			y++;
 			x=0;

@@ -1,5 +1,6 @@
 package objects;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -22,7 +23,8 @@ public class Object {
 	public BufferedImage upperTexture;
 	public boolean isColliding = false;
 	public boolean passable = true;
-	
+
+	public Dimension specialDimensions = new Dimension(-16,-16);
 	public Object(Rectangle rec)
 	{
 		this.bounds = rec;
@@ -108,7 +110,7 @@ public class Object {
 		// TODO Auto-generated method stub
 		if(this.isVisible)
 		{
-			g.drawImage(lowerTexture,this.bounds.x,this.bounds.y,this.bounds.width,this.bounds.height,obj);
+			g.drawImage(lowerTexture,this.bounds.x,this.bounds.y,this.bounds.width-specialDimensions.width,this.bounds.height-specialDimensions.height,obj);
 		}
 	}
 	public void onUpperPaint(Graphics g, ImageObserver obj) {
