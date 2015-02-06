@@ -22,6 +22,7 @@ public class Interface {
 	public Point windowPosition = new Point(0,0);
 	public Dimension dim = new Dimension(100,100);
 	public boolean usesWindow = false;
+	public int menu =1;
 	public Interface()
 	{
 		texture = ImageLoader.getImageFromResources("\\resources\\image\\menuset.png");
@@ -33,6 +34,10 @@ public class Interface {
 	public void setPosition(Point newPosition)
 	{
 		position =newPosition;
+	}
+	public void setWindowPosition(Point newWinPos)
+	{
+		windowPosition = newWinPos;
 	}
 	public void onLoad(ArrayList<MenuItem> items)
 	{
@@ -50,7 +55,7 @@ public class Interface {
 	{
 		if(usesWindow)
 		{
-			window.drawWindow(g,position.x+windowPosition.x,position.y+windowPosition.y, dim.width, dim.height, obj);
+			window.drawWindow(g,windowPosition.x,windowPosition.y, dim.width, dim.height, obj);
 		}
 		g.setColor(Color.BLACK);
 		for(MenuItem item:menuItems)
@@ -58,6 +63,7 @@ public class Interface {
 			if(item.isImage)
 			{
 				g.drawImage(getTexture(item.getTag()),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
+				g.drawRect(position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height);
 			}
 			else
 			{

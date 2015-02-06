@@ -173,16 +173,21 @@ public class Game extends JFrame implements Runnable{
 		bag.setTag("bag");
 		bag.setBounds(new Rectangle(0,0,32,32));
 		uiItems.add(bag);
+		MenuItem chara = new MenuItem();
+		chara.setTag("chara");
+		chara.setBounds(new Rectangle(0,32,32,32));
+		uiItems.add(bag);
+		uiItems.add(chara);
 		ui.dim = new Dimension(32*6,32*7);
-		ui.windowPosition = new Point(32,-(32*6));
+		ui.setWindowPosition(new Point(32,(height)-(32*6)));
 		ui.usesWindow = true;
-		ui.setPosition(new Point(0,(height)-uiItems.size()*32));
+		ui.setPosition(new Point(0,(height)-(32*6)));
 		ui.onLoad(uiItems);
 
 		Item item = new Item();
 		item.setCount(1);
 		item.setName("test");
-		item.setPosition(0, 0);
+		item.setPosition(5, 5);
 		item.setType(ItemType.Log);
 		item.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\itemset.png").getSubimage(0, 32, 32, 32));
 		inventory.add(item);
@@ -292,6 +297,39 @@ public class Game extends JFrame implements Runnable{
 				debug = !debug;
 			}
 			ui.onInput(mouse);
+			for(MenuItem item:ui.menuItems)
+			{
+				if(item.isClicked)
+				{
+					if(item.getTag()=="bag")
+					{
+						ui.usesWindow = !ui.usesWindow;
+						if(ui.menu!=1)
+						{
+							ui.menu = 0;
+						}
+						else
+						{
+							ui.menu = 1;
+						}
+						break;
+					}
+					else if(item.getTag()=="chara")
+					{
+						ui.usesWindow = !ui.usesWindow;
+						if(ui.menu!=2)
+						{
+							ui.menu = 0;
+						}
+						else
+						{
+							ui.menu = 2;
+						}
+						break;
+					}
+					
+				}
+			}
 		}
 		else
 		{
@@ -323,14 +361,20 @@ public class Game extends JFrame implements Runnable{
 		map.onPaint(g, this);
 		player.draw(g, this);
 		map.onUpperPaint(g, this);
-		//inventory.get(0).draw(g, this, ui.window);
+		//
 		ui.onPaint(g,this);
+		if(ui.menu==1)
+		{
+			for(Item item:inventory)
+			{
+				item.draw(g, this, ui.window);
+			}
+		}
 		if(menuShown)
 		{
 			g.setColor(new Color(0,0,0,128));
-			g.fillRect(0, 0, width, height);
-			
-			menu.onPaint(g,this);
+			g.fillRect(0, 0, width, height);			
+			menu.onPaint(g,this);			
 		}
 		if(debug)
 		{

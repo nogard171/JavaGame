@@ -22,6 +22,7 @@ public class Window
 	//this draws the window
 	public void drawCustomWindow(Graphics bg, int x, int y, int width, int height,ImageObserver obj)
 	{
+		bounds = new Rectangle(x,y,width,height);
 		BufferedImage off_Image = new BufferedImage(800,600,
 				                    BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = off_Image.createGraphics();
@@ -67,6 +68,7 @@ public class Window
 	}
 	public void drawWindow(Graphics g, int x, int y, int width, int height,ImageObserver obj)
 	{
+		bounds = new Rectangle(x,y,width,height);
 		//draw the bottom right
 		g.drawImage(this.texture.getSubimage(0,0,128,128), x, y, width, height,obj);
 		
