@@ -23,7 +23,8 @@ public class Object {
 	public BufferedImage upperTexture;
 	public boolean isColliding = false;
 	public boolean passable = true;
-
+	public Point framePoints = new Point(0,0);
+	int cycle = 1;
 	public Dimension specialDimensions = new Dimension(-16,-16);
 	public Object(Rectangle rec)
 	{
@@ -106,6 +107,10 @@ public class Object {
 		// TODO Auto-generated method stub
 		
 	}
+	public Type getLowerType()
+	{
+		return this.lowerType;
+	}
 	public void onPaint(Graphics g, ImageObserver obj) {
 		// TODO Auto-generated method stub
 		if(this.isVisible)
@@ -117,7 +122,7 @@ public class Object {
 		// TODO Auto-generated method stub
 		if(this.isVisible)
 		{
-			g.drawImage(upperTexture,this.bounds.x+this.upperBounds.x,this.bounds.y+this.upperBounds.y,upperBounds.width,upperBounds.height,obj);
+			g.drawImage(upperTexture,this.bounds.x+this.upperBounds.x,this.bounds.y+this.upperBounds.y,upperBounds.width-specialDimensions.width,upperBounds.height-specialDimensions.height,obj);
 		}
 	}
 }

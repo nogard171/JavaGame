@@ -9,12 +9,6 @@ public class Main {
 	public static void main(String[] args)
 	{
 		final Game game = new Game();
-		game.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e)
-			{
-				game.onClose();
-			}
-		});
 		 SwingUtilities.invokeLater(new Runnable() {     
 	            @Override
 	            public void run() {

@@ -26,11 +26,11 @@ public enum Type {
 	{
 		if(type==objects.Type.Player)
 		{
-			return texture.getSubimage(season*128, 768, 64,64);
+			return texture.getSubimage((season*128)+8, 768, 64,64);
 		}
 		if(type==objects.Type.Tree)
 		{
-			return texture.getSubimage(season*128, 768, 64,64);
+			return texture.getSubimage((season*128)+8, (768+8), 64,(64-8));
 		}
 		if(type==objects.Type.Bush)
 		{

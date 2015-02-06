@@ -1,9 +1,15 @@
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -18,72 +24,166 @@ import util.KeyboardInput;
 import util.Time;
 
 
-public class Game extends JFrame{
+public class Game extends JFrame implements Runnable{
 
 	public Game()
 	{
 		keyboard = new KeyboardInput(this);
 		frameRate = new FrameRate();
 	}
-	int width = 800;
-	int height = 600;
+	int width = 832;
+	int height = 640;
+	boolean fullscreen = false;
 	FrameRate frameRate;
 	KeyboardInput keyboard;
+	private GraphicsDevice graphicsDevice;
+	private DisplayMode currentDisplayMode;
+	private BufferStrategy bs;
+	private Thread gameThread;
 	public void createAndShowGUI()
 	{
-		GamePanel gamePanel = new GamePanel();
-		gamePanel.setBackground(Color.white);
-		gamePanel.setPreferredSize(new Dimension(this.width,this.height));
-		getContentPane().add(gamePanel);
+		setIgnoreRepaint(true);
+		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Test title");
-		pack();
+		setBackground(Color.white);
 		
+		if(fullscreen)
+		{
+			setUndecorated(true);
+			
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			graphicsDevice = ge.getDefaultScreenDevice();
+			currentDisplayMode = graphicsDevice.getDisplayMode();
+			width = graphicsDevice.getDisplayMode().getWidth();
+			height = graphicsDevice.getDisplayMode().getHeight();
+			
+			if(!graphicsDevice.isFullScreenSupported())
+			{
+				System.err.println("ERROR: Not Supported.");
+			}
+			
+			addKeyListener(new KeyAdapter(){
+				
+				public void keyPressed(KeyEvent e)
+				{
+					if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+					{
+						shutdown();	
+					}
+				}
+			});
+		
+			graphicsDevice.setFullScreenWindow(this);
+			
+			createBufferStrategy(2);
+			bs = getBufferStrategy();
+			//graphicsDevice.setDisplayMode(getDisplayMode());
+		}
+		else
+		{
+			Canvas canvas = new Canvas();
+			canvas.setSize(width, height);
+			getContentPane().add(canvas);
+			pack();
+			setVisible(true);
+			canvas.createBufferStrategy(2);
+			bs = canvas.getBufferStrategy();
+		}
+		
+		
+		
+		gameThread = new Thread(this);
+		gameThread.start();
+	}
+	public void shutdown()
+	{
+		try
+		{
+			running = false;
+			gameThread.join();
+			System.out.println("Game Loop Stopped.");
+			graphicsDevice.setDisplayMode(this.currentDisplayMode);
+			graphicsDevice.setFullScreenWindow(null);
+			System.out.println("Display Restored.");
+		}
+		catch(InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	public DisplayMode getDisplayMode()
+	{
+		return new DisplayMode(800,600,32, DisplayMode.REFRESH_RATE_UNKNOWN);
+	}
+	boolean running = false;
+	public void run()
+	{
+		running = true;
+		System.out.println("game running");
 		frameRate.initialize();
-		setVisible(true);
 		onSetup();
+		while(running)
+		{
+			gameLoop();
+		}
+		
 	}
 	public void onSetup() 
 	{
-		texture = ImageLoader.getImageFromResources("\\resources\\image\\tileset.png");
-		recOne.lowerType=objects.Type.Player;
+		onTextureLoading();
+		
 	}
-	public class GamePanel extends JPanel
+	public void gameLoop()
 	{
-		public void paint(Graphics g)
+		do
 		{
-			super.paint(g);
-			onUpdate();
-			onPaint(g);
-		}
+			do
+			{
+				Graphics g = null;
+				if(bs ==null)
+				{
+					g = createImage(width,height).getGraphics();
+				}
+				else
+				{
+					g = bs.getDrawGraphics();
+				}
+				g.clearRect(0, 0, getWidth(), getHeight());
+				onUpdate();
+				onPaint(g);
+			
+			}while(bs.contentsLost());
+			bs.show();
+		}while(bs.contentsLost());
 	}
 	public void onTextureLoading()
 	{
-		recOne.setTexture(null, objects.Type.getTexture(texture,recOne.lowerType));
+		texture = ImageLoader.getImageFromResources("\\resources\\image\\tileset.png");
+		player.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
 	}
 	int season =0;
 	Time time = new Time();
 	public void onUpdate()
 	{
-		onTextureLoading();
 		
 		//System.out.println("looping");
-		recOne.onUpdate();
+		player.onUpdate();
 		// TODO Auto-generated method stub
 
 		if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
-			recOne.moveRight();
+			player.moveRight();
 			
 		}
 		else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
-			recOne.moveLeft();
+			player.moveLeft();
 		}
 		else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
-			recOne.moveUp();
+			player.moveUp();
 			
 		}
 		else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
-			recOne.moveDown();
+			player.moveDown();
 			
 		}
 		
@@ -104,7 +204,10 @@ public class Game extends JFrame{
 		{
 			season=3;		
 		}
-		
+		if(keyboard.currentKey == KeyEvent.VK_SHIFT)
+		{
+			player.dash();	
+		}
 		if(keyboard.currentKey == KeyEvent.VK_SPACE)
 		{
 			keyboard.currentKey=-1;			
@@ -115,20 +218,19 @@ public class Game extends JFrame{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		map.checkCollision(recOne);
+		map.checkCollision(player);
 		time.onUpdate();
 		map.onUpdate();
 	}
 	
-	Object recOne = new Object(new Rectangle(0,32,32,32));
+	Player player = new Player();
 	Object recThree = new Object(new Rectangle(200,100,32,32));
 	public void onPaint(Graphics g)
 	{
 		frameRate.calculate();
 		
 		map.onPaint(g, this);
-		recOne.onPaint(g, this);
-		g.drawRect(recOne.bounds.x, recOne.bounds.y,recOne.bounds.width,recOne.bounds.height);
+		player.draw(g, this);
 		map.onUpperPaint(g, this);
 		
 		onDebug(g);

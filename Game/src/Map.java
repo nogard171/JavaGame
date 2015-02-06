@@ -9,6 +9,7 @@ import java.util.Random;
 import objects.Object;
 import objects.Type;
 import util.ImageLoader;
+import objects.Player;
 public class Map {
 ArrayList<Object> tiles = new ArrayList<Object>();
 ArrayList<Object> arrayObjects = new ArrayList<Object>();
@@ -59,9 +60,9 @@ public void generateRandomObjects(ArrayList<Object> objs)
 		if(obj.lowerType==Type.Tree)
 		{
 			obj.passable = false;
+			obj.upperBounds = new Rectangle(-22,-106,64,128);
 		}
-		obj.bounds = new Rectangle((x*64),(y*64),32-obj.specialDimensions.width,32-obj.specialDimensions.height);
-		obj.upperBounds = new Rectangle(0,-80,64,128);
+		obj.bounds = new Rectangle((x*64)+16,(y*64)+16,32,32);
 		obj.setTexture(objects.Type.getTexture(texture,obj.upperType), objects.Type.getTexture(texture,obj.lowerType));
 		if(x>=9)
 		{
@@ -76,6 +77,23 @@ public void generateRandomObjects(ArrayList<Object> objs)
 	}
 }
 public void checkCollision(Object player)
+{
+	for(Object tile: tiles)
+	{
+		if(!tile.passable&&tile.getBounds().intersects(player.getBounds()))
+		{
+			player.onCollide(tile);		
+		}
+	}
+	for(Object tile: arrayObjects)
+	{
+		if(!tile.passable&&tile.getBounds().intersects(player.getBounds()))
+		{
+			player.onCollide(tile);		
+		}
+	}
+}
+public void checkCollision(Player player)
 {
 	for(Object tile: tiles)
 	{
@@ -112,6 +130,7 @@ public void onPaint(Graphics g, ImageObserver obj)
 	for(Object tile:arrayObjects)
 	{
 		tile.onPaint(g, obj);
+		//g.drawRect(tile.bounds.x,tile.bounds.y,tile.bounds.width,tile.bounds.height);
 	}
 }
 public void onUpperPaint(Graphics g, ImageObserver obj)
@@ -119,6 +138,7 @@ public void onUpperPaint(Graphics g, ImageObserver obj)
 	for(Object tile: tiles)
 	{
 		tile.onUpperPaint(g, obj);
+		
 	}
 	for(Object tile: arrayObjects)
 	{
