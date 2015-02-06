@@ -1,4 +1,4 @@
-package input;
+package util;
 
 import java.awt.Component;
 import java.awt.event.*;
@@ -8,8 +8,8 @@ public class KeyboardInput implements KeyListener
 {
 	//declare the array of if keys are down or not
 	private boolean[] keys;
-	private int lastKey = -1;
-	private int currentKey = -1;
+	public int lastKey = -1;
+	public int currentKey = -1;
 	public int getLastKey()
 	{
 		return lastKey;
@@ -37,6 +37,7 @@ public class KeyboardInput implements KeyListener
 	}
 	//if key is being pressed, set the boolean for the specific key
 	//to true
+	
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{

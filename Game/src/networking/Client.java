@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import input.*;
+import util.ImageLoader;
+import util.*;
 
 public class Client extends Thread
 {
