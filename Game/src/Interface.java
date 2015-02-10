@@ -70,6 +70,7 @@ public class Interface {
 			{
 				g.setFont(new Font("Arial", Font.PLAIN, 20)); 
 				g.drawString(item.getTag(),position.x+item.getBounds().x+5,position.y+item.getBounds().y+15);
+				g.setFont(new Font("Arial", Font.PLAIN, 12));
 			}
 		}
 	}

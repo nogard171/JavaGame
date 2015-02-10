@@ -12,11 +12,15 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import networking.Client;
+import networking.Locker;
+import networking.Server;
 import objects.*;
 import objects.Object;
 import util.FrameRate;
@@ -200,7 +204,7 @@ public class Game extends JFrame implements Runnable{
 	}
 	ArrayList<Item> inventory = new ArrayList<Item>();
 	boolean menuShown = false;
-	boolean titleScreen = true;
+	boolean titleScreen = false;
 	TitleScreen title;
 	public void gameLoop()
 	{
@@ -263,7 +267,7 @@ public class Game extends JFrame implements Runnable{
 	public void processInput()
 	{
 		mouse.poll();
-		if(titleScreen)
+		if(!titleScreen)
 		{
 			if(!menuShown)
 			{
@@ -312,10 +316,7 @@ public class Game extends JFrame implements Runnable{
 				{
 					keyboard.currentKey=-1;			
 				}
-				if(keyboard.isKeyDown(KeyEvent.VK_F1))
-				{
-					debug = !debug;
-				}
+
 				ui.onInput(mouse);
 				for(MenuItem item:ui.menuItems)
 				{
@@ -354,10 +355,91 @@ public class Game extends JFrame implements Runnable{
 			{
 				menu.onInput(mouse);
 			}
+			if(keyboard.isKeyDown(KeyEvent.VK_F1))
+			{
+				debug = !debug;
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_F2))
+			{
+
+				server = new Server();
+				
+				if(server!=null&&serverStatus)
+				{
+					Locker.sendLine="shutdown:"+Locker.player.getName();
+				}
+				else
+				{
+					server.start();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				serverStatus = !serverStatus;
+				client = new Client();
+				if(client!=null&&client.isAlive())
+				{
+					client.disconnect();
+				}
+				else
+				{
+					client.username = Locker.player.getName();
+					client.start();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if(client.connected)
+					{
+
+						clientStatus = client.connected;
+					}
+				}
+			}
+			if(keyboard.isKeyDown(KeyEvent.VK_F3)&&!serverStatus)
+			{
+
+				client = new Client();
+				if(client!=null&&client.isAlive())
+				{
+					client.disconnect();
+				}
+				else
+				{
+					client.username = Locker.player.getName();
+					client.start();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if(client.connected)
+					{
+
+						clientStatus = client.connected;
+					}
+				}
+				
+			}
 			for(MenuItem item:menu.menuItems)
 			{
+				
 				if(item.isClicked&&item.getTag()=="exit")
 				{
+					
 					shutdown();
 				}
 				if(item.isClicked&&item.getTag()=="resume")
@@ -365,19 +447,59 @@ public class Game extends JFrame implements Runnable{
 					menuShown = false;
 				}
 			}
-	
 			if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
 			{
 				menuShown = true;	
 			}
+			
 		}
-		if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).intersects(title.newGameBounds)&&mouse.buttonDownOnce(1))
+		else
 		{
-			System.out.println("new game clicked");
+
+			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).intersects(title.newGameBounds))
+			{
+				//System.out.println("new game hovered");
+				if(mouse.buttonDownOnce(1))
+				{
+					System.out.println("new game clicked");
+					//titleScreen = false;
+				}
+			}
 		}
+
+		
 		title.onUpdate();
+		networkingData();
 	}
-	boolean debug = false;
+	boolean serverStatus = false;
+	boolean clientStatus = false;
+	//the server and client vars
+	Server server;
+	Client client;
+	public void networkingData()
+	{
+		if(Locker.sendLine!=""&&clientStatus)
+		{
+				sendMessage(Locker.proticol+":"+Locker.player.getName()+","+Locker.sendLine);
+				Locker.sendLine = "";
+		}
+		if(Locker.recieveLine!="")
+		{
+			//System.out.println(Locker.recieveLine);
+			debugLines.add(Locker.recieveLine);
+			Locker.recieveLine = "";
+		}
+	}
+	public void sendMessage(String message)
+	{
+		try {
+			client.sendMessage(client.client,message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	boolean debug = true;
 	Player player = new Player();
 	public void onPaint(Graphics g)
 	{
@@ -427,15 +549,20 @@ public class Game extends JFrame implements Runnable{
 	}
 	Map map = new Map();
 	Rectangle rec = new Rectangle(0,20,50,10);
+	ArrayList<String> debugLines = new ArrayList<String>();
 	public void onDebug(Graphics g)
 	{
 		int width =150;
-		int height = 30;
+		int height = 30+(debugLines.size()*20);
 		g.setColor(new Color(0,0,0,128));
 		g.fillRect(0, 0, width, height);
 		g.setColor(Color.white);
 		g.drawString(frameRate.getFrameRate(), 0,10);
 		g.drawString("Seconds Running" + time.getSeconds(), 0,20);
+		for(int i =0;i<debugLines.size();i++)
+		{
+			g.drawString(debugLines.get(i), 0, 30+(i*20));
+		}
 	}
 	public void onClose()
 	{
