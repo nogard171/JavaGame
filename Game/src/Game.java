@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -22,6 +23,7 @@ import util.FrameRate;
 import util.ImageLoader;
 import util.KeyboardInput;
 import util.MouseInput;
+import util.ParticleSystem;
 import util.Time;
 
 
@@ -29,11 +31,10 @@ public class Game extends JFrame implements Runnable{
 
 	public Game()
 	{
-		keyboard = new KeyboardInput(this);
-		mouse = new MouseInput();
-		ui = new Interface();
-		menu = new Interface();
-		frameRate = new FrameRate();
+		title = new TitleScreen();
+
+		
+		loadClasses();
 	}
 	int width = 832;
 	int height = 640;
@@ -55,12 +56,14 @@ public class Game extends JFrame implements Runnable{
 		setTitle("Test title");
 		setBackground(Color.white);
 		
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		graphicsDevice = ge.getDefaultScreenDevice();
+		
 		if(fullscreen)
 		{
 			setUndecorated(true);
 			
-			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-			graphicsDevice = ge.getDefaultScreenDevice();
+			
 			currentDisplayMode = graphicsDevice.getDisplayMode();
 			width = graphicsDevice.getDisplayMode().getWidth();
 			height = graphicsDevice.getDisplayMode().getHeight();
@@ -165,6 +168,7 @@ public class Game extends JFrame implements Runnable{
 		items.add(exit);
 		menu.usesWindow = true;
 		menu.dim = new Dimension(75,90);
+		menu.windowPosition=new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height);
 		menu.setPosition(new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height));
 		menu.onLoad(items);		
 		
@@ -191,11 +195,16 @@ public class Game extends JFrame implements Runnable{
 		item.setType(ItemType.Log);
 		item.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\itemset.png").getSubimage(0, 32, 32, 32));
 		inventory.add(item);
+		
+		
 	}
 	ArrayList<Item> inventory = new ArrayList<Item>();
 	boolean menuShown = false;
+	boolean titleScreen = true;
+	TitleScreen title;
 	public void gameLoop()
 	{
+	
 		do
 		{
 			do
@@ -216,6 +225,15 @@ public class Game extends JFrame implements Runnable{
 			bs.show();
 		}while(bs.contentsLost());
 	}
+	public void loadClasses()
+	{
+
+		keyboard = new KeyboardInput(this);
+		mouse = new MouseInput();
+		ui = new Interface();
+		menu = new Interface();
+		frameRate = new FrameRate();
+	}
 	public void onTextureLoading()
 	{
 		texture = ImageLoader.getImageFromResources("\\resources\\image\\tileset.png");
@@ -223,9 +241,10 @@ public class Game extends JFrame implements Runnable{
 	}
 	int season =0;
 	Time time = new Time();
+	
 	public void onUpdate()
 	{
-		
+		title.dim = new Dimension(this.getWidth(),this.getHeight());
 		//System.out.println("looping");
 		player.onUpdate();
 		// TODO Auto-generated method stub
@@ -244,137 +263,161 @@ public class Game extends JFrame implements Runnable{
 	public void processInput()
 	{
 		mouse.poll();
-
-		if(!menuShown)
+		if(titleScreen)
 		{
-			if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
-				player.moveRight();
+			if(!menuShown)
+			{
+				if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
+					player.moveRight();
+					
+				}
+				else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
+					player.moveLeft();
+				}
+				else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
+					player.moveUp();
+					
+				}
+				else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
+					player.moveDown();
+					
+				}
 				
-			}
-			else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
-				player.moveLeft();
-			}
-			else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
-				player.moveUp();
 				
-			}
-			else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
-				player.moveDown();
-				
-			}
-			
-			
-			if(keyboard.isKeyDown(KeyEvent.VK_0))
-			{
-				season=0;		
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_1))
-			{
-				season=1;		
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_2))
-			{
-				season=2;		
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_3))
-			{
-				season=3;		
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
-			{
-				player.dash();	
+				if(keyboard.isKeyDown(KeyEvent.VK_0))
+				{
+					season=0;		
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_1))
+				{
+					season=1;		
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_2))
+				{
+					season=2;		
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_3))
+				{
+					season=3;		
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
+				{
+					player.dash();	
+				}
+				else
+				{
+					player.stopDashing();
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
+				{
+					keyboard.currentKey=-1;			
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_F1))
+				{
+					debug = !debug;
+				}
+				ui.onInput(mouse);
+				for(MenuItem item:ui.menuItems)
+				{
+					if(item.isClicked)
+					{
+						if(item.getTag()=="bag")
+						{
+							if(ui.usesWindow&&ui.menu==1)
+							{
+								ui.usesWindow = !ui.usesWindow;
+							}
+							else
+							{
+								ui.usesWindow = true;
+							}
+							ui.menu = 1;
+							break;
+						}
+						else if(item.getTag()=="chara")
+						{
+							if(ui.usesWindow&&ui.menu==2)
+							{
+								ui.usesWindow = !ui.usesWindow;
+							}
+							else
+							{
+								ui.usesWindow = true;
+							}
+							ui.menu = 2;
+							break;
+						}
+					}
+				}
 			}
 			else
 			{
-				player.stopDashing();
+				menu.onInput(mouse);
 			}
-			if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
+			for(MenuItem item:menu.menuItems)
 			{
-				keyboard.currentKey=-1;			
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F1))
-			{
-				debug = !debug;
-			}
-			ui.onInput(mouse);
-			for(MenuItem item:ui.menuItems)
-			{
-				if(item.isClicked)
+				if(item.isClicked&&item.getTag()=="exit")
 				{
-					if(item.getTag()=="bag")
-					{
-						ui.usesWindow = !ui.usesWindow;
-						if(ui.menu!=1)
-						{
-							ui.menu = 0;
-						}
-						else
-						{
-							ui.menu = 1;
-						}
-						break;
-					}
-					else if(item.getTag()=="chara")
-					{
-						ui.usesWindow = !ui.usesWindow;
-						if(ui.menu!=2)
-						{
-							ui.menu = 0;
-						}
-						else
-						{
-							ui.menu = 2;
-						}
-						break;
-					}
-					
+					shutdown();
+				}
+				if(item.isClicked&&item.getTag()=="resume")
+				{
+					menuShown = false;
 				}
 			}
-		}
-		else
-		{
-			menu.onInput(mouse);
-		}
-		for(MenuItem item:menu.menuItems)
-		{
-			if(item.isClicked&&item.getTag()=="exit")
+	
+			if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
 			{
-				shutdown();
-			}
-			if(item.isClicked&&item.getTag()=="resume")
-			{
-				menuShown = false;
+				menuShown = true;	
 			}
 		}
-
-		if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
+		if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).intersects(title.newGameBounds)&&mouse.buttonDownOnce(1))
 		{
-			menuShown = true;	
+			System.out.println("new game clicked");
 		}
+		title.onUpdate();
 	}
 	boolean debug = false;
 	Player player = new Player();
 	public void onPaint(Graphics g)
 	{
-		frameRate.calculate();
-		
-		map.onPaint(g, this);
-		player.draw(g, this);
-		map.onUpperPaint(g, this);
-		//
-		ui.onPaint(g,this);
-		if(ui.menu==1)
+		if(titleScreen)
 		{
-			for(Item item:inventory)
-			{
-				item.draw(g, this, ui.window);
-			}
+			title.onPaint(g, this);
 		}
-		if(menuShown)
+		else
 		{
-			g.setColor(new Color(0,0,0,128));
-			g.fillRect(0, 0, width, height);			
-			menu.onPaint(g,this);			
+			frameRate.calculate();		
+			map.onPaint(g, this);
+			player.draw(g, this);
+			map.onUpperPaint(g, this);
+			ui.onPaint(g,this);
+			if(ui.menu==1&&ui.usesWindow)
+			{
+				for(Item item:inventory)
+				{
+					item.draw(g, this, ui.window);
+				}
+			}
+			else if(ui.menu ==2)
+			{
+				
+			}
+			else
+			{
+				ui.usesWindow = false;
+			}
+			if(ui.usesWindow)
+			{
+				g.drawRect(ui.menuItems.get(ui.menu).getBounds().x, ui.menuItems.get(ui.menu).getBounds().y+ui.getPosition().y, ui.menuItems.get(ui.menu).getBounds().width, ui.menuItems.get(ui.menu).getBounds().height);
+			}
+			if(menuShown)
+			{
+				g.setColor(new Color(0,0,0,128));
+				g.fillRect(0, 0, width, height);			
+				menu.onPaint(g,this);			
+			}
+		
 		}
 		if(debug)
 		{

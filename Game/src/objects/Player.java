@@ -309,7 +309,6 @@ public class Player
     	    //math: maxCycles/2 which gets the total number of steps for one cycle
     	    //frameCycle/(maxCycles/2) gets the current cycle the player is on
     	    framePoints.x = frameCycle/2;
-    	    System.out.println(framePoints.x);
     	    if(!this.networked)
     	    {
     	    	//this sends the players points to the server

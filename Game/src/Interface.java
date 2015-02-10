@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 
+import objects.ItemType;
 import objects.MenuItem;
 import util.ImageLoader;
 import util.MouseInput;
@@ -62,8 +63,8 @@ public class Interface {
 		{
 			if(item.isImage)
 			{
-				g.drawImage(getTexture(item.getTag()),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
-				g.drawRect(position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height);
+				g.drawImage(getTexture("back"),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
+				g.drawImage(getTexture(item.getTag()),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);				
 			}
 			else
 			{
@@ -91,6 +92,8 @@ public class Interface {
 	{
 		switch(tag)
 		{
+		case "back":
+			return texture.getSubimage(128, 0, 32,32);
 		case "bag":
 			return texture.getSubimage(128, 32, 32,32);
 		case "chara":
