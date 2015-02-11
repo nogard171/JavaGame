@@ -342,24 +342,7 @@ public class Game extends JFrame implements Runnable{
 
 				ui.onInput(mouse);
 				
-				if(keyboard.isKeyDown(KeyEvent.VK_ALT))
-				{
-					for(MenuItem item:ui.menuItems)
-					{
-						if(item.isHovered)
-						{
-							System.out.println(item.description);
-							ui.hoverPoints = new Point(item.getBounds().x,item.getBounds().y);
-							ui.hoverDescription = item.description;
-							break;
-						}
-						else
-						{
-							ui.hoverDescription = "";
-						}
-					}
-				}
-				else
+				if(!keyboard.isKeyDown(KeyEvent.VK_ALT))
 				{
 					ui.hoverDescription = "";
 				}

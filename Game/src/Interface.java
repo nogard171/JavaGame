@@ -136,6 +136,19 @@ public class Interface {
 		}
 		for(MenuItem item:menuItems)
 		{
+			if(item.isHovered)
+			{
+				hoverPoints = new Point(item.getBounds().x,item.getBounds().y);
+				hoverDescription = item.description;
+				break;
+			}
+			else
+			{
+				hoverDescription = "";
+			}
+		}
+		for(MenuItem item:menuItems)
+		{
 			if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height)))
 			{
 				item.isHovered = true;
@@ -207,6 +220,7 @@ public class Interface {
 					item.setBounds(new Rectangle(item.getBounds().x+32,item.getBounds().y,item.getBounds().width,item.getBounds().height));
 					transform = new Point(-32,0);
 					item.setTag("show");
+					usesWindow = false;
 					break;
 				}
 				else if(item.getTag()=="show")
@@ -214,6 +228,7 @@ public class Interface {
 					item.setBounds(new Rectangle(item.getBounds().x-32,item.getBounds().y,item.getBounds().width,item.getBounds().height));
 					transform = new Point(0,0);
 					item.setTag("hide");
+					usesWindow = false;
 					break;
 				}
 				else if(item.getTag()=="exit")
