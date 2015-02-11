@@ -8,9 +8,21 @@ public class MenuItem {
 	private String Tag = "";
 	public boolean isImage = true;
 	public boolean isClicked = false;
+	public String description = "test";
+	public boolean isHovered;
+	public boolean isHoverable = true;
+	public long hoverTime = 0;
+	public MenuItem()
+	{
+		isHovered = true;
+	}
 	public Rectangle getBounds()
 	{
 		return this.bounds;
+	}
+	public void setHoverable(boolean newHoverable)
+	{
+		isHoverable = newHoverable;
 	}
 	public boolean isClickable()
 	{

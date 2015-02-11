@@ -36,8 +36,6 @@ public class Game extends JFrame implements Runnable{
 	public Game()
 	{
 		title = new TitleScreen();
-
-		
 		loadClasses();
 	}
 	int width = 832;
@@ -154,7 +152,7 @@ public class Game extends JFrame implements Runnable{
 	public void onSetup() 
 	{
 		onTextureLoading();
-		ArrayList<MenuItem> items = new ArrayList<MenuItem>();
+		/*ArrayList<MenuItem> items = new ArrayList<MenuItem>();
 		MenuItem resume = new MenuItem();
 		resume.setTag("resume");
 		resume.isImage = false;
@@ -174,22 +172,48 @@ public class Game extends JFrame implements Runnable{
 		menu.dim = new Dimension(75,90);
 		menu.windowPosition=new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height);
 		menu.setPosition(new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height));
-		menu.onLoad(items);		
+		menu.onLoad(items);		*/
 		
+		ui.dim = new Dimension(32*6,32*7);
+		ui.setWindowPosition(new Point(32,(height)-(32*7)));
+		ui.usesWindow = true;
+		ui.setPosition(new Point(0,(height)-(32*7)));
 		ArrayList<MenuItem> uiItems = new ArrayList<MenuItem>();
 		MenuItem bag = new MenuItem();
+		bag.description = "This will show the players inventory.";
 		bag.setTag("bag");
 		bag.setBounds(new Rectangle(0,0,32,32));
-		uiItems.add(bag);
 		MenuItem chara = new MenuItem();
+		chara.description = "This will show the players stats and related info.";
 		chara.setTag("chara");
 		chara.setBounds(new Rectangle(0,32,32,32));
+		MenuItem equip = new MenuItem();
+		equip.description = "This will show the players equipment.";
+		equip.setTag("equip");
+		equip.setBounds(new Rectangle(0,64,32,32));
+		MenuItem magic = new MenuItem();
+		magic.description = "This will show the players magic skills.";
+		magic.setTag("magic");
+		magic.setBounds(new Rectangle(0,96,32,32));
+		
+		
+		MenuItem hideShow = new MenuItem();
+		hideShow.description = "This will hide the Interface";
+		hideShow.setHoverable(false);
+		hideShow.setTag("hide");
+		hideShow.setBounds(new Rectangle(0,-(height-ui.getPosition().y),32,32));
+		MenuItem exit = new MenuItem();
+		exit.description = "You must click exit twice to quit the game.";
+		exit.setTag("exit");
+		exit.setBounds(new Rectangle(0,-(height-ui.getPosition().y)-192,32,32));
+		
+		
 		uiItems.add(bag);
 		uiItems.add(chara);
-		ui.dim = new Dimension(32*6,32*7);
-		ui.setWindowPosition(new Point(32,(height)-(32*6)));
-		ui.usesWindow = true;
-		ui.setPosition(new Point(0,(height)-(32*6)));
+		uiItems.add(equip);
+		uiItems.add(magic);
+		uiItems.add(hideShow);
+		uiItems.add(exit);
 		ui.onLoad(uiItems);
 
 		Item item = new Item();
@@ -198,11 +222,10 @@ public class Game extends JFrame implements Runnable{
 		item.setPosition(5, 5);
 		item.setType(ItemType.Log);
 		item.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\itemset.png").getSubimage(0, 32, 32, 32));
-		inventory.add(item);
+		Locker.player.inventory.add(item);
 		
 		
 	}
-	ArrayList<Item> inventory = new ArrayList<Item>();
 	boolean menuShown = false;
 	boolean titleScreen = false;
 	TitleScreen title;
@@ -318,37 +341,27 @@ public class Game extends JFrame implements Runnable{
 				}
 
 				ui.onInput(mouse);
-				for(MenuItem item:ui.menuItems)
+				
+				if(keyboard.isKeyDown(KeyEvent.VK_ALT))
 				{
-					if(item.isClicked)
+					for(MenuItem item:ui.menuItems)
 					{
-						if(item.getTag()=="bag")
+						if(item.isHovered)
 						{
-							if(ui.usesWindow&&ui.menu==1)
-							{
-								ui.usesWindow = !ui.usesWindow;
-							}
-							else
-							{
-								ui.usesWindow = true;
-							}
-							ui.menu = 1;
+							System.out.println(item.description);
+							ui.hoverPoints = new Point(item.getBounds().x,item.getBounds().y);
+							ui.hoverDescription = item.description;
 							break;
 						}
-						else if(item.getTag()=="chara")
+						else
 						{
-							if(ui.usesWindow&&ui.menu==2)
-							{
-								ui.usesWindow = !ui.usesWindow;
-							}
-							else
-							{
-								ui.usesWindow = true;
-							}
-							ui.menu = 2;
-							break;
+							ui.hoverDescription = "";
 						}
 					}
+				}
+				else
+				{
+					ui.hoverDescription = "";
 				}
 			}
 			else
@@ -434,19 +447,6 @@ public class Game extends JFrame implements Runnable{
 				}
 				
 			}
-			for(MenuItem item:menu.menuItems)
-			{
-				
-				if(item.isClicked&&item.getTag()=="exit")
-				{
-					
-					shutdown();
-				}
-				if(item.isClicked&&item.getTag()=="resume")
-				{
-					menuShown = false;
-				}
-			}
 			if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
 			{
 				menuShown = true;	
@@ -499,7 +499,7 @@ public class Game extends JFrame implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	boolean debug = true;
+	boolean debug = false;
 	Player player = new Player();
 	public void onPaint(Graphics g)
 	{
@@ -514,32 +514,14 @@ public class Game extends JFrame implements Runnable{
 			player.draw(g, this);
 			map.onUpperPaint(g, this);
 			ui.onPaint(g,this);
-			if(ui.menu==1&&ui.usesWindow)
-			{
-				for(Item item:inventory)
-				{
-					item.draw(g, this, ui.window);
-				}
-			}
-			else if(ui.menu ==2)
-			{
-				
-			}
-			else
-			{
-				ui.usesWindow = false;
-			}
-			if(ui.usesWindow)
-			{
-				g.drawRect(ui.menuItems.get(ui.menu).getBounds().x, ui.menuItems.get(ui.menu).getBounds().y+ui.getPosition().y, ui.menuItems.get(ui.menu).getBounds().width, ui.menuItems.get(ui.menu).getBounds().height);
-			}
+			
+			
 			if(menuShown)
 			{
 				g.setColor(new Color(0,0,0,128));
 				g.fillRect(0, 0, width, height);			
 				menu.onPaint(g,this);			
 			}
-		
 		}
 		if(debug)
 		{

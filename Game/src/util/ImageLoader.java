@@ -22,7 +22,7 @@ public class ImageLoader
 	    	return ImageIO.read(new File(workingDir +image));
 		}
 		catch (IOException e)
-		{
+		{ 
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 			return null;

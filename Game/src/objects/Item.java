@@ -87,7 +87,6 @@ public class Item {
 	//draw the item
 	public void draw(Graphics g, ImageObserver obj, Window win)
 	{
-		g.drawRect(win.bounds.x+(position.x), win.bounds.y+(position.y), 30,30);
 		g.drawImage(texture, win.bounds.x+(position.x), win.bounds.y+(position.y), 30,30, obj);
 	}
 	public void mouseClicked(MouseEvent e)

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import util.ImageLoader;
+import objects.Player;
 import util.*;
 
 public class Client extends Thread
@@ -64,11 +64,11 @@ public class Client extends Thread
 	    			if(!playerExist(user)&&!user.equals(this.username))
 	    			{
 	    				Locker.recieveLine = user +" added to players";
-	    				/*Player player = new Player();
+	    				Player player = new Player();
 	    				player.networked = true;
 	    				player.setTexture(imgLoader.getImageFromResources("\\resources\\images\\playerset.png"));
 	    				player.setName(user);
-	    				Locker.players.add(player);	*/
+	    				Locker.players.add(player);	
 	    			}
 	    		}
 	    		if(command.startsWith("message:"))
@@ -85,21 +85,21 @@ public class Client extends Thread
 	    			String[] data = command.substring(command.indexOf(':')+1,command.length()).split(",");
 	    			if(getPlayerIndex(user)>=0)
 	    			{
-	    				/*Player player = Locker.players.get(getPlayerIndex(user));
+	    				Player player = Locker.players.get(getPlayerIndex(user));
 	    				player.setPosition(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
 	    				//player.setFramePoints(Integer.parseInt(data[3]), Integer.parseInt(data[4]));
 	    				player.moving = Boolean.parseBoolean(data[3]);
-	    				player.direction = Direction.pareDirection(data[4]);
+	    				//player.direction = Direction.pareDirection(data[4]);
 	    				player.action = Integer.parseInt(data[5]);
 	    				player.setHealth(Float.parseFloat(data[6]),Float.parseFloat(data[7]));
-	    				player.setMana(Float.parseFloat(data[8]),Float.parseFloat(data[9]));*/
+	    				player.setMana(Float.parseFloat(data[8]),Float.parseFloat(data[9]));
 	    			}
 	    			System.out.println("player moving"+data[0]+data[1]);
 	    		}
 	    		if(command.startsWith("remove:"))
 	    		{
 	    			String user = command.substring(command.indexOf(':')+1,command.length());
-	    			//Locker.players.remove(getPlayerIndex(user));
+	    			Locker.players.remove(getPlayerIndex(user));
 	    		}
 	    	  }
 	    	  }
@@ -117,22 +117,22 @@ public class Client extends Thread
 	   } 
 	   public boolean playerExist(String username)
 	   {
-		   /*for(int i=0;i<Locker.players.size();i++)
+		   for(int i=0;i<Locker.players.size();i++)
 		   {
 			   if(Locker.players.get(i).getName().toLowerCase().equals(username.toLowerCase())){
 				   return true;
 			   }
-		   }*/
+		   }
 		   return false;
 	   }
 	   public int getPlayerIndex(String username)
 	   {
-		/*   for(int i=0;i<Locker.players.size();i++)
+		   for(int i=0;i<Locker.players.size();i++)
 		   {
 			   if(Locker.players.get(i).getName().toLowerCase().equals(username.toLowerCase())){
 				   return i;
 			   }
-		   }*/
+		   }
 		   return -1;
 	   }
 	   public static String getInput(Socket client) throws IOException {

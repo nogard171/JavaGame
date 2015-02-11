@@ -20,7 +20,7 @@ import networking.Locker;
 public class Player
 {
     //the players name
-    private String name = "test";
+    private String name = "joe";
     //the players texture
     private BufferedImage texture;
     //the players current frame
@@ -68,6 +68,7 @@ public class Player
     public int count = 0;
     //audio player for walking sounds
     AudioPlayer audioPlayer = new AudioPlayer();
+	public ArrayList<Item> inventory = new ArrayList<Item>();
     //audio sounds location
     public String[] audioFilePath = {"\\resources\\audio\\footstep02.wav",
     		"\\resources\\audio\\chop.wav"};
