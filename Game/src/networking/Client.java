@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import objects.Direction;
 import objects.Player;
 import util.*;
 
@@ -56,7 +57,7 @@ public class Client extends Thread
 	    	  while(true)
 	    	  {
 	    		String command = getInput(client);
-	    		System.out.println(command);
+	    		//System.out.println(command);
 	    		if(command.startsWith("player:"))
 	    		{
 	    			String user = command.substring(command.indexOf(':')+1,command.length());
@@ -85,16 +86,16 @@ public class Client extends Thread
 	    			String[] data = command.substring(command.indexOf(':')+1,command.length()).split(",");
 	    			if(getPlayerIndex(user)>=0)
 	    			{
+	    				System.out.println(data[0]);
 	    				Player player = Locker.players.get(getPlayerIndex(user));
 	    				player.setPosition(Integer.parseInt(data[1]), Integer.parseInt(data[2]));
-	    				//player.setFramePoints(Integer.parseInt(data[3]), Integer.parseInt(data[4]));
 	    				player.moving = Boolean.parseBoolean(data[3]);
-	    				//player.direction = Direction.pareDirection(data[4]);
+	    				player.direction = Direction.pareDirection(data[4]);
 	    				player.action = Integer.parseInt(data[5]);
 	    				player.setHealth(Float.parseFloat(data[6]),Float.parseFloat(data[7]));
 	    				player.setMana(Float.parseFloat(data[8]),Float.parseFloat(data[9]));
 	    			}
-	    			System.out.println("player moving"+data[0]+data[1]);
+	    			System.out.println("player moving: "+data[0]);
 	    		}
 	    		if(command.startsWith("remove:"))
 	    		{

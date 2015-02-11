@@ -449,8 +449,17 @@ public class Game extends JFrame implements Runnable{
 				}
 			}
 		}
-
-		
+		try
+		{
+			for(int i=0;i<Locker.players.size();i++)
+			{
+				Locker.players.get(i).setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
+				Locker.players.get(i).onUpdate();
+			}
+		}catch(Exception e)
+		{
+			System.out.println("no players to read");
+		}
 		title.onUpdate();
 		networkingData();
 	}
@@ -494,16 +503,40 @@ public class Game extends JFrame implements Runnable{
 		{
 			frameRate.calculate();		
 			map.onPaint(g, this);
+			
+			for(Player player:Locker.players)
+			{
+				player.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
+				player.draw(g, this);
+			}
+			
 			player.draw(g, this);
 			map.onUpperPaint(g, this);
 			ui.onPaint(g,this);
 			
+			if(serverStatus)
+			{
+				g.setColor(new Color(0,0,0,96));
+				g.fillRect(32,0,116,18);
+				g.setColor(Color.white);
+				g.drawString("Server Status: " +serverStatus, 32,12);
+				g.setColor(Color.BLACK);
+			}
+			else if(clientStatus)
+			{
+				g.setColor(new Color(0,0,0,96));
+				g.fillRect(32,0,116,18);
+				g.setColor(Color.white);
+				g.drawString("Client Status: " +clientStatus, 32,12);
+				g.setColor(Color.BLACK);
+			}
 			
 			if(menuShown)
 			{
 				g.setColor(new Color(0,0,0,128));
 				g.fillRect(0, 0, width, height);			
-				menu.onPaint(g,this);			
+				menu.onPaint(g,this);	
+				g.setColor(Color.BLACK);
 			}
 		}
 		if(debug)

@@ -20,7 +20,7 @@ import networking.Locker;
 public class Player
 {
     //the players name
-    private String name = "joe";
+    private String name = "test";
     //the players texture
     private BufferedImage texture;
     //the players current frame
@@ -261,24 +261,24 @@ public class Player
     	int delta = frameRate.getDelta();
     	if(!this.networked)
 	    {
-    	//if stamina is less than the maxStamina, it will regen until it's equal to maxStamina 
-    	if(delta%5==1&&this.stamina<maxStamina)
-    	{
-    	    //add the stamina regen rate to the current stamina
-    	    this.stamina += staminaRegenRate;
-    	}
-    	//if health is less than the maxhealth, it will regen until it's equal to maxhealth
-    	if(delta%5==1&&this.health<maxHealth)
-    	{
-    	    //add the stamina regen rate to the current stamina
-    	    this.health += healthRegenRate;
-    	}
-    	//if health is less than the maxhealth, it will regen until it's equal to maxhealth
-    	if(delta%5==1&&this.mana<maxMana)
-    	{
-    	    //add the stamina regen rate to the current stamina
-    	    this.mana += manaRegenRate;
-    	}
+	    	//if stamina is less than the maxStamina, it will regen until it's equal to maxStamina 
+	    	if(delta%5==1&&this.stamina<maxStamina)
+	    	{
+	    	    //add the stamina regen rate to the current stamina
+	    	    this.stamina += staminaRegenRate;
+	    	}
+	    	//if health is less than the maxhealth, it will regen until it's equal to maxhealth
+	    	if(delta%5==1&&this.health<maxHealth)
+	    	{
+	    	    //add the stamina regen rate to the current stamina
+	    	    this.health += healthRegenRate;
+	    	}
+	    	//if health is less than the maxhealth, it will regen until it's equal to maxhealth
+	    	if(delta%5==1&&this.mana<maxMana)
+	    	{
+	    	    //add the stamina regen rate to the current stamina
+	    	    this.mana += manaRegenRate;
+	    	}
 	    }
     	if(delta%5==1&&action==1)
     	{
