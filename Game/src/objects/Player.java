@@ -72,6 +72,18 @@ public class Player
     //audio sounds location
     public String[] audioFilePath = {"\\resources\\audio\\footstep02.wav",
     		"\\resources\\audio\\chop.wav"};
+    public Player()
+    {
+    	for(int i =0;i<10;i++)
+    	{
+    	Skill skill = new Skill();
+    	
+    	skill.name = "test";
+    	skill.description = "this is the test skill";
+    	skill.level = 1;
+    	skills.add(skill);
+    	}
+    }
     //return the current frame
     public BufferedImage getFrame()
     {
@@ -254,6 +266,7 @@ public class Player
 	public boolean networked;
 	private boolean isColliding;
 	FrameRate frameRate = new FrameRate();
+	public ArrayList<Skill> skills = new ArrayList<Skill>();
     //this updates the players frame
     public void onUpdate()
     {

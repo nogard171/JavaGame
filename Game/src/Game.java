@@ -187,14 +187,18 @@ public class Game extends JFrame implements Runnable{
 		chara.description = "This will show the players stats and related info.";
 		chara.setTag("chara");
 		chara.setBounds(new Rectangle(0,32,32,32));
+		MenuItem skills = new MenuItem();
+		skills.description = "This will show the players skills.";
+		skills.setTag("skills");
+		skills.setBounds(new Rectangle(0,64,32,32));
 		MenuItem equip = new MenuItem();
 		equip.description = "This will show the players equipment.";
 		equip.setTag("equip");
-		equip.setBounds(new Rectangle(0,64,32,32));
+		equip.setBounds(new Rectangle(0,96,32,32));
 		MenuItem magic = new MenuItem();
 		magic.description = "This will show the players magic skills.";
 		magic.setTag("magic");
-		magic.setBounds(new Rectangle(0,96,32,32));
+		magic.setBounds(new Rectangle(0,129,32,32));
 		
 		
 		MenuItem hideShow = new MenuItem();
@@ -210,6 +214,7 @@ public class Game extends JFrame implements Runnable{
 		
 		uiItems.add(bag);
 		uiItems.add(chara);
+		uiItems.add(skills);
 		uiItems.add(equip);
 		uiItems.add(magic);
 		uiItems.add(hideShow);
