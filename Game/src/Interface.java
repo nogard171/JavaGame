@@ -12,6 +12,7 @@ import networking.Locker;
 import objects.Item;
 import objects.ItemType;
 import objects.MenuItem;
+import objects.Skill;
 import util.ImageLoader;
 import util.MouseInput;
 import util.Window;
@@ -93,24 +94,42 @@ public class Interface {
 			g.drawString(hoverDescription, hoverPoints.x+position.x, hoverPoints.y+10+position.y);
 		}
 		if(menu==1&&usesWindow)
-		{
+		{//inventory
 			for(Item item:Locker.player.inventory)
 			{
 				item.draw(g, obj, window);
 			}
 		}
 		else if(menu ==2&&usesWindow)
-		{
+		{//chara
 			g.setFont(new Font("Engravers MT",1,12));
 			g.setColor(new Color(81,65,41));
 			g.drawString("Username:"+Locker.player.getName(), position.x+37,position.y+16);
 		}
 		else if(menu ==3&&usesWindow)
-		{
-			
+		{//skills
+			int x=1,y=0;
+			for(Skill skill:Locker.player.skills)
+			{
+				skill.bounds = new Rectangle(position.x+(x*32)+(x*4),position.y+(y*32),32,32);
+				g.drawRect(skill.bounds.x, skill.bounds.y, skill.bounds.width, skill.bounds.height);
+				g.drawString(skill.name, skill.bounds.x,skill.bounds.y);
+				if(x>=7)
+				{
+					y++;
+				}
+				else
+				{
+					x++;
+				}
+			}
 		}
 		else if(menu ==4&&usesWindow)
-		{
+		{//equipment
+			
+		}
+		else if(menu ==5&&usesWindow)
+		{//magic
 			
 		}
 		else
@@ -189,7 +208,7 @@ public class Interface {
 					menu = 2;
 					break;
 				}
-				else if(item.getTag()=="equip")
+				else if(item.getTag()=="skills")
 				{
 					if(usesWindow&&menu==3)
 					{
@@ -202,7 +221,7 @@ public class Interface {
 					menu = 3;
 					break;
 				}
-				else if(item.getTag()=="magic")
+				else if(item.getTag()=="equip")
 				{
 					if(usesWindow&&menu==4)
 					{
@@ -213,6 +232,19 @@ public class Interface {
 						usesWindow = true;
 					}
 					menu = 4;
+					break;
+				}
+				else if(item.getTag()=="magic")
+				{
+					if(usesWindow&&menu==5)
+					{
+						usesWindow = !usesWindow;
+					}
+					else
+					{
+						usesWindow = true;
+					}
+					menu = 5;
 					break;
 				}
 				else if(item.getTag()=="hide")
