@@ -40,7 +40,6 @@ public class Game extends JFrame implements Runnable{
 	}
 	int width = 832;
 	int height = 640;
-	boolean fullscreen = false;
 	FrameRate frameRate;
 	KeyboardInput keyboard;
 	MouseInput mouse;
@@ -61,51 +60,15 @@ public class Game extends JFrame implements Runnable{
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		graphicsDevice = ge.getDefaultScreenDevice();
 		
-		if(fullscreen)
+		if(Locker.fullscreen)
 		{
 			setUndecorated(true);
-			
-			
-			currentDisplayMode = graphicsDevice.getDisplayMode();
-			width = graphicsDevice.getDisplayMode().getWidth();
-			height = graphicsDevice.getDisplayMode().getHeight();
-			
-			if(!graphicsDevice.isFullScreenSupported())
-			{
-				System.err.println("ERROR: Not Supported.");
-			}
-			
-			addKeyListener(new KeyAdapter(){
-				
-				public void keyPressed(KeyEvent e)
-				{
-					if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
-					{
-						shutdown();	
-					}
-				}
-			});
-			addKeyListener(keyboard);
-			addMouseListener(mouse);
-			addMouseMotionListener(mouse);
-			graphicsDevice.setFullScreenWindow(this);
-			
-			createBufferStrategy(2);
-			bs = getBufferStrategy();
+			setFullscreen();
 			//graphicsDevice.setDisplayMode(getDisplayMode());
 		}
 		else
 		{
-			Canvas canvas = new Canvas();
-			canvas.setSize(width, height);
-			canvas.addKeyListener(keyboard);
-			canvas.addMouseListener(mouse);
-			canvas.addMouseMotionListener(mouse);
-			getContentPane().add(canvas);
-			pack();
-			setVisible(true);
-			canvas.createBufferStrategy(2);
-			bs = canvas.getBufferStrategy();
+			setWindow();
 		}
 		
 		
@@ -113,13 +76,56 @@ public class Game extends JFrame implements Runnable{
 		gameThread = new Thread(this);
 		gameThread.start();
 	}
+	public void setFullscreen()
+	{
+		currentDisplayMode = graphicsDevice.getDisplayMode();
+		width = graphicsDevice.getDisplayMode().getWidth();
+		height = graphicsDevice.getDisplayMode().getHeight();
+		if(!graphicsDevice.isFullScreenSupported())
+		{
+			System.err.println("ERROR: Not Supported.");
+		}
+		
+		addKeyListener(new KeyAdapter(){
+			
+			public void keyPressed(KeyEvent e)
+			{			if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+				{
+					shutdown();	
+				}
+			}
+		});
+		addKeyListener(keyboard);
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
+		graphicsDevice.setFullScreenWindow(this);
+
+		//recenter window
+		setLocationRelativeTo(null);
+		
+		createBufferStrategy(2);
+		bs = getBufferStrategy();
+	}
+	public void setWindow()
+	{
+		Canvas canvas = new Canvas();
+		canvas.setSize(width, height);
+		canvas.addKeyListener(keyboard);
+		canvas.addMouseListener(mouse);
+		canvas.addMouseMotionListener(mouse);
+		getContentPane().add(canvas);
+		pack();
+		setVisible(true);
+		canvas.createBufferStrategy(2);
+		bs = canvas.getBufferStrategy();
+	}
 	public void shutdown()
 	{
 		try
 		{
 			running = false;
 			System.out.println("Game Loop Stopped.");
-			if(fullscreen)
+			if(Locker.fullscreen)
 			{
 				gameThread.join();				
 				graphicsDevice.setDisplayMode(this.currentDisplayMode);
@@ -152,27 +158,8 @@ public class Game extends JFrame implements Runnable{
 	public void onSetup() 
 	{
 		onTextureLoading();
-		/*ArrayList<MenuItem> items = new ArrayList<MenuItem>();
-		MenuItem resume = new MenuItem();
-		resume.setTag("resume");
-		resume.isImage = false;
-		resume.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y,70,15));
-		items.add(resume);
-		MenuItem options = new MenuItem();
-		options.setTag("options");
-		options.isImage = false;
-		options.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y+20,70,15));
-		items.add(options);
-		MenuItem exit = new MenuItem();
-		exit.setTag("exit");
-		exit.isImage = false;
-		exit.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y+40,70,15));
-		items.add(exit);
-		menu.usesWindow = true;
-		menu.dim = new Dimension(75,90);
-		menu.windowPosition=new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height);
-		menu.setPosition(new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height));
-		menu.onLoad(items);		*/
+		
+		Locker.keys = new KeyBindings(KeyEvent.VK_LEFT,KeyEvent.VK_RIGHT,KeyEvent.VK_UP,KeyEvent.VK_DOWN);
 		
 		ui.dim = new Dimension(32*6,32*7);
 		ui.setWindowPosition(new Point(32,(height)-(32*7)));
@@ -198,27 +185,76 @@ public class Game extends JFrame implements Runnable{
 		MenuItem magic = new MenuItem();
 		magic.description = "This will show the players magic skills.";
 		magic.setTag("magic");
-		magic.setBounds(new Rectangle(0,129,32,32));
+		magic.setBounds(new Rectangle(0,128,32,32));
+		
+		MenuItem options = new MenuItem();
+		options.description = "This will open the options.";
+		options.setTag("options");
+		options.setBounds(new Rectangle(0,192,32,32));
+		
+		MenuItem fullscreen = new MenuItem();
+		fullscreen.description = "This will toggle an option";
+		fullscreen.setTag("Launch next in Fullscreen");
+		fullscreen.setBounds(new Rectangle(0,20,32,10));
+		
+		MenuItem Left = new MenuItem();
+		Left.description = "This will toggle an option";
+		Left.setTag("left");
+		Left.text = String.valueOf(Locker.keys.Left);
+		Left.setPreTag("Bind the key for ");
+		Left.isInput = true;
+		Left.setBounds(new Rectangle(0,40,32,10));
+		
+		MenuItem Right = new MenuItem();
+		Right.description = "This will toggle an option";
+		Right.setTag("right");
+		Right.text = String.valueOf(Locker.keys.Right);
+		Right.setPreTag("Bind the key for ");
+		Right.isInput = true;
+		Right.setBounds(new Rectangle(0,60,32,10));
+		
+		MenuItem Up = new MenuItem();
+		Up.description = "This will toggle an option";
+		Up.setTag("up");
+		Up.text = String.valueOf(Locker.keys.Up);
+		Up.setPreTag("Bind the key for ");
+		Up.isInput = true;
+		Up.setBounds(new Rectangle(0,80,32,10));
+		
+		MenuItem Down = new MenuItem();
+		Down.description = "This will toggle an option";
+		Down.setTag("down");
+		Down.text = String.valueOf(Locker.keys.Down);
+		Down.setPreTag("Bind the key for ");
+		Down.isInput = true;
+		Down.setBounds(new Rectangle(0,100,32,10));
 		
 		
 		MenuItem hideShow = new MenuItem();
 		hideShow.description = "This will hide the Interface";
 		hideShow.setHoverable(false);
 		hideShow.setTag("hide");
-		hideShow.setBounds(new Rectangle(0,-(height-ui.getPosition().y),32,32));
+		hideShow.setBounds(new Rectangle(0,(0-ui.getPosition().y)+height/2,32,32));
 		MenuItem exit = new MenuItem();
 		exit.description = "You must click exit twice to quit the game.";
 		exit.setTag("exit");
-		exit.setBounds(new Rectangle(0,-(height-ui.getPosition().y)-192,32,32));
-		
+		exit.setBounds(new Rectangle(0,0-ui.getPosition().y,32,32));
+		System.out.println(height);
 		
 		uiItems.add(bag);
 		uiItems.add(chara);
 		uiItems.add(skills);
 		uiItems.add(equip);
 		uiItems.add(magic);
+		uiItems.add(options);
+		ui.options.add(fullscreen);
+		ui.options.add(Left);
+		ui.options.add(Right);
+		ui.options.add(Up);
+		ui.options.add(Down);
+		
 		uiItems.add(hideShow);
-		uiItems.add(exit);
+		uiItems.add(exit);		
 		ui.onLoad(uiItems);
 
 		Item item = new Item();
@@ -278,7 +314,7 @@ public class Game extends JFrame implements Runnable{
 	{
 		title.dim = new Dimension(this.getWidth(),this.getHeight());
 		//System.out.println("looping");
-		player.onUpdate();
+		player.onUpdate(frameRate);
 		// TODO Auto-generated method stub
 		map.checkCollision(player);
 		time.onUpdate();
@@ -294,179 +330,214 @@ public class Game extends JFrame implements Runnable{
 	}
 	public void processInput()
 	{
-		mouse.poll();
-		if(!titleScreen)
+		if(!Locker.changeKeyBindings)
 		{
-			if(!menuShown)
+			mouse.poll();
+			if(!titleScreen)
 			{
-				if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
-					player.moveRight();
-					
-				}
-				else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
-					player.moveLeft();
-				}
-				else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
-					player.moveUp();
-					
-				}
-				else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
-					player.moveDown();
-					
-				}
 				
-				
-				if(keyboard.isKeyDown(KeyEvent.VK_0))
+				if(!menuShown)
 				{
-					season=0;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_1))
-				{
-					season=1;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_2))
-				{
-					season=2;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_3))
-				{
-					season=3;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
-				{
-					player.dash();	
+					if(keyboard.isKeyDown(Locker.keys.Right)){
+						player.moveRight();
+						
+					}
+					else if(keyboard.isKeyDown(Locker.keys.Left)){
+						player.moveLeft();
+					}
+					else if(keyboard.isKeyDown(Locker.keys.Up)){
+						player.moveUp();
+						
+					}
+					else if(keyboard.isKeyDown(Locker.keys.Down)){
+						player.moveDown();
+						
+					}
+					
+					
+					if(keyboard.isKeyDown(KeyEvent.VK_0))
+					{
+						season=0;		
+					}
+					if(keyboard.isKeyDown(KeyEvent.VK_1))
+					{
+						season=1;		
+					}
+					if(keyboard.isKeyDown(KeyEvent.VK_2))
+					{
+						season=2;		
+					}
+					if(keyboard.isKeyDown(KeyEvent.VK_3))
+					{
+						season=3;		
+					}
+					if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
+					{
+						player.dash();	
+					}
+					else
+					{
+						player.stopDashing();
+					}
+					if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
+					{
+						keyboard.currentKey=-1;			
+					}
+	
+					ui.onInput(mouse);
+					
+					if(!keyboard.isKeyDown(KeyEvent.VK_ALT))
+					{
+						ui.hoverDescription = "";
+					}
 				}
 				else
 				{
-					player.stopDashing();
+					menu.onInput(mouse);
 				}
-				if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
+				if(keyboard.isKeyDown(KeyEvent.VK_F1))
 				{
-					keyboard.currentKey=-1;			
+					debug = !debug;
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-
-				ui.onInput(mouse);
+				if(keyboard.isKeyDown(KeyEvent.VK_F2))
+				{
+	
+					server = new Server();
+					
+					if(server!=null&&serverStatus)
+					{
+						Locker.sendLine="shutdown:"+Locker.player.getName();
+					}
+					else
+					{
+						server.start();
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
+					serverStatus = !serverStatus;
+					client = new Client();
+					if(client!=null&&client.isAlive())
+					{
+						client.disconnect();
+					}
+					else
+					{
+						client.username = Locker.player.getName();
+						client.start();
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if(client.connected)
+						{
+	
+							clientStatus = client.connected;
+						}
+					}
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_F3)&&!serverStatus)
+				{
+	
+					client = new Client();
+					if(client!=null&&client.isAlive())
+					{
+						client.disconnect();
+					}
+					else
+					{
+						client.username = Locker.player.getName();
+						client.start();
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if(client.connected)
+						{
+	
+							clientStatus = client.connected;
+						}
+					}
+					
+				}
+				if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
+				{
+					menuShown = true;	
+				}
 				
-				if(!keyboard.isKeyDown(KeyEvent.VK_ALT))
-				{
-					ui.hoverDescription = "";
-				}
 			}
 			else
 			{
-				menu.onInput(mouse);
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F1))
-			{
-				debug = !debug;
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F2))
-			{
-
-				server = new Server();
-				
-				if(server!=null&&serverStatus)
+	
+				if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).intersects(title.newGameBounds))
 				{
-					Locker.sendLine="shutdown:"+Locker.player.getName();
-				}
-				else
-				{
-					server.start();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-				serverStatus = !serverStatus;
-				client = new Client();
-				if(client!=null&&client.isAlive())
-				{
-					client.disconnect();
-				}
-				else
-				{
-					client.username = Locker.player.getName();
-					client.start();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(client.connected)
+					//System.out.println("new game hovered");
+					if(mouse.buttonDownOnce(1))
 					{
-
-						clientStatus = client.connected;
+						System.out.println("new game clicked");
+						//titleScreen = false;
 					}
 				}
 			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F3)&&!serverStatus)
+			try
 			{
-
-				client = new Client();
-				if(client!=null&&client.isAlive())
+				for(int i=0;i<Locker.players.size();i++)
 				{
-					client.disconnect();
+					Locker.players.get(i).setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
+					Locker.players.get(i).onUpdate(frameRate);
 				}
-				else
-				{
-					client.username = Locker.player.getName();
-					client.start();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(client.connected)
-					{
-
-						clientStatus = client.connected;
-					}
-				}
-				
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
+			}catch(Exception e)
 			{
-				menuShown = true;	
+				System.out.println("no players to read");
 			}
-			
+			title.onUpdate();
+			networkingData();
 		}
 		else
 		{
-
-			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).intersects(title.newGameBounds))
+			if(keyboard.currentKey!=keyboard.lastKey)
 			{
-				//System.out.println("new game hovered");
-				if(mouse.buttonDownOnce(1))
+				if(Locker.changeKey=="left")
 				{
-					System.out.println("new game clicked");
-					//titleScreen = false;
+					Locker.keys = new KeyBindings(keyboard.currentKey,Locker.keys.Right,Locker.keys.Up,Locker.keys.Down);
 				}
+				else if(Locker.changeKey=="right")
+				{
+					Locker.keys = new KeyBindings(Locker.keys.Left,keyboard.currentKey,Locker.keys.Up,Locker.keys.Down);
+				}
+				else if(Locker.changeKey=="up")
+				{
+					Locker.keys = new KeyBindings(Locker.keys.Left,Locker.keys.Right,keyboard.currentKey,Locker.keys.Down);
+				}
+				else if(Locker.changeKey=="down")
+				{
+					Locker.keys = new KeyBindings(Locker.keys.Left,Locker.keys.Right,Locker.keys.Up,keyboard.currentKey);
+				}
+				Locker.changeKeyBindings = false;
+				Locker.showMessage ="";
 			}
 		}
-		try
-		{
-			for(int i=0;i<Locker.players.size();i++)
-			{
-				Locker.players.get(i).setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
-				Locker.players.get(i).onUpdate();
-			}
-		}catch(Exception e)
-		{
-			System.out.println("no players to read");
-		}
-		title.onUpdate();
-		networkingData();
+	}
+	public void showMessage(Graphics g)
+	{
+		g.setColor(new Color(0,0,0,128));
+		g.fillRect(0,0,width,height);
+		g.setColor(new Color(255,255,255));
+		g.drawString(Locker.showMessage,width/2,height/2);
 	}
 	boolean serverStatus = false;
 	boolean clientStatus = false;
@@ -547,6 +618,10 @@ public class Game extends JFrame implements Runnable{
 		if(debug)
 		{
 			onDebug(g);
+		}
+		if(Locker.showMessage!="")
+		{
+			showMessage(g);
 		}
 		repaint();
 	}

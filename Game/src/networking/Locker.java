@@ -2,10 +2,16 @@ package networking;
 
 import java.util.ArrayList;
 
+import objects.KeyBindings;
 import objects.Player;
 
 public class Locker {
 	public static String location="";
+	public static boolean fullscreen = false;
+	public static boolean changeKeyBindings = false;
+	public static KeyBindings keys = new KeyBindings(0,0,0,0);
+	public static String showMessage ="";
+	public static String changeKey = "";
 	//this is the player object
 	public static Player player = new Player();
 	public static ArrayList<Player> players = new ArrayList<Player>();

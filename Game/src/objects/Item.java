@@ -2,6 +2,7 @@ package objects;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -24,6 +25,11 @@ public class Item {
 	private Point position = new Point(0,0);
 	//the texture of the item
 	private BufferedImage texture;
+	
+	Rectangle bounds = new Rectangle(0,0,30,30);
+	public boolean isHoverable = true;
+	public boolean isHovered;
+	public String description = "this is an item.";
 	//this sets the name for th item
 	public void setName(String newName)
 	{
@@ -87,10 +93,15 @@ public class Item {
 	//draw the item
 	public void draw(Graphics g, ImageObserver obj, Window win)
 	{
+		bounds = new Rectangle( win.bounds.x+(position.x), win.bounds.y+(position.y), 30,30);
 		g.drawImage(texture, win.bounds.x+(position.x), win.bounds.y+(position.y), 30,30, obj);
 	}
 	public void mouseClicked(MouseEvent e)
 	{
 		
+	}
+	public Rectangle getBounds() {
+		// TODO Auto-generated method stub
+		return bounds;
 	}
 }

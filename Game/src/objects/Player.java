@@ -20,7 +20,7 @@ import networking.Locker;
 public class Player
 {
     //the players name
-    private String name = "test";
+    private String name = "player1";
     //the players texture
     private BufferedImage texture;
     //the players current frame
@@ -64,6 +64,11 @@ public class Player
     private int selectedWalking = 0;
     //boolean for if the player is dashing
     private boolean dashing = false;
+    
+    public int level = 1;
+	public double experience = 32;
+	public double maxExperience =83;
+	public double baseExperience = 83;
     //count for timing based things
     public int count = 0;
     //audio player for walking sounds
@@ -74,15 +79,29 @@ public class Player
     		"\\resources\\audio\\chop.wav"};
     public Player()
     {
-    	for(int i =0;i<10;i++)
+	    	Skill skill = new Skill();    	
+	    	skill.name = "attack";
+	    	skill.description = "This is the players attack.";
+	    	skill.level = 1;
+	    	skills.add(skill);
+	    	skill = new Skill();    	
+	    	skill.name = "defense";
+	    	skill.description = "This is the players defense.";
+	    	skill.level = 1;
+	    	skills.add(skill);
+    }
+    public boolean hasSkill(String skillName)
+    {
+    	boolean temp = false;
+    	for(int i =0;i<skills.size();i++)
     	{
-    	Skill skill = new Skill();
-    	
-    	skill.name = "test";
-    	skill.description = "this is the test skill";
-    	skill.level = 1;
-    	skills.add(skill);
+	    	if(skills.get(i).name == skillName)
+	    	{
+	    		temp = true;
+	    		break;
+	    	}
     	}
+    	return temp;
     }
     //return the current frame
     public BufferedImage getFrame()
@@ -227,7 +246,11 @@ public class Player
     		frameCycle=0;
     		audioPlayer.play(workingDir+audioFilePath[selectedWalking]);
     	}
-    	else if(delta%5==1)
+    	else if(delta%5==1&&!dashing)
+    	{
+    		frameCycle++;
+    	}
+    	else if(delta%2==1&&dashing)
     	{
     		frameCycle++;
     	}
@@ -265,12 +288,10 @@ public class Player
     int chopped = 0;
 	public boolean networked;
 	private boolean isColliding;
-	FrameRate frameRate = new FrameRate();
 	public ArrayList<Skill> skills = new ArrayList<Skill>();
     //this updates the players frame
-    public void onUpdate()
+    public void onUpdate(FrameRate frameRate)
     {
-    	frameRate.calculate();
     	int delta = frameRate.getDelta();
     	if(!this.networked)
 	    {

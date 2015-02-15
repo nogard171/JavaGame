@@ -11,7 +11,11 @@ public class MenuItem {
 	public String description = "test";
 	public boolean isHovered;
 	public boolean isHoverable = true;
+	public boolean isInput = false;
+	public String text = "test";
 	public long hoverTime = 0;
+	public boolean status = false;
+	public  String PreTag = "";
 	public MenuItem()
 	{
 		isHovered = true;
@@ -43,5 +47,9 @@ public class MenuItem {
 	public void setTag(String newTag)
 	{
 		Tag=newTag;
+	}
+	public void setPreTag(String string) {
+		// TODO Auto-generated method stub
+		PreTag = string;
 	}
 }
