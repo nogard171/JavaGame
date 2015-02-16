@@ -305,7 +305,7 @@ public class Game extends JFrame implements Runnable{
 	public void onTextureLoading()
 	{
 		texture = ImageLoader.getImageFromResources("\\resources\\image\\tileset.png");
-		player.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
+		Locker.player.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
 	}
 	int season =0;
 	Time time = new Time();
@@ -314,9 +314,9 @@ public class Game extends JFrame implements Runnable{
 	{
 		title.dim = new Dimension(this.getWidth(),this.getHeight());
 		//System.out.println("looping");
-		player.onUpdate(frameRate);
+		Locker.player.onUpdate(frameRate);
 		// TODO Auto-generated method stub
-		map.checkCollision(player);
+		map.checkCollision(Locker.player);
 		time.onUpdate();
 		map.onUpdate();
 		
@@ -339,18 +339,18 @@ public class Game extends JFrame implements Runnable{
 				if(!menuShown)
 				{
 					if(keyboard.isKeyDown(Locker.keys.Right)){
-						player.moveRight();
+						Locker.player.moveRight();
 						
 					}
 					else if(keyboard.isKeyDown(Locker.keys.Left)){
-						player.moveLeft();
+						Locker.player.moveLeft();
 					}
 					else if(keyboard.isKeyDown(Locker.keys.Up)){
-						player.moveUp();
+						Locker.player.moveUp();
 						
 					}
 					else if(keyboard.isKeyDown(Locker.keys.Down)){
-						player.moveDown();
+						Locker.player.moveDown();
 						
 					}
 					
@@ -373,11 +373,11 @@ public class Game extends JFrame implements Runnable{
 					}
 					if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
 					{
-						player.dash();	
+						Locker.player.dash();	
 					}
 					else
 					{
-						player.stopDashing();
+						Locker.player.stopDashing();
 					}
 					if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
 					{
@@ -568,7 +568,6 @@ public class Game extends JFrame implements Runnable{
 		}
 	}
 	boolean debug = false;
-	Player player = new Player();
 	public void onPaint(Graphics g)
 	{
 		if(titleScreen)
@@ -586,7 +585,7 @@ public class Game extends JFrame implements Runnable{
 				player.draw(g, this);
 			}
 			
-			player.draw(g, this);
+			Locker.player.draw(g, this);
 			map.onUpperPaint(g, this);
 			ui.onPaint(g,this);
 			

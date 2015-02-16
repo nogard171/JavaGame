@@ -36,6 +36,9 @@ public class Interface {
 	String hoverDescription = "";
 	private Point transform = new Point(0,0);
 	public boolean fullscreen = false;
+	private Rectangle staminaBounds;
+	private Rectangle healthBounds;
+	private Rectangle manaBounds;
 	public Interface()
 	{
 		texture = ImageLoader.getImageFromResources("\\resources\\image\\menuset.png");
@@ -73,8 +76,8 @@ public class Interface {
 		if(usesWindow)
 		{
 			window.drawWindow(g,windowPosition.x,windowPosition.y, dim.width, dim.height, obj);
-		}		
-		g.setColor(Color.BLACK);
+		}
+		g.setColor(new Color(81,65,41));
 		for(MenuItem item:menuItems)
 		{
 			if(item.isImage)
@@ -104,15 +107,39 @@ public class Interface {
 		}
 		else if(menu ==2&&usesWindow)
 		{//chara
-			g.drawString("Name: "+Locker.player.getName(), position.x+37,position.y+16);
-			g.drawString("Level: "+Locker.player.level, position.x+37,position.y+30);
 			
-			int xpWidth = (int) (((window.bounds.width-17)/(double)Locker.player.maxExperience)*((double)Locker.player.experience));
+			int statsWidth = (window.bounds.width-17);
+			
+			g.drawString("Name: "+Locker.player.getName(), position.x+37,position.y+16);
+			g.drawString("Level: "+Locker.player.level, position.x+37,position.y+32);
+			g.drawString("Health: "+(int)Locker.player.getHealth()+"/"+(int)Locker.player.getMaxHealth(), position.x+37,position.y+48);
+			
+			int healthWidth = (int) ((statsWidth/Locker.player.getMaxHealth())*(Locker.player.getHealth()));
+			healthBounds  =new Rectangle(position.x+41,position.y+56,healthWidth,9); 
+			
+			drawBar(g, new Color(255,0,0), healthBounds, new Color(0,0,0),new Rectangle(healthBounds.x,healthBounds.y,statsWidth,healthBounds.height));
+			
+			g.drawString("Mana: "+(int)Locker.player.getMana()+"/"+(int)Locker.player.getMaxMana(), position.x+37,position.y+78);
+			int manaWidth = (int) ((statsWidth/Locker.player.getMaxMana())*(Locker.player.getMana()));
+			manaBounds  =new Rectangle(position.x+41,position.y+86,manaWidth,9); 
+			
+			drawBar(g, new Color(50,50,255), manaBounds, new Color(0,0,0),new Rectangle(manaBounds.x,manaBounds.y,statsWidth,manaBounds.height));
+			
+			g.drawString("Statmina: "+(int)Locker.player.getStamina()+"/"+(int)Locker.player.getMaxStamina(), position.x+37,position.y+108);
+			
+			
+			int staminaWidth = (int) ((statsWidth/Locker.player.getMaxStamina())*(Locker.player.getStamina()));
+			staminaBounds =new Rectangle(position.x+41,position.y+116,staminaWidth,9); 
+			
+			drawBar(g, new Color(255,255,0), staminaBounds, new Color(0,0,0),new Rectangle(staminaBounds.x,staminaBounds.y,statsWidth,staminaBounds.height));
+
+			g.drawString("Experience: "+Locker.player.getExperience()+"/"+Locker.player.getMaxExperience(), position.x+37,position.y+window.bounds.height-20);
+			
+			int xpWidth = (int) ((statsWidth/(double)Locker.player.maxExperience)*((double)Locker.player.experience));
 			xpBounds =new Rectangle(position.x+41,position.y+window.bounds.height-15,xpWidth,9); 
-			g.drawRect(xpBounds.x-1,xpBounds.y-1,(window.bounds.width-17),xpBounds.height+1);
-			g.setColor(new Color(0,255,0));
-			g.fillRect(xpBounds.x,xpBounds.y,xpBounds.width,xpBounds.height);
-			//g.drawString("Skills Count: "+Locker.player.skills.size(), position.x+37,position.y+30);
+			
+			drawBar(g, new Color(0,255,0), xpBounds, new Color(0,0,0),new Rectangle(xpBounds.x,xpBounds.y,statsWidth,xpBounds.height));
+			
 		}
 		else if(menu ==3&&usesWindow)
 		{//skills
@@ -209,8 +236,16 @@ public class Interface {
 			g.drawString(hoverDescription, hoverPoints.x+position.x, hoverPoints.y+10+position.y);
 		}
 		g.setColor(Color.black);
-		g.drawLine(hoverPoints.x, hoverPoints.y+position.y, mouseUI.x, mouseUI.y);
+		//g.drawLine(hoverPoints.x, hoverPoints.y+position.y, mouseUI.x, mouseUI.y);
 		g.setFont(new Font("arial",1,12));		
+	}
+	public void drawBar(Graphics g, Color color, Rectangle rec, Color backColor, Rectangle backRec)
+	{
+		g.setColor(backColor);
+		g.drawRect(backRec.x-1,backRec.y-1,backRec.width+1,backRec.height+1);
+		g.setColor(color);
+		g.fillRect(rec.x,rec.y,rec.width,rec.height);
+		g.setColor(new Color(81,65,41));
 	}
 	Rectangle xpBounds =new Rectangle(0,0,32,32); 
 	Point mouseUI = new Point(0,0);
@@ -310,7 +345,22 @@ public class Interface {
 			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(xpBounds))
 			{
 				hoverPoints = new Point(xpBounds.x,xpBounds.y-position.y);
-				hoverDescription = Locker.player.experience+"/"+Locker.player.maxExperience;
+				hoverDescription = "Experience: " +Locker.player.experience+"/"+Locker.player.maxExperience;
+			}
+			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(staminaBounds))
+			{
+				hoverPoints = new Point(staminaBounds.x,staminaBounds.y-position.y);
+				hoverDescription = "Stamina: " +(int)Locker.player.getStamina()+"/"+(int)Locker.player.getMaxStamina();
+			}
+			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(healthBounds))
+			{
+				hoverPoints = new Point(healthBounds.x,healthBounds.y-position.y);
+				hoverDescription = "Health: " +(int)Locker.player.getHealth()+"/"+(int)Locker.player.getMaxHealth();
+			}
+			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(manaBounds))
+			{
+				hoverPoints = new Point(manaBounds.x,manaBounds.y-position.y);
+				hoverDescription = "Mana: " +(int)Locker.player.getMana()+"/"+(int)Locker.player.getMaxMana();
 			}
 		}
 		for(MenuItem item:menuItems)

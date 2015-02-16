@@ -2,6 +2,7 @@ package objects;
 
 import util.AudioPlayer;
 import util.FrameRate;
+import util.Window;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -11,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.swing.Timer;
@@ -20,7 +23,7 @@ import networking.Locker;
 public class Player
 {
     //the players name
-    private String name = "player1";
+    private String name = "player2";
     //the players texture
     private BufferedImage texture;
     //the players current frame
@@ -63,12 +66,13 @@ public class Player
     //this indicates the selected walking sound
     private int selectedWalking = 0;
     //boolean for if the player is dashing
-    private boolean dashing = false;
-    
+    private boolean dashing = false;    
     public int level = 1;
-	public double experience = 32;
-	public double maxExperience =83;
-	public double baseExperience = 83;
+
+	public long currentExperience = 0;
+	public long experience = 0;
+	public long maxExperience =83;
+	public long baseExperience = 83;
     //count for timing based things
     public int count = 0;
     //audio player for walking sounds
@@ -80,15 +84,24 @@ public class Player
     public Player()
     {
 	    	Skill skill = new Skill();    	
-	    	skill.name = "attack";
-	    	skill.description = "This is the players attack.";
+	    	skill.name = "Vitality";
+	    	skill.description = "This is the players health skill.";
 	    	skill.level = 1;
 	    	skills.add(skill);
-	    	skill = new Skill();    	
-	    	skill.name = "defense";
-	    	skill.description = "This is the players defense.";
-	    	skill.level = 1;
-	    	skills.add(skill);
+    }
+    public Skill getSkill(String skillName)
+    {
+    	Skill temp = new Skill();
+    	temp.level = 0;
+    	for(int i =0;i<skills.size();i++)
+    	{
+	    	if(skills.get(i).name == skillName)
+	    	{
+	    		temp = skills.get(i);
+	    		break;
+	    	}
+    	}
+    	return temp;
     }
     public boolean hasSkill(String skillName)
     {
@@ -197,6 +210,7 @@ public class Player
     		this.velocity.y =2;
     		//turn dashing off
     		dashing = false;
+    		 addExperience(500000l);
     	}
 	
     }
@@ -211,6 +225,11 @@ public class Player
     public double getStamina()
     {
     	return this.stamina;
+    }
+    //this returns the players stamina
+    public double getMaxStamina()
+    {
+    	return this.maxStamina;
     }
     //this returns health
     public double getHealth()
@@ -295,6 +314,7 @@ public class Player
     	int delta = frameRate.getDelta();
     	if(!this.networked)
 	    {
+    		checkLevel();
 	    	//if stamina is less than the maxStamina, it will regen until it's equal to maxStamina 
 	    	if(delta%5==1&&this.stamina<maxStamina)
 	    	{
@@ -384,6 +404,58 @@ public class Player
     	//stop moving
     	moving = false;
 	}
+    public void addExperience(long amount)
+    {
+    	experience +=amount;
+    	boolean adding = true;
+    	while(adding)
+    	{
+	    	if(this.experience>this.maxExperience)
+	    	{
+	    		level++;
+	    		newMaxStats();
+	    	}
+	    	else
+	    	{
+	    		adding = false;
+	    	}
+    	}
+    }
+    public void checkLevel()
+    {
+    	if(this.experience>this.maxExperience)
+    	{
+    		level++;
+    		newMaxStats();
+    	}    	
+    }
+    float multiplier = 0.25f;
+    float rate = 1.5f;
+    public void newMaxStats()
+    {
+    	experience -=maxExperience;
+    	this.maxExperience = (long) (((Math.pow(((level*multiplier)*baseExperience), rate))*(level-1))+this.baseExperience);
+    	maxHealth+=  ((maxHealth/level)/((0.05)*level))+(2*(getSkill("Vitality").level+1));
+    	this.healthRegenRate +=0.13f*(getSkill("Vitality").level+1);
+    	
+    	maxMana+=  ((maxMana/level)/((0.05)*level))+(2*(getSkill("Magic").level+1));
+    	manaRegenRate +=0.15f*(getSkill("Magic").level+1);
+    	
+    	maxStamina+=  ((maxStamina/level)/((0.055)*level))+(3*(getSkill("Strength").level+1));
+    	staminaRegenRate +=0.125f*(getSkill("Strength").level+1);
+    }
+    public String getExperience()
+    {
+    	NumberFormat formatter = new DecimalFormat();
+        formatter = new DecimalFormat("0.#E0");
+        return formatter.format(experience);
+    }
+    public String getMaxExperience()
+    {
+    	NumberFormat formatter = new DecimalFormat();
+        formatter = new DecimalFormat("0.#E0");
+        return formatter.format(maxExperience);
+    }
     public void setHealth(float f, float g) 
 	{
 		this.health = f;
