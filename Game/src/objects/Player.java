@@ -210,7 +210,10 @@ public class Player
     		this.velocity.y =2;
     		//turn dashing off
     		dashing = false;
-    		 addExperience(500000l);
+    		for(int i =0;i<100;i++)
+    		{
+    		 addExperience(1000000000000000000l);
+    		}
     	}
 	
     }
@@ -321,17 +324,32 @@ public class Player
 	    	    //add the stamina regen rate to the current stamina
 	    	    this.stamina += staminaRegenRate;
 	    	}
+	    	if(this.stamina>maxStamina)
+	    	{
+	    	    //add the stamina regen rate to the current stamina
+	    	    this.stamina = maxStamina;
+	    	}
 	    	//if health is less than the maxhealth, it will regen until it's equal to maxhealth
 	    	if(delta%5==1&&this.health<maxHealth)
 	    	{
 	    	    //add the stamina regen rate to the current stamina
 	    	    this.health += healthRegenRate;
 	    	}
+	    	if(this.health>maxHealth)
+	    	{
+	    	    //add the stamina regen rate to the current stamina
+	    	    this.health = maxHealth;
+	    	}
 	    	//if health is less than the maxhealth, it will regen until it's equal to maxhealth
 	    	if(delta%5==1&&this.mana<maxMana)
 	    	{
 	    	    //add the stamina regen rate to the current stamina
 	    	    this.mana += manaRegenRate;
+	    	}
+	    	if(this.mana>maxMana)
+	    	{
+	    	    //add the stamina regen rate to the current stamina
+	    	    this.mana = maxMana;
 	    	}
 	    }
     	if(delta%5==1&&action==1)
@@ -429,12 +447,13 @@ public class Player
     		newMaxStats();
     	}    	
     }
-    float multiplier = 0.25f;
+    float multiplier = 0.05f;
     float rate = 1.5f;
     public void newMaxStats()
     {
     	experience -=maxExperience;
     	this.maxExperience = (long) (((Math.pow(((level*multiplier)*baseExperience), rate))*(level-1))+this.baseExperience);
+    	
     	maxHealth+=  ((maxHealth/level)/((0.05)*level))+(2*(getSkill("Vitality").level+1));
     	this.healthRegenRate +=0.13f*(getSkill("Vitality").level+1);
     	
@@ -447,13 +466,13 @@ public class Player
     public String getExperience()
     {
     	NumberFormat formatter = new DecimalFormat();
-        formatter = new DecimalFormat("0.#E0");
+        formatter = new DecimalFormat("0.###E0");
         return formatter.format(experience);
     }
     public String getMaxExperience()
     {
     	NumberFormat formatter = new DecimalFormat();
-        formatter = new DecimalFormat("0.#E0");
+        formatter = new DecimalFormat("0.###E0");
         return formatter.format(maxExperience);
     }
     public void setHealth(float f, float g) 
