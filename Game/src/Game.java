@@ -13,75 +13,63 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import networking.Client;
-import networking.Locker;
-import networking.Server;
-import objects.*;
-import objects.Object;
 import util.FrameRate;
 import util.ImageLoader;
 import util.KeyboardInput;
 import util.MouseInput;
-import util.ParticleSystem;
-import util.Time;
 
+public class Game extends JFrame implements Runnable {
 
-public class Game extends JFrame implements Runnable{
-
-	public Game()
-	{
-		title = new TitleScreen();
+	public Game() {
 		loadClasses();
 	}
+
 	int width = 832;
 	int height = 640;
 	boolean fullscreen = false;
 	FrameRate frameRate;
 	KeyboardInput keyboard;
 	MouseInput mouse;
-	Interface ui;
-	Interface menu;
 	private GraphicsDevice graphicsDevice;
 	private DisplayMode currentDisplayMode;
 	private BufferStrategy bs;
 	private Thread gameThread;
-	public void createAndShowGUI()
-	{
+
+	public void createAndShowGUI() {
 		setIgnoreRepaint(true);
-		
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Test title");
 		setBackground(Color.white);
-		
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+		GraphicsEnvironment ge = GraphicsEnvironment
+				.getLocalGraphicsEnvironment();
 		graphicsDevice = ge.getDefaultScreenDevice();
-		
-		if(fullscreen)
-		{
+
+		if (fullscreen) {
 			setUndecorated(true);
-			
-			
+
 			currentDisplayMode = graphicsDevice.getDisplayMode();
 			width = graphicsDevice.getDisplayMode().getWidth();
 			height = graphicsDevice.getDisplayMode().getHeight();
-			
-			if(!graphicsDevice.isFullScreenSupported())
-			{
+
+			if (!graphicsDevice.isFullScreenSupported()) {
 				System.err.println("ERROR: Not Supported.");
 			}
-			
-			addKeyListener(new KeyAdapter(){
-				
-				public void keyPressed(KeyEvent e)
-				{
-					if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
-					{
-						shutdown();	
+
+			addKeyListener(new KeyAdapter() {
+
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+						shutdown();
 					}
 				}
 			});
@@ -89,13 +77,11 @@ public class Game extends JFrame implements Runnable{
 			addMouseListener(mouse);
 			addMouseMotionListener(mouse);
 			graphicsDevice.setFullScreenWindow(this);
-			
+
 			createBufferStrategy(2);
 			bs = getBufferStrategy();
-			//graphicsDevice.setDisplayMode(getDisplayMode());
-		}
-		else
-		{
+			// graphicsDevice.setDisplayMode(getDisplayMode());
+		} else {
 			Canvas canvas = new Canvas();
 			canvas.setSize(width, height);
 			canvas.addKeyListener(keyboard);
@@ -107,183 +93,84 @@ public class Game extends JFrame implements Runnable{
 			canvas.createBufferStrategy(2);
 			bs = canvas.getBufferStrategy();
 		}
-		
-		
-		
+
 		gameThread = new Thread(this);
 		gameThread.start();
 	}
-	public void shutdown()
-	{
-		try
-		{
+
+	public void shutdown() {
+		try {
 			running = false;
 			System.out.println("Game Loop Stopped.");
-			if(fullscreen)
-			{
-				gameThread.join();				
+			if (fullscreen) {
+				gameThread.join();
 				graphicsDevice.setDisplayMode(this.currentDisplayMode);
 				graphicsDevice.setFullScreenWindow(null);
 				System.out.println("Display Restored.");
-			}			
-		}
-		catch(InterruptedException e)
-		{
+			}
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		System.exit(0);
 	}
-	public DisplayMode getDisplayMode()
-	{
-		return new DisplayMode(800,600,32, DisplayMode.REFRESH_RATE_UNKNOWN);
+
+	public DisplayMode getDisplayMode() {
+		return new DisplayMode(800, 600, 32, DisplayMode.REFRESH_RATE_UNKNOWN);
 	}
+
 	boolean running = false;
-	public void run()
-	{
+
+	public void run() {
 		running = true;
 		System.out.println("game running");
 		frameRate.initialize();
 		onSetup();
-		while(running)
-		{
+		while (running) {
 			gameLoop();
 		}
 	}
-	public void onSetup() 
-	{
-		onTextureLoading();
-		/*ArrayList<MenuItem> items = new ArrayList<MenuItem>();
-		MenuItem resume = new MenuItem();
-		resume.setTag("resume");
-		resume.isImage = false;
-		resume.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y,70,15));
-		items.add(resume);
-		MenuItem options = new MenuItem();
-		options.setTag("options");
-		options.isImage = false;
-		options.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y+20,70,15));
-		items.add(options);
-		MenuItem exit = new MenuItem();
-		exit.setTag("exit");
-		exit.isImage = false;
-		exit.setBounds(new Rectangle(menu.getPosition().x,menu.getPosition().y+40,70,15));
-		items.add(exit);
-		menu.usesWindow = true;
-		menu.dim = new Dimension(75,90);
-		menu.windowPosition=new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height);
-		menu.setPosition(new Point((width/2)-menu.dim.width,(height/2)-menu.dim.height));
-		menu.onLoad(items);		*/
-		
-		ui.dim = new Dimension(32*6,32*7);
-		ui.setWindowPosition(new Point(32,(height)-(32*7)));
-		ui.usesWindow = true;
-		ui.setPosition(new Point(0,(height)-(32*7)));
-		ArrayList<MenuItem> uiItems = new ArrayList<MenuItem>();
-		MenuItem bag = new MenuItem();
-		bag.description = "This will show the players inventory.";
-		bag.setTag("bag");
-		bag.setBounds(new Rectangle(0,0,32,32));
-		MenuItem chara = new MenuItem();
-		chara.description = "This will show the players stats and related info.";
-		chara.setTag("chara");
-		chara.setBounds(new Rectangle(0,32,32,32));
-		MenuItem skills = new MenuItem();
-		skills.description = "This will show the players skills.";
-		skills.setTag("skills");
-		skills.setBounds(new Rectangle(0,64,32,32));
-		MenuItem equip = new MenuItem();
-		equip.description = "This will show the players equipment.";
-		equip.setTag("equip");
-		equip.setBounds(new Rectangle(0,96,32,32));
-		MenuItem magic = new MenuItem();
-		magic.description = "This will show the players magic skills.";
-		magic.setTag("magic");
-		magic.setBounds(new Rectangle(0,129,32,32));
-		
-		
-		MenuItem hideShow = new MenuItem();
-		hideShow.description = "This will hide the Interface";
-		hideShow.setHoverable(false);
-		hideShow.setTag("hide");
-		hideShow.setBounds(new Rectangle(0,-(height-ui.getPosition().y),32,32));
-		MenuItem exit = new MenuItem();
-		exit.description = "You must click exit twice to quit the game.";
-		exit.setTag("exit");
-		exit.setBounds(new Rectangle(0,-(height-ui.getPosition().y)-192,32,32));
-		
-		
-		uiItems.add(bag);
-		uiItems.add(chara);
-		uiItems.add(skills);
-		uiItems.add(equip);
-		uiItems.add(magic);
-		uiItems.add(hideShow);
-		uiItems.add(exit);
-		ui.onLoad(uiItems);
 
-		Item item = new Item();
-		item.setCount(1);
-		item.setName("test");
-		item.setPosition(5, 5);
-		item.setType(ItemType.Log);
-		item.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\itemset.png").getSubimage(0, 32, 32, 32));
-		Locker.player.inventory.add(item);
-		
-		
+	public void onSetup() {
+		onTextureLoading();
 	}
+
 	boolean menuShown = false;
 	boolean titleScreen = false;
-	TitleScreen title;
-	public void gameLoop()
-	{
-	
-		do
-		{
-			do
-			{
+
+	public void gameLoop() {
+
+		do {
+			do {
 				Graphics g = null;
-				if(bs ==null)
-				{
-					g = createImage(width,height).getGraphics();
-				}
-				else
-				{
+				if (bs == null) {
+					g = createImage(width, height).getGraphics();
+				} else {
 					g = bs.getDrawGraphics();
 				}
 				g.clearRect(0, 0, getWidth(), getHeight());
 				onUpdate();
 				onPaint(g);
-			}while(bs.contentsLost());
+			} while (bs.contentsLost());
 			bs.show();
-		}while(bs.contentsLost());
+		} while (bs.contentsLost());
 	}
-	public void loadClasses()
-	{
+
+	public void loadClasses() {
 
 		keyboard = new KeyboardInput(this);
 		mouse = new MouseInput();
-		ui = new Interface();
-		menu = new Interface();
 		frameRate = new FrameRate();
 	}
-	public void onTextureLoading()
-	{
-		texture = ImageLoader.getImageFromResources("\\resources\\image\\tileset.png");
-		player.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
+
+	public void onTextureLoading() {
+		texture = ImageLoader
+				.getImageFromResources("\\resources\\image\\tileset.png");
 	}
-	int season =0;
-	Time time = new Time();
-	
-	public void onUpdate()
-	{
-		title.dim = new Dimension(this.getWidth(),this.getHeight());
-		//System.out.println("looping");
-		player.onUpdate();
-		// TODO Auto-generated method stub
-		map.checkCollision(player);
-		time.onUpdate();
-		map.onUpdate();
-		
+
+	int season = 0;
+
+	public void onUpdate() {
+
 		processInput();
 		try {
 			Thread.sleep(10);
@@ -292,285 +179,183 @@ public class Game extends JFrame implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	public void processInput()
-	{
-		mouse.poll();
-		if(!titleScreen)
-		{
-			if(!menuShown)
-			{
-				if(keyboard.isKeyDown(KeyEvent.VK_RIGHT)){
-					player.moveRight();
-					
-				}
-				else if(keyboard.isKeyDown(KeyEvent.VK_LEFT)){
-					player.moveLeft();
-				}
-				else if(keyboard.isKeyDown(KeyEvent.VK_UP)){
-					player.moveUp();
-					
-				}
-				else if(keyboard.isKeyDown(KeyEvent.VK_DOWN)){
-					player.moveDown();
-					
-				}
-				
-				
-				if(keyboard.isKeyDown(KeyEvent.VK_0))
-				{
-					season=0;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_1))
-				{
-					season=1;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_2))
-				{
-					season=2;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_3))
-				{
-					season=3;		
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_SHIFT))
-				{
-					player.dash();	
-				}
-				else
-				{
-					player.stopDashing();
-				}
-				if(keyboard.isKeyDown(KeyEvent.VK_SPACE))
-				{
-					keyboard.currentKey=-1;			
-				}
 
-				ui.onInput(mouse);
-				
-				if(!keyboard.isKeyDown(KeyEvent.VK_ALT))
-				{
-					ui.hoverDescription = "";
-				}
+	public void processInput() {
+		mouse.poll();
+		if (keyboard.isKeyDown(KeyEvent.VK_ESCAPE)) {
+			System.exit(0);
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_F1)) {
+			debug = !debug;
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_1)) {
+			shopcharges[0]+=100;
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_2)) {
+			shopcharges[1]+=100;
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_3)) {
+			shopcharges[2]+=100;
+		}
+	}
+
+	boolean debug = false;
+	int bank = 0;
+	int taxs = 0;
+	int mayor = 30000;
+	// woodcutter,miner and blacksmith
+	int[] shops = { 300, 500, 1000 ,1200,5000,2000};
+	float rate = 0.05f;
+	int[] shopUpkeep = { 200, 400, 200,300,1000,500 };// 800
+	int[] shopcharges = { 300, 500, 400,400,2000,700 };// 1300
+	String[] shopnames = { "woodcutter", "miner", "blacksmith","tailor" ,"farmer","general shop"};
+	boolean[] shopOpened = { true, true, true ,true,true,true};
+	String[] shopCloseed = { "","","","","",""};
+	public void onCharge() {
+		number = 1 + (int) (Math.random() * 100);
+		for (int i = 0; i < shops.length; i++) {
+
+			if (shops[i] >= 0 && shopOpened[i]) {
+				shops[i] -= shopUpkeep[i];
+				mayor += shopUpkeep[i];
+			} else if(shopCloseed[i]==""){
+				shopCloseed[i] = getCurrentTimeStamp();
+				shopOpened[i] = false;
 			}
 			else
 			{
-				menu.onInput(mouse);
+				shops[i] +=10000;
+				bank-=10000;
+				shopOpened[i] = true;
+				shopCloseed[i] = "";
 			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F1))
-			{
-				debug = !debug;
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		}
+		for (int i = 0; i < shops.length; i++) {
+			if (shopOpened[i] && mayor - shopcharges[i] > 0) {
+				shops[i] += shopcharges[i];
+				mayor -= shopcharges[i];
 			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F2))
-			{
-
-				server = new Server();
+		}
+		for (int i = 0; i < shops.length; i++) {
+			if (shopOpened[i]) {
+				float amount =(((shops[i] - shopUpkeep[i])*3)* rate)+number;
+				shopUpkeep[i] = (int) amount;
 				
-				if(server!=null&&serverStatus)
-				{
-					Locker.sendLine="shutdown:"+Locker.player.getName();
-				}
-				else
-				{
-					server.start();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-				serverStatus = !serverStatus;
-				client = new Client();
-				if(client!=null&&client.isAlive())
-				{
-					client.disconnect();
-				}
-				else
-				{
-					client.username = Locker.player.getName();
-					client.start();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(client.connected)
-					{
-
-						clientStatus = client.connected;
-					}
-				}
-			}
-			if(keyboard.isKeyDown(KeyEvent.VK_F3)&&!serverStatus)
-			{
-
-				client = new Client();
-				if(client!=null&&client.isAlive())
-				{
-					client.disconnect();
-				}
-				else
-				{
-					client.username = Locker.player.getName();
-					client.start();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(client.connected)
-					{
-
-						clientStatus = client.connected;
-					}
-				}
+			} 
+		}
+		for (int i = 0; i < shops.length; i++) {
+			if (shopOpened[i]) {
+				float amount =(((shops[i] - shopUpkeep[i])*3)* rate)+number;
+				shops[i] -= amount;
+				taxs += amount+0.95f;
 				
+			} else  if(shopCloseed[i]==""){
+				shopCloseed[i] = getCurrentTimeStamp();
+				shopOpened[i] = false;
 			}
-			if(keyboard.isKeyDown(KeyEvent.VK_ESCAPE))
+			else
 			{
-				menuShown = true;	
+				shops[i] +=10000;
+				bank-=10000;
+				shopOpened[i] = true;
+				shopCloseed[i] = "";
 			}
-			
 		}
-		else
-		{
+		if (mayor < 10000) {
+			mayor += taxs;
+			taxs = 0;
+		}
+	}
+	public static String getCurrentTimeStamp() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	    Date now = new Date();
+	    String strDate = sdf.format(now);
+	    return strDate;
+	}
+	int count = 0;
+	int number = 0;
+	int total = 0;
+	int highestTotal = 0;
+	Random ran = new Random();
 
-			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).intersects(title.newGameBounds))
+	public void onPaint(Graphics g) {
+		count++;
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, width, height);
+		g.setColor(Color.black);
+		total = 0;
+		for (int i = 0; i < shops.length; i++) {
+			total += shops[i];
+		}
+		total += mayor + taxs;
+		if (total > highestTotal) {
+			highestTotal = total;
+		}
+		int temp = (total / shops.length) / 100;
+		// rate = (temp+1)/100;
+		g.drawString("total:\t" + highestTotal + "(" + total + ")", 100, 50);
+
+		g.drawString("bank:\t" + bank, 100, 70);
+		g.drawString("tax:\t" + taxs, 100, 80);
+		g.drawString("mayor:\t" + mayor, 100, 100);
+		for (int i = 0; i < shops.length; i++) {
+			if(shopOpened[i])
 			{
-				//System.out.println("new game hovered");
-				if(mouse.buttonDownOnce(1))
-				{
-					System.out.println("new game clicked");
-					//titleScreen = false;
-				}
+				g.drawString(
+						shopnames[i] + "(Opened):\t" + shops[i]+"("+shopcharges[i]+")"+"("+shopUpkeep[i]+")",
+						100, 120 + (i * 20));
 			}
-		}
-		try
-		{
-			for(int i=0;i<Locker.players.size();i++)
+			else
 			{
-				Locker.players.get(i).setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
-				Locker.players.get(i).onUpdate();
-			}
-		}catch(Exception e)
-		{
-			System.out.println("no players to read");
-		}
-		title.onUpdate();
-		networkingData();
-	}
-	boolean serverStatus = false;
-	boolean clientStatus = false;
-	//the server and client vars
-	Server server;
-	Client client;
-	public void networkingData()
-	{
-		if(Locker.sendLine!=""&&clientStatus)
-		{
-				sendMessage(Locker.proticol+":"+Locker.player.getName()+","+Locker.sendLine);
-				Locker.sendLine = "";
-		}
-		if(Locker.recieveLine!="")
-		{
-			//System.out.println(Locker.recieveLine);
-			debugLines.add(Locker.recieveLine);
-			Locker.recieveLine = "";
-		}
-	}
-	public void sendMessage(String message)
-	{
-		try {
-			client.sendMessage(client.client,message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	boolean debug = false;
-	Player player = new Player();
-	public void onPaint(Graphics g)
-	{
-		if(titleScreen)
-		{
-			title.onPaint(g, this);
-		}
-		else
-		{
-			frameRate.calculate();		
-			map.onPaint(g, this);
-			
-			for(Player player:Locker.players)
-			{
-				player.setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
-				player.draw(g, this);
+				g.drawString(
+						shopnames[i] + "(Closed:"+shopCloseed[i] +"):\t" +"("+shopcharges[i]+")"+"("+shopUpkeep[i]+")",
+						100, 120 + (i * 20));
 			}
 			
-			player.draw(g, this);
-			map.onUpperPaint(g, this);
-			ui.onPaint(g,this);
-			
-			if(serverStatus)
-			{
-				g.setColor(new Color(0,0,0,96));
-				g.fillRect(32,0,116,18);
-				g.setColor(Color.white);
-				g.drawString("Server Status: " +serverStatus, 32,12);
-				g.setColor(Color.BLACK);
-			}
-			else if(clientStatus)
-			{
-				g.setColor(new Color(0,0,0,96));
-				g.fillRect(32,0,116,18);
-				g.setColor(Color.white);
-				g.drawString("Client Status: " +clientStatus, 32,12);
-				g.setColor(Color.BLACK);
-			}
-			
-			if(menuShown)
-			{
-				g.setColor(new Color(0,0,0,128));
-				g.fillRect(0, 0, width, height);			
-				menu.onPaint(g,this);	
-				g.setColor(Color.BLACK);
+		}
+		if (count % 2 == 1) {
+			onCharge();
+		}
+		if (count % 100 == 1) {
+			highestTotal = 0;
+
+			for (int i = 0; i < shops.length; i++) {
+				bank += shops[i];
 			}
 		}
-		if(debug)
-		{
+		frameRate.calculate();
+		if (debug) {
 			onDebug(g);
 		}
 		repaint();
 	}
-	Map map = new Map();
-	Rectangle rec = new Rectangle(0,20,50,10);
+
+	Rectangle rec = new Rectangle(0, 20, 50, 10);
 	ArrayList<String> debugLines = new ArrayList<String>();
-	public void onDebug(Graphics g)
-	{
-		int width =150;
-		int height = 30+(debugLines.size()*20);
-		g.setColor(new Color(0,0,0,128));
+
+	public void onDebug(Graphics g) {
+		int width = 150;
+		int height = 30 + (debugLines.size() * 20);
+		g.setColor(new Color(0, 0, 0, 128));
 		g.fillRect(0, 0, width, height);
 		g.setColor(Color.white);
-		g.drawString(frameRate.getFrameRate(), 0,10);
-		g.drawString("Seconds Running" + time.getSeconds(), 0,20);
-		for(int i =0;i<debugLines.size();i++)
-		{
-			g.drawString(debugLines.get(i), 0, 30+(i*20));
+		g.drawString(frameRate.getFrameRate(), 0, 10);
+		g.drawString(count + "", 0, 20);
+		for (int i = 0; i < debugLines.size(); i++) {
+			g.drawString(debugLines.get(i), 0, 30 + (i * 20));
 		}
 	}
-	public void onClose()
-	{
+
+	public void onClose() {
 		System.out.println("Closing");
 	}
+
 	static BufferedImage texture;
-	
+
 }
