@@ -194,29 +194,58 @@ public class Game extends JFrame implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		if (keyboard.isKeyDown(KeyEvent.VK_1)) {
-			shopcharges[0]+=100;
+		if (keyboard.isKeyDown(KeyEvent.VK_1)
+				&& keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+			shops[0] -= shopUpkeep[0] * 2;
+		} else if (keyboard.isKeyDown(KeyEvent.VK_1)) {
+			shops[0] += shopcharges[0] * 2;
 		}
-		if (keyboard.isKeyDown(KeyEvent.VK_2)) {
-			shopcharges[1]+=100;
+		if (keyboard.isKeyDown(KeyEvent.VK_2)
+				&& keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+			shops[1] -= shopUpkeep[1] * 2;
+		} else if (keyboard.isKeyDown(KeyEvent.VK_2)) {
+			shops[1] += shopcharges[1] * 2;
 		}
-		if (keyboard.isKeyDown(KeyEvent.VK_3)) {
-			shopcharges[2]+=100;
+		if (keyboard.isKeyDown(KeyEvent.VK_3)
+				&& keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+			shops[2] -= shopUpkeep[2];
+		} else if (keyboard.isKeyDown(KeyEvent.VK_3)) {
+			shops[2] += shopcharges[2];
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_4)
+				&& keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+			shops[3] -= shopUpkeep[3];
+		} else if (keyboard.isKeyDown(KeyEvent.VK_4)) {
+			shops[3] += shopcharges[3];
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_5)
+				&& keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+			shops[4] -= shopUpkeep[4];
+		} else if (keyboard.isKeyDown(KeyEvent.VK_5)) {
+			shops[4] += shopcharges[4];
+		}
+		if (keyboard.isKeyDown(KeyEvent.VK_6)
+				&& keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+			shops[5] -= shopUpkeep[5];
+		} else if (keyboard.isKeyDown(KeyEvent.VK_6)) {
+			shops[5] += shopcharges[5];
 		}
 	}
 
 	boolean debug = false;
-	int bank = 0;
-	int taxs = 0;
-	int mayor = 30000;
+	long bank = 0;
+	long taxs = 0;
+	long mayor = 30000;
 	// woodcutter,miner and blacksmith
-	int[] shops = { 300, 500, 1000 ,1200,5000,2000};
+	long[] shops = { 300, 500, 1000, 1200, 5000, 2000,1000 };
 	float rate = 0.05f;
-	int[] shopUpkeep = { 200, 400, 200,300,1000,500 };// 800
-	int[] shopcharges = { 300, 500, 400,400,2000,700 };// 1300
-	String[] shopnames = { "woodcutter", "miner", "blacksmith","tailor" ,"farmer","general shop"};
-	boolean[] shopOpened = { true, true, true ,true,true,true};
-	String[] shopCloseed = { "","","","","",""};
+	long[] shopUpkeep = { 200, 400, 200, 300, 1000, 500,400 };// 800
+	long[] shopcharges = { 300, 500, 400, 400, 2000, 700,600 };// 1300
+	String[] shopnames = { "woodcutter", "miner", "blacksmith", "tailor",
+			"farmer", "general shop","tanner" };
+	boolean[] shopOpened = { true, true, true, true, true, true ,true};
+	String[] shopClosed = { "", "", "", "", "", "" ,""};
+
 	public void onCharge() {
 		number = 1 + (int) (Math.random() * 100);
 		for (int i = 0; i < shops.length; i++) {
@@ -224,16 +253,14 @@ public class Game extends JFrame implements Runnable {
 			if (shops[i] >= 0 && shopOpened[i]) {
 				shops[i] -= shopUpkeep[i];
 				mayor += shopUpkeep[i];
-			} else if(shopCloseed[i]==""){
-				shopCloseed[i] = getCurrentTimeStamp();
+			} else if (shopClosed[i] == "") {
+				shopClosed[i] = getCurrentTimeStamp();
 				shopOpened[i] = false;
 			}
-			else
+			else if(shops[i] >= 0 )
 			{
-				shops[i] +=10000;
-				bank-=10000;
+				shopClosed[i] = "";
 				shopOpened[i] = true;
-				shopCloseed[i] = "";
 			}
 		}
 		for (int i = 0; i < shops.length; i++) {
@@ -244,27 +271,27 @@ public class Game extends JFrame implements Runnable {
 		}
 		for (int i = 0; i < shops.length; i++) {
 			if (shopOpened[i]) {
-				float amount =(((shops[i] - shopUpkeep[i])*3)* rate)+number;
+				float amount = (((shops[i] - shopUpkeep[i]) * 3) * rate)
+						+ number;
 				shopUpkeep[i] = (int) amount;
-				
-			} 
+
+			}
 		}
 		for (int i = 0; i < shops.length; i++) {
 			if (shopOpened[i]) {
-				float amount =(((shops[i] - shopUpkeep[i])*3)* rate)+number;
+				float amount = (((shops[i] - shopUpkeep[i]) * 3) * rate)
+						+ number;
 				shops[i] -= amount;
-				taxs += amount+0.95f;
-				
-			} else  if(shopCloseed[i]==""){
-				shopCloseed[i] = getCurrentTimeStamp();
+				taxs += amount + 0.95f;
+
+			} else if (shopClosed[i] == "") {
+				shopClosed[i] = getCurrentTimeStamp();
 				shopOpened[i] = false;
 			}
-			else
+			else if(shops[i] >= 0 )
 			{
-				shops[i] +=10000;
-				bank-=10000;
+				shopClosed[i] = "";
 				shopOpened[i] = true;
-				shopCloseed[i] = "";
 			}
 		}
 		if (mayor < 10000) {
@@ -272,16 +299,18 @@ public class Game extends JFrame implements Runnable {
 			taxs = 0;
 		}
 	}
+
 	public static String getCurrentTimeStamp() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	    Date now = new Date();
-	    String strDate = sdf.format(now);
-	    return strDate;
+		Date now = new Date();
+		String strDate = sdf.format(now);
+		return strDate;
 	}
+
 	int count = 0;
 	int number = 0;
-	int total = 0;
-	int highestTotal = 0;
+	long total = 0;
+	long highestTotal = 0;
 	Random ran = new Random();
 
 	public void onPaint(Graphics g) {
@@ -297,7 +326,7 @@ public class Game extends JFrame implements Runnable {
 		if (total > highestTotal) {
 			highestTotal = total;
 		}
-		int temp = (total / shops.length) / 100;
+		long temp = (total / shops.length) / 100;
 		// rate = (temp+1)/100;
 		g.drawString("total:\t" + highestTotal + "(" + total + ")", 100, 50);
 
@@ -305,19 +334,16 @@ public class Game extends JFrame implements Runnable {
 		g.drawString("tax:\t" + taxs, 100, 80);
 		g.drawString("mayor:\t" + mayor, 100, 100);
 		for (int i = 0; i < shops.length; i++) {
-			if(shopOpened[i])
-			{
-				g.drawString(
-						shopnames[i] + "(Opened):\t" + shops[i]+"("+shopcharges[i]+")"+"("+shopUpkeep[i]+")",
+			if (shopOpened[i]) {
+				g.drawString(shopnames[i] + "(Opened):\t" + shops[i] + "("
+						+ shopcharges[i] + ")" + "(" + shopUpkeep[i] + ")",
 						100, 120 + (i * 20));
+			} else {
+				g.drawString(shopnames[i] + "(Closed:" + shopClosed[i] + "):\t"
+						+ shops[i] + "(" + shopcharges[i] + ")" + "("
+						+ shopUpkeep[i] + ")", 100, 120 + (i * 20));
 			}
-			else
-			{
-				g.drawString(
-						shopnames[i] + "(Closed:"+shopCloseed[i] +"):\t" +"("+shopcharges[i]+")"+"("+shopUpkeep[i]+")",
-						100, 120 + (i * 20));
-			}
-			
+
 		}
 		if (count % 2 == 1) {
 			onCharge();
@@ -325,9 +351,16 @@ public class Game extends JFrame implements Runnable {
 		if (count % 100 == 1) {
 			highestTotal = 0;
 
-			for (int i = 0; i < shops.length; i++) {
-				bank += shops[i];
-			}
+			/*for (int i = 0; i < shops.length; i++) {
+				if (shopOpened[i]) {
+					bank += shops[i];
+				} else {
+					shopOpened[i] = true;
+					shopClosed[i] = "";
+					shops[i] += shopcharges[i];
+					bank -= shopcharges[i];
+				}
+			}*/
 		}
 		frameRate.calculate();
 		if (debug) {
