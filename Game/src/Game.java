@@ -150,9 +150,14 @@ public class Game extends JFrame implements Runnable{
 		System.out.println("game running");
 		frameRate.initialize();
 		onSetup();
-		while(running)
-		{
-			gameLoop();
+		long curTime = System.nanoTime();
+		long lastTime = curTime;
+		double nsPerFrame;
+		while (running) {
+			curTime = System.nanoTime();
+			nsPerFrame = curTime - lastTime;
+			gameLoop(nsPerFrame / 1.0E9);
+			lastTime = curTime;
 		}
 	}
 	public void onSetup() 
@@ -270,7 +275,7 @@ public class Game extends JFrame implements Runnable{
 	boolean menuShown = false;
 	boolean titleScreen = false;
 	TitleScreen title;
-	public void gameLoop()
+	public void gameLoop(double d)
 	{
 	
 		do
@@ -287,7 +292,7 @@ public class Game extends JFrame implements Runnable{
 					g = bs.getDrawGraphics();
 				}
 				g.clearRect(0, 0, getWidth(), getHeight());
-				onUpdate();
+				onUpdate(d);
 				onPaint(g);
 			}while(bs.contentsLost());
 			bs.show();
@@ -310,17 +315,17 @@ public class Game extends JFrame implements Runnable{
 	int season =0;
 	Time time = new Time();
 	
-	public void onUpdate()
+	public void onUpdate(double d)
 	{
 		title.dim = new Dimension(this.getWidth(),this.getHeight());
 		//System.out.println("looping");
-		Locker.player.onUpdate(frameRate);
+		Locker.player.onUpdate(d);
 		// TODO Auto-generated method stub
 		map.checkCollision(Locker.player);
 		time.onUpdate();
 		map.onUpdate();
 		
-		processInput();
+		processInput(d);
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
@@ -328,7 +333,7 @@ public class Game extends JFrame implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	public void processInput()
+	public void processInput(double delta)
 	{
 		if(!Locker.changeKeyBindings)
 		{
@@ -498,7 +503,7 @@ public class Game extends JFrame implements Runnable{
 				for(int i=0;i<Locker.players.size();i++)
 				{
 					Locker.players.get(i).setTexture(ImageLoader.getImageFromResources("\\resources\\image\\playerset.png"));
-					Locker.players.get(i).onUpdate(frameRate);
+					Locker.players.get(i).onUpdate(delta);
 				}
 			}catch(Exception e)
 			{

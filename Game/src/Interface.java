@@ -133,7 +133,7 @@ public class Interface {
 			
 			drawBar(g, new Color(255,255,0), staminaBounds, new Color(0,0,0),new Rectangle(staminaBounds.x,staminaBounds.y,statsWidth,staminaBounds.height));
 
-			g.drawString("Experience: "+Locker.player.getExperience()+"/"+Locker.player.getMaxExperience(), position.x+37,position.y+window.bounds.height-20);
+			g.drawString("Ex: "+Locker.player.getExperience()+"/"+Locker.player.getMaxExperience(), position.x+37,position.y+window.bounds.height-20);
 			
 			int xpWidth = (int) ((statsWidth/(double)Locker.player.maxExperience)*((double)Locker.player.experience));
 			xpBounds =new Rectangle(position.x+41,position.y+window.bounds.height-15,xpWidth,9); 
@@ -535,6 +535,8 @@ public class Interface {
 				return skillTexture.getSubimage(64, 0, 32,32);
 			case "defense":
 				return skillTexture.getSubimage(128, 0, 32,32);
+			case "Vitality":
+				return skillTexture.getSubimage(32, 96, 32,32);
 			case "back":
 				return skillTexture.getSubimage(64, 160, 32,32);
 			case "xp":
