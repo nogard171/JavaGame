@@ -22,7 +22,7 @@ import networking.Locker;
 
 public class Player {
 	// the players name
-	private String name = "player2";
+	private String name = "player";
 	// the players texture
 	private BufferedImage texture;
 	// the players current frame

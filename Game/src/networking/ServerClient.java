@@ -14,7 +14,9 @@ public class ServerClient extends Thread {
 	private final ServerClient[] threads;
 	private int maxClientsCount;
 	public String username = "";
+	public int index = -1;
 	boolean isOnline = false;
+	boolean isServer = false;
 
 	public ServerClient(Socket clientSocket, ServerClient[] threads) {
 		this.clientSocket = clientSocket;
@@ -45,8 +47,9 @@ public class ServerClient extends Thread {
 			System.out.print("test");
 			if(name.startsWith("LOG:"))
 			{
-				username = name.substring(4,name.length());
-				System.out.println(name.substring(4, name.length()));
+				username = name.substring(4,name.indexOf(","));
+				isServer = Boolean.parseBoolean(name.substring(name.indexOf(",")+1, name.length()));
+				//System.out.println(username+","+name.substring(name.indexOf(",")+1, name.length()));
 				this.isOnline = true;
 			}
 			sendMessage(clientSocket, "login");
@@ -76,7 +79,13 @@ public class ServerClient extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+            if(isServer)
+            {
+            	sendMessage(clientSocket,"message:System,Welcome to the world, Server.");
+            }else
+            {
             sendMessage(clientSocket,"message:System,Welcome to the world.");
+            }
 			while (true) {
 				String command = getInput(clientSocket);
 				System.out.println(command);

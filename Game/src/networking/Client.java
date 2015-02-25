@@ -46,7 +46,7 @@ public class Client extends Thread
 	    	  {
 	    		  System.out.println(greetings);
 	    		  
-	    		  sendMessage(client, "LOG:"+username);
+	    		  sendMessage(client, "LOG:"+username+","+master);
 	    		  String text = getInput(client);
 	    		  if(text.contains("login"))
 	    		  {
@@ -147,5 +147,10 @@ public class Client extends Thread
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			out.writeUTF(text);
 			//out.close();
+		}
+		boolean master = false;
+		public void setMaster(boolean b) {
+			// TODO Auto-generated method stub
+			master = true;
 		}
 }

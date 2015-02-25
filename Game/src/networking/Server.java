@@ -14,7 +14,6 @@ public class Server extends Thread {
 		// This chat server can accept up to maxClientsCount clients' connections.
 		private static final int maxClientsCount = 10;
 		private static final ServerClient[] threads = new ServerClient[maxClientsCount];
-		
 		public void run(){
 
 			// The default port number.
@@ -45,8 +44,10 @@ public class Server extends Thread {
 					int i = 0;
 					for (i = 0; i < maxClientsCount; i++) {
 						if (threads[i] == null) {
+							
 							(threads[i] = new ServerClient(clientSocket, threads))
 									.start();
+							threads[i].index =i;
 							break;
 						}
 					}

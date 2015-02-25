@@ -414,7 +414,6 @@ public class Game extends JFrame implements Runnable{
 				{
 	
 					server = new Server();
-					
 					if(server!=null&&serverStatus)
 					{
 						Locker.sendLine="shutdown:"+Locker.player.getName();
@@ -439,6 +438,7 @@ public class Game extends JFrame implements Runnable{
 					else
 					{
 						client.username = Locker.player.getName();
+						client.setMaster(true);
 						client.start();
 						try {
 							Thread.sleep(1000);
