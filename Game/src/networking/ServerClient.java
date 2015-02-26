@@ -142,6 +142,12 @@ public class ServerClient extends Thread {
 					int index = Integer.parseInt(command.substring(command.indexOf(',')+1,command.length()));
 					System.out.println(Locker.map.arrayObjects.get(index).lowerType);
 				}
+				if(command.startsWith("move:"))
+				{
+					String message = command.substring(command.indexOf(':'),command.indexOf(',')-1);
+					
+					
+				}	
 				if(command.startsWith("name:"))
 				{
 					String message = command.substring(command.indexOf(':'),command.indexOf(',')-1);

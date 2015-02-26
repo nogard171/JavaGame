@@ -140,11 +140,10 @@ public class Object {
 	int hits = 5;
 	public void harvest() {
 		// TODO Auto-generated method stub
-		Locker.proticol = "harvest";
-		Locker.sendLine =index+"";
-		
 		if(hits <=0)
 		{
+			Locker.proticol = "harvest";
+			Locker.sendLine =index+"";
 			harvested = true;
 		}
 		else

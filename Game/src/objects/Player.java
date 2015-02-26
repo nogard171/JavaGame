@@ -72,6 +72,7 @@ public class Player {
 	public long experience = 0;
 	public long maxExperience = 83;
 	public long baseExperience = 83;
+	public Rectangle weaponBounds = new Rectangle(0,0,10,10);
 	// count for timing based things
 	public int count = 0;
 	// audio player for walking sounds
@@ -459,21 +460,26 @@ public class Player {
 			this.bounds.x = this.bounds.x - this.velocity.x;
 		}
 	}
-	int index =0;
 	public void preformAction(Object obj)
 	{
-		if(obj.lowerType.equals(Type.Tree))
+		if(obj == null ||obj.lowerType.equals(Type.Blank))
 		{
-			System.out.println("Cutting tree down"+index);
+			System.out.println("Attacking nothing but thin air");
+			action = 1;
+		}
+		else if(obj.lowerType.equals(Type.Tree))
+		{
+			System.out.println("Cutting tree down");
 			obj.harvest();
+			action = 2;
 		}
 		else if(obj.lowerType.equals(Type.Rock))
 		{
-			System.out.println("Mining a Rock"+index);
+			System.out.println("Mining a Rock");
 			obj.passable = true;
 			obj.harvest();
+			action = 2;
 		}
-		index++;
 	}
 
 	public void draw(Graphics bbg, ImageObserver obj) {
@@ -490,12 +496,27 @@ public class Player {
 		bbg.fillRect(getPosition().x, getPosition().y - 8, manaWidth, 5);
 		// draw the players Rec in the backbuffer
 		bbg.drawImage(getFrame(), getPosition().x, getPosition().y, 32, 32, obj);
-
-	}
-
-	public void attack() {
-		if (this.direction == Direction.Right) {
-			action = 2;
+		Point adjust = new Point(0,0);
+		if(direction==Direction.Right)
+		{
+			adjust.x =32;
+			adjust.y = 16;
 		}
+		else if(direction==Direction.Left)
+		{
+			adjust.x =-16;
+			adjust.y = 16;
+		}
+		else if(direction==Direction.Up)
+		{
+			adjust.x =12;
+			adjust.y = -16;
+		}
+		else if(direction==Direction.Down)
+		{
+			adjust.x =12;
+			adjust.y = 32;
+		}
+		bbg.drawRect(getPosition().x+weaponBounds.x+adjust.x,  getPosition().y+weaponBounds.y+adjust.y, weaponBounds.width, weaponBounds.height);
 	}
 }

@@ -53,7 +53,7 @@ public class Client extends Thread {
 				}
 				while (true) {
 					String command = getInput(client);
-					System.out.println(command);
+					// System.out.println(command);
 					if (command.startsWith("player:")) {
 						String user = command.substring(
 								command.indexOf(':') + 1, command.length());
@@ -73,36 +73,15 @@ public class Client extends Thread {
 								command.indexOf(':') + 1, command.length())
 								.split("~");
 						String[] tiles = mapData[1].split(";");
-						for (int i =0;i<tiles.length;i++) {
+						for (int i = 0; i < tiles.length; i++) {
 							String[] tileData = tiles[i].split(",");
 							Object obj = new Object();
 							obj.index = i;
 							obj.lowerType = Type.parse(tileData[0]);
 							obj.upperType = Type.parse(tileData[1]);
-							obj.setTexture(Type.getTexture(Locker.map.texture, obj.upperType), Type.getTexture(Locker.map.texture, obj.lowerType));
-							obj.isVisible = Boolean.parseBoolean(tileData[2]);
-							obj.passable = Boolean.parseBoolean(tileData[3]);							
-							obj.harvested = Boolean.parseBoolean(tileData[4]);
-							obj.bounds = new Rectangle(
-									Integer.parseInt(tileData[5]),
-									Integer.parseInt(tileData[6]),
-									Integer.parseInt(tileData[7]),
-									Integer.parseInt(tileData[8]));
-							obj.upperBounds = new Rectangle(
-									Integer.parseInt(tileData[9]),
-									Integer.parseInt(tileData[10]),
-									Integer.parseInt(tileData[11]),
-									Integer.parseInt(tileData[12]));
-							Locker.map.tiles.set(i,obj);							
-						}
-						String[] objects = mapData[2].split(";");
-						for (int i =0;i<objects.length;i++) {
-							String[] tileData = objects[i].split(",");
-							Object obj = new Object();
-							obj.index = i;
-							obj.lowerType = Type.parse(tileData[0]);
-							obj.upperType = Type.parse(tileData[1]);
-							obj.setTexture(Type.getTexture(Locker.map.texture, obj.upperType), Type.getTexture(Locker.map.texture, obj.lowerType));
+							obj.setTexture(Type.getTexture(Locker.map.texture,
+									obj.upperType), Type.getTexture(
+									Locker.map.texture, obj.lowerType));
 							obj.isVisible = Boolean.parseBoolean(tileData[2]);
 							obj.passable = Boolean.parseBoolean(tileData[3]);
 							obj.harvested = Boolean.parseBoolean(tileData[4]);
@@ -116,13 +95,39 @@ public class Client extends Thread {
 									Integer.parseInt(tileData[10]),
 									Integer.parseInt(tileData[11]),
 									Integer.parseInt(tileData[12]));
-							Locker.map.arrayObjects.set(i,obj);							
+							Locker.map.tiles.set(i, obj);
+						}
+						String[] objects = mapData[2].split(";");
+						for (int i = 0; i < objects.length; i++) {
+							String[] tileData = objects[i].split(",");
+							Object obj = new Object();
+							obj.index = i;
+							obj.lowerType = Type.parse(tileData[0]);
+							obj.upperType = Type.parse(tileData[1]);
+							obj.setTexture(Type.getTexture(Locker.map.texture,
+									obj.upperType), Type.getTexture(
+									Locker.map.texture, obj.lowerType));
+							obj.isVisible = Boolean.parseBoolean(tileData[2]);
+							obj.passable = Boolean.parseBoolean(tileData[3]);
+							obj.harvested = Boolean.parseBoolean(tileData[4]);
+							obj.bounds = new Rectangle(
+									Integer.parseInt(tileData[5]),
+									Integer.parseInt(tileData[6]),
+									Integer.parseInt(tileData[7]),
+									Integer.parseInt(tileData[8]));
+							obj.upperBounds = new Rectangle(
+									Integer.parseInt(tileData[9]),
+									Integer.parseInt(tileData[10]),
+									Integer.parseInt(tileData[11]),
+									Integer.parseInt(tileData[12]));
+							Locker.map.arrayObjects.set(i, obj);
 						}
 					}
-					if(command.startsWith("harvest:"))
-					{
-						String user = command.substring(command.indexOf(':'),command.length());
-						int index = Integer.parseInt(command.substring(command.indexOf(',')+1,command.length()));
+					if (command.startsWith("harvest:")) {
+						String user = command.substring(command.indexOf(':'),
+								command.length());
+						int index = Integer.parseInt(command.substring(
+								command.indexOf(',') + 1, command.length()));
 						Locker.map.arrayObjects.get(index).harvested = true;
 					}
 					if (command.startsWith("message:")) {
@@ -141,7 +146,6 @@ public class Client extends Thread {
 								command.indexOf(':') + 1, command.length())
 								.split(",");
 						if (getPlayerIndex(user) >= 0) {
-							System.out.println(data[0]);
 							Player player = Locker.players
 									.get(getPlayerIndex(user));
 							player.setPosition(Integer.parseInt(data[1]),
@@ -153,14 +157,24 @@ public class Client extends Thread {
 									Float.parseFloat(data[7]));
 							player.setMana(Float.parseFloat(data[8]),
 									Float.parseFloat(data[9]));
+							/*for (Player otherPlayers : Locker.players) {
+								System.out.println(player.getName());
+								if (player.getBounds().intersects(
+										otherPlayers.getBounds())) {
+									System.out
+											.println("player colliding with: "
+													+ otherPlayers.getName());
+									break;
+								}
+							}*/
 						}
-						System.out.println("player moving: " + data[0]);
+
+						// System.out.println("player moving: " + data[0]);
 					}
 					if (command.startsWith("remove:")) {
 						String user = command.substring(
 								command.indexOf(':') + 1, command.length());
-						if(user!=username&&getPlayerIndex(user)!=-1)
-						{
+						if (user != username && getPlayerIndex(user) != -1) {
 							Locker.players.remove(getPlayerIndex(user));
 						}
 					}

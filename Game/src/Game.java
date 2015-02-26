@@ -347,10 +347,12 @@ public class Game extends JFrame implements Runnable {
 								new Point(Locker.player.getPosition().x,
 										Locker.player.getPosition().y),
 								Locker.player.direction);
-						if (obj != null && !obj.harvested) {
-							// System.out.println(obj.lowerType);
+						if (obj != null ) {
 							Locker.player.preformAction(obj);
-							System.out.println(space);
+						}
+						else
+						{
+							Locker.player.preformAction(null);
 						}
 						
 					}
@@ -531,6 +533,7 @@ public class Game extends JFrame implements Runnable {
 				debugLines.add(Locker.recieveLine);
 				Locker.recieveLine = "";
 		}
+		//System.out.println("players:"+Locker.players.size());
 	}
 
 	public void sendMessage(String message) {
