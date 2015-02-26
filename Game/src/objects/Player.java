@@ -470,6 +470,7 @@ public class Player {
 		else if(obj.lowerType.equals(Type.Rock))
 		{
 			System.out.println("Mining a Rock"+index);
+			obj.passable = true;
 			obj.harvest();
 		}
 		index++;
