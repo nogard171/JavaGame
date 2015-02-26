@@ -2,12 +2,16 @@ package objects;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
+import networking.Locker;
 import util.KeyboardInput;
 
 public class Object {
@@ -24,8 +28,8 @@ public class Object {
 	public boolean isColliding = false;
 	public boolean passable = true;
 	public Point framePoints = new Point(0,0);
-	int cycle = 1;
 	public Dimension specialDimensions = new Dimension(-16,-16);
+	public int index = -1;
 	public Object(Rectangle rec)
 	{
 		this.bounds = rec;
@@ -103,7 +107,7 @@ public class Object {
 		isColliding = true;	
 		isMoving = false;
 	}
-	public void onUpdate() {
+	public void onUpdate(double delta) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -115,14 +119,37 @@ public class Object {
 		// TODO Auto-generated method stub
 		if(this.isVisible)
 		{
-			g.drawImage(lowerTexture,this.bounds.x,this.bounds.y,this.bounds.width-specialDimensions.width,this.bounds.height-specialDimensions.height,obj);
+			if(upperType==Type.Blank&&harvested)
+			{
+				//g.drawImage(lowerTexture,this.bounds.x,this.bounds.y,this.bounds.width-specialDimensions.width,this.bounds.height-specialDimensions.height,obj);
+			}
+			else
+			{
+				g.drawImage(lowerTexture,this.bounds.x,this.bounds.y,this.bounds.width-specialDimensions.width,this.bounds.height-specialDimensions.height,obj);
+			}
 		}
 	}
 	public void onUpperPaint(Graphics g, ImageObserver obj) {
 		// TODO Auto-generated method stub
-		if(this.isVisible)
+		if(this.isVisible&&upperTexture!=null&&!harvested)
 		{
-			g.drawImage(upperTexture,this.bounds.x+this.upperBounds.x,this.bounds.y+this.upperBounds.y,upperBounds.width-specialDimensions.width,upperBounds.height-specialDimensions.height,obj);
+			g.drawImage(upperTexture,this.bounds.x+this.upperBounds.x+6,this.bounds.y+this.upperBounds.y,upperBounds.width-specialDimensions.width,upperBounds.height-specialDimensions.height,obj);
+		}
+	}
+	public boolean harvested = false;
+	int hits = 5;
+	public void harvest() {
+		// TODO Auto-generated method stub
+		Locker.proticol = "harvest";
+		Locker.sendLine =index+"";
+		
+		if(hits <=0)
+		{
+			harvested = true;
+		}
+		else
+		{
+			hits--;
 		}
 	}
 }

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import objects.Object;
+
 public class ServerClient extends Thread {
 
 	private DataInputStream is = null;
@@ -81,11 +83,40 @@ public class ServerClient extends Thread {
 			}
             if(isServer)
             {
-            	sendMessage(clientSocket,"message:System,Welcome to the world, Server.");
+            	sendMessage(clientSocket,"message:System,Hello again Server.");
             }else
             {
-            sendMessage(clientSocket,"message:System,Welcome to the world.");
+            	sendMessage(clientSocket,"message:System,Welcome to the world.");
             }
+        	try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	String mapData = Locker.map.title + "~";
+			for (Object tile : Locker.map.tiles) {
+				mapData += tile.lowerType + "," + tile.upperType + ","
+						+ tile.isVisible + ","+ tile.passable + "," + tile.harvested + "," + tile.bounds.x + ","
+						+ tile.bounds.y + "," + tile.bounds.width + ","
+						+ tile.bounds.height + "," + tile.upperBounds.x
+						+ "," + tile.upperBounds.y + ","
+						+ tile.upperBounds.width + ","
+						+ tile.upperBounds.height+";";
+
+			}
+			mapData +="~";
+			for (Object tile : Locker.map.arrayObjects) {
+				mapData += tile.lowerType + "," + tile.upperType + ","
+						+ tile.isVisible + ","+ tile.passable + "," + tile.harvested + ","+ tile.bounds.x + ","
+						+ tile.bounds.y + "," + tile.bounds.width + ","
+						+ tile.bounds.height + "," + tile.upperBounds.x
+						+ "," + tile.upperBounds.y + ","
+						+ tile.upperBounds.width + ","
+						+ tile.upperBounds.height+";";
+			}       	
+        	
+        	sendMessage(clientSocket,"map:"+mapData);
 			while (true) {
 				String command = getInput(clientSocket);
 				System.out.println(command);
@@ -102,8 +133,14 @@ public class ServerClient extends Thread {
 				}
 				if(command.startsWith("message:"))
 				{
-					String message = command.substring(command.indexOf(':'),command.length());
+					String message = command.substring(command.indexOf(':')+1,command.length());
 					System.out.println(username + " has said: " +  message);
+				}
+				if(command.startsWith("harvest:"))
+				{
+					String user = command.substring(command.indexOf(':'),command.length());
+					int index = Integer.parseInt(command.substring(command.indexOf(',')+1,command.length()));
+					System.out.println(Locker.map.arrayObjects.get(index).lowerType);
 				}
 				if(command.startsWith("name:"))
 				{

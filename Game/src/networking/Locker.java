@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import objects.KeyBindings;
 import objects.Player;
+import util.Map;
 
 public class Locker {
 	public static String location="";
@@ -13,6 +14,7 @@ public class Locker {
 	public static String showMessage ="";
 	public static String changeKey = "";
 	//this is the player object
+	public static Map map = new Map();
 	public static Player player = new Player();
 	public static ArrayList<Player> players = new ArrayList<Player>();
 	public static String sendLine ="";

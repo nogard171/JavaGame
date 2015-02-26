@@ -5,6 +5,8 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import objects.Type;
+
 public class Server extends Thread {
 	// The server socket.
 		private static ServerSocket serverSocket = null;
@@ -32,8 +34,6 @@ public class Server extends Thread {
 				System.out.println(e);
 			}
 			
-			
-
 			/*
 			 * Create a client socket for each connection and pass it to a new
 			 * client thread.

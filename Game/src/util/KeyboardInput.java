@@ -44,7 +44,6 @@ public class KeyboardInput implements KeyListener
 		if(e.getKeyCode()> 0 && e.getKeyCode() < 256)
 		{
 			keys[e.getKeyCode()] = true;
-			currentKey = e.getKeyCode();
 		}
 		
 	}
@@ -52,11 +51,10 @@ public class KeyboardInput implements KeyListener
 	//to false
     public void keyReleased(KeyEvent e) 
     { 
-            if (e.getKeyCode() > 0 && e.getKeyCode() < 256) 
-            { 
-                    keys[e.getKeyCode()] = false; 
-                    lastKey = e.getKeyCode();
-            } 
+        if (e.getKeyCode() > 0 && e.getKeyCode() < 256) 
+        { 
+                keys[e.getKeyCode()] = false; 
+        } 
     }
     //if a key is just typed do nothing
 	@Override

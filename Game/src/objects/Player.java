@@ -194,7 +194,7 @@ public class Player {
 			this.baseVelocity.x = 300;
 			this.baseVelocity.y = 300;
 			// minus stamina from the current stamina
-			this.stamina -= 0.5f;
+			this.stamina -= 0.2f;
 		} else {
 			this.baseVelocity.x = 100;
 			this.baseVelocity.y = 100;
@@ -338,7 +338,7 @@ public class Player {
 			// else if count modulus of 4(is a multipuly of 4)
 			// and dashing is true, then play the walking sound faster
 			if (dashing ) {
-				audioPlayer.play(workingDir + audioFilePath[selectedWalking]);
+				//audioPlayer.play(workingDir + audioFilePath[selectedWalking]);
 			}
 			// call the cycle function
 			cycle(delta);
@@ -458,6 +458,21 @@ public class Player {
 		} else if (this.direction == Direction.Right) {
 			this.bounds.x = this.bounds.x - this.velocity.x;
 		}
+	}
+	int index =0;
+	public void preformAction(Object obj)
+	{
+		if(obj.lowerType.equals(Type.Tree))
+		{
+			System.out.println("Cutting tree down"+index);
+			obj.harvest();
+		}
+		else if(obj.lowerType.equals(Type.Rock))
+		{
+			System.out.println("Mining a Rock"+index);
+			obj.harvest();
+		}
+		index++;
 	}
 
 	public void draw(Graphics bbg, ImageObserver obj) {
