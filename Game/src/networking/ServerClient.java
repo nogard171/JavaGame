@@ -46,7 +46,6 @@ public class ServerClient extends Thread {
 		try {
 			sendMessage(clientSocket, "Enter Username:");
 			String name = getInput(clientSocket);
-			System.out.print("test");
 			if(name.startsWith("LOG:"))
 			{
 				username = name.substring(4,name.indexOf(","));
@@ -119,7 +118,7 @@ public class ServerClient extends Thread {
         	sendMessage(clientSocket,"map:"+mapData);
 			while (true) {
 				String command = getInput(clientSocket);
-				System.out.println(command);
+				//System.out.println(command);
 				synchronized (this) {
 		            for (int i = 0; i < maxClientsCount; i++) {
 		              if (threads[i] != null && threads[i].clientSocket != null) {

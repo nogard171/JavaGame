@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 import networking.Locker;
+import util.Harvester;
 import util.KeyboardInput;
 
 public class Object {
@@ -136,19 +137,28 @@ public class Object {
 			g.drawImage(upperTexture,this.bounds.x+this.upperBounds.x+6,this.bounds.y+this.upperBounds.y,upperBounds.width-specialDimensions.width,upperBounds.height-specialDimensions.height,obj);
 		}
 	}
+	
 	public boolean harvested = false;
 	int hits = 5;
-	public void harvest() {
+	public Item harvest() {
+		Item item = null;
 		// TODO Auto-generated method stub
 		if(hits <=0)
 		{
 			Locker.proticol = "harvest";
 			Locker.sendLine =index+"";
 			harvested = true;
+			Harvester harvest = new Harvester();
+			item = harvest.getObjectItem(lowerType);
+			if(lowerType == Type.Rock)
+			{
+				passable = true;
+			}
 		}
 		else
 		{
 			hits--;
 		}
+		return item;
 	}
 }

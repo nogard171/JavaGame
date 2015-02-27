@@ -235,7 +235,6 @@ public class Game extends JFrame implements Runnable {
 		exit.description = "You must click exit twice to quit the game.";
 		exit.setTag("exit");
 		exit.setBounds(new Rectangle(0, 0 - ui.getPosition().y, 32, 32));
-		System.out.println(height);
 
 		uiItems.add(bag);
 		uiItems.add(chara);
@@ -252,15 +251,6 @@ public class Game extends JFrame implements Runnable {
 		uiItems.add(hideShow);
 		uiItems.add(exit);
 		ui.onLoad(uiItems);
-
-		Item item = new Item();
-		item.setCount(1);
-		item.setName("test");
-		item.setPosition(5, 5);
-		item.setType(ItemType.Log);
-		item.setTexture(ImageLoader.getImageFromResources(
-				"\\resources\\image\\itemset.png").getSubimage(0, 32, 32, 32));
-		Locker.player.inventory.add(item);
 
 	}
 
@@ -357,7 +347,6 @@ public class Game extends JFrame implements Runnable {
 						
 					}
 					else if (!keyboard.isKeyDown(KeyEvent.VK_SPACE)) {
-					
 						space = 0;
 					}
 
@@ -555,8 +544,6 @@ public class Game extends JFrame implements Runnable {
 			Locker.map.onPaint(g, this);
 
 			for (Player player : Locker.players) {
-				player.setTexture(ImageLoader
-						.getImageFromResources("\\resources\\image\\playerset.png"));
 				player.draw(g, this);
 			}
 

@@ -22,7 +22,7 @@ import networking.Locker;
 
 public class Player {
 	// the players name
-	private String name = "player2";
+	private String name = "player";
 	// the players texture
 	private BufferedImage texture;
 	// the players current frame
@@ -67,12 +67,12 @@ public class Player {
 	// boolean for if the player is dashing
 	private boolean dashing = false;
 	public int level = 1;
-
+	public boolean isDead = false;
 	public long currentExperience = 0;
 	public long experience = 0;
 	public long maxExperience = 83;
 	public long baseExperience = 83;
-	public Rectangle weaponBounds = new Rectangle(0,0,10,10);
+	public Rectangle weaponBounds = new Rectangle(0, 0, 10, 10);
 	// count for timing based things
 	public int count = 0;
 	// audio player for walking sounds
@@ -86,9 +86,13 @@ public class Player {
 	public Player() {
 		Skill skill = new Skill();
 		skill.name = "Vitality";
-		skill.description = "This is the players "+skill.name+" skill.";
+		skill.description = "This is the players " + skill.name + " skill.";
 		skill.level = 1;
 		skills.add(skill);
+	}
+
+	public void takeDamge(int amount) {
+		health -= amount;
 	}
 
 	public Skill getSkill(String skillName) {
@@ -152,7 +156,7 @@ public class Player {
 
 	// move the player right
 	public void moveRight() {
-		if (action == 0) {
+		if (action == 0&&!isDead) {
 			this.bounds.x += this.velocity.x;
 			this.direction = Direction.Right;
 			moving = true;
@@ -161,7 +165,7 @@ public class Player {
 
 	// move the player left
 	public void moveLeft() {
-		if (action == 0) {
+		if (action == 0&&!isDead) {
 			this.bounds.x -= this.velocity.x;
 			this.direction = Direction.Left;
 			moving = true;
@@ -170,7 +174,7 @@ public class Player {
 
 	// move the player up
 	public void moveUp() {
-		if (action == 0) {
+		if (action == 0&&!isDead) {
 			this.bounds.y -= this.velocity.y;
 			this.direction = Direction.Up;
 			moving = true;
@@ -179,7 +183,7 @@ public class Player {
 
 	// move the player Down
 	public void moveDown() {
-		if (action == 0) {
+		if (action == 0&&!isDead) {
 			this.bounds.y += this.velocity.y;
 			this.direction = Direction.Down;
 			moving = true;
@@ -251,7 +255,7 @@ public class Player {
 	public void cycle(double delta) {
 		this.velocity.x = (int) (baseVelocity.x * delta);
 		this.velocity.y = (int) (baseVelocity.y * delta);
-		
+
 		if (frameCycle >= maxCycles) {
 			String workingDir = System.getProperty("user.dir");
 			frameCycle = 0;
@@ -298,8 +302,11 @@ public class Player {
 
 	// this updates the players frame
 	public void onUpdate(double delta) {
-		if (!this.networked) {
+		attackedByPlayers();
+		if (!this.networked&&!isDead) {		
+
 			checkLevel();
+			action = 0;
 			// if stamina is less than the maxStamina, it will regen until it's
 			// equal to maxStamina
 			if (this.stamina < maxStamina) {
@@ -324,7 +331,7 @@ public class Player {
 			// equal to maxhealth
 			if (this.mana < maxMana) {
 				// add the stamina regen rate to the current stamina
-				this.mana += manaRegenRate* delta;
+				this.mana += manaRegenRate * delta;
 			}
 			if (this.mana > maxMana) {
 				// add the stamina regen rate to the current stamina
@@ -338,8 +345,9 @@ public class Player {
 
 			// else if count modulus of 4(is a multipuly of 4)
 			// and dashing is true, then play the walking sound faster
-			if (dashing ) {
-				//audioPlayer.play(workingDir + audioFilePath[selectedWalking]);
+			if (dashing) {
+				// audioPlayer.play(workingDir +
+				// audioFilePath[selectedWalking]);
 			}
 			// call the cycle function
 			cycle(delta);
@@ -355,7 +363,7 @@ public class Player {
 						+ this.moving + "," + this.direction + ","
 						+ this.action + "," + this.health + ","
 						+ this.maxHealth + "," + this.mana + "," + this.maxMana
-						+ ",";
+						+ "," + weaponBounds.x + "," + weaponBounds.y;
 			}
 		} else {
 			framePoints.x = 1;
@@ -380,6 +388,28 @@ public class Player {
 				texture.getWidth() / 3, texture.getHeight() / 4);
 		// stop moving
 		moving = false;
+
+	}
+
+	public void attackedByPlayers() {
+		if (action == 1) {
+			for (Player player : Locker.players) {
+
+				if (weaponBounds.intersects(player.bounds)) {
+					Locker.proticol = "attack";
+					Locker.sendLine = player.getName() + ",10";
+				} else {
+				}
+
+				// System.out.println(weaponBounds.intersects(player.bounds));
+
+			}
+		}
+		if(health<=0)
+		{
+			isDead = true;
+			health = 0;
+		}
 	}
 
 	public void addExperience(long amount) {
@@ -426,13 +456,13 @@ public class Player {
 	public String getExperience() {
 		NumberFormat formatter = new DecimalFormat();
 		formatter = new DecimalFormat("0.###E0");
-		return experience+"";
+		return experience + "";
 	}
 
 	public String getMaxExperience() {
 		NumberFormat formatter = new DecimalFormat();
 		formatter = new DecimalFormat("0.###E0");
-		return maxExperience+"";
+		return maxExperience + "";
 	}
 
 	public void setHealth(float f, float g) {
@@ -460,30 +490,50 @@ public class Player {
 			this.bounds.x = this.bounds.x - this.velocity.x;
 		}
 	}
-	public void preformAction(Object obj)
-	{
-		if(obj == null ||obj.lowerType.equals(Type.Blank))
-		{
+
+	public void preformAction(Object obj) {
+		if(!isDead){
+		if (obj == null || obj.lowerType.equals(Type.Blank)) {
+			System.out.println("Attacking nothing but thin air");
+			action = 1;
+		} else if (obj.lowerType.equals(Type.Tree) && !obj.harvested) {
+			String workingDir = System.getProperty("user.dir");
+			audioPlayer.play(workingDir + audioFilePath[1]);
+			System.out.println("Cutting tree down");
+			addItem(obj.harvest());
+			action = 2;
+		} else if (obj.lowerType.equals(Type.Tree) && obj.harvested) {
+			System.out.println("Attacking nothing but thin air");
+			action = 1;
+		} else if (obj.lowerType.equals(Type.Rock) && !obj.harvested) {
+			String workingDir = System.getProperty("user.dir");
+			audioPlayer.play(workingDir + audioFilePath[1]);
+			System.out.println("Mining a Rock");
+			addItem(obj.harvest());
+			action = 2;
+		} else if (obj.lowerType.equals(Type.Rock) && obj.harvested) {
 			System.out.println("Attacking nothing but thin air");
 			action = 1;
 		}
-		else if(obj.lowerType.equals(Type.Tree))
-		{
-			System.out.println("Cutting tree down");
-			obj.harvest();
-			action = 2;
 		}
-		else if(obj.lowerType.equals(Type.Rock))
-		{
-			System.out.println("Mining a Rock");
-			obj.passable = true;
-			obj.harvest();
-			action = 2;
+	}
+
+	public void addItem(Item item) {
+		if (item != null) {
+			this.inventory.add(item);
 		}
 	}
 
 	public void draw(Graphics bbg, ImageObserver obj) {
-		bbg.drawString(getName(), getPosition().x, getPosition().y - 15);
+		if (isDead) {
+			bbg.drawString(getName() + "(Dead)", getPosition().x,
+					getPosition().y - 15);
+		}
+		else
+		{
+			bbg.drawString(getName(), getPosition().x,
+					getPosition().y - 15);
+		}
 		bbg.setColor(new Color(128, 128, 128, 128));
 		bbg.fillRect(getPosition().x, getPosition().y - 13, 32, 5);
 		bbg.setColor(new Color(255, 0, 0, 128));
@@ -496,27 +546,23 @@ public class Player {
 		bbg.fillRect(getPosition().x, getPosition().y - 8, manaWidth, 5);
 		// draw the players Rec in the backbuffer
 		bbg.drawImage(getFrame(), getPosition().x, getPosition().y, 32, 32, obj);
-		Point adjust = new Point(0,0);
-		if(direction==Direction.Right)
-		{
-			adjust.x =32;
+		Point adjust = new Point(0, 0);
+		if (direction == Direction.Right) {
+			adjust.x = 32;
 			adjust.y = 16;
-		}
-		else if(direction==Direction.Left)
-		{
-			adjust.x =-16;
+		} else if (direction == Direction.Left) {
+			adjust.x = -16;
 			adjust.y = 16;
-		}
-		else if(direction==Direction.Up)
-		{
-			adjust.x =12;
+		} else if (direction == Direction.Up) {
+			adjust.x = 12;
 			adjust.y = -16;
-		}
-		else if(direction==Direction.Down)
-		{
-			adjust.x =12;
+		} else if (direction == Direction.Down) {
+			adjust.x = 12;
 			adjust.y = 32;
 		}
-		bbg.drawRect(getPosition().x+weaponBounds.x+adjust.x,  getPosition().y+weaponBounds.y+adjust.y, weaponBounds.width, weaponBounds.height);
+		weaponBounds = new Rectangle(bounds.x + adjust.x, bounds.y + adjust.y,
+				weaponBounds.width, weaponBounds.height);
+		bbg.drawRect(weaponBounds.x, weaponBounds.y, weaponBounds.width,
+				weaponBounds.height);
 	}
 }

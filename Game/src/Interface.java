@@ -100,9 +100,21 @@ public class Interface {
 		
 		if(menu==1&&usesWindow)
 		{//inventory
+			int x =0;
+			int y =0;
 			for(Item item:Locker.player.inventory)
 			{
+				item.setPosition(x*32, y*32);
 				item.draw(g, obj, window);
+				if(x>=5)
+				{
+					y++;
+					x=0;
+				}
+				else
+				{
+					x++;
+				}
 			}
 		}
 		else if(menu ==2&&usesWindow)

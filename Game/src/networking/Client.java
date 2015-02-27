@@ -53,7 +53,7 @@ public class Client extends Thread {
 				}
 				while (true) {
 					String command = getInput(client);
-					// System.out.println(command);
+				 System.out.println(command);
 					if (command.startsWith("player:")) {
 						String user = command.substring(
 								command.indexOf(':') + 1, command.length());
@@ -138,7 +138,16 @@ public class Client extends Thread {
 						System.out.println(user + ": " + message);
 						Locker.recieveLine = user + ":" + message;
 					}
-
+					if (command.startsWith("attack:")) {
+						String[] data = command.substring(
+								command.indexOf(':') + 1, command.length())
+								.split(",");
+						System.out.println(data[1].equals(Locker.player.getName()));
+						if(data[1].equals(Locker.player.getName()))
+						{
+							Locker.player.takeDamge(Integer.parseInt(data[2]));
+						}
+					}
 					if (command.startsWith("move:")) {
 						String user = command.substring(
 								command.indexOf(':') + 1, command.indexOf(','));
@@ -157,16 +166,7 @@ public class Client extends Thread {
 									Float.parseFloat(data[7]));
 							player.setMana(Float.parseFloat(data[8]),
 									Float.parseFloat(data[9]));
-							/*for (Player otherPlayers : Locker.players) {
-								System.out.println(player.getName());
-								if (player.getBounds().intersects(
-										otherPlayers.getBounds())) {
-									System.out
-											.println("player colliding with: "
-													+ otherPlayers.getName());
-									break;
-								}
-							}*/
+							player.weaponBounds = new Rectangle(Integer.parseInt(data[10]),Integer.parseInt(data[11]),10,10);
 						}
 
 						// System.out.println("player moving: " + data[0]);
