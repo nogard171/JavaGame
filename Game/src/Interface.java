@@ -185,56 +185,7 @@ public class Interface {
 		{//magic
 			
 		}
-		else if(menu ==6&&usesWindow)
-		{//options
-			
-			g.drawString("options", window.bounds.x+5,window.bounds.y+16);
-			for(MenuItem item:options)
-			{
-				item.setBounds(new Rectangle(window.bounds.width-32-8,item.getBounds().y,32,10));
-				g.drawString(item.PreTag + item.getTag(), window.bounds.x+5,window.bounds.y+item.getBounds().y+10);
-				
-				if(!item.isInput)
-				{
-					g.drawRect(window.bounds.x+item.getBounds().x,window.bounds.y+item.getBounds().y,item.getBounds().width,item.getBounds().height);
-					if(item.status)
-					{
-						g.setColor(Color.green);
-					}
-					else
-					{
-						g.setColor(Color.red);
-					}
-
-					g.fillRect(window.bounds.x+item.getBounds().x+1,window.bounds.y+item.getBounds().y+1,item.getBounds().width-1,item.getBounds().height-1);
-					g.setColor(Color.black);
-				}
-				else
-				{
-					g.drawString(item.text, window.bounds.x+item.getBounds().x,window.bounds.y+item.getBounds().y+10);
-					if(item.getTag()=="left")
-					{
-						item.text = String.valueOf(Locker.keys.Left)+"("+(char)Locker.keys.Left+")";
-						
-					}
-					if(item.getTag()=="right")
-					{
-						item.text = String.valueOf(Locker.keys.Right)+"("+(char)Locker.keys.Right+")";
-						
-					}
-					if(item.getTag()=="up")
-					{
-						item.text = String.valueOf(Locker.keys.Up)+"("+(char)Locker.keys.Up+")";
-						
-					}
-					if(item.getTag()=="down")
-					{
-						item.text = String.valueOf(Locker.keys.Down)+"("+(char)Locker.keys.Down+")";
-						
-					}
-				}
-			}
-		}
+		
 		else
 		{
 			usesWindow = false;
@@ -293,48 +244,7 @@ public class Interface {
 				}
 			}
 		}
-		if(menu ==6&&usesWindow)
-		{
-			for(MenuItem item:options)
-			{
-				if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(window.bounds.x+item.getBounds().x+transform.x,window.bounds.y+item.getBounds().y+transform.y,item.getBounds().width,item.getBounds().height)))
-				{
-					hoverPoints = new Point(item.getBounds().x+32,item.getBounds().y);
-					hoverDescription = item.description;
-					item.isHovered = true;
-					break;
-				}
-				else
-				{
-					item.isHovered = false;
-				}
-			}
-			for(MenuItem item:options)
-			{
-				if(item.isClickable()&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(window.bounds.x+item.getBounds().x+transform.x,window.bounds.y+item.getBounds().y+transform.y,item.getBounds().width,item.getBounds().height))&&mouse.buttonDown(1))
-				{
-					item.isClicked = true;
-					break;
-				}
-				else
-				{
-					item.isClicked = false;
-				}
-			}
-			for(MenuItem item:options)
-			{
-				if(item.isClicked)
-				{
-					if(item.getTag()=="left"||item.getTag()=="right"||item.getTag()=="up"||item.getTag()=="down")
-					{
-						Locker.showMessage ="Enter the new "+item.getTag()+" movement key.";
-						Locker.changeKey = item.getTag();
-						Locker.changeKeyBindings = true;
-						break;
-					}
-				}
-			}
-		}
+		
 		if(menu ==1&&usesWindow)
 		{
 			for(Item item:Locker.player.inventory)
@@ -487,19 +397,6 @@ public class Interface {
 					}
 					break;
 				}
-				else if(item.getTag()=="options")
-				{
-					if(usesWindow&&menu==6)
-					{
-						usesWindow = !usesWindow;
-					}
-					else
-					{
-						usesWindow = true;
-					}
-					menu = 6;
-					break;
-				}
 			}
 		}
 	}
@@ -529,8 +426,6 @@ public class Interface {
 				return texture.getSubimage(96, 160, 32,16);
 			case "xpback":
 				return texture.getSubimage(96, 176, 32,16);
-			case "options":
-				return texture.getSubimage(0, 224, 32,32);
 			case "show":
 				return texture.getSubimage(64, 192, 32,32);
 			case "hide":

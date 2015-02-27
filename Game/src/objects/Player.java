@@ -4,8 +4,10 @@ import util.AudioPlayer;
 import util.FrameRate;
 import util.Window;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -22,7 +24,7 @@ import networking.Locker;
 
 public class Player {
 	// the players name
-	private String name = "player";
+	private String name = "player2";
 	// the players texture
 	private BufferedImage texture;
 	// the players current frame
@@ -156,7 +158,7 @@ public class Player {
 
 	// move the player right
 	public void moveRight() {
-		if (action == 0&&!isDead) {
+		if (action == 0 && !isDead) {
 			this.bounds.x += this.velocity.x;
 			this.direction = Direction.Right;
 			moving = true;
@@ -165,7 +167,7 @@ public class Player {
 
 	// move the player left
 	public void moveLeft() {
-		if (action == 0&&!isDead) {
+		if (action == 0 && !isDead) {
 			this.bounds.x -= this.velocity.x;
 			this.direction = Direction.Left;
 			moving = true;
@@ -174,7 +176,7 @@ public class Player {
 
 	// move the player up
 	public void moveUp() {
-		if (action == 0&&!isDead) {
+		if (action == 0 && !isDead) {
 			this.bounds.y -= this.velocity.y;
 			this.direction = Direction.Up;
 			moving = true;
@@ -183,7 +185,7 @@ public class Player {
 
 	// move the player Down
 	public void moveDown() {
-		if (action == 0&&!isDead) {
+		if (action == 0 && !isDead) {
 			this.bounds.y += this.velocity.y;
 			this.direction = Direction.Down;
 			moving = true;
@@ -303,7 +305,7 @@ public class Player {
 	// this updates the players frame
 	public void onUpdate(double delta) {
 		attackedByPlayers();
-		if (!this.networked&&!isDead) {		
+		if (!this.networked && !isDead) {
 
 			checkLevel();
 			action = 0;
@@ -405,8 +407,7 @@ public class Player {
 
 			}
 		}
-		if(health<=0)
-		{
+		if (health <= 0) {
 			isDead = true;
 			health = 0;
 		}
@@ -492,29 +493,29 @@ public class Player {
 	}
 
 	public void preformAction(Object obj) {
-		if(!isDead){
-		if (obj == null || obj.lowerType.equals(Type.Blank)) {
-			System.out.println("Attacking nothing but thin air");
-			action = 1;
-		} else if (obj.lowerType.equals(Type.Tree) && !obj.harvested) {
-			String workingDir = System.getProperty("user.dir");
-			audioPlayer.play(workingDir + audioFilePath[1]);
-			System.out.println("Cutting tree down");
-			addItem(obj.harvest());
-			action = 2;
-		} else if (obj.lowerType.equals(Type.Tree) && obj.harvested) {
-			System.out.println("Attacking nothing but thin air");
-			action = 1;
-		} else if (obj.lowerType.equals(Type.Rock) && !obj.harvested) {
-			String workingDir = System.getProperty("user.dir");
-			audioPlayer.play(workingDir + audioFilePath[1]);
-			System.out.println("Mining a Rock");
-			addItem(obj.harvest());
-			action = 2;
-		} else if (obj.lowerType.equals(Type.Rock) && obj.harvested) {
-			System.out.println("Attacking nothing but thin air");
-			action = 1;
-		}
+		if (!isDead) {
+			if (obj == null || obj.lowerType.equals(Type.Blank)) {
+				System.out.println("Attacking nothing but thin air");
+				action = 1;
+			} else if (obj.lowerType.equals(Type.Tree) && !obj.harvested) {
+				String workingDir = System.getProperty("user.dir");
+				audioPlayer.play(workingDir + audioFilePath[1]);
+				System.out.println("Cutting tree down");
+				addItem(obj.harvest());
+				action = 2;
+			} else if (obj.lowerType.equals(Type.Tree) && obj.harvested) {
+				System.out.println("Attacking nothing but thin air");
+				action = 1;
+			} else if (obj.lowerType.equals(Type.Rock) && !obj.harvested) {
+				String workingDir = System.getProperty("user.dir");
+				audioPlayer.play(workingDir + audioFilePath[1]);
+				System.out.println("Mining a Rock");
+				addItem(obj.harvest());
+				action = 2;
+			} else if (obj.lowerType.equals(Type.Rock) && obj.harvested) {
+				System.out.println("Attacking nothing but thin air");
+				action = 1;
+			}
 		}
 	}
 
@@ -528,11 +529,8 @@ public class Player {
 		if (isDead) {
 			bbg.drawString(getName() + "(Dead)", getPosition().x,
 					getPosition().y - 15);
-		}
-		else
-		{
-			bbg.drawString(getName(), getPosition().x,
-					getPosition().y - 15);
+		} else {
+			bbg.drawString(getName(), getPosition().x, getPosition().y - 15);
 		}
 		bbg.setColor(new Color(128, 128, 128, 128));
 		bbg.fillRect(getPosition().x, getPosition().y - 13, 32, 5);

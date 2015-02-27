@@ -183,48 +183,6 @@ public class Game extends JFrame implements Runnable {
 		magic.setTag("magic");
 		magic.setBounds(new Rectangle(0, 128, 32, 32));
 
-		MenuItem options = new MenuItem();
-		options.description = "This will open the options.";
-		options.setTag("options");
-		options.setBounds(new Rectangle(0, 192, 32, 32));
-
-		MenuItem fullscreen = new MenuItem();
-		fullscreen.description = "This will toggle an option";
-		fullscreen.setTag("Launch next in Fullscreen");
-		fullscreen.setBounds(new Rectangle(0, 20, 32, 10));
-
-		MenuItem Left = new MenuItem();
-		Left.description = "This will toggle an option";
-		Left.setTag("left");
-		Left.text = String.valueOf(Locker.keys.Left);
-		Left.setPreTag("Bind the key for ");
-		Left.isInput = true;
-		Left.setBounds(new Rectangle(0, 40, 32, 10));
-
-		MenuItem Right = new MenuItem();
-		Right.description = "This will toggle an option";
-		Right.setTag("right");
-		Right.text = String.valueOf(Locker.keys.Right);
-		Right.setPreTag("Bind the key for ");
-		Right.isInput = true;
-		Right.setBounds(new Rectangle(0, 60, 32, 10));
-
-		MenuItem Up = new MenuItem();
-		Up.description = "This will toggle an option";
-		Up.setTag("up");
-		Up.text = String.valueOf(Locker.keys.Up);
-		Up.setPreTag("Bind the key for ");
-		Up.isInput = true;
-		Up.setBounds(new Rectangle(0, 80, 32, 10));
-
-		MenuItem Down = new MenuItem();
-		Down.description = "This will toggle an option";
-		Down.setTag("down");
-		Down.text = String.valueOf(Locker.keys.Down);
-		Down.setPreTag("Bind the key for ");
-		Down.isInput = true;
-		Down.setBounds(new Rectangle(0, 100, 32, 10));
-
 		MenuItem hideShow = new MenuItem();
 		hideShow.description = "This will hide the Interface";
 		hideShow.setHoverable(false);
@@ -241,12 +199,6 @@ public class Game extends JFrame implements Runnable {
 		uiItems.add(skills);
 		uiItems.add(equip);
 		uiItems.add(magic);
-		uiItems.add(options);
-		ui.options.add(fullscreen);
-		ui.options.add(Left);
-		ui.options.add(Right);
-		ui.options.add(Up);
-		ui.options.add(Down);
 
 		uiItems.add(hideShow);
 		uiItems.add(exit);
