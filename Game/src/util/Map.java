@@ -175,4 +175,15 @@ public class Map {
 			tile.onUpperPaint(g, obj);
 		}
 	}
+
+	public void removeObjectsIn(Rectangle walkableArea) {
+		// TODO Auto-generated method stub
+		for(int i =0;i<arrayObjects.size();i++)
+		{
+			if(walkableArea.intersects(arrayObjects.get(i).bounds))
+			{
+				arrayObjects.remove(i);
+			}
+		}
+	}
 }

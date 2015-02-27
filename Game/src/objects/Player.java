@@ -24,7 +24,7 @@ import networking.Locker;
 
 public class Player {
 	// the players name
-	private String name = "player2";
+	private String name = "player";
 	// the players texture
 	private BufferedImage texture;
 	// the players current frame
@@ -43,7 +43,7 @@ public class Player {
 	// this is the players steps
 	private int steps = 0;
 	// the players position
-	private Rectangle bounds = new Rectangle(0, 0, 32, 32);
+	public Rectangle bounds = new Rectangle(0, 0, 32, 32);
 	// this is the players health
 	private double health = 10;
 	// this is the players max health
@@ -162,6 +162,7 @@ public class Player {
 			this.bounds.x += this.velocity.x;
 			this.direction = Direction.Right;
 			moving = true;
+			talking = false;
 		}
 	}
 
@@ -171,6 +172,7 @@ public class Player {
 			this.bounds.x -= this.velocity.x;
 			this.direction = Direction.Left;
 			moving = true;
+			talking = false;
 		}
 	}
 
@@ -180,6 +182,7 @@ public class Player {
 			this.bounds.y -= this.velocity.y;
 			this.direction = Direction.Up;
 			moving = true;
+			talking = false;
 		}
 	}
 
@@ -189,6 +192,7 @@ public class Player {
 			this.bounds.y += this.velocity.y;
 			this.direction = Direction.Down;
 			moving = true;
+			talking = false;
 		}
 	}
 
@@ -301,6 +305,7 @@ public class Player {
 	public boolean networked;
 	private boolean isColliding;
 	public ArrayList<Skill> skills = new ArrayList<Skill>();
+	private boolean talking;
 
 	// this updates the players frame
 	public void onUpdate(double delta) {
@@ -340,8 +345,10 @@ public class Player {
 				this.mana = maxMana;
 			}
 		}
+		checkNPC();
 		// if the player is moving call cycling
 		if (moving && !this.colliding) {
+			
 			// get the current working directory
 			String workingDir = System.getProperty("user.dir");
 
@@ -400,16 +407,33 @@ public class Player {
 				if (weaponBounds.intersects(player.bounds)) {
 					Locker.proticol = "attack";
 					Locker.sendLine = player.getName() + ",10";
+					player.takeDamge(10);
 				} else {
 				}
 
 				// System.out.println(weaponBounds.intersects(player.bounds));
 
 			}
+			checkNPC();
 		}
 		if (health <= 0) {
 			isDead = true;
 			health = 0;
+		}
+	}
+
+	public void checkNPC() {
+		for (NPC_AI npc : Locker.npcs) {
+
+			if (weaponBounds.intersects(npc.bounds)&&action==1) {
+				System.out.println("Are you talking to me?");
+				talking = true;
+			}
+			if (talking) {
+				npc.talking = true;
+			} else {
+				npc.talking = false;
+			}
 		}
 	}
 
@@ -526,6 +550,7 @@ public class Player {
 	}
 
 	public void draw(Graphics bbg, ImageObserver obj) {
+		bbg.setColor(Color.black);
 		if (isDead) {
 			bbg.drawString(getName() + "(Dead)", getPosition().x,
 					getPosition().y - 15);
@@ -562,5 +587,10 @@ public class Player {
 				weaponBounds.width, weaponBounds.height);
 		bbg.drawRect(weaponBounds.x, weaponBounds.y, weaponBounds.width,
 				weaponBounds.height);
+	}
+
+	public void setBounds(Rectangle bounds2) {
+		// TODO Auto-generated method stub
+		bounds = bounds2;
 	}
 }

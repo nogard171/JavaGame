@@ -203,7 +203,7 @@ public class Game extends JFrame implements Runnable {
 		uiItems.add(hideShow);
 		uiItems.add(exit);
 		ui.onLoad(uiItems);
-
+		
 	}
 
 	boolean menuShown = false;
@@ -228,6 +228,7 @@ public class Game extends JFrame implements Runnable {
 		} while (bs.contentsLost());
 	}
 
+	// NPC_AI npc = new NPC_AI();
 	public void loadClasses() {
 
 		keyboard = new KeyboardInput(this);
@@ -238,10 +239,18 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onTextureLoading() {
+		//NPC_AI npcA = new NPC_AI();
+		//Locker.npcs.add(npcA);
+		
 		texture = ImageLoader
 				.getImageFromResources("\\resources\\image\\tileset.png");
 		Locker.player.setTexture(ImageLoader
 				.getImageFromResources("\\resources\\image\\playerset.png"));
+		for (NPC_AI npc : Locker.npcs) {
+			npc.setTexture(ImageLoader
+					.getImageFromResources("\\resources\\image\\playerset.png"));
+
+		}
 	}
 
 	int season = 0;
@@ -253,9 +262,13 @@ public class Game extends JFrame implements Runnable {
 		Locker.player.onUpdate(d);
 		// TODO Auto-generated method stub
 		Locker.map.checkCollision(Locker.player);
+		// Locker.map.checkCollision(npc.character);
 		time.onUpdate();
 		Locker.map.onUpdate(d);
-
+		for(NPC_AI npc:Locker.npcs)	
+		{
+			npc.onUpdate(d);
+		}
 		processInput(d);
 		try {
 			Thread.sleep(10);
@@ -264,7 +277,9 @@ public class Game extends JFrame implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	int space=0;
+
+	int space = 0;
+
 	public void processInput(double delta) {
 		if (!Locker.changeKeyBindings) {
 			mouse.poll();
@@ -283,22 +298,19 @@ public class Game extends JFrame implements Runnable {
 						Locker.player.moveDown();
 
 					}
-					if (keyboard.isKeyDown(KeyEvent.VK_SPACE)&&space ==0) {
-						space ++;
+					if (keyboard.isKeyDown(KeyEvent.VK_SPACE) && space == 0) {
+						space++;
 						Object obj = Locker.map.getObjectAt(
 								new Point(Locker.player.getPosition().x,
 										Locker.player.getPosition().y),
 								Locker.player.direction);
-						if (obj != null ) {
+						if (obj != null) {
 							Locker.player.preformAction(obj);
-						}
-						else
-						{
+						} else {
 							Locker.player.preformAction(null);
 						}
-						
-					}
-					else if (!keyboard.isKeyDown(KeyEvent.VK_SPACE)) {
+
+					} else if (!keyboard.isKeyDown(KeyEvent.VK_SPACE)) {
 						space = 0;
 					}
 
@@ -470,11 +482,11 @@ public class Game extends JFrame implements Runnable {
 		}
 		if (Locker.recieveLine != "") {
 			// System.out.println(Locker.recieveLine);
-			
-				debugLines.add(Locker.recieveLine);
-				Locker.recieveLine = "";
+
+			debugLines.add(Locker.recieveLine);
+			Locker.recieveLine = "";
 		}
-		//System.out.println("players:"+Locker.players.size());
+		// System.out.println("players:"+Locker.players.size());
 	}
 
 	public void sendMessage(String message) {
@@ -498,8 +510,19 @@ public class Game extends JFrame implements Runnable {
 			for (Player player : Locker.players) {
 				player.draw(g, this);
 			}
-
+			for(NPC_AI npc:Locker.npcs)	
+			{
+			if (npc.bounds.y <= Locker.player.getBounds().y) {
+				npc.onPaint(g, this);
+			}
+			}
 			Locker.player.draw(g, this);
+			for(NPC_AI npc:Locker.npcs)	
+			{
+			if (npc.bounds.y > Locker.player.getBounds().y) {
+				npc.onPaint(g, this);
+			}
+			}
 			Locker.map.onUpperPaint(g, this);
 			ui.onPaint(g, this);
 
@@ -532,6 +555,7 @@ public class Game extends JFrame implements Runnable {
 		}
 		repaint();
 	}
+
 	Rectangle rec = new Rectangle(0, 20, 50, 10);
 	ArrayList<String> debugLines = new ArrayList<String>();
 

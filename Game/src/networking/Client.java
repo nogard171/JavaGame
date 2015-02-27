@@ -146,6 +146,10 @@ public class Client extends Thread {
 						if(data[1].equals(Locker.player.getName()))
 						{
 							Locker.player.takeDamge(Integer.parseInt(data[2]));
+						if(Locker.player.getHealth()<=0)
+						{
+							Locker.player.setHealth(0, (float) Locker.player.getMaxHealth());
+						}
 						}
 					}
 					if (command.startsWith("move:")) {
