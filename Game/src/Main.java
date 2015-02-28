@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,6 +15,10 @@ import java.net.Socket;
 
 
 
+
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import objects.Player;
@@ -113,7 +118,16 @@ public class Main extends JFrame
 		//set the backbuffer to a created bufferedimage
 		backBuffer = new BufferedImage(windowWidth, windowHeight, BufferedImage.TYPE_INT_RGB);
 		//set the chat as keylistener
-		Locker.username = "test2";
+		try {
+			Locker.player.setTexture(ImageIO.read(new URL("http://204.237.93.81/resources/images/playerset.png")));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Locker.username = "testing";
 	}
 	boolean right = false;
 	boolean left = false;
@@ -295,8 +309,8 @@ public class Main extends JFrame
         //fill a rectangle in the backbuffer
         bbg.fillRect(0, 0, windowWidth, windowHeight);
         bbg.setColor(Color.black); 
-        //render the bottom of the map
-        bbg.drawRect(Locker.player.position.x, Locker.player.position.y, 32,32);
+        //render the bottom of the map]
+        Locker.player.draw(bbg);
         for(Player player:Locker.players)
         {
         	 //render the bottom of the map

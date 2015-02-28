@@ -19,7 +19,7 @@ public class Server extends Thread {
 		public void run(){
 
 			// The default port number.
-			int portNumber = 80;
+			int portNumber = 81;
 			System.out.println("Usage: java MultiThreadChatServer <portNumber>\n"
 								+ "Now using port number=" + portNumber);
 

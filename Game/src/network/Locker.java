@@ -14,4 +14,5 @@ public class Locker {
 	public static String proticol;
 	public static Player player = new Player();
 	public static ArrayList<Player> players = new ArrayList<Player>();
+	public static boolean grid = true;
 }

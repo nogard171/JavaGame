@@ -24,7 +24,7 @@ public class Client extends Thread {
 	public Socket client = null;
 	String serverName = "204.237.93.81";
 	boolean logged = false;
-	int port = 80;
+	int port = 81;
 
 	public void run() {
 
@@ -66,11 +66,13 @@ public class Client extends Thread {
 						{
 							System.out.println("moving player");
 							Locker.player.setPosition(new Point(Integer.parseInt(data[1]),Integer.parseInt(data[2])));
+							Locker.player.framePoints = new Point(Integer.parseInt(data[3]),Integer.parseInt(data[4]));
 						}
 						else
 						{
 							System.out.println("moving another player");
 							Locker.players.get(this.getPlayerIndex(data[0])).setPosition(new Point(Integer.parseInt(data[1]),Integer.parseInt(data[2])));
+							Locker.players.get(getPlayerIndex(data[0])).framePoints = new Point(Integer.parseInt(data[3]),Integer.parseInt(data[4]));
 						}
 					}
 					if(command.startsWith("player:"))

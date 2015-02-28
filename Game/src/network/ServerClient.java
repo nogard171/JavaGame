@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import objects.Direction;
 import objects.Player;
 
 public class ServerClient extends Thread {
@@ -129,7 +130,7 @@ public class ServerClient extends Thread {
 					
 					//if(data[0].equals(username))
 					//{
-						broadcast("chara:" + data[0]+","+player.position.x+","+player.position.y);
+						broadcast("chara:" + data[0]+","+player.position.x+","+player.position.y+","+player.framePoints.x+","+player.framePoints.y);
 					/*}
 					else
 					{
@@ -210,18 +211,22 @@ public class ServerClient extends Thread {
 			if(b)
 			{
 				player.position.x-=5;
+				player.framePoints.y=1;
 			}
 			if(c)
 			{
 				player.position.x+=5;
+				player.framePoints.y=2;
 			}
 			if(d)
 			{
 				player.position.y-=5;
+				player.framePoints.y=3;
 			}
 			if(e)
 			{
 				player.position.y+=5;
+				player.framePoints.y=0;
 			}
 		}
 	}
