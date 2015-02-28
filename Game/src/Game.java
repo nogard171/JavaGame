@@ -16,16 +16,19 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import network.Chat;
 import network.Client;
 import network.Locker;
 import network.Server;
 import objects.*;
 import util.FrameRate;
+import util.InputHandler;
 
 public class Game extends JFrame implements Runnable {
 
@@ -44,7 +47,8 @@ public class Game extends JFrame implements Runnable {
 	boolean serverStatus = false;
 	// this is the clients status, if it connected to a server or not
 	boolean clientStatus = false;
-	
+	int oldWidth = 0;
+	int oldHeight = 0;
 	// this declares the input object
 	InputHandler input;
 	// the server and client vars
@@ -81,7 +85,10 @@ public class Game extends JFrame implements Runnable {
 		if (!graphicsDevice.isFullScreenSupported()) {
 			System.err.println("ERROR: Not Supported.");
 		}
-
+		// set the inputhandler to this
+		input = new InputHandler(this);
+		chat = new Chat(this);
+		
 		addKeyListener(new KeyAdapter() {
 
 			public void keyPressed(KeyEvent e) {
@@ -102,8 +109,10 @@ public class Game extends JFrame implements Runnable {
 	public void setWindow() {
 		Canvas canvas = new Canvas();
 		canvas.setSize(width, height);
+		
 		// set the inputhandler to this
-				input = new InputHandler(canvas);
+		input = new InputHandler(canvas);
+		chat = new Chat(canvas);
 		getContentPane().add(canvas);
 		pack();
 		setVisible(true);
@@ -151,6 +160,8 @@ public class Game extends JFrame implements Runnable {
 
 	public void onSetup() {
 		onTextureLoading();
+		
+		Locker.player.setName(Locker.username);
 	}
 
 	public void gameLoop(double d) {
@@ -178,28 +189,29 @@ public class Game extends JFrame implements Runnable {
 
 	public void onTextureLoading() {
 
-			Locker.player.setTexture(textureLoad("/resources/images/playerset.png"));
+		Locker.player
+				.setTexture(textureLoad("/resources/images/playerset.png"));
 	}
-	public BufferedImage textureLoad(String location)
-	{
-		
-			try {
-				return ImageIO.read(new URL(
-						"http://localhost" +location));
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				
-				e.printStackTrace();
-				return null;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
+
+	public BufferedImage textureLoad(String location) {
+
+		try {
+			return ImageIO.read(new URL("http://localhost" + location));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+
+			// e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+			return null;
+		}
 	}
 
 	public void onUpdate(double d) {
-
+		Locker.clientWidth = width;
+		Locker.clientHeight = height;
 		processInput(d);
 	}
 
@@ -208,6 +220,7 @@ public class Game extends JFrame implements Runnable {
 	boolean up = false;
 	boolean down = false;
 	boolean shift = false;
+
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
 		right = input.isKeyDown(KeyEvent.VK_RIGHT);
@@ -220,9 +233,10 @@ public class Game extends JFrame implements Runnable {
 		// if shift is pressed
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 
-		if (left || right || up || down||shift) {
+		if (left || right || up || down || shift) {
 			Locker.proticol = "move";
-			Locker.sendLine = delta+","+left + "," + right + "," + up + "," + down+","+shift;
+			Locker.sendLine = delta + "/s" + left + "/s" + right + "/s" + up + "/s"
+					+ down + "/s" + shift;
 		}
 		// start the server, then connect a client to it.
 		if (input.isKeyDown(KeyEvent.VK_F2)) {
@@ -308,14 +322,14 @@ public class Game extends JFrame implements Runnable {
 	public void networkingData() {
 		// if sendline has data send it to the server.
 		if (Locker.sendLine != "" && clientStatus) {
-			sendMessage(Locker.proticol + ":" + Locker.username + ","
+			sendMessage(Locker.proticol + "/p" + Locker.username + "/s"
 					+ Locker.sendLine);
 			// set sendline back to nothing
 			Locker.sendLine = "";
 		}
 		// if receiveline has something add it into the chat.
 		if (Locker.recieveLine != "") {
-			// chat.Lines.add(Locker.recieveLine);
+			chat.Lines.add(Locker.recieveLine);
 			// set the receiveline to nothing
 			Locker.recieveLine = "";
 		}
@@ -360,21 +374,45 @@ public class Game extends JFrame implements Runnable {
 
 	private void paintPlayers(Graphics g) {
 		// TODO Auto-generated method stub
-		for (Player player : Locker.players) {
-			player.setTexture(textureLoad("/resources/images/playerset.png"));
-			if(player.positionY<=Locker.player.positionY)
-			{
-				player.draw(g);
+		try {
+			for (Player player : Locker.players) {
+				player.setTexture(textureLoad("/resources/images/playerset.png"));
+
+				if (player.positionY <= Locker.player.positionY) {
+					player.draw(g);
+				}
 			}
+		} catch (ConcurrentModificationException cme) {
+
 		}
-		Locker.player.draw(g);
-		for (Player player : Locker.players) {
-			player.setTexture(textureLoad("/resources/images/playerset.png"));
-			if(player.positionY>Locker.player.positionY)
-			{
-				player.draw(g);
+
+		try {
+			Locker.player.draw(g);
+			for (Player player : Locker.players) {
+				player.setTexture(textureLoad("/resources/images/playerset.png"));
+				if (player.positionY > Locker.player.positionY) {
+					player.draw(g);
+				}
 			}
+		} catch (ConcurrentModificationException cme) {
+
 		}
+		drawTitleBar(g);
+		chat.draw(g);
+	}
+	Chat chat;
+	public void drawTitleBar(Graphics g) {
+		if (clientStatus) {
+			g.setColor(new Color(64, 64, 64, 128));
+			g.fillRect(0, 0, 200, 30);
+			g.setColor(Color.black);
+			g.drawRect(0, 0, 200, 30);
+
+			g.setColor(Color.white);
+			g.drawString("You are connected to:", 10, 10);
+			g.drawString(Locker.ipAddress, 10, 25);
+		}
+		g.setColor(Color.black);
 	}
 
 	public void onClose() {

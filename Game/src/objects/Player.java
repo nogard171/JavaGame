@@ -108,6 +108,7 @@ public class Player {
 
 	public void draw(Graphics g) {
 		updateFrame();
+		g.drawString(getName(), getPosition().x, getPosition().y-10);
 		g.drawImage(frame, getPosition().x, getPosition().y, 32, 32, null);
 		if (Locker.grid) {
 			g.drawRect(getPosition().x, getPosition().y, 32, 32);

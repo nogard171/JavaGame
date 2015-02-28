@@ -25,6 +25,10 @@ public class Main {
 	            	while(user==""||user==null)
 	            	{
 	            		user = JOptionPane.showInputDialog("enter username:");
+	            		if(user!=null&&user.toLowerCase().equals("exit"))
+	            		{
+	            			System.exit(1);
+	            		}
 	            	}
 	            	Locker.username = user;
 	            	game.createAndShowGUI();
