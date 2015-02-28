@@ -18,10 +18,13 @@ public class Player {
 	private BufferedImage texture;
 	// the players current frame
 	private BufferedImage frame;
-	// the frame points determine the frame
-	public Point framePoints = new Point(0, 0);
+	//ths players velocity
+	public Point velocity = new Point(200,200);
 	// the players position
-	public Point position = new Point(0, 0);
+	public float positionX = 0;
+	public float positionY = 0;
+	public float frameX = 0;
+	public float frameY = 0;
 
 	// return the current frame
 	public BufferedImage getFrame() {
@@ -30,12 +33,13 @@ public class Player {
 
 	// this sets the frames points
 	public void setFramePoints(int x, int y) {
-		this.framePoints = new Point(x, y);
+		this.frameX= x;
+		this.frameY= y;
 	}
 
 	// this returns the players position
 	public Point getPosition() {
-		return this.position;
+		return new Point((int)positionX,(int)positionY);
 	}
 
 	// sets the players texture
@@ -45,12 +49,14 @@ public class Player {
 
 	// this sets the players position to the newPoint
 	public void setPosition(Point newPoint) {
-		this.position = newPoint;
+		this.positionX = newPoint.x;
+		this.positionY = newPoint.y;
 	}
 
 	// this sets the players position to the ints
 	public void setPosition(int x, int y) {
-		this.position = new Point(x, y);
+		this.positionX = x;
+		this.positionY = y;
 	}
 
 	// this returns the players name
@@ -65,15 +71,15 @@ public class Player {
 
 	// this updates the players frame
 	public void updateFrame() {
-		frame = texture.getSubimage(framePoints.x * 32, framePoints.y * 32, 32,
+		frame = texture.getSubimage((int)frameX * 32, (int)frameY * 32, 32,
 				32);
 	}
 
 	public void draw(Graphics g) {
 		updateFrame();
-		g.drawImage(frame, position.x, position.y, 32, 32, null);
+		g.drawImage(frame, getPosition().x, getPosition().y, 32, 32, null);
 		if (Locker.grid) {
-			g.drawRect(position.x, position.y, 32, 32);
+			g.drawRect(getPosition().x,getPosition().y, 32, 32);
 		}
 	}
 }

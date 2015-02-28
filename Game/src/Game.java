@@ -13,41 +13,43 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import networking.Client;
-import networking.Locker;
-import networking.Server;
+import network.Client;
+import network.Locker;
+import network.Server;
 import objects.*;
-import objects.Object;
 import util.FrameRate;
-import util.ImageLoader;
-import util.KeyboardInput;
-import util.MouseInput;
-import util.ParticleSystem;
-import util.Time;
 
 public class Game extends JFrame implements Runnable {
 
 	public Game() {
-		title = new TitleScreen();
 		loadClasses();
 	}
 
 	int width = 832;
 	int height = 640;
 	FrameRate frameRate;
-	KeyboardInput keyboard;
-	MouseInput mouse;
-	Interface ui;
-	Interface menu;
 	private GraphicsDevice graphicsDevice;
 	private DisplayMode currentDisplayMode;
 	private BufferStrategy bs;
 	private Thread gameThread;
+	boolean fullscreen = false;
+	boolean serverStatus = false;
+	// this is the clients status, if it connected to a server or not
+	boolean clientStatus = false;
+
+	// this declares the input object
+	InputHandler input;
+	// the server and client vars
+	Server server;
+	Client client;
 
 	public void createAndShowGUI() {
 		setIgnoreRepaint(true);
@@ -60,7 +62,7 @@ public class Game extends JFrame implements Runnable {
 				.getLocalGraphicsEnvironment();
 		graphicsDevice = ge.getDefaultScreenDevice();
 
-		if (Locker.fullscreen) {
+		if (fullscreen) {
 			setUndecorated(true);
 			setFullscreen();
 			// graphicsDevice.setDisplayMode(getDisplayMode());
@@ -88,9 +90,6 @@ public class Game extends JFrame implements Runnable {
 				}
 			}
 		});
-		addKeyListener(keyboard);
-		addMouseListener(mouse);
-		addMouseMotionListener(mouse);
 		graphicsDevice.setFullScreenWindow(this);
 
 		// recenter window
@@ -103,9 +102,8 @@ public class Game extends JFrame implements Runnable {
 	public void setWindow() {
 		Canvas canvas = new Canvas();
 		canvas.setSize(width, height);
-		canvas.addKeyListener(keyboard);
-		canvas.addMouseListener(mouse);
-		canvas.addMouseMotionListener(mouse);
+		// set the inputhandler to this
+				input = new InputHandler(canvas);
 		getContentPane().add(canvas);
 		pack();
 		setVisible(true);
@@ -117,7 +115,7 @@ public class Game extends JFrame implements Runnable {
 		try {
 			running = false;
 			System.out.println("Game Loop Stopped.");
-			if (Locker.fullscreen) {
+			if (fullscreen) {
 				gameThread.join();
 				graphicsDevice.setDisplayMode(this.currentDisplayMode);
 				graphicsDevice.setFullScreenWindow(null);
@@ -154,62 +152,20 @@ public class Game extends JFrame implements Runnable {
 	public void onSetup() {
 		onTextureLoading();
 
-		Locker.keys = new KeyBindings(KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
-				KeyEvent.VK_UP, KeyEvent.VK_DOWN);
-
-		ui.dim = new Dimension(32 * 6, 32 * 7);
-		ui.setWindowPosition(new Point(32, (height) - (32 * 7)));
-		ui.usesWindow = true;
-		ui.setPosition(new Point(0, (height) - (32 * 7)));
-		ArrayList<MenuItem> uiItems = new ArrayList<MenuItem>();
-		MenuItem bag = new MenuItem();
-		bag.description = "This will show the players inventory.";
-		bag.setTag("bag");
-		bag.setBounds(new Rectangle(0, 0, 32, 32));
-		MenuItem chara = new MenuItem();
-		chara.description = "This will show the players stats and related info.";
-		chara.setTag("chara");
-		chara.setBounds(new Rectangle(0, 32, 32, 32));
-		MenuItem skills = new MenuItem();
-		skills.description = "This will show the players skills.";
-		skills.setTag("skills");
-		skills.setBounds(new Rectangle(0, 64, 32, 32));
-		MenuItem equip = new MenuItem();
-		equip.description = "This will show the players equipment.";
-		equip.setTag("equip");
-		equip.setBounds(new Rectangle(0, 96, 32, 32));
-		MenuItem magic = new MenuItem();
-		magic.description = "This will show the players magic skills.";
-		magic.setTag("magic");
-		magic.setBounds(new Rectangle(0, 128, 32, 32));
-
-		MenuItem hideShow = new MenuItem();
-		hideShow.backDrop = false;
-		hideShow.description = "This will hide the Interface";
-		hideShow.setHoverable(false);
-		hideShow.setTag("hide");
-		hideShow.setBounds(new Rectangle(0, (0 - ui.getPosition().y) + height
-				/ 2, 32, 32));
-		MenuItem exit = new MenuItem();
-		exit.description = "You must click exit twice to quit the game.";
-		exit.setTag("exit");
-		exit.setBounds(new Rectangle(0, 0 - ui.getPosition().y, 32, 32));
-
-		uiItems.add(bag);
-		uiItems.add(chara);
-		uiItems.add(skills);
-		uiItems.add(equip);
-		uiItems.add(magic);
-
-		uiItems.add(hideShow);
-		uiItems.add(exit);
-		ui.onLoad(uiItems);
 		
+		// set the chat as keylistener
+		try {
+			Locker.player.setTexture(ImageIO.read(new URL(
+					"http://204.237.93.81/resources/images/playerset.png")));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Locker.username = "testing";
 	}
-
-	boolean menuShown = false;
-	boolean titleScreen = false;
-	TitleScreen title;
 
 	public void gameLoop(double d) {
 
@@ -232,264 +188,163 @@ public class Game extends JFrame implements Runnable {
 	// NPC_AI npc = new NPC_AI();
 	public void loadClasses() {
 
-		keyboard = new KeyboardInput(this);
-		mouse = new MouseInput();
-		ui = new Interface();
-		menu = new Interface();
 		frameRate = new FrameRate();
 	}
 
 	public void onTextureLoading() {
-		//NPC_AI npcA = new NPC_AI();
-		//Locker.npcs.add(npcA);
-		
-		texture = ImageLoader
-				.getImageFromResources("\\resources\\image\\tileset.png");
-		Locker.player.setTexture(ImageLoader
-				.getImageFromResources("\\resources\\image\\playerset.png"));
-		for (NPC_AI npc : Locker.npcs) {
-			npc.setTexture(ImageLoader
-					.getImageFromResources("\\resources\\image\\playerset.png"));
+		// NPC_AI npcA = new NPC_AI();
+		// Locker.npcs.add(npcA);
 
-		}
-	}
-
-	int season = 0;
-	Time time = new Time();
-
-	public void onUpdate(double d) {
-		title.dim = new Dimension(this.getWidth(), this.getHeight());
-		// System.out.println("looping");
-		Locker.player.onUpdate(d);
-		// TODO Auto-generated method stub
-		Locker.map.checkCollision(Locker.player);
-		// Locker.map.checkCollision(npc.character);
-		time.onUpdate();
-		Locker.map.onUpdate(d);
-		for(NPC_AI npc:Locker.npcs)	
-		{
-			npc.onUpdate(d);
-		}
-		processInput(d);
 		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
+			Locker.player.setTexture(ImageIO.read(new URL(
+					"http://204.237.93.81/resources/images/playerset.png")));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			backupLoad();
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			backupLoad();
+			e.printStackTrace();
+		}
+		Locker.username = "testing";
+	}
+	public void backupLoad()
+	{
+		try {
+			Locker.player.setTexture(ImageIO.read(new URL(
+					"http://localhost/resources/images/playerset.png")));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	int space = 0;
+	public void onUpdate(double d) {
+
+		processInput(d);
+	}
+
+	boolean right = false;
+	boolean left = false;
+	boolean up = false;
+	boolean down = false;
 
 	public void processInput(double delta) {
-		if (!Locker.changeKeyBindings) {
-			mouse.poll();
-			if (!titleScreen) {
+		// if right arrow is pressed, add to the players x position
+		right = input.isKeyDown(KeyEvent.VK_RIGHT);
+		// if left arrow is pressed, minus to the players x position
+		left = input.isKeyDown(KeyEvent.VK_LEFT);
+		// if up arrow is pressed, minus to the players y position
+		up = input.isKeyDown(KeyEvent.VK_UP);
+		// if down arrow is pressed, add to the players y position
+		down = input.isKeyDown(KeyEvent.VK_DOWN);
 
-				if (!menuShown) {
-					if (keyboard.isKeyDown(Locker.keys.Right)) {
-						Locker.player.moveRight();
-
-					} else if (keyboard.isKeyDown(Locker.keys.Left)) {
-						Locker.player.moveLeft();
-					} else if (keyboard.isKeyDown(Locker.keys.Up)) {
-						Locker.player.moveUp();
-
-					} else if (keyboard.isKeyDown(Locker.keys.Down)) {
-						Locker.player.moveDown();
-
-					}
-					if (keyboard.isKeyDown(KeyEvent.VK_SPACE) && space == 0) {
-						space++;
-						Object obj = Locker.map.getObjectAt(
-								new Point(Locker.player.getPosition().x,
-										Locker.player.getPosition().y),
-								Locker.player.direction);
-						if (obj != null) {
-							Locker.player.preformAction(obj);
-						} else {
-							Locker.player.preformAction(null);
-						}
-
-					} else if (!keyboard.isKeyDown(KeyEvent.VK_SPACE)) {
-						space = 0;
-					}
-
-					if (keyboard.isKeyDown(KeyEvent.VK_0)) {
-						season = 0;
-					}
-					if (keyboard.isKeyDown(KeyEvent.VK_1)) {
-						season = 1;
-					}
-					if (keyboard.isKeyDown(KeyEvent.VK_2)) {
-						season = 2;
-					}
-					if (keyboard.isKeyDown(KeyEvent.VK_3)) {
-						season = 3;
-					}
-					if (keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
-						Locker.player.dash();
-					} else {
-						Locker.player.stopDashing();
-					}
-					if (keyboard.isKeyDown(KeyEvent.VK_SPACE)) {
-						keyboard.currentKey = -1;
-					}
-
-					ui.onInput(mouse);
-
-					if (!keyboard.isKeyDown(KeyEvent.VK_ALT)) {
-						ui.hoverDescription = "";
-					}
-				} else {
-					menu.onInput(mouse);
-				}
-				if (keyboard.isKeyDown(KeyEvent.VK_F1)) {
-					debug = !debug;
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				if (keyboard.isKeyDown(KeyEvent.VK_F2)) {
-
-					server = new Server();
-					if (server != null && serverStatus) {
-						Locker.sendLine = "shutdown:" + Locker.player.getName();
-					} else {
-						server.start();
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-					}
-					serverStatus = !serverStatus;
-					client = new Client();
-					if (client != null && client.isAlive()) {
-						client.disconnect();
-					} else {
-						client.username = Locker.player.getName();
-						client.setMaster(true);
-						client.start();
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if (client.connected) {
-
-							clientStatus = client.connected;
-						}
-					}
-				}
-				if (keyboard.isKeyDown(KeyEvent.VK_F3) && !serverStatus) {
-
-					client = new Client();
-					if (client != null && client.isAlive()) {
-						client.disconnect();
-					} else {
-						client.username = Locker.player.getName();
-						client.start();
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if (client.connected) {
-
-							clientStatus = client.connected;
-						}
-					}
-
-				}
-				if (keyboard.isKeyDown(KeyEvent.VK_ESCAPE)) {
-					menuShown = true;
-				}
+		if (left || right || up || down) {
+			Locker.proticol = "move";
+			Locker.sendLine = delta+","+left + "," + right + "," + up + "," + down;
+		}
+		// start the server, then connect a client to it.
+		if (input.isKeyDown(KeyEvent.VK_F2)) {
+			// set server to a new Server
+			server = new Server();
+			// check if the server is null
+			if (server != null && serverStatus) {
 
 			} else {
+				// start the server thread
+				server.start();
+				// delay 1 second
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-				if (new Rectangle(mouse.getPosition().x, mouse.getPosition().y,
-						1, 1).intersects(title.newGameBounds)) {
-					// System.out.println("new game hovered");
-					if (mouse.buttonDownOnce(1)) {
-						System.out.println("new game clicked");
-						// titleScreen = false;
-					}
-				}
 			}
-			try {
-				for (int i = 0; i < Locker.players.size(); i++) {
-					Locker.players
-							.get(i)
-							.setTexture(
-									ImageLoader
-											.getImageFromResources("\\resources\\image\\playerset.png"));
-					Locker.players.get(i).onUpdate(delta);
+			// toggle serverstatus
+			serverStatus = !serverStatus;
+			// set the client to a new client
+			client = new Client();
+			// check if the client is null
+			if (client != null && client.isAlive()) {
+				// disconnect the client if it's connected.
+				client.disconnect();
+			} else {
+				// set the client's username to the local player one
+				client.username = Locker.username;
+				// start the client thread
+				client.start();
+				// delay 1 second
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				System.out.println("no players to read");
-			}
-			title.onUpdate();
-			networkingData();
-		} else {
-			if (keyboard.currentKey != keyboard.lastKey) {
-				if (Locker.changeKey == "left") {
-					Locker.keys = new KeyBindings(keyboard.currentKey,
-							Locker.keys.Right, Locker.keys.Up, Locker.keys.Down);
-				} else if (Locker.changeKey == "right") {
-					Locker.keys = new KeyBindings(Locker.keys.Left,
-							keyboard.currentKey, Locker.keys.Up,
-							Locker.keys.Down);
-				} else if (Locker.changeKey == "up") {
-					Locker.keys = new KeyBindings(Locker.keys.Left,
-							Locker.keys.Right, keyboard.currentKey,
-							Locker.keys.Down);
-				} else if (Locker.changeKey == "down") {
-					Locker.keys = new KeyBindings(Locker.keys.Left,
-							Locker.keys.Right, Locker.keys.Up,
-							keyboard.currentKey);
+				// if the client is connected set clientstatus to it.
+				if (client.connected) {
+					clientStatus = client.connected;
 				}
-				Locker.changeKeyBindings = false;
-				Locker.showMessage = "";
 			}
 		}
-	}
+		// start the client if the server is not started.
+		if (input.isKeyDown(KeyEvent.VK_F3) && !serverStatus) {
 
-	public void showMessage(Graphics g) {
-		g.setColor(new Color(0, 0, 0, 128));
-		g.fillRect(0, 0, width, height);
-		g.setColor(new Color(255, 255, 255));
-		g.drawString(Locker.showMessage, width / 2, height / 2);
+			// set the client to a new client
+			client = new Client();
+			// check if the client is null
+			if (client != null && client.isAlive()) {
+				// disconnect the client if it's connected.
+				client.disconnect();
+			} else {
+				// set the client's username to the local player one
+				client.username = Locker.username;
+				// start the client thread
+				client.start();
+				// delay 1 second
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// if the client is connected set clientstatus to it.
+				if (client.connected) {
+					clientStatus = client.connected;
+				}
+			}
+		}
+		// if escape is pressed continue
+		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
+			// call countDownExit function
+			countDownExit(5);
+		}
+		// check for networking data.
+		networkingData();
 	}
-
-	boolean serverStatus = false;
-	boolean clientStatus = false;
-	// the server and client vars
-	Server server;
-	Client client;
 
 	public void networkingData() {
+		// if sendline has data send it to the server.
 		if (Locker.sendLine != "" && clientStatus) {
-			sendMessage(Locker.proticol + ":" + Locker.player.getName() + ","
+			sendMessage(Locker.proticol + ":" + Locker.username + ","
 					+ Locker.sendLine);
+			// set sendline back to nothing
 			Locker.sendLine = "";
 		}
+		// if receiveline has something add it into the chat.
 		if (Locker.recieveLine != "") {
-			// System.out.println(Locker.recieveLine);
-
-			debugLines.add(Locker.recieveLine);
+			// chat.Lines.add(Locker.recieveLine);
+			// set the receiveline to nothing
 			Locker.recieveLine = "";
 		}
-		// System.out.println("players:"+Locker.players.size());
 	}
 
+	// the sendmessage function to send text to the server
 	public void sendMessage(String message) {
 		try {
 			client.sendMessage(client.client, message);
@@ -499,78 +354,35 @@ public class Game extends JFrame implements Runnable {
 		}
 	}
 
-	boolean debug = false;
-
-	public void onPaint(Graphics g) {
-		if (titleScreen) {
-			title.onPaint(g, this);
-		} else {
-			frameRate.calculate();
-			Locker.map.onPaint(g, this);
-
-			for (Player player : Locker.players) {
-				player.draw(g, this);
+	// count down to 0 from the inputted time
+	public void countDownExit(int time) {
+		// ouput text
+		System.out.println("Closing in " + time + " Seconds...");
+		try {
+			// loop the number of times
+			for (int i = time; i > 0; i--) {
+				// output current time
+				System.out.println(i);
+				// paused the entire thread for 1 second
+				Thread.sleep(1000);
 			}
-			for(NPC_AI npc:Locker.npcs)	
-			{
-			if (npc.bounds.y <= Locker.player.getBounds().y) {
-				npc.onPaint(g, this);
-			}
-			}
-			Locker.player.draw(g, this);
-			for(NPC_AI npc:Locker.npcs)	
-			{
-			if (npc.bounds.y > Locker.player.getBounds().y) {
-				npc.onPaint(g, this);
-			}
-			}
-			Locker.map.onUpperPaint(g, this);
-			ui.onPaint(g, this);
-
-			if (serverStatus) {
-				g.setColor(new Color(0, 0, 0, 96));
-				g.fillRect(32, 0, 116, 18);
-				g.setColor(Color.white);
-				g.drawString("Server Status: " + serverStatus, 32, 12);
-				g.setColor(Color.BLACK);
-			} else if (clientStatus) {
-				g.setColor(new Color(0, 0, 0, 96));
-				g.fillRect(32, 0, 116, 18);
-				g.setColor(Color.white);
-				g.drawString("Client Status: " + clientStatus, 32, 12);
-				g.setColor(Color.BLACK);
-			}
-
-			if (menuShown) {
-				g.setColor(new Color(0, 0, 0, 128));
-				g.fillRect(0, 0, width, height);
-				menu.onPaint(g, this);
-				g.setColor(Color.BLACK);
-			}
+			// output closed
+			System.out.println("Closed");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if (debug) {
-			onDebug(g);
-		}
-		if (Locker.showMessage != "") {
-			showMessage(g);
-		}
-		repaint();
+		// exit the current application
+		System.exit(0);
 	}
 
-	Rectangle rec = new Rectangle(0, 20, 50, 10);
-	ArrayList<String> debugLines = new ArrayList<String>();
-
-	public void onDebug(Graphics g) {
-		int width = 150;
-		int height = 30 + (debugLines.size() * 20);
-		g.setColor(new Color(0, 0, 0, 128));
-		g.fillRect(0, 0, width, height);
-		g.setColor(Color.white);
-		g.drawString(frameRate.getFrameRate(), 0, 10);
-		g.drawString("Seconds Running" + time.getSeconds(), 0, 20);
-		for (int i = 0; i < debugLines.size(); i++) {
-			g.drawString(debugLines.get(i), 0, 30 + (i * 20));
-		}
+	public void onPaint(Graphics g) {
+		
+		Locker.player.draw(g);
+		/*for (Player player : Locker.players) {
+			player.draw(g);
+		}*/
+		repaint();
 	}
 
 	public void onClose() {

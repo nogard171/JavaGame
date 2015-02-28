@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import objects.Player;
 
@@ -23,15 +24,33 @@ public class Client extends Thread {
 	public boolean connected = false;
 	public Socket client = null;
 	String serverName = "204.237.93.81";
+	String backupServerName = "localhost";
 	boolean logged = false;
 	int port = 81;
 
 	public void run() {
 
-		try {
+		
 			System.out.println("Connecting to " + serverName + " on port "
 					+ port);
+			try
+			{
 			client = new Socket(serverName, port);
+			} catch (IOException e) {
+
+				try {
+					client = new Socket(backupServerName, port);
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			}
+			try
+			{
 			System.out.println("Just connected to "
 					+ client.getRemoteSocketAddress());
 			if (client.isConnected()) {
@@ -64,15 +83,15 @@ public class Client extends Thread {
 						String[] data = command.substring(command.indexOf(':')+1,command.length()).split(",");
 						if(Locker.username.toLowerCase().equals(data[0]))
 						{
-							System.out.println("moving player");
 							Locker.player.setPosition(new Point(Integer.parseInt(data[1]),Integer.parseInt(data[2])));
-							Locker.player.framePoints = new Point(Integer.parseInt(data[3]),Integer.parseInt(data[4]));
+							Locker.player.frameX =Float.parseFloat(data[3]);
+							Locker.player.frameY =Float.parseFloat(data[4]);
 						}
 						else
 						{
-							System.out.println("moving another player");
 							Locker.players.get(this.getPlayerIndex(data[0])).setPosition(new Point(Integer.parseInt(data[1]),Integer.parseInt(data[2])));
-							Locker.players.get(getPlayerIndex(data[0])).framePoints = new Point(Integer.parseInt(data[3]),Integer.parseInt(data[4]));
+							Locker.player.frameX =Float.parseFloat(data[3]);
+							Locker.player.frameY =Float.parseFloat(data[4]);
 						}
 					}
 					if(command.startsWith("player:"))
@@ -94,16 +113,16 @@ public class Client extends Thread {
 		    		}
 				}
 			}
-		} catch (IOException e) {
+			} catch (IOException e) {
 
-			try {
-				client.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				try {
+					client.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
 			}
-			e.printStackTrace();
-		}
 	}
 
 	

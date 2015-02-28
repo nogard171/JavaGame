@@ -10,6 +10,7 @@ import java.net.Socket;
 
 import objects.Direction;
 import objects.Player;
+import util.FrameRate;
 
 public class ServerClient extends Thread {
 
@@ -22,6 +23,9 @@ public class ServerClient extends Thread {
 	public int index = -1;
 	boolean isOnline = false;
 	boolean isServer = false;
+	private long curTime;
+	private Object nsPerFrame;
+	private long lastTime;
 
 	public ServerClient(Socket clientSocket, ServerClient[] threads) {
 		this.clientSocket = clientSocket;
@@ -45,7 +49,6 @@ public class ServerClient extends Thread {
 		
 		int maxClientsCount = this.maxClientsCount;
 		ServerClient[] threads = this.threads;
-		
 		try {
 			sendMessage(clientSocket, "Enter Username:");
 			String name = getInput(clientSocket);
@@ -100,7 +103,6 @@ public class ServerClient extends Thread {
 			while (true) {
 				String command = getInput(clientSocket);
 				//System.out.println(command);
-				
 				if(command.startsWith("shutdown:"))
 				{
 					break;
@@ -126,17 +128,17 @@ public class ServerClient extends Thread {
 				{
 					String[] data = command.substring(command.indexOf(':')+1,command.length()).split(",");
 					//System.out.println(data[0]+","+data[1]+","+data[2]+","+data[3]+","+data[4]);
-					moveChara(data[0],Boolean.parseBoolean(data[1]),Boolean.parseBoolean(data[2]),Boolean.parseBoolean(data[3]),Boolean.parseBoolean(data[4]));
+					moveChara(data[0],Double.parseDouble(data[1]),Boolean.parseBoolean(data[2]),Boolean.parseBoolean(data[3]),Boolean.parseBoolean(data[4]),Boolean.parseBoolean(data[5]));
 					
 					//if(data[0].equals(username))
 					//{
-						broadcast("chara:" + data[0]+","+player.position.x+","+player.position.y+","+player.framePoints.x+","+player.framePoints.y);
+						broadcast("chara:" + data[0]+","+player.getPosition().x+","+player.getPosition().y+","+player.frameX+","+player.frameY);
 					/*}
 					else
 					{
 						sendTo(data[0],"chara:" + data[0]+","+player.position.x+","+player.position.y);
 					}*/
-				}	
+				}
 			}
 			sendMessage(clientSocket,"Bye " + name);
 		
@@ -204,29 +206,36 @@ public class ServerClient extends Thread {
 		   }
 		   return -1;
 	   }
-	private void moveChara(String string, boolean b, boolean c, boolean d, boolean e) {
+	float speed = 10;
+	private void moveChara(String string, double delta, boolean b, boolean c, boolean d, boolean e) {
 		// TODO Auto-generated method stub
 		if(string.equals(username))
 		{
+			player.frameX+=speed*delta;
 			if(b)
 			{
-				player.position.x-=5;
-				player.framePoints.y=1;
+				player.positionX-=player.velocity.x*delta;
+				
+				player.frameY=1;
 			}
 			if(c)
 			{
-				player.position.x+=5;
-				player.framePoints.y=2;
+				player.positionX+=player.velocity.x*delta;
+				player.frameY=2;
 			}
 			if(d)
 			{
-				player.position.y-=5;
-				player.framePoints.y=3;
+				player.positionY-=player.velocity.y*delta;
+				player.frameY=3;
 			}
 			if(e)
 			{
-				player.position.y+=5;
-				player.framePoints.y=0;
+				player.positionY+=player.velocity.y*delta;
+				player.frameY=0;
+			}
+			if(player.frameX>2)
+			{
+				player.frameX = 0;
 			}
 		}
 	}
