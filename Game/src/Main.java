@@ -37,8 +37,8 @@ public class Main extends JFrame
 	//this statically sets the fps for the game
 	int fps = 60;
 	//this is the dimenions for the game
-	int windowWidth = 1024;
-	int windowHeight = 768;
+	int windowWidth = 800;
+	int windowHeight = 600;
 	//this is the backimage in which is drawn on first
 	BufferedImage backBuffer;
 	//debugging boolean
@@ -49,6 +49,8 @@ public class Main extends JFrame
 	boolean serverStatus = false;
 	//this is the clients status, if it connected to a server or not
 	boolean clientStatus = false;	
+
+	FrameRate frameRate;
 	//this declares the input object
 		InputHandler input;
 	//the server and client vars
