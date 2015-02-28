@@ -33,8 +33,8 @@ public class Game extends JFrame implements Runnable {
 		loadClasses();
 	}
 
-	int width = 832;
-	int height = 640;
+	int width = 800;
+	int height = 600;
 	FrameRate frameRate;
 	private GraphicsDevice graphicsDevice;
 	private DisplayMode currentDisplayMode;
@@ -44,7 +44,7 @@ public class Game extends JFrame implements Runnable {
 	boolean serverStatus = false;
 	// this is the clients status, if it connected to a server or not
 	boolean clientStatus = false;
-
+	
 	// this declares the input object
 	InputHandler input;
 	// the server and client vars
@@ -151,20 +151,6 @@ public class Game extends JFrame implements Runnable {
 
 	public void onSetup() {
 		onTextureLoading();
-
-		
-		// set the chat as keylistener
-		try {
-			Locker.player.setTexture(ImageIO.read(new URL(
-					"http://204.237.93.81/resources/images/playerset.png")));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Locker.username = "testing";
 	}
 
 	public void gameLoop(double d) {
@@ -185,42 +171,31 @@ public class Game extends JFrame implements Runnable {
 		} while (bs.contentsLost());
 	}
 
-	// NPC_AI npc = new NPC_AI();
 	public void loadClasses() {
 
 		frameRate = new FrameRate();
 	}
 
 	public void onTextureLoading() {
-		// NPC_AI npcA = new NPC_AI();
-		// Locker.npcs.add(npcA);
 
-		try {
-			Locker.player.setTexture(ImageIO.read(new URL(
-					"http://204.237.93.81/resources/images/playerset.png")));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			backupLoad();
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			backupLoad();
-			e.printStackTrace();
-		}
-		Locker.username = "testing";
+			Locker.player.setTexture(textureLoad("/resources/images/playerset.png"));
 	}
-	public void backupLoad()
+	public BufferedImage textureLoad(String location)
 	{
-		try {
-			Locker.player.setTexture(ImageIO.read(new URL(
-					"http://localhost/resources/images/playerset.png")));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+			try {
+				return ImageIO.read(new URL(
+						"http://localhost" +location));
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				
+				e.printStackTrace();
+				return null;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
 	}
 
 	public void onUpdate(double d) {
@@ -232,7 +207,7 @@ public class Game extends JFrame implements Runnable {
 	boolean left = false;
 	boolean up = false;
 	boolean down = false;
-
+	boolean shift = false;
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
 		right = input.isKeyDown(KeyEvent.VK_RIGHT);
@@ -242,10 +217,12 @@ public class Game extends JFrame implements Runnable {
 		up = input.isKeyDown(KeyEvent.VK_UP);
 		// if down arrow is pressed, add to the players y position
 		down = input.isKeyDown(KeyEvent.VK_DOWN);
+		// if shift is pressed
+		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 
-		if (left || right || up || down) {
+		if (left || right || up || down||shift) {
 			Locker.proticol = "move";
-			Locker.sendLine = delta+","+left + "," + right + "," + up + "," + down;
+			Locker.sendLine = delta+","+left + "," + right + "," + up + "," + down+","+shift;
 		}
 		// start the server, then connect a client to it.
 		if (input.isKeyDown(KeyEvent.VK_F2)) {
@@ -377,12 +354,27 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onPaint(Graphics g) {
-		
-		Locker.player.draw(g);
-		/*for (Player player : Locker.players) {
-			player.draw(g);
-		}*/
+		paintPlayers(g);
 		repaint();
+	}
+
+	private void paintPlayers(Graphics g) {
+		// TODO Auto-generated method stub
+		for (Player player : Locker.players) {
+			player.setTexture(textureLoad("/resources/images/playerset.png"));
+			if(player.positionY<=Locker.player.positionY)
+			{
+				player.draw(g);
+			}
+		}
+		Locker.player.draw(g);
+		for (Player player : Locker.players) {
+			player.setTexture(textureLoad("/resources/images/playerset.png"));
+			if(player.positionY>Locker.player.positionY)
+			{
+				player.draw(g);
+			}
+		}
 	}
 
 	public void onClose() {

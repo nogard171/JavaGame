@@ -23,8 +23,8 @@ public class Client extends Thread {
 	public String username = "";
 	public boolean connected = false;
 	public Socket client = null;
-	String serverName = "204.237.93.81";
-	String backupServerName = "localhost";
+	String serverName = "localhost";
+	String backupServerName = "204.237.93.81";
 	boolean logged = false;
 	int port = 81;
 
@@ -81,6 +81,7 @@ public class Client extends Thread {
 					}
 					if (command.startsWith("chara:")) {
 						String[] data = command.substring(command.indexOf(':')+1,command.length()).split(",");
+						System.out.println(Locker.username +"/"+data[0]);
 						if(Locker.username.toLowerCase().equals(data[0]))
 						{
 							Locker.player.setPosition(new Point(Integer.parseInt(data[1]),Integer.parseInt(data[2])));
@@ -90,8 +91,8 @@ public class Client extends Thread {
 						else
 						{
 							Locker.players.get(this.getPlayerIndex(data[0])).setPosition(new Point(Integer.parseInt(data[1]),Integer.parseInt(data[2])));
-							Locker.player.frameX =Float.parseFloat(data[3]);
-							Locker.player.frameY =Float.parseFloat(data[4]);
+							Locker.players.get(this.getPlayerIndex(data[0])).frameX =Float.parseFloat(data[3]);
+							Locker.players.get(this.getPlayerIndex(data[0])).frameY =Float.parseFloat(data[4]);
 						}
 					}
 					if(command.startsWith("player:"))
