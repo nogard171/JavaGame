@@ -49,6 +49,7 @@ public class Chat implements KeyListener, MouseListener {
 				g.setColor(Color.black);
 			}
 		}
+		g.setColor(Color.white);
 		g.drawString(Locker.username + ":" + input, position.x + 2, position.y
 				+ dim.height + 12);
 		g.setColor(Color.black);
@@ -72,7 +73,7 @@ public class Chat implements KeyListener, MouseListener {
 			// TODO Auto-generated method stub
 			Pattern p = Pattern.compile("[^a-zA-Z0-9]");
 			String temp = arg0.getKeyChar() + "";
-			if (!temp.matches("^.*[^a-zA-Z0-9 ].*$") && !temp.contains("/")
+			if (!temp.contains("/")
 					&& !temp.contains("\\")) {
 				input += arg0.getKeyChar();
 			}

@@ -78,7 +78,7 @@ public class Client extends Thread {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length())
 								.split("/s");
-						System.out.println(Locker.username + "/" + data[0]);
+						//System.out.println(Locker.username + "/" + data[0]);
 						if (Locker.username.toLowerCase().equals(data[0])) {
 							Locker.player.setPosition(new Point(Integer
 									.parseInt(data[1]), Integer
