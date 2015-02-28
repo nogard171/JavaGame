@@ -82,7 +82,10 @@ public class Interface {
 		{
 			if(item.isImage)
 			{
-				g.drawImage(getTexture("back"),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
+				if(item.backDrop)
+				{
+					g.drawImage(getTexture("back"),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
+				}
 				g.drawImage(getTexture(item.getTag()),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
 				
 			}
@@ -417,7 +420,7 @@ public class Interface {
 			case "skills":
 				return texture.getSubimage(128, 64, 32,32);
 			case "exit":
-				return texture.getSubimage(128, 96, 32,32);
+				return texture.getSubimage(32,196, 32,32);
 			case "equip":
 				return texture.getSubimage(128, 128, 32,32);
 			case "magic":

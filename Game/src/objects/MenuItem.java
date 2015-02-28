@@ -16,6 +16,7 @@ public class MenuItem {
 	public long hoverTime = 0;
 	public boolean status = false;
 	public  String PreTag = "";
+	public boolean backDrop = true;
 	public MenuItem()
 	{
 		isHovered = true;

@@ -184,6 +184,7 @@ public class Game extends JFrame implements Runnable {
 		magic.setBounds(new Rectangle(0, 128, 32, 32));
 
 		MenuItem hideShow = new MenuItem();
+		hideShow.backDrop = false;
 		hideShow.description = "This will hide the Interface";
 		hideShow.setHoverable(false);
 		hideShow.setTag("hide");
