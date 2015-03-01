@@ -27,6 +27,7 @@ public class Player {
 	public float frameY = 0;
 	public float stamina = 50;
 	public float maxStamina = 50;
+
 	public float getMaxStamina() {
 		return maxStamina;
 	}
@@ -102,15 +103,17 @@ public class Player {
 
 	// this updates the players frame
 	public void updateFrame() {
-		frame = texture.getSubimage((int) frameX * 32, (int) frameY * 32, 32,
-				32);
+		if (texture != null) {
+			frame = texture.getSubimage((int) frameX * 32, (int) frameY * 32,
+					32, 32);
+		}
 	}
 
 	public void draw(Graphics g) {
 		updateFrame();
-		g.drawString(getName(), getPosition().x, getPosition().y-10);
+		g.drawString(getName(), getPosition().x, getPosition().y - 10);
 		g.drawImage(frame, getPosition().x, getPosition().y, 32, 32, null);
-		if (Locker.grid) {
+		if (Locker.grid||texture == null) {
 			g.drawRect(getPosition().x, getPosition().y, 32, 32);
 		}
 	}

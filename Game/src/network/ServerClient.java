@@ -1,6 +1,7 @@
 package network;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -207,7 +208,6 @@ public class ServerClient extends Thread implements ActionListener {
 
 		}
 	}
-
 	public void actionPerformed(ActionEvent e) {
 		onUpdate();
 

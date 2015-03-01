@@ -324,12 +324,24 @@ public class Game extends JFrame implements Runnable {
 		if (Locker.sendLine != "" && clientStatus) {
 			sendMessage(Locker.proticol + "/p" + Locker.username + "/s"
 					+ Locker.sendLine);
+			
 			// set sendline back to nothing
 			Locker.sendLine = "";
 		}
 		// if receiveline has something add it into the chat.
 		if (Locker.recieveLine != "") {
-			chat.Lines.add(Locker.recieveLine);
+			System.out.println(Locker.recieveLine);
+			if(Locker.recieveLine.startsWith("chat/p"))
+			{
+				String[] data = Locker.recieveLine.substring(
+						Locker.recieveLine.indexOf("/p") + 2, Locker.recieveLine.length())
+						.split("/s");
+				chat.position = new Point(Integer.parseInt(data[0]),Integer.parseInt(data[1]));
+			}
+			else
+			{
+				chat.Lines.add(Locker.recieveLine);
+			}
 			// set the receiveline to nothing
 			Locker.recieveLine = "";
 		}

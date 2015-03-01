@@ -102,11 +102,18 @@ public class Client extends Thread {
 								command.indexOf("/p") + 2, command.length());
 						Locker.recieveLine = user + " has logged in.";
 						if (!user.equals(Locker.username)) {
-							Locker.recieveLine = user + " has joined the game.";
+							Locker.recieveLine = user + " has logged in.";
 							Player player = new Player();
 							player.setName(user);
 							Locker.players.add(player);
 						}
+					}
+					if (command.startsWith("chat/p")) {
+						String[] data = command.substring(
+								command.indexOf("/p") + 2, command.length())
+								.split("/s");
+						Locker.recieveLine = "chat/p"+data[1]+"/s"+data[2];
+						
 					}
 					if (command.startsWith("remove/p")) {
 						String user = command.substring(
