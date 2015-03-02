@@ -89,7 +89,7 @@ public class Game extends JFrame implements Runnable {
 		// set the inputhandler to this
 		input = new InputHandler(this);
 		chat = new Chat(this);
-		
+
 		addKeyListener(new KeyAdapter() {
 
 			public void keyPressed(KeyEvent e) {
@@ -110,7 +110,7 @@ public class Game extends JFrame implements Runnable {
 	public void setWindow() {
 		Canvas canvas = new Canvas();
 		canvas.setSize(width, height);
-		
+		win = new Window(canvas, true);
 		// set the inputhandler to this
 		input = new InputHandler(canvas);
 		chat = new Chat(canvas);
@@ -120,6 +120,8 @@ public class Game extends JFrame implements Runnable {
 		canvas.createBufferStrategy(2);
 		bs = canvas.getBufferStrategy();
 	}
+
+	Window win = new Window(this, true);
 
 	public void shutdown() {
 		try {
@@ -161,7 +163,7 @@ public class Game extends JFrame implements Runnable {
 
 	public void onSetup() {
 		onTextureLoading();
-		
+
 		Locker.player.setName(Locker.username);
 	}
 
@@ -190,13 +192,12 @@ public class Game extends JFrame implements Runnable {
 
 	public void onTextureLoading() {
 
-		Locker.player
-				.setTexture(TextureHandler.textureLoad("/resources/images/playerset.png"));
+		Locker.player.setTexture(TextureHandler
+				.textureLoad("/resources/images/playerset.png"));
 	}
 
-	
-
 	public void onUpdate(double d) {
+
 		Locker.clientWidth = width;
 		Locker.clientHeight = height;
 		processInput(d);
@@ -208,6 +209,7 @@ public class Game extends JFrame implements Runnable {
 	boolean down = false;
 	boolean shift = false;
 	boolean space = false;
+	boolean spaceDown = false;
 
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
@@ -220,12 +222,17 @@ public class Game extends JFrame implements Runnable {
 		down = input.isKeyDown(KeyEvent.VK_DOWN);
 		// if shift is pressed
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
-
-		space =input.isKeyDown(KeyEvent.VK_SPACE);
-		if (left || right || up || down || shift||space) {
+		space = input.isKeyDown(KeyEvent.VK_SPACE);
+		
+		if (left || right || up || down || shift || space) {
 			Locker.proticol = "move";
-			Locker.sendLine = delta + "/s" + left + "/s" + right + "/s" + up + "/s"
-					+ down + "/s" + shift+"/s"+space;
+			Locker.sendLine = delta + "/s" + left + "/s" + right + "/s" + up
+					+ "/s" + down + "/s" + shift + "/s" + space;
+		}
+		// start the server, then connect a client to it.
+		if (input.isKeyDown(KeyEvent.VK_I)) {
+			win.visible = true;
+
 		}
 		// start the server, then connect a client to it.
 		if (input.isKeyDown(KeyEvent.VK_F2)) {
@@ -250,6 +257,7 @@ public class Game extends JFrame implements Runnable {
 			serverStatus = !serverStatus;
 			// set the client to a new client
 			client = new Client();
+			client.master = true;
 			// check if the client is null
 			if (client != null && client.isAlive()) {
 				// disconnect the client if it's connected.
@@ -313,21 +321,19 @@ public class Game extends JFrame implements Runnable {
 		if (Locker.sendLine != "" && clientStatus) {
 			sendMessage(Locker.proticol + "/p" + Locker.username + "/s"
 					+ Locker.sendLine);
-			
+
 			// set sendline back to nothing
 			Locker.sendLine = "";
 		}
 		// if receiveline has something add it into the chat.
 		if (Locker.recieveLine != "") {
-			if(Locker.recieveLine.startsWith("chat/p"))
-			{
+			if (Locker.recieveLine.startsWith("chat/p")) {
 				String[] data = Locker.recieveLine.substring(
-						Locker.recieveLine.indexOf("/p") + 2, Locker.recieveLine.length())
-						.split("/s");
-				chat.position = new Point(Integer.parseInt(data[0]),Integer.parseInt(data[1]));
-			}
-			else
-			{
+						Locker.recieveLine.indexOf("/p") + 2,
+						Locker.recieveLine.length()).split("/s");
+				chat.position = new Point(Integer.parseInt(data[0]),
+						Integer.parseInt(data[1]));
+			} else {
 				chat.Lines.add(Locker.recieveLine);
 			}
 			// set the receiveline to nothing
@@ -368,7 +374,9 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onPaint(Graphics g) {
+		win.titleString = "Inventory";
 		paintPlayers(g);
+		win.draw(g);
 		repaint();
 	}
 
@@ -376,7 +384,8 @@ public class Game extends JFrame implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			for (Player player : Locker.players) {
-				player.setTexture(TextureHandler.textureLoad("/resources/images/playerset.png"));
+				player.setTexture(TextureHandler
+						.textureLoad("/resources/images/playerset.png"));
 
 				if (player.positionY <= Locker.player.positionY) {
 					player.draw(g);
@@ -389,7 +398,8 @@ public class Game extends JFrame implements Runnable {
 		try {
 			Locker.player.draw(g);
 			for (Player player : Locker.players) {
-				player.setTexture(TextureHandler.textureLoad("/resources/images/playerset.png"));
+				player.setTexture(TextureHandler
+						.textureLoad("/resources/images/playerset.png"));
 				if (player.positionY > Locker.player.positionY) {
 					player.draw(g);
 				}
@@ -400,7 +410,9 @@ public class Game extends JFrame implements Runnable {
 		drawTitleBar(g);
 		chat.draw(g);
 	}
+
 	Chat chat;
+
 	public void drawTitleBar(Graphics g) {
 		if (clientStatus) {
 			g.setColor(new Color(64, 64, 64, 128));

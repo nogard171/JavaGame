@@ -26,6 +26,15 @@ public class InputHandler implements KeyListener
 		}
 		return false;
 	}
+	//if key is down return the keycode
+		public boolean isKeyUp(int keyCode)
+		{
+			if(keyCode > 0 && keyCode < 256)
+			{
+				return keys[keyCode];
+			}
+			return false;
+		}
 	//if key is being pressed, set the boolean for the specific key
 	//to true
 	@Override

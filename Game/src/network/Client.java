@@ -24,7 +24,7 @@ public class Client extends Thread {
 	String backupServerName = "204.237.93.81";
 	boolean logged = false;
 	int port = 81;
-	boolean master = false;
+	public boolean master = false;
 
 	public void run() {
 
@@ -65,7 +65,7 @@ public class Client extends Thread {
 				}
 				while (true) {
 					String command = getInput(client);
-					 System.out.println(command);
+					// System.out.println(command);
 					if (command.startsWith("message/p")) {
 						String user = command.substring(
 								command.indexOf("/p") + 2,
@@ -115,7 +115,9 @@ public class Client extends Thread {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length()).split(
 								"/s");
-						Locker.player.minusStamina(Double.parseDouble(data[1]));
+
+						System.out.println(data[0] +" has attacked you");
+						Locker.player.minusStamina(Double.parseDouble(data[2]));
 					}
 					if (command.startsWith("chat/p")) {
 						String[] data = command.substring(

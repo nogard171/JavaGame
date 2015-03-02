@@ -25,7 +25,8 @@ public class Main {
 	            	while(user==""||user==null)
 	            	{
 	            		user = JOptionPane.showInputDialog("enter username:");
-	            		if(user!=null&&user.toLowerCase().equals("exit"))
+	            		System.out.println(user);
+	            		if(user==null)
 	            		{
 	            			System.exit(1);
 	            		}

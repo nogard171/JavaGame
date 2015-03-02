@@ -76,14 +76,8 @@ public class ServerClient extends Thread implements ActionListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			synchronized (this) {
-				for (int i = 0; i < maxClientsCount; i++) {
-					if (threads[i] != null && threads[i].clientSocket != null) {
-						threads[i].sendMessage(threads[i].clientSocket,
-								"player/p" + username);
-					}
-				}
-			}
+			
+			broadcast("player/p" + username);
 
 			// System.out.println(name.substring(4,name.length()) +
 			// " entered the world.");
@@ -102,6 +96,9 @@ public class ServerClient extends Thread implements ActionListener {
 				e.printStackTrace();
 			}
 			if (isServer) {
+				Player player = new Player();
+				player.setName(username);
+				Locker.players.add(player);
 				sendMessage(clientSocket,
 						"message/pSystem/sHello again Server.");
 			} else {
@@ -157,10 +154,15 @@ public class ServerClient extends Thread implements ActionListener {
 							Boolean.parseBoolean(data[4]),
 							Boolean.parseBoolean(data[5]),
 							Boolean.parseBoolean(data[6]));
-					if (Boolean.parseBoolean(data[7])) {
-						action();
+					if (Boolean.parseBoolean(data[7])&&spaceCount<=0) {
+						action(Double.parseDouble(data[1]),data[0]);
+						spaceCount++;
 					}
-
+					else
+					{
+						spaceCount--;
+					}
+					
 					broadcast("chara/p" + data[0] + "/s" + player.positionX
 							+ "/s" + player.positionY + "/s" + player.frameX
 							+ "/s" + player.frameY);
@@ -215,58 +217,57 @@ public class ServerClient extends Thread implements ActionListener {
 	}
 
 	int actionDistance = 16;
-
-	public void action() {
+	int spaceCount = 0;
+	public void action(double d, String data) {
+		Player attacker = Locker.players.get(getPlayerIndex(data));
 		if (player.frameY == 0) {
 			// System.out.println("action down");
+			
 			Player p = getPlayerAt(new Point((int) player.positionX,
 					(int) player.positionY + actionDistance));
-			attack(p);
+			attack(d,attacker,p);
 		} else if (player.frameY == 1) {
 
 			// System.out.println("action left");
 			Player p = getPlayerAt(new Point((int) player.positionX
 					- actionDistance, (int) player.positionY));
-			attack(p);
+			attack(d,attacker,p);
 		} else if (player.frameY == 2) {
 
 			// System.out.println("action right");
 			Player p = getPlayerAt(new Point((int) player.positionX
 					+ actionDistance, (int) player.positionY));
-			attack(p);
+			attack(d,attacker,p);
 		} else if (player.frameY == 3) {
 
 			// System.out.println("action up");
 			Player p = getPlayerAt(new Point((int) player.positionX,
 					(int) player.positionY - actionDistance));
-			attack(p);
+			attack(d,attacker,p);
 		}
+		
 	}
 
-	public void attack(Player p) {
-		if (p != null) {
+	public void attack(double delta, Player attacker, Player p) {
+		if (p != null&&attacker.getName()!=p.getName()) {
 
-			// System.out.println("action on player:" + p.getName());
-			p.minusStamina(10);
-			sendTo(p.getName(), "attack/p" + p.getName() + "/s" + 10);
+			float attack = (float) (5);
+			p.minusStamina(attack);
+			sendTo(p.getName(), "attack/p" + attacker.getName()+"/s"+ p.getName() + "/s" + attack);
 			// System.out.println("player stamina:" + p.getStamina());
 		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		onUpdate();
-		for (int i = 0; i < Locker.players.size(); i++) {
-			if (Locker.players.get(i).getName().toLowerCase()
-					.equals(username.toLowerCase())) {
-				System.out.println("player:" + Locker.players.get(i).getName()
-						+ "/" + i);
-			}
+		try {
+			sendMessage(clientSocket, "stat/p" + player.getName() + "/s"
+					+ player.getStamina());
+		} catch (IOException e1) { // TODO Auto-generated catch block
+			e1.printStackTrace();
+
 		}
-		/*
-		 * try { sendMessage(clientSocket, "stat/p"
-		 * +player.getName()+"/s"+player.getStamina()); } catch (IOException e1)
-		 * { // TODO Auto-generated catch block e1.printStackTrace(); }
-		 */
+
 	}
 
 	public void onUpdate() {
@@ -295,8 +296,7 @@ public class ServerClient extends Thread implements ActionListener {
 
 	public Player getPlayerAt(Point position) {
 		for (int i = 0; i < Locker.players.size(); i++) {
-			System.out.println(Locker.players.get(i).getName());
-			if (new Rectangle(position.x, position.y, 32, 32)
+			if (Locker.players.get(i).getName()!=username&&new Rectangle(position.x, position.y, 32, 32)
 					.intersects(new Rectangle(
 							(int) Locker.players.get(i).positionX,
 							(int) Locker.players.get(i).positionY, 32, 32))) {
@@ -358,6 +358,50 @@ public class ServerClient extends Thread implements ActionListener {
 			if (player.frameX > 2) {
 				player.frameX = 0;
 			}
+		}
+		if(this.isServer)
+		{
+			Player p= Locker.players.get(getPlayerIndex(username));
+				p.frameX += speed * delta;
+				if (left) {
+					p.positionX -= p.velocity.x * delta;
+					p.frameY = 1;
+
+					if (p.positionX <= 0) {
+						p.positionX += p.velocity.x * delta;
+					}
+				} else if (right) {
+					p.positionX += p.velocity.x * delta;
+					p.frameY = 2;
+
+					if (p.positionX + 32 >= clientWidth) {
+						p.positionX -= p.velocity.x * delta;
+					}
+				} else if (up) {
+					p.positionY -= p.velocity.y * delta;
+					p.frameY = 3;
+
+					if (p.positionY <= 0) {
+						p.positionY += p.velocity.y * delta;
+					}
+				} else if (down) {
+					p.positionY += p.velocity.y * delta;
+					p.frameY = 0;
+
+					if (p.positionY + 32 >= clientHeight) {
+						p.positionY -= p.velocity.y * delta;
+					}
+				}
+				if (shift && p.getStamina() > 0) {
+					p.velocity = new Point(300, 300);
+					p.minusStamina(50 * delta);
+				} else {
+					p.velocity = new Point(100, 100);
+				}
+				if (p.frameX > 2) {
+					p.frameX = 0;
+				}
+			
 		}
 	}
 
