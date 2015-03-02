@@ -90,6 +90,11 @@ public class Player {
 		this.positionX = x;
 		this.positionY = y;
 	}
+	// this sets the players position to the ints
+		public void setPosition(float x, float y) {
+			this.positionX = x;
+			this.positionY = y;
+		}
 
 	// this returns the players name
 	public String getName() {

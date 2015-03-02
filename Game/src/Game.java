@@ -29,6 +29,7 @@ import network.Server;
 import objects.*;
 import util.FrameRate;
 import util.InputHandler;
+import util.TextureHandler;
 
 public class Game extends JFrame implements Runnable {
 
@@ -190,24 +191,10 @@ public class Game extends JFrame implements Runnable {
 	public void onTextureLoading() {
 
 		Locker.player
-				.setTexture(textureLoad("/resources/images/playerset.png"));
+				.setTexture(TextureHandler.textureLoad("/resources/images/playerset.png"));
 	}
 
-	public BufferedImage textureLoad(String location) {
-
-		try {
-			return ImageIO.read(new URL("http://localhost" + location));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-
-			// e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			return null;
-		}
-	}
+	
 
 	public void onUpdate(double d) {
 		Locker.clientWidth = width;
@@ -220,6 +207,7 @@ public class Game extends JFrame implements Runnable {
 	boolean up = false;
 	boolean down = false;
 	boolean shift = false;
+	boolean space = false;
 
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
@@ -233,10 +221,11 @@ public class Game extends JFrame implements Runnable {
 		// if shift is pressed
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 
-		if (left || right || up || down || shift) {
+		space =input.isKeyDown(KeyEvent.VK_SPACE);
+		if (left || right || up || down || shift||space) {
 			Locker.proticol = "move";
 			Locker.sendLine = delta + "/s" + left + "/s" + right + "/s" + up + "/s"
-					+ down + "/s" + shift;
+					+ down + "/s" + shift+"/s"+space;
 		}
 		// start the server, then connect a client to it.
 		if (input.isKeyDown(KeyEvent.VK_F2)) {
@@ -330,7 +319,6 @@ public class Game extends JFrame implements Runnable {
 		}
 		// if receiveline has something add it into the chat.
 		if (Locker.recieveLine != "") {
-			System.out.println(Locker.recieveLine);
 			if(Locker.recieveLine.startsWith("chat/p"))
 			{
 				String[] data = Locker.recieveLine.substring(
@@ -388,7 +376,7 @@ public class Game extends JFrame implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			for (Player player : Locker.players) {
-				player.setTexture(textureLoad("/resources/images/playerset.png"));
+				player.setTexture(TextureHandler.textureLoad("/resources/images/playerset.png"));
 
 				if (player.positionY <= Locker.player.positionY) {
 					player.draw(g);
@@ -401,7 +389,7 @@ public class Game extends JFrame implements Runnable {
 		try {
 			Locker.player.draw(g);
 			for (Player player : Locker.players) {
-				player.setTexture(textureLoad("/resources/images/playerset.png"));
+				player.setTexture(TextureHandler.textureLoad("/resources/images/playerset.png"));
 				if (player.positionY > Locker.player.positionY) {
 					player.draw(g);
 				}
@@ -425,6 +413,7 @@ public class Game extends JFrame implements Runnable {
 			g.drawString(Locker.ipAddress, 10, 25);
 		}
 		g.setColor(Color.black);
+		g.drawString("stamina:" + Locker.player.getStamina(), 100, 100);
 	}
 
 	public void onClose() {

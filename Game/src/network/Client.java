@@ -24,6 +24,7 @@ public class Client extends Thread {
 	String backupServerName = "204.237.93.81";
 	boolean logged = false;
 	int port = 81;
+	boolean master = false;
 
 	public void run() {
 
@@ -52,8 +53,7 @@ public class Client extends Thread {
 
 				String greetings = getInput(client);
 
-				if (greetings.startsWith("Enter Username")) {
-					System.out.println(greetings);
+				if (greetings.startsWith("Enter Username/p")) {
 					sendMessage(client, "LOG/p" + username + "/s" + master
 							+ "/s" + Locker.clientWidth + "/s"
 							+ Locker.clientHeight);
@@ -65,7 +65,7 @@ public class Client extends Thread {
 				}
 				while (true) {
 					String command = getInput(client);
-					// System.out.println(command);
+					 System.out.println(command);
 					if (command.startsWith("message/p")) {
 						String user = command.substring(
 								command.indexOf("/p") + 2,
@@ -74,23 +74,26 @@ public class Client extends Thread {
 								command.indexOf("/s") + 2, command.length());
 						Locker.recieveLine = user + ": " + message;
 					}
+					if (command.startsWith("stat/p")) {
+						String[] data = command.substring(
+								command.indexOf("/p") + 2, command.length())
+								.split("/s");
+						Locker.player.setStamina(Float.parseFloat(data[1]));
+					}
 					if (command.startsWith("chara/p")) {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length())
 								.split("/s");
 						//System.out.println(Locker.username + "/" + data[0]);
 						if (Locker.username.toLowerCase().equals(data[0])) {
-							Locker.player.setPosition(new Point(Integer
-									.parseInt(data[1]), Integer
-									.parseInt(data[2])));
+							Locker.player.setPosition(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
 							Locker.player.frameX = Float.parseFloat(data[3]);
 							Locker.player.frameY = Float.parseFloat(data[4]);
 						} else {
 							Locker.players.get(this.getPlayerIndex(data[0]))
 									.setPosition(
-											new Point(
-													Integer.parseInt(data[1]),
-													Integer.parseInt(data[2])));
+													Float.parseFloat(data[1]),
+													Float.parseFloat(data[2]));
 							Locker.players.get(this.getPlayerIndex(data[0])).frameX = Float
 									.parseFloat(data[3]);
 							Locker.players.get(this.getPlayerIndex(data[0])).frameY = Float
@@ -107,6 +110,12 @@ public class Client extends Thread {
 							player.setName(user);
 							Locker.players.add(player);
 						}
+					}
+					if (command.startsWith("attack/p")) {
+						String[] data = command.substring(
+								command.indexOf("/p") + 2, command.length()).split(
+								"/s");
+						Locker.player.minusStamina(Double.parseDouble(data[1]));
 					}
 					if (command.startsWith("chat/p")) {
 						String[] data = command.substring(
@@ -158,7 +167,6 @@ public class Client extends Thread {
 		// out.close();
 	}
 
-	boolean master = false;
 
 	public void setMaster(boolean b) {
 		// TODO Auto-generated method stub

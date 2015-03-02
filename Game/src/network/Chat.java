@@ -71,7 +71,6 @@ public class Chat implements KeyListener, MouseListener, MouseMotionListener {
 				g.setColor(Color.black);
 			}
 		}
-		System.out.println(scrollBar.height);
 		g.setColor(Color.white);
 		g.drawString(Locker.username + ":" + input, position.x + 2, position.y
 				+ dim.height + 12);
