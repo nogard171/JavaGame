@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import util.TextureHandler;
 
 public class Button extends Item implements MouseListener {
-	
+
 	public BufferedImage image;
 	public Point imagePosition = new Point(0, 0);
 	public ArrayList<BufferedImage> graphics = new ArrayList<BufferedImage>();
@@ -31,20 +31,21 @@ public class Button extends Item implements MouseListener {
 	public boolean isDown = false;
 	public boolean isUp = false;
 	public boolean isClicked = false;
-	public String backGroundLocation = "/resources/images/button_set.png";
+	public String backGroundLocation = "/Game/resources/images/button_set.png";
 	public String imageLocation = "";
-	public Dimension backGroundDim = new Dimension(10, 10);
+	public Dimension backGroundDim = new Dimension(16,16);
 	public boolean isClickable = true;
 	boolean autoTexture = false;
+
 	public Button(Component c, boolean auto) {
 		c.addMouseListener(this);
 		autoTexture = auto;
-		setup();
+		// setup();
 	}
 
 	public Button(Component c) {
 		c.addMouseListener(this);
-		setup();
+		// setup();
 	}
 
 	Font font;
@@ -57,94 +58,15 @@ public class Button extends Item implements MouseListener {
 			}
 		}
 		
-		graphics.clear();
-		graphics.addAll(generateButton(texturePoints.x, texturePoints.y,
-				dim.width, dim.height));
-		if (isClickable) {
-			graphics.addAll(generateButton(texturePoints.x - 64,
-					texturePoints.y, dim.width, dim.height));
-		}
+		graphics.addAll(getButtonTexture(96,64));
+		graphics.addAll(getButtonTexture(32,64));
 	}
-
-	public ArrayList<BufferedImage> generateButton(int xtemp, int ytemp,
-			int width, int height) {
-		ArrayList<BufferedImage> temp = new ArrayList<BufferedImage>();
-		int x = 0;
-		int y = 0;
-		int numX = width / backGroundDim.width;
-		int numY = height / backGroundDim.height;
-		for (int i = 0; i < numX * numY; i++) {
-			if (y == 0) {
-				if (x == 0) {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 0 * backGroundDim.width), ytemp
-							+ (int) ((float) 0 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				} else if (x == numX - 1) {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 2 * backGroundDim.width) + 2,
-							ytemp + (int) ((float) 0 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				} else {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 1 * backGroundDim.width), ytemp
-							+ (int) ((float) 0 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				}
-
-			} else if (y == numY - 1) {
-				if (x == 0) {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 0 * backGroundDim.width), ytemp
-							+ (int) ((float) 2 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				} else if (x == numX - 1) {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 2 * backGroundDim.width) + 2,
-							ytemp + (int) ((float) 2 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				} else {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 1 * backGroundDim.width), ytemp
-							+ (int) ((float) 2 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				}
-
-			} else {
-				if (x == 0) {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 0 * backGroundDim.width), ytemp
-							+ (int) ((float) 1 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				} else if (x == numX - 1) {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 2 * backGroundDim.width) + 2,
-							ytemp + (int) ((float) 1 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				} else {
-					BufferedImage img = texture.getSubimage(xtemp
-							+ (int) ((float) 1 * backGroundDim.width), ytemp
-							+ (int) ((float) 1 * backGroundDim.height),
-							backGroundDim.width, backGroundDim.height);
-					temp.add(img);
-				}
-
-			}
-			if (x >= numX - 1) {
-				y++;
-				x = 0;
-			} else {
-				x++;
-			}
-		}
+	public ArrayList<BufferedImage> getButtonTexture(int x, int y)
+	{
+		 ArrayList<BufferedImage> temp = new ArrayList<BufferedImage>();
+		temp.add(texture.getSubimage(x, y, 10, 32));
+		temp.add(texture.getSubimage(x+10, y, 10, 32));
+		temp.add(texture.getSubimage(x+22, y, 10, 32));
 		return temp;
 	}
 
@@ -155,32 +77,20 @@ public class Button extends Item implements MouseListener {
 			mouse = 0;
 		}
 	}
+
 	@Override
 	public void draw(Graphics g) {
 		update();
 		if (hasBackground) {
-			int x = 0;
-			int y = 0;
-			int numX = dim.width / backGroundDim.width;
-			int numY = dim.height / backGroundDim.height;
-			for (int i = 0; i < numX * numY; i++) {
-
-				g.drawImage(graphics.get(i + (state * (numX * numY))),
-						position.x + (x * backGroundDim.width), position.y
-								+ (y * backGroundDim.height), null);
-				if (x >= numX - 1) {
-					y++;
-					x = 0;
-				} else {
-					x++;
-				}
+			g.drawImage(graphics.get((state*3)),(int)(position.x), (int)(position.y),null);
+			g.drawImage(graphics.get((state*3)+1),(int)(position.x+(10)), (int)(position.y),dim.width,32,null);
+			g.drawImage(graphics.get((state*3)+2),(int)(position.x+(dim.width+8)), (int)(position.y),null);
 			}
-		}
 		if (image != null) {
 			g.drawImage(image, position.x + (dim.width / 4), position.y
 					- (dim.height / 4) + 5, null);
 		} else {
-			g.setFont(font); 
+			g.setFont(font);
 			g.drawString(text, position.x + (dim.width / 8), position.y
 					+ (state * 2) + (dim.height / 2) + 8);
 		}

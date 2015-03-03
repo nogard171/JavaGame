@@ -193,7 +193,7 @@ public class Game extends JFrame implements Runnable {
 	public void onTextureLoading() {
 
 		Locker.player.setTexture(TextureHandler
-				.textureLoad("/resources/images/playerset.png"));
+				.textureLoad("/Game/resources/images/playerset.png"));
 	}
 
 	public void onUpdate(double d) {
@@ -385,7 +385,7 @@ public class Game extends JFrame implements Runnable {
 		try {
 			for (Player player : Locker.players) {
 				player.setTexture(TextureHandler
-						.textureLoad("/resources/images/playerset.png"));
+						.textureLoad("/Game/resources/images/playerset.png"));
 
 				if (player.positionY <= Locker.player.positionY) {
 					player.draw(g);
@@ -399,7 +399,7 @@ public class Game extends JFrame implements Runnable {
 			Locker.player.draw(g);
 			for (Player player : Locker.players) {
 				player.setTexture(TextureHandler
-						.textureLoad("/resources/images/playerset.png"));
+						.textureLoad("/Game/resources/images/playerset.png"));
 				if (player.positionY > Locker.player.positionY) {
 					player.draw(g);
 				}
@@ -412,9 +412,10 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	Chat chat;
-
 	public void drawTitleBar(Graphics g) {
+		
 		if (clientStatus) {
+			
 			g.setColor(new Color(64, 64, 64, 128));
 			g.fillRect(0, 0, 200, 30);
 			g.setColor(Color.black);
@@ -425,7 +426,7 @@ public class Game extends JFrame implements Runnable {
 			g.drawString(Locker.ipAddress, 10, 25);
 		}
 		g.setColor(Color.black);
-		g.drawString("stamina:" + Locker.player.getStamina(), 100, 100);
+		g.drawString("stamina:" + Locker.player.getHealth(), 100, 100);
 	}
 
 	public void onClose() {

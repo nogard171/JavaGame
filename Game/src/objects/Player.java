@@ -27,6 +27,37 @@ public class Player {
 	public float frameY = 0;
 	public float stamina = 50;
 	public float maxStamina = 50;
+	public float health = 50;
+	public float healthRegen = 0.05f;
+	public Player()
+	{
+		isDead = false;
+	}
+	public float getHealthRegen() {
+		return healthRegen;
+	}
+
+	public void setHealthRegen(float healthRegen) {
+		this.healthRegen = healthRegen;
+	}
+
+	public float maxHealth = 50;
+	
+	public float getMaxHealth() {
+		return maxHealth;
+	}
+
+	public void setMaxHealth(float maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+
+	public float getHealth() {
+		return health;
+	}
+
+	public void setHealth(float health) {
+		this.health = health;
+	}
 
 	public float getMaxStamina() {
 		return maxStamina;
@@ -36,7 +67,8 @@ public class Player {
 		this.maxStamina = maxStamina;
 	}
 
-	public float staminaRegen = 0.05f;
+	public float staminaRegen = 0.01f;
+	public boolean isDead = false;
 
 	public float getStaminaRegen() {
 		return staminaRegen;
@@ -56,6 +88,18 @@ public class Player {
 
 	public void addStamina(float stamina) {
 		this.stamina += stamina;
+	}
+	public void minusStamina(double d) {
+		// TODO Auto-generated method stub
+		stamina -= d;
+	}
+	
+	public void addHealth(float health) {
+		this.health += health;
+	}
+	public void minusHealth(double d) {
+		// TODO Auto-generated method stub
+		health -= d;
 	}
 
 	// return the current frame
@@ -116,22 +160,28 @@ public class Player {
 
 	public void draw(Graphics g) {
 		updateFrame();
-		g.drawString(getName(), getPosition().x, getPosition().y - 10);
+		if(isDead)
+		{
+			g.drawString(getName()+"(Dead)", getPosition().x, getPosition().y - 10);
+		}
+		else
+		{
+			g.drawString(getName(), getPosition().x, getPosition().y - 10);
+		}
 		g.drawImage(frame, getPosition().x, getPosition().y, 32, 32, null);
 		if (Locker.grid||texture == null) {
 			g.drawRect(getPosition().x, getPosition().y, 32, 32);
 		}
 	}
 
-	public void minusStamina(double d) {
-		// TODO Auto-generated method stub
-		stamina -= d;
-	}
 
 	public void update() {
 		// TODO Auto-generated method stub
 		if (stamina < getMaxStamina()) {
 			addStamina(getStaminaRegen());
+		}
+		if (health < getMaxHealth()) {
+			addHealth(getHealthRegen());
 		}
 	}
 }

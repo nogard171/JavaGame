@@ -1,5 +1,6 @@
 package objects;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -19,7 +20,6 @@ public class Window implements MouseListener, MouseMotionListener {
 	public Point position = new Point(200, 200);
 	public BufferedImage texture;
 	public ArrayList<BufferedImage> states = new ArrayList<BufferedImage>();
-	public ArrayList<BufferedImage> graphics = new ArrayList<BufferedImage>();
 	public Point texturePoints = new Point(64, 384);
 	public Dimension dim = new Dimension(200, 200);
 	public Graphics solidImage;
@@ -38,7 +38,7 @@ public class Window implements MouseListener, MouseMotionListener {
 		c.addMouseMotionListener(this);
 		if (autoTexture) {
 			texture = TextureHandler
-					.textureLoad("/resources/images/window_set.png");
+					.textureLoad("/Game/resources/images/menu_set.png");
 		}
 		setup(c);
 	}
@@ -51,21 +51,18 @@ public class Window implements MouseListener, MouseMotionListener {
 
 	public void setup(Component c) {
 		close = new Button(c, true);
-		// close.hasBackground = false;
 		close.hasBackground = false;
 		close.dim = new Dimension(40, 32);
 		close.image = TextureHandler.textureLoad(
-				"/resources/images/button_set.png")
+				"/Game/resources/images/button_set.png")
 				.getSubimage(96, 192, 32, 32);
-		
 		title = new Button(c, true);
-		
+		title.text = titleString;
+		title.dim = new Dimension(40, 32);
 		for (int i = 0; i < 2; i++) {
 			BufferedImage img = texture.getSubimage(96 - (i * 64), 64, 32, 32);
 			states.add(img);
 		}
-		graphics.addAll(generateWindow(texturePoints.x, texturePoints.y,
-				dim.width, dim.height));
 	}
 
 	public ArrayList<BufferedImage> generateWindow(int xtemp, int ytemp,
@@ -143,24 +140,17 @@ public class Window implements MouseListener, MouseMotionListener {
 
 	public void update() {
 		title.text = titleString;
-		title.font=  new Font("Arial", Font.PLAIN, 20);
-		title.dim = new Dimension(title.text.length()*13,32);
-		title.backGroundLocation = "/resources/images/window_set.png";
-		title.backGroundDim = new Dimension(15,16);
-		title.texturePoints = new Point(0,0);
-		title.isClickable = false;
-		title.setup();
 		close.position = new Point(
-				position.x + dim.width - close.dim.width - 7,
-				(position.y - close.dim.height) + 5);
+				position.x + dim.width - close.dim.width,
+				(position.y )-8);
 		title.position = new Point(
-				position.x +32,
-				(position.y ) -title.dim.height);
+				position.x ,
+				(position.y )-32);
 		
 
-		slot.position = new Point(position.x,position.y);
+		slot.position = new Point(position.x+8,position.y+8);
 		Item test = new Item();
-		test.texture = TextureHandler.textureLoad("/resources/images/window_set.png").getSubimage(0, 0, 32, 32);
+		test.texture = TextureHandler.textureLoad("/Game/resources/images/window_set.png").getSubimage(0, 0, 32, 32);
 		test.position = new Point(slot.position.x,slot.position.y);
 		slot.obj = test;
 		if (mouse == 1) {
@@ -173,21 +163,8 @@ public class Window implements MouseListener, MouseMotionListener {
 	public void draw(Graphics g) {
 		if (visible) {
 			
-			int x = 0;
-			int y = 0;
-			int numX = dim.width / 16;
-			int numY = dim.height / 16;
-			for (int i = 0; i < numX * numY; i++) {
-
-				g.drawImage(graphics.get(i), position.x + (x * 16), position.y
-						+ (y * 16), null);
-				if (x >= numX - 1) {
-					y++;
-					x = 0;
-				} else {
-					x++;
-				}
-			}
+		
+			g.drawImage(texture.getSubimage(0, 0, 128, 128), position.x , position.y,dim.width,dim.height, null);
 			close.draw(g);
 			title.draw(g);
 			slot.draw(g);

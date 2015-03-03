@@ -78,7 +78,10 @@ public class Client extends Thread {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length())
 								.split("/s");
-						Locker.player.setStamina(Float.parseFloat(data[1]));
+						Locker.player.setHealth(Float.parseFloat(data[1]));
+						Locker.player.setMaxHealth(Float.parseFloat(data[2]));
+						Locker.player.setStamina(Float.parseFloat(data[3]));
+						Locker.player.setMaxStamina(Float.parseFloat(data[4]));
 					}
 					if (command.startsWith("chara/p")) {
 						String[] data = command.substring(
@@ -117,7 +120,23 @@ public class Client extends Thread {
 								"/s");
 
 						System.out.println(data[0] +" has attacked you");
-						Locker.player.minusStamina(Double.parseDouble(data[2]));
+						Locker.player.minusHealth(Double.parseDouble(data[2]));
+					}
+					if (command.startsWith("dead/p")) {
+						String[] data = command.substring(
+								command.indexOf("/p") + 2, command.length()).split(
+								"/s");
+
+						if(data[1]==this.username)
+						{
+							System.out.println(data[0] +" has killed you");
+							Locker.player.isDead = true;
+						}
+						else
+						{
+							System.out.println(data[0] +" has killed "+data[1]);
+							Locker.players.get(getPlayerIndex(data[1])).isDead = true;
+						}
 					}
 					if (command.startsWith("chat/p")) {
 						String[] data = command.substring(

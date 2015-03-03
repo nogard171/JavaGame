@@ -76,7 +76,7 @@ public class ServerClient extends Thread implements ActionListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			broadcast("player/p" + username);
 
 			// System.out.println(name.substring(4,name.length()) +
@@ -123,7 +123,12 @@ public class ServerClient extends Thread implements ActionListener {
 					String[] message = command.substring(
 							command.indexOf("/p") + 2, command.length()).split(
 							"/s");
-					broadcast("message/p" + message[0] + "/s" + message[1]);
+					if (message[1].startsWith(".die")) {
+						getPlayer(message[0]).isDead = true;
+						getPlayer(message[0]).setHealth(0);
+					} else {
+						broadcast("message/p" + message[0] + "/s" + message[1]);
+					}
 				}
 				if (command.startsWith("player/p")) {
 					String user = command.substring(command.indexOf("/p") + 2,
@@ -148,24 +153,25 @@ public class ServerClient extends Thread implements ActionListener {
 							command.indexOf("/p") + 2, command.length()).split(
 							"/s");
 					// System.out.println(data[0]+","+data[1]+","+data[2]+","+data[3]+","+data[4]);
-					moveChara(data[0], Double.parseDouble(data[1]),
-							Boolean.parseBoolean(data[2]),
-							Boolean.parseBoolean(data[3]),
-							Boolean.parseBoolean(data[4]),
-							Boolean.parseBoolean(data[5]),
-							Boolean.parseBoolean(data[6]));
-					if (Boolean.parseBoolean(data[7])&&spaceCount<=0) {
-						action(Double.parseDouble(data[1]),data[0]);
-						spaceCount++;
-					}
-					else
+					if(Locker.players.get(getPlayerIndex(data[0])).isDead)
 					{
-						spaceCount--;
+						
 					}
-					
-					broadcast("chara/p" + data[0] + "/s" + player.positionX
-							+ "/s" + player.positionY + "/s" + player.frameX
-							+ "/s" + player.frameY);
+							moveChara(data[0], Double.parseDouble(data[1]),
+									Boolean.parseBoolean(data[2]),
+									Boolean.parseBoolean(data[3]),
+									Boolean.parseBoolean(data[4]),
+									Boolean.parseBoolean(data[5]),
+									Boolean.parseBoolean(data[6]));
+							if (Boolean.parseBoolean(data[7])) {
+								action(Double.parseDouble(data[1]), data[0]);
+							}
+
+							broadcast("chara/p" + data[0] + "/s"
+									+ player.positionX + "/s"
+									+ player.positionY + "/s" + player.frameX
+									+ "/s" + player.frameY);
+				
 				}
 			}
 			sendMessage(clientSocket, "Bye " + name);
@@ -218,59 +224,93 @@ public class ServerClient extends Thread implements ActionListener {
 
 	int actionDistance = 16;
 	int spaceCount = 0;
+
 	public void action(double d, String data) {
 		Player attacker = Locker.players.get(getPlayerIndex(data));
 		if (player.frameY == 0) {
 			// System.out.println("action down");
-			
+
 			Player p = getPlayerAt(new Point((int) player.positionX,
 					(int) player.positionY + actionDistance));
-			attack(d,attacker,p);
+			attack(d, attacker, p);
 		} else if (player.frameY == 1) {
 
 			// System.out.println("action left");
 			Player p = getPlayerAt(new Point((int) player.positionX
 					- actionDistance, (int) player.positionY));
-			attack(d,attacker,p);
+			attack(d, attacker, p);
 		} else if (player.frameY == 2) {
 
 			// System.out.println("action right");
 			Player p = getPlayerAt(new Point((int) player.positionX
 					+ actionDistance, (int) player.positionY));
-			attack(d,attacker,p);
+			attack(d, attacker, p);
 		} else if (player.frameY == 3) {
 
 			// System.out.println("action up");
 			Player p = getPlayerAt(new Point((int) player.positionX,
 					(int) player.positionY - actionDistance));
-			attack(d,attacker,p);
+			attack(d, attacker, p);
 		}
-		
+
 	}
 
 	public void attack(double delta, Player attacker, Player p) {
-		if (p != null&&attacker.getName()!=p.getName()) {
+		if (p != null && attacker.getName() != p.getName()) {
 
-			float attack = (float) (5);
-			p.minusStamina(attack);
-			sendTo(p.getName(), "attack/p" + attacker.getName()+"/s"+ p.getName() + "/s" + attack);
-			// System.out.println("player stamina:" + p.getStamina());
+			float attack = (float) (5 * delta);
+			if (p.getHealth() <= 0) {
+				broadcast("dead/p" + attacker.getName() + "/s" + p.getName());
+				p.isDead = true;
+			} else {
+				p.minusHealth(attack);
+				// p.minusStamina(attack)
+				sendTo(p.getName(),
+						"attack/p" + attacker.getName() + "/s" + p.getName()
+								+ "/s" + attack);
+			}
 		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		onUpdate();
-		try {
-			sendMessage(clientSocket, "stat/p" + player.getName() + "/s"
-					+ player.getStamina());
-		} catch (IOException e1) { // TODO Auto-generated catch block
-			e1.printStackTrace();
+		if (!Locker.players.get(getPlayerIndex(player.getName())).isDead) {
+			onUpdate();
+			try {
 
+				sendMessage(
+						clientSocket,
+						"stat/p"
+								+ Locker.players.get(
+										getPlayerIndex(player.getName()))
+										.getName()
+								+ "/s"
+								+ Locker.players.get(
+										getPlayerIndex(player.getName()))
+										.getHealth()
+								+ "/s"
+								+ Locker.players.get(
+										getPlayerIndex(player.getName()))
+										.getMaxHealth()
+								+ "/s"
+								+ Locker.players.get(
+										getPlayerIndex(player.getName()))
+										.getStamina()
+								+ "/s"
+								+ Locker.players.get(
+										getPlayerIndex(player.getName()))
+										.getMaxStamina());
+
+				// sendMessage(clientSocket, "stat/p" + player.getName() + "/s"+
+				// player.getStamina());
+			} catch (IOException e1) { // TODO Auto-generated catch block
+				e1.printStackTrace();
+
+			}
 		}
-
 	}
 
 	public void onUpdate() {
+		Locker.players.get(getPlayerIndex(player.getName())).update();
 		player.update();
 	}
 
@@ -296,10 +336,11 @@ public class ServerClient extends Thread implements ActionListener {
 
 	public Player getPlayerAt(Point position) {
 		for (int i = 0; i < Locker.players.size(); i++) {
-			if (Locker.players.get(i).getName()!=username&&new Rectangle(position.x, position.y, 32, 32)
-					.intersects(new Rectangle(
-							(int) Locker.players.get(i).positionX,
-							(int) Locker.players.get(i).positionY, 32, 32))) {
+			if (Locker.players.get(i).getName() != username
+					&& new Rectangle(position.x, position.y, 32, 32)
+							.intersects(new Rectangle((int) Locker.players
+									.get(i).positionX, (int) Locker.players
+									.get(i).positionY, 32, 32))) {
 				return Locker.players.get(i);
 			}
 		}
@@ -318,7 +359,7 @@ public class ServerClient extends Thread implements ActionListener {
 	private void moveChara(String string, double delta, boolean left,
 			boolean right, boolean up, boolean down, boolean shift) {
 		// TODO Auto-generated method stub
-		if (string.equals(username)) {
+		if (string.equals(username) && !player.isDead) {
 			player.frameX += speed * delta;
 			if (left) {
 				player.positionX -= player.velocity.x * delta;
@@ -359,9 +400,9 @@ public class ServerClient extends Thread implements ActionListener {
 				player.frameX = 0;
 			}
 		}
-		if(this.isServer)
-		{
-			Player p= Locker.players.get(getPlayerIndex(username));
+		if (this.isServer) {
+			Player p = Locker.players.get(getPlayerIndex(username));
+			if (!p.isDead) {
 				p.frameX += speed * delta;
 				if (left) {
 					p.positionX -= p.velocity.x * delta;
@@ -401,7 +442,7 @@ public class ServerClient extends Thread implements ActionListener {
 				if (p.frameX > 2) {
 					p.frameX = 0;
 				}
-			
+			}
 		}
 	}
 
