@@ -184,26 +184,27 @@ public class Map {
 			tile.onUpdate(d);
 		}
 	}
+	public int get64(int n)
+	{
+		return ((n + 32) >> 6) << 6;
+	}
 	public Point position = new Point(0,0);
 	public void onPaint(Graphics g, ImageObserver obj) {
-		/*for (Object tile : tiles) {
-			Rectangle rec = new Rectangle(position.x,position.y,dim.width,dim.height);
-			if(rec.intersects(tile.bounds))
-			{
-				tile.onPaint(g, obj);
-			}
-		}*/
-		int x=0,y = 0;
+		
 		int width = (int)Math.ceil((double)(dim.width/64));
 		int height = (int)Math.ceil((float)(dim.height/64));
-		for(int i =0;i<((width*2)*(height*2));i++)
+		int range = ((width)*(height))*2;
+		int x=0,y = 0;
+		for(int i =0;i<range;i++)
 		{
-			Object tile = this.getTileAt(new Point(((x-2)*64)-position.x,((y-2)*64)-position.y));
+			Object tile = this.getTileAt(new Point(get64(((x-2)*64)-position.x), get64(((y-2)*64)-position.y)));
 			if(tile ==null)
 			{
 				//System.out.println("null tile");
 				Object newTile = new Object();
-				newTile.bounds = new Rectangle(((x-2)*64)-position.x,((y-2)*64)-position.y,64,64);
+				//object.bounds = new Rectangle(((x-2)*64)-position.x, ((y-2)*64)-position.y, 32, 32);
+				newTile.bounds = new Rectangle(get64(((x-2)*64)-position.x), get64(((y-2)*64)-position.y),64,64);
+				
 				int randomNum = rand.nextInt(((randomLowerTypes.length-1) - 0) + 1) + 1;
 				if (randomNum==1) {
 					newTile.lowerType = Type.Grass;
@@ -223,6 +224,7 @@ public class Map {
 				if(second==null)
 				{
 					Locker.map.tiles.add(newTile);
+					newTile.onPaint(g,position, obj);
 				}
 			}
 			else
@@ -239,15 +241,11 @@ public class Map {
 				x++;
 			}
 		}
-		/*for (Object tile : arrayObjects) {
-			tile.onPaint(g, obj);
-			// g.drawRect(tile.bounds.x,tile.bounds.y,tile.bounds.width,tile.bounds.height);
-		}*/
 		x = 0;
 		y = 0;
-		for(int i =0;i<((width*2)*(height*2));i++)
+		for(int i =0;i<range;i++)
 		{
-			Object tile = this.getObjectAt(new Point(((x-2)*64)-position.x,((y-2)*64)-position.y));
+			Object tile = this.getObjectAt(new Point(get64(((x-2)*64)-position.x), get64(((y-2)*64)-position.y)));
 			if(tile ==null)
 			{
 				//System.out.println("null tile");
@@ -264,7 +262,7 @@ public class Map {
 				if (object.lowerType == Type.Rock) {
 					object.passable = false;
 				}
-				object.bounds = new Rectangle(((x-2)*64)-position.x, ((y-2)*64)-position.y, 32, 32);
+				object.bounds = new Rectangle(get64(((x-2)*64)-position.x), get64(((y-2)*64)-position.y), 32, 32);
 				object.setTexture(objects.Type.getTexture(texture, object.upperType),
 						objects.Type.getTexture(texture, object.lowerType));
 					

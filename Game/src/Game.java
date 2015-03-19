@@ -337,14 +337,14 @@ public class Game extends JFrame implements Runnable {
 					space = 0;
 				}
 
-				double speed = delta*150;
+				double speed = delta*350;
 				if (keyboard.isKeyDown(KeyEvent.VK_D)) {
 					Locker.map.position.x-=speed;
-					Locker.player.bounds.x -=speed;
+					Locker.player.bounds.x-=speed;
 				}
 				else if (keyboard.isKeyDown(KeyEvent.VK_A)) {
 					Locker.map.position.x+=speed;
-					Locker.player.bounds.x +=speed;
+					Locker.player.bounds.x+=speed;
 				}
 				else if (keyboard.isKeyDown(KeyEvent.VK_W)) {
 					Locker.map.position.y+=speed;
@@ -537,7 +537,7 @@ public class Game extends JFrame implements Runnable {
 				npc.onPaint(g, this);
 			}
 		}
-		Locker.map.onUpperPaint(g, this);
+		//Locker.map.onUpperPaint(g, this);
 		ui.onPaint(g, this);
 
 		if (serverStatus) {
