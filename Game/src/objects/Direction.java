@@ -6,7 +6,7 @@ public enum Direction {
 	Up,
 	Down;
 
-	public static Direction pareDirection(String string) {
+	public static Direction parseDirection(String string) {
 		// TODO Auto-generated method stub
 		if(string.toLowerCase().equals("right"))
 		{

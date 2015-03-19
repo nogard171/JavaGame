@@ -28,8 +28,10 @@ public class Interface {
 	private Point position = new Point(0,0);
 	ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
 	public Window window;
+	public Window bagWindow;
 	public Point windowPosition = new Point(0,0);
 	public Dimension dim = new Dimension(100,100);
+	public Dimension gameDim = new Dimension(100,100);
 	public boolean usesWindow = false;
 	public int menu =0;
 	Point hoverPoints = new Point(0,0);
@@ -61,6 +63,7 @@ public class Interface {
 		if(usesWindow)
 		{
 			window = new Window();
+			bagWindow = new Window();
 		}
 		menuItems = items;		
 	}
@@ -68,16 +71,21 @@ public class Interface {
 	{
 		
 	}
+	int selectedBag = -1;
 	public void onPaint(Graphics g, ImageObserver obj)
 	{
 		g.translate(transform.x, transform.y);
 		g.setFont(new Font("arial",Font.PLAIN,12));
-		g.setColor(new Color(81,65,41));
+		g.setColor(new Color(128,128,128));
 		if(usesWindow)
 		{
 			window.drawWindow(g,windowPosition.x,windowPosition.y, dim.width, dim.height, obj);
 		}
-		g.setColor(new Color(81,65,41));
+		if(selectedBag>=0)
+		{
+			bagWindow.drawWindow(g,gameDim.width- dim.width-transform.x,gameDim.height- dim.height-32-transform.y, dim.width, dim.height, obj);
+		}
+		g.setColor(new Color(128,128,128));
 		for(MenuItem item:menuItems)
 		{
 			if(item.isImage)
@@ -98,18 +106,18 @@ public class Interface {
 		}
 		if(usesWindow&&menu-1>=0)
 		{
-			g.drawImage(getTexture("selector"),menuItems.get(menu-1).getBounds().x, menuItems.get(menu-1).getBounds().y+getPosition().y, menuItems.get(menu-1).getBounds().width, menuItems.get(menu-1).getBounds().height,obj);
+			g.drawImage(getTexture("selector"),menuItems.get(menu-2).getBounds().x, menuItems.get(menu-2).getBounds().y+getPosition().y, menuItems.get(menu-2).getBounds().width, menuItems.get(menu-2).getBounds().height,obj);
 		}
 		
 		if(menu==1&&usesWindow)
 		{//inventory
-			int x =0;
+			/*int x =0;
 			int y =0;
-			for(Item item:Locker.player.inventory)
+			for(Item item:Locker.player.inventorySlots.get(inventoryOpened))
 			{
-				item.setPosition(x*32, y*32);
+				item.setPosition(x*32+(15), y*32+(10));
 				item.draw(g, obj, window);
-				if(x>=5)
+				if(x>=4)
 				{
 					y++;
 					x=0;
@@ -118,40 +126,44 @@ public class Interface {
 				{
 					x++;
 				}
-			}
+			}*/
 		}
-		else if(menu ==2&&usesWindow)
+		for(int i = 0;i<Locker.player.bags.length;i++)
+		{
+			//Locker.player.bags[i].draw(g, bagWindow);
+		}
+		if(menu ==2&&usesWindow)
 		{//chara
 			
-			int statsWidth = (window.bounds.width-17);
+			int statsWidth = (window.bounds.width-17-15);
 			
-			g.drawString("Name: "+Locker.player.getName(), position.x+37,position.y+16);
-			g.drawString("Level: "+Locker.player.level, position.x+37,position.y+32);
-			g.drawString("Health: "+(int)Locker.player.getHealth()+"/"+(int)Locker.player.getMaxHealth(), position.x+37,position.y+48);
+			g.drawString("Name: "+Locker.player.getName(), position.x+37+7,position.y+16+7);
+			g.drawString("Level: "+Locker.player.level, position.x+37+7,position.y+32+7);
+			g.drawString("Health: "+(int)Locker.player.getHealth()+"/"+(int)Locker.player.getMaxHealth(), position.x+37+7,position.y+48+7);
 			
 			int healthWidth = (int) ((statsWidth/Locker.player.getMaxHealth())*(Locker.player.getHealth()));
-			healthBounds  =new Rectangle(position.x+41,position.y+56,healthWidth,9); 
+			healthBounds  =new Rectangle(position.x+41+7,position.y+56+7,healthWidth,9); 
 			
 			drawBar(g, new Color(255,0,0), healthBounds, new Color(0,0,0),new Rectangle(healthBounds.x,healthBounds.y,statsWidth,healthBounds.height));
 			
-			g.drawString("Mana: "+(int)Locker.player.getMana()+"/"+(int)Locker.player.getMaxMana(), position.x+37,position.y+78);
+			g.drawString("Mana: "+(int)Locker.player.getMana()+"/"+(int)Locker.player.getMaxMana(), position.x+37+7,position.y+78+7);
 			int manaWidth = (int) ((statsWidth/Locker.player.getMaxMana())*(Locker.player.getMana()));
-			manaBounds  =new Rectangle(position.x+41,position.y+86,manaWidth,9); 
+			manaBounds  =new Rectangle(position.x+41+7,position.y+86+7,manaWidth,9); 
 			
 			drawBar(g, new Color(50,50,255), manaBounds, new Color(0,0,0),new Rectangle(manaBounds.x,manaBounds.y,statsWidth,manaBounds.height));
 			
-			g.drawString("Statmina: "+(int)Locker.player.getStamina()+"/"+(int)Locker.player.getMaxStamina(), position.x+37,position.y+108);
+			g.drawString("Statmina: "+(int)Locker.player.getStamina()+"/"+(int)Locker.player.getMaxStamina(), position.x+37+7,position.y+108+7);
 			
 			
 			int staminaWidth = (int) ((statsWidth/Locker.player.getMaxStamina())*(Locker.player.getStamina()));
-			staminaBounds =new Rectangle(position.x+41,position.y+116,staminaWidth,9); 
+			staminaBounds =new Rectangle(position.x+41+7,position.y+116+7,staminaWidth,9); 
 			
 			drawBar(g, new Color(255,255,0), staminaBounds, new Color(0,0,0),new Rectangle(staminaBounds.x,staminaBounds.y,statsWidth,staminaBounds.height));
 
-			g.drawString("Ex: "+Locker.player.getExperience()+"/"+Locker.player.getMaxExperience(), position.x+37,position.y+window.bounds.height-20);
+			g.drawString("Ex: "+Locker.player.getExperience()+"/"+Locker.player.getMaxExperience(), position.x+37+7,position.y+window.bounds.height-20-15);
 			
 			int xpWidth = (int) ((statsWidth/(double)Locker.player.maxExperience)*((double)Locker.player.experience));
-			xpBounds =new Rectangle(position.x+41,position.y+window.bounds.height-15,xpWidth,9); 
+			xpBounds =new Rectangle(position.x+41+7,position.y+window.bounds.height-15-15,xpWidth,9); 
 			
 			drawBar(g, new Color(0,255,0), xpBounds, new Color(0,0,0),new Rectangle(xpBounds.x,xpBounds.y,statsWidth,xpBounds.height));
 			
@@ -211,10 +223,11 @@ public class Interface {
 		g.drawRect(backRec.x-1,backRec.y-1,backRec.width+1,backRec.height+1);
 		g.setColor(color);
 		g.fillRect(rec.x,rec.y,rec.width,rec.height);
-		g.setColor(new Color(81,65,41));
+		g.setColor(new Color(128,128,128));
 	}
 	Rectangle xpBounds =new Rectangle(0,0,32,32); 
 	Point mouseUI = new Point(0,0);
+
 	public void onInput(MouseInput mouse) 
 	{
 		mouseUI = new Point(mouse.getPosition().x,mouse.getPosition().y);
@@ -228,6 +241,13 @@ public class Interface {
 			else
 			{
 				item.isClicked = false;
+			}
+		}
+		for(int i = 0;i<Locker.player.bags.length;i++)
+		{
+			if(Locker.player.bags[i]!=null&&Locker.player.bags[i].isClick(mouse.getPosition()))
+			{
+				selectedBag = i;
 			}
 		}
 		if(menu ==3&&usesWindow)
@@ -244,13 +264,14 @@ public class Interface {
 				else
 				{
 					skill.isHovered = false;
+					hoverDescription = "";
 				}
 			}
 		}
 		
 		if(menu ==1&&usesWindow)
 		{
-			for(Item item:Locker.player.inventory)
+			/*for(Item item:Locker.player.inventorySlots.get(inventoryOpened))
 			{
 				if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(item.getBounds().x,item.getBounds().y,item.getBounds().width,item.getBounds().height)))
 				{
@@ -262,8 +283,9 @@ public class Interface {
 				else
 				{
 					item.isHovered = false;
+					hoverDescription = "";
 				}
-			}
+			}		*/	
 		}
 		if(menu ==2&&usesWindow)
 		{
@@ -272,20 +294,24 @@ public class Interface {
 				hoverPoints = new Point(xpBounds.x,xpBounds.y-position.y);
 				hoverDescription = "Experience: " +Locker.player.experience+"/"+Locker.player.maxExperience;
 			}
-			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(staminaBounds))
+			else if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(staminaBounds))
 			{
 				hoverPoints = new Point(staminaBounds.x,staminaBounds.y-position.y);
 				hoverDescription = "Stamina: " +(int)Locker.player.getStamina()+"/"+(int)Locker.player.getMaxStamina();
 			}
-			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(healthBounds))
+			else if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(healthBounds))
 			{
 				hoverPoints = new Point(healthBounds.x,healthBounds.y-position.y);
 				hoverDescription = "Health: " +(int)Locker.player.getHealth()+"/"+(int)Locker.player.getMaxHealth();
 			}
-			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(manaBounds))
+			else if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(manaBounds))
 			{
 				hoverPoints = new Point(manaBounds.x,manaBounds.y-position.y);
 				hoverDescription = "Mana: " +(int)Locker.player.getMana()+"/"+(int)Locker.player.getMaxMana();
+			}
+			else
+			{
+				hoverDescription = "";
 			}
 		}
 		for(MenuItem item:menuItems)
@@ -300,6 +326,7 @@ public class Interface {
 			else
 			{
 				item.isHovered = false;
+				hoverDescription = "";
 			}
 		}
 		
@@ -420,7 +447,7 @@ public class Interface {
 			case "skills":
 				return texture.getSubimage(128, 64, 32,32);
 			case "exit":
-				return texture.getSubimage(32,196, 32,32);
+				return texture.getSubimage(32,192, 32,32);
 			case "equip":
 				return texture.getSubimage(128, 128, 32,32);
 			case "magic":

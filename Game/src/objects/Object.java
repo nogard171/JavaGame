@@ -121,34 +121,34 @@ public class Object {
 		return this.lowerType;
 	}
 
-	public void onPaint(Graphics g, ImageObserver obj) {
+	public void onPaint(Graphics g, Point position, ImageObserver obj) {
 		// TODO Auto-generated method stub
 		if (this.isVisible) {
 			if (upperType == Type.Blank && harvested) {
 				// g.drawImage(lowerTexture,this.bounds.x,this.bounds.y,this.bounds.width-specialDimensions.width,this.bounds.height-specialDimensions.height,obj);
 			} else {
-				g.drawImage(lowerTexture, this.bounds.x, this.bounds.y,
+				g.drawImage(lowerTexture, this.bounds.x+position.x, this.bounds.y+position.y,
 						this.bounds.width - specialDimensions.width,
 						this.bounds.height - specialDimensions.height, obj);
 			}
 		}
 	}
 
-	public void onUpperPaint(Graphics g, ImageObserver obj) {
+	public void onUpperPaint(Graphics g,Point position, ImageObserver obj) {
 		// TODO Auto-generated method stub
 		if (this.isVisible && upperTexture != null && !harvested) {
 			Graphics2D g2d = (Graphics2D) g;
 			if (Locker.player.getBounds().x > bounds.x
-					- (this.upperBounds.width / 2)
-					&& Locker.player.getBounds().x < bounds.x + bounds.width
+					- (this.upperBounds.width / 2)+position.x
+					&& Locker.player.getBounds().x < bounds.x + bounds.width+position.x
 							+ (this.upperBounds.width / 2)&&
-							Locker.player.getBounds().y > bounds.y
+							Locker.player.getBounds().y > bounds.y+position.y
 							- (this.upperBounds.height-16)
-							&& Locker.player.getBounds().y < bounds.y + bounds.height-5) {
+							&& Locker.player.getBounds().y < bounds.y + bounds.height-5+position.y) {
 				g2d.setComposite(AlphaComposite.SrcOver.derive(0.5f));
 			}
-			g.drawImage(upperTexture, this.bounds.x + this.upperBounds.x + 6,
-					this.bounds.y + this.upperBounds.y, upperBounds.width
+			g.drawImage(upperTexture, this.bounds.x + this.upperBounds.x + 6+position.x,
+					this.bounds.y + this.upperBounds.y+position.y, upperBounds.width
 							- specialDimensions.width, upperBounds.height
 							- specialDimensions.height, obj);
 			g2d.setComposite(AlphaComposite.SrcOver.derive(1f));

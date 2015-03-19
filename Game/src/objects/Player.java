@@ -79,7 +79,7 @@ public class Player {
 	public int count = 0;
 	// audio player for walking sounds
 	AudioPlayer audioPlayer = new AudioPlayer();
-	public ArrayList<Item> inventory = new ArrayList<Item>();
+	public Bag[] bags = {new Bag(),null,null,null}; 
 	// audio sounds location
 	public String[] audioFilePath = { "\\resources\\audio\\footstep02.wav",
 			"\\resources\\audio\\chop.wav" };
@@ -158,41 +158,45 @@ public class Player {
 
 	// move the player right
 	public void moveRight() {
-		if (action == 0 && !isDead) {
+		if (!isDead) {
 			this.bounds.x += this.velocity.x;
 			this.direction = Direction.Right;
 			moving = true;
 			talking = false;
+			action = Action.Move;
 		}
 	}
 
 	// move the player left
 	public void moveLeft() {
-		if (action == 0 && !isDead) {
+		if (!isDead) {
 			this.bounds.x -= this.velocity.x;
 			this.direction = Direction.Left;
 			moving = true;
 			talking = false;
+			action = Action.Move;
 		}
 	}
 
 	// move the player up
 	public void moveUp() {
-		if (action == 0 && !isDead) {
+		if (!isDead) {
 			this.bounds.y -= this.velocity.y;
 			this.direction = Direction.Up;
 			moving = true;
 			talking = false;
+			action = Action.Move;
 		}
 	}
 
 	// move the player Down
 	public void moveDown() {
-		if (action == 0 && !isDead) {
+		if (!isDead) {
 			this.bounds.y += this.velocity.y;
 			this.direction = Direction.Down;
 			moving = true;
 			talking = false;
+			action = Action.Move;
 		}
 	}
 
@@ -200,7 +204,8 @@ public class Player {
 	public void dash() {
 		// if the player is moving and stamina is greater than
 		// zero continue
-		if (this.moving && this.stamina > 0 && !this.colliding && action == 0) {
+		if (this.moving && this.stamina > 0 && !this.colliding
+				&& action == Action.Move) {
 			dashing = true;
 			this.baseVelocity.x = 300;
 			this.baseVelocity.y = 300;
@@ -287,12 +292,12 @@ public class Player {
 	}
 
 	// boolean for chopping trees
-	public int action = 0;
+	public Action action = Action.Nothing;
 
 	public void harvest(Object object) {
 		// TODO Auto-generated method stub
 		if (object.getLowerType() == Type.Tree) {
-			this.action = 1;
+			this.action = Action.Chop;
 		}
 	}
 
@@ -309,11 +314,11 @@ public class Player {
 
 	// this updates the players frame
 	public void onUpdate(double delta) {
-		attackedByPlayers();
-		if (!this.networked && !isDead) {
 
+		if (!this.networked && !isDead) {
+			attackedByPlayers();
 			checkLevel();
-			action = 0;
+			// action = Action.Move;
 			// if stamina is less than the maxStamina, it will regen until it's
 			// equal to maxStamina
 			if (this.stamina < maxStamina) {
@@ -348,7 +353,7 @@ public class Player {
 		checkNPC();
 		// if the player is moving call cycling
 		if (moving && !this.colliding) {
-			
+
 			// get the current working directory
 			String workingDir = System.getProperty("user.dir");
 
@@ -401,7 +406,7 @@ public class Player {
 	}
 
 	public void attackedByPlayers() {
-		if (action == 1) {
+		if (action == Action.Attack) {
 			for (Player player : Locker.players) {
 
 				if (weaponBounds.intersects(player.bounds)) {
@@ -425,7 +430,7 @@ public class Player {
 	public void checkNPC() {
 		for (NPC_AI npc : Locker.npcs) {
 
-			if (weaponBounds.intersects(npc.bounds)&&action==1) {
+			if (weaponBounds.intersects(npc.bounds) && action == Action.Attack) {
 				System.out.println("Are you talking to me?");
 				talking = true;
 			}
@@ -520,32 +525,32 @@ public class Player {
 		if (!isDead) {
 			if (obj == null || obj.lowerType.equals(Type.Blank)) {
 				System.out.println("Attacking nothing but thin air");
-				action = 1;
+				action = Action.Attack;
 			} else if (obj.lowerType.equals(Type.Tree) && !obj.harvested) {
 				String workingDir = System.getProperty("user.dir");
 				audioPlayer.play(workingDir + audioFilePath[1]);
 				System.out.println("Cutting tree down");
 				addItem(obj.harvest());
-				action = 2;
+				action = Action.Chop;
 			} else if (obj.lowerType.equals(Type.Tree) && obj.harvested) {
 				System.out.println("Attacking nothing but thin air");
-				action = 1;
+				action = Action.Attack;
 			} else if (obj.lowerType.equals(Type.Rock) && !obj.harvested) {
 				String workingDir = System.getProperty("user.dir");
 				audioPlayer.play(workingDir + audioFilePath[1]);
 				System.out.println("Mining a Rock");
 				addItem(obj.harvest());
-				action = 2;
+				action = Action.Mine;
 			} else if (obj.lowerType.equals(Type.Rock) && obj.harvested) {
 				System.out.println("Attacking nothing but thin air");
-				action = 1;
+				action = Action.Attack;
 			}
 		}
 	}
 
 	public void addItem(Item item) {
 		if (item != null) {
-			this.inventory.add(item);
+			//this.inventory.add(item);
 		}
 	}
 
@@ -555,7 +560,7 @@ public class Player {
 			bbg.drawString(getName() + "(Dead)", getPosition().x,
 					getPosition().y - 15);
 		} else {
-			bbg.drawString(getName(), getPosition().x, getPosition().y - 15);
+			bbg.drawString(this.getName(), getPosition().x, getPosition().y - 15);
 		}
 		bbg.setColor(new Color(128, 128, 128, 128));
 		bbg.fillRect(getPosition().x, getPosition().y - 13, 32, 5);

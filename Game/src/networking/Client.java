@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import objects.Action;
 import objects.Direction;
 import objects.Object;
 import objects.Player;
@@ -164,8 +165,8 @@ public class Client extends Thread {
 							player.setPosition(Integer.parseInt(data[1]),
 									Integer.parseInt(data[2]));
 							player.moving = Boolean.parseBoolean(data[3]);
-							player.direction = Direction.pareDirection(data[4]);
-							player.action = Integer.parseInt(data[5]);
+							player.direction = Direction.parseDirection(data[4]);
+							player.action = Action.parseAction(data[5]);
 							player.setHealth(Float.parseFloat(data[6]),
 									Float.parseFloat(data[7]));
 							player.setMana(Float.parseFloat(data[8]),
