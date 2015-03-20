@@ -28,7 +28,7 @@ public class Item {
 	
 	Rectangle bounds = new Rectangle(0,0,30,30);
 	public boolean isHoverable = true;
-	public boolean isHovered;
+	public boolean isHovered  =false;
 	public String description = "this is an item.";
 	//this sets the name for th item
 	public void setName(String newName)

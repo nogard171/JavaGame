@@ -69,6 +69,44 @@ public class Client extends Thread {
 							Locker.players.add(player);
 						}
 					}
+					if(command.startsWith("newtile:"))
+					{
+						String[] mapData = command.substring(
+								command.indexOf(':') + 1, command.length())
+								.split("~");
+						String[] tiles = mapData[1].split(";");
+						for (int i = 0; i < tiles.length; i++) {
+							String[] tileData = tiles[i].split(",");
+							Object obj = new Object();
+							obj.index = Integer.parseInt(tileData[0]);
+							obj.lowerType = Type.parse(tileData[1]);
+							obj.upperType = Type.parse(tileData[2]);
+							obj.setTexture(Type.getTexture(Locker.map.texture,
+									obj.upperType), Type.getTexture(
+									Locker.map.texture, obj.lowerType));
+							obj.isVisible = Boolean.parseBoolean(tileData[3]);
+							obj.passable = Boolean.parseBoolean(tileData[4]);
+							obj.harvested = Boolean.parseBoolean(tileData[5]);
+							obj.bounds = new Rectangle(
+									Integer.parseInt(tileData[6]),
+									Integer.parseInt(tileData[7]),
+									Integer.parseInt(tileData[8]),
+									Integer.parseInt(tileData[9]));
+							obj.upperBounds = new Rectangle(
+									Integer.parseInt(tileData[10]),
+									Integer.parseInt(tileData[11]),
+									Integer.parseInt(tileData[12]),
+									Integer.parseInt(tileData[13]));
+							if(Locker.map.tiles.size()<=i)
+							{
+								Locker.map.tiles.add(obj);
+							}
+							else
+							{
+								Locker.map.tiles.set(obj.index, obj);
+							}
+						}
+					}
 					if (command.startsWith("map:")) {
 						String[] mapData = command.substring(
 								command.indexOf(':') + 1, command.length())
@@ -96,7 +134,14 @@ public class Client extends Thread {
 									Integer.parseInt(tileData[10]),
 									Integer.parseInt(tileData[11]),
 									Integer.parseInt(tileData[12]));
-							Locker.map.tiles.set(i, obj);
+							if(Locker.map.tiles.size()<=i)
+							{
+								Locker.map.tiles.add(obj);
+							}
+							else
+							{
+								Locker.map.tiles.set(i, obj);
+							}
 						}
 						String[] objects = mapData[2].split(";");
 						for (int i = 0; i < objects.length; i++) {
@@ -121,7 +166,14 @@ public class Client extends Thread {
 									Integer.parseInt(tileData[10]),
 									Integer.parseInt(tileData[11]),
 									Integer.parseInt(tileData[12]));
-							Locker.map.arrayObjects.set(i, obj);
+							if(Locker.map.tiles.size()<=i)
+							{
+								Locker.map.tiles.add(obj);
+							}
+							else
+							{
+								Locker.map.arrayObjects.set(i, obj);
+							}
 						}
 					}
 					if (command.startsWith("harvest:")) {

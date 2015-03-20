@@ -2,6 +2,7 @@ package objects;
 
 import util.AudioPlayer;
 import util.FrameRate;
+import util.ImageLoader;
 import util.Window;
 
 import java.awt.AlphaComposite;
@@ -79,7 +80,7 @@ public class Player {
 	public int count = 0;
 	// audio player for walking sounds
 	AudioPlayer audioPlayer = new AudioPlayer();
-	public Bag[] bags = {new Bag(),null,null,null}; 
+	public Bag[] bags = {new Bag(),new Bag(),new Bag(),new Bag()}; 
 	// audio sounds location
 	public String[] audioFilePath = { "\\resources\\audio\\footstep02.wav",
 			"\\resources\\audio\\chop.wav" };
@@ -158,7 +159,7 @@ public class Player {
 
 	// move the player right
 	public void moveRight() {
-		if (!isDead) {
+		if (!isDead&&bounds.x<(Locker.map.position.x+Locker.map.width*64)-32) {
 			this.bounds.x += this.velocity.x;
 			this.direction = Direction.Right;
 			moving = true;
@@ -169,7 +170,7 @@ public class Player {
 
 	// move the player left
 	public void moveLeft() {
-		if (!isDead) {
+		if (!isDead&&bounds.x>Locker.map.position.x) {
 			this.bounds.x -= this.velocity.x;
 			this.direction = Direction.Left;
 			moving = true;
@@ -180,7 +181,7 @@ public class Player {
 
 	// move the player up
 	public void moveUp() {
-		if (!isDead) {
+		if (!isDead&&bounds.y>Locker.map.position.y) {
 			this.bounds.y -= this.velocity.y;
 			this.direction = Direction.Up;
 			moving = true;
@@ -191,7 +192,7 @@ public class Player {
 
 	// move the player Down
 	public void moveDown() {
-		if (!isDead) {
+		if (!isDead&&bounds.y<(Locker.map.position.y+Locker.map.height*64)-32) {
 			this.bounds.y += this.velocity.y;
 			this.direction = Direction.Down;
 			moving = true;
@@ -464,6 +465,7 @@ public class Player {
 
 	float multiplier = 0.05f;
 	float rate = 1.5f;
+	public int selectedBag = 0;
 
 	public void newMaxStats() {
 		experience -= maxExperience;
@@ -504,7 +506,7 @@ public class Player {
 		this.mana = f;
 		this.maxMana = g;
 	}
-
+	
 	public void onCollide(Object recThree) {
 
 		isColliding = true;
@@ -550,6 +552,14 @@ public class Player {
 
 	public void addItem(Item item) {
 		if (item != null) {
+			if(bags[selectedBag].items.indexOf(item)>=0)
+			{
+				bags[selectedBag].items.get(bags[selectedBag].items.indexOf(item)).addAmount(1);
+			}
+			else
+			{
+			bags[selectedBag].items.add(item);
+			}
 			//this.inventory.add(item);
 		}
 	}
@@ -586,7 +596,7 @@ public class Player {
 			adjust.y = -16;
 		} else if (direction == Direction.Down) {
 			adjust.x = 12;
-			adjust.y = 32;
+			adjust.y = 40;
 		}
 		weaponBounds = new Rectangle(bounds.x + adjust.x, bounds.y + adjust.y,
 				weaponBounds.width, weaponBounds.height);

@@ -13,6 +13,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import javax.swing.JFrame;
 
@@ -184,22 +185,26 @@ public class Game extends JFrame implements Runnable {
 		ui.usesWindow = true;
 		ui.setPosition(new Point(0, (height) - (32 * 7)));
 		ArrayList<MenuItem> uiItems = new ArrayList<MenuItem>();
+		MenuItem bag = new MenuItem();
+		bag.description = "This will show the players bags items.";
+		bag.setTag("bag");
+		bag.setBounds(new Rectangle(0, 0, 32, 32));
 		MenuItem chara = new MenuItem();
 		chara.description = "This will show the players stats and related info.";
 		chara.setTag("chara");
-		chara.setBounds(new Rectangle(0, 0, 32, 32));
+		chara.setBounds(new Rectangle(0, 32, 32, 32));
 		MenuItem skills = new MenuItem();
 		skills.description = "This will show the players skills.";
 		skills.setTag("skills");
-		skills.setBounds(new Rectangle(0, 32, 32, 32));
+		skills.setBounds(new Rectangle(0, 64, 32, 32));
 		MenuItem equip = new MenuItem();
 		equip.description = "This will show the players equipment.";
 		equip.setTag("equip");
-		equip.setBounds(new Rectangle(0, 64, 32, 32));
+		equip.setBounds(new Rectangle(0, 96, 32, 32));
 		MenuItem magic = new MenuItem();
 		magic.description = "This will show the players magic skills.";
 		magic.setTag("magic");
-		magic.setBounds(new Rectangle(0, 96, 32, 32));
+		magic.setBounds(new Rectangle(0, 128, 32, 32));
 
 		MenuItem hideShow = new MenuItem();
 		hideShow.backDrop = false;
@@ -213,11 +218,12 @@ public class Game extends JFrame implements Runnable {
 		exit.setTag("exit");
 		exit.setBounds(new Rectangle(0, 0 - ui.getPosition().y, 32, 32));
 
+		uiItems.add(bag);
 		uiItems.add(chara);
 		uiItems.add(skills);
 		uiItems.add(equip);
 		uiItems.add(magic);
-
+		
 		uiItems.add(hideShow);
 		uiItems.add(exit);
 		ui.onLoad(uiItems);
@@ -284,12 +290,19 @@ public class Game extends JFrame implements Runnable {
 
 	public void onUpdate(double d) {
 		ui.gameDim = new Dimension(width,height);
-		Locker.map.dim = new Dimension(width,height);
+		Locker.dim = new Dimension(width,height);
 		// System.out.println("looping");
 		Locker.player.onUpdate(d);
 		// TODO Auto-generated method stub
-		Locker.map.checkCollision(Locker.player);
-		// Locker.map.checkCollision(npc.character);
+		try
+		{
+			Locker.map.checkCollision(Locker.player);
+		}
+		catch(ConcurrentModificationException error)
+		{
+			
+		}
+		//Locker.map.checkCollision(npc.character);
 		time.onUpdate();
 		Locker.map.onUpdate(d);
 		for (NPC_AI npc : Locker.npcs) {
@@ -337,7 +350,7 @@ public class Game extends JFrame implements Runnable {
 					space = 0;
 				}
 
-				double speed = delta*350;
+				double speed = delta*550;
 				if (keyboard.isKeyDown(KeyEvent.VK_D)) {
 					Locker.map.position.x-=speed;
 					Locker.player.bounds.x-=speed;
@@ -366,7 +379,7 @@ public class Game extends JFrame implements Runnable {
 				ui.onInput(mouse);
 
 				if (!keyboard.isKeyDown(KeyEvent.VK_ALT)) {
-					// ui.hoverDescription = "";
+					 ui.hoverDescription = "";
 				}
 			} else {
 				menu.onInput(mouse);
@@ -383,7 +396,7 @@ public class Game extends JFrame implements Runnable {
 			if (keyboard.isKeyDown(KeyEvent.VK_F2)) {
 
 				server = new Server();
-				if (server != null && serverStatus) {
+				if (server != null && Locker.serverStatus) {
 					Locker.sendLine = "shutdown:" + Locker.player.getName();
 				} else {
 					server.start();
@@ -395,7 +408,7 @@ public class Game extends JFrame implements Runnable {
 					}
 
 				}
-				serverStatus = !serverStatus;
+				Locker.serverStatus = !Locker.serverStatus;
 				client = new Client();
 				if (client != null && client.isAlive()) {
 					client.disconnect();
@@ -412,11 +425,11 @@ public class Game extends JFrame implements Runnable {
 					}
 					if (client.connected) {
 
-						clientStatus = client.connected;
+						Locker.clientStatus = client.connected;
 					}
 				}
 			}
-			if (keyboard.isKeyDown(KeyEvent.VK_F3) && !serverStatus) {
+			if (keyboard.isKeyDown(KeyEvent.VK_F3) && !Locker.serverStatus) {
 
 				client = new Client();
 				if (client != null && client.isAlive()) {
@@ -432,7 +445,7 @@ public class Game extends JFrame implements Runnable {
 					}
 					if (client.connected) {
 
-						clientStatus = client.connected;
+						Locker.clientStatus = client.connected;
 					}
 				}
 
@@ -486,14 +499,12 @@ public class Game extends JFrame implements Runnable {
 				height / 2);
 	}
 
-	boolean serverStatus = false;
-	boolean clientStatus = false;
 	// the server and client vars
 	Server server;
 	Client client;
 
 	public void networkingData() {
-		if (Locker.sendLine != "" && clientStatus) {
+		if (Locker.sendLine != "" && Locker.clientStatus) {
 			sendMessage(Locker.proticol + ":" + Locker.player.getName() + ","
 					+ Locker.sendLine);
 			Locker.sendLine = "";
@@ -537,20 +548,20 @@ public class Game extends JFrame implements Runnable {
 				npc.onPaint(g, this);
 			}
 		}
-		//Locker.map.onUpperPaint(g, this);
+		Locker.map.onUpperPaint(g, this);
 		ui.onPaint(g, this);
 
-		if (serverStatus) {
+		if (Locker.serverStatus) {
 			g.setColor(new Color(0, 0, 0, 96));
 			g.fillRect(32, 0, 116, 18);
 			g.setColor(Color.white);
-			g.drawString("Server Status: " + serverStatus, 32, 12);
+			g.drawString("Server Status: " + Locker.serverStatus, 32, 12);
 			g.setColor(Color.BLACK);
-		} else if (clientStatus) {
+		} else if (Locker.clientStatus) {
 			g.setColor(new Color(0, 0, 0, 96));
 			g.fillRect(32, 0, 116, 18);
 			g.setColor(Color.white);
-			g.drawString("Client Status: " + clientStatus, 32, 12);
+			g.drawString("Client Status: " + Locker.clientStatus, 32, 12);
 			g.setColor(Color.BLACK);
 		}
 

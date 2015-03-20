@@ -85,18 +85,18 @@ public class Object {
 	}
 
 	boolean isMoving = false;
-
-	public void onCollide(Object recThree) {
+	public boolean isPushable = false;
+	public void onCollide(Player player) {
 
 		// TODO Auto-generated method stub
-		if (this.direction == Direction.Up) {
-			this.bounds.y = this.bounds.y + this.velocity.y;
-		} else if (this.direction == Direction.Down) {
-			this.bounds.y = this.bounds.y - this.velocity.y;
-		} else if (this.direction == Direction.Left) {
-			this.bounds.x = this.bounds.x + this.velocity.x;
-		} else if (this.direction == Direction.Right) {
-			this.bounds.x = this.bounds.x - this.velocity.x;
+		if (player.direction == Direction.Up) {
+			this.bounds.y -= this.velocity.y;
+		} else if (player.direction == Direction.Down) {
+			this.bounds.y += this.velocity.y;
+		} else if (player.direction == Direction.Left) {
+			this.bounds.x -= this.velocity.x;
+		} else if (player.direction == Direction.Right) {
+			this.bounds.x +=this.velocity.x;
 		}
 		isColliding = true;
 		isMoving = false;
@@ -109,7 +109,7 @@ public class Object {
 		{
 			// TODO Auto-generated method stub
 			gen += delta * genRate;
-			if (gen > maxGen) {
+			if (gen > maxGen&&!this.isColliding) {
 				this.harvested = false;
 				this.passable = false;
 				gen = 0;

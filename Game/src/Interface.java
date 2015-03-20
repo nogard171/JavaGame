@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import networking.Locker;
+import objects.Bag;
 import objects.Item;
 import objects.ItemType;
 import objects.KeyBindings;
@@ -71,7 +72,6 @@ public class Interface {
 	{
 		
 	}
-	int selectedBag = -1;
 	public void onPaint(Graphics g, ImageObserver obj)
 	{
 		g.translate(transform.x, transform.y);
@@ -80,10 +80,6 @@ public class Interface {
 		if(usesWindow)
 		{
 			window.drawWindow(g,windowPosition.x,windowPosition.y, dim.width, dim.height, obj);
-		}
-		if(selectedBag>=0)
-		{
-			bagWindow.drawWindow(g,gameDim.width- dim.width-transform.x,gameDim.height- dim.height-32-transform.y, dim.width, dim.height, obj);
 		}
 		g.setColor(new Color(128,128,128));
 		for(MenuItem item:menuItems)
@@ -95,7 +91,6 @@ public class Interface {
 					g.drawImage(getTexture("back"),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
 				}
 				g.drawImage(getTexture(item.getTag()),position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height,obj);
-				
 			}
 			else
 			{
@@ -104,16 +99,22 @@ public class Interface {
 				g.setFont(new Font("Arial", Font.PLAIN, 12));
 			}
 		}
+		for(Bag bag:Locker.player.bags)
+		{
+			if(bag!=null)
+			{
+				bag.draw(g,bagWindow);
+			}
+		}
 		if(usesWindow&&menu-1>=0)
 		{
-			g.drawImage(getTexture("selector"),menuItems.get(menu-2).getBounds().x, menuItems.get(menu-2).getBounds().y+getPosition().y, menuItems.get(menu-2).getBounds().width, menuItems.get(menu-2).getBounds().height,obj);
+			g.drawImage(getTexture("selector"),menuItems.get(menu-1).getBounds().x, menuItems.get(menu-1).getBounds().y+getPosition().y, menuItems.get(menu-1).getBounds().width, menuItems.get(menu-1).getBounds().height,obj);
 		}
-		
 		if(menu==1&&usesWindow)
 		{//inventory
-			/*int x =0;
+			int x =0;
 			int y =0;
-			for(Item item:Locker.player.inventorySlots.get(inventoryOpened))
+			for(Item item:Locker.player.bags[Locker.player.selectedBag].items)
 			{
 				item.setPosition(x*32+(15), y*32+(10));
 				item.draw(g, obj, window);
@@ -126,13 +127,9 @@ public class Interface {
 				{
 					x++;
 				}
-			}*/
+			}
 		}
-		for(int i = 0;i<Locker.player.bags.length;i++)
-		{
-			//Locker.player.bags[i].draw(g, bagWindow);
-		}
-		if(menu ==2&&usesWindow)
+		else if(menu ==2&&usesWindow)
 		{//chara
 			
 			int statsWidth = (window.bounds.width-17-15);
@@ -173,7 +170,7 @@ public class Interface {
 			int x=1,y=0;
 			for(Skill skill:Locker.player.skills)
 			{
-				skill.bounds = new Rectangle(position.x+(x*32)+(x*5),position.y+(y*32)+((y+1)*4),32,32);
+				skill.bounds = new Rectangle(position.x+(x*32)+(x*15),position.y+(y*32)+((y+1)*15),32,32);
 				//g.drawRect(skill.bounds.x, skill.bounds.y, skill.bounds.width, skill.bounds.height);
 				g.drawImage(getSkillTexture("back"),skill.bounds.x,skill.bounds.y,skill.bounds.width,skill.bounds.height,obj);
 				g.drawImage(getSkillTexture(skill.name),skill.bounds.x,skill.bounds.y,skill.bounds.width,skill.bounds.height,obj);
@@ -199,8 +196,7 @@ public class Interface {
 		else if(menu ==5&&usesWindow)
 		{//magic
 			
-		}
-		
+		}		
 		else
 		{
 			usesWindow = false;
@@ -243,39 +239,31 @@ public class Interface {
 				item.isClicked = false;
 			}
 		}
-		for(int i = 0;i<Locker.player.bags.length;i++)
-		{
-			if(Locker.player.bags[i]!=null&&Locker.player.bags[i].isClick(mouse.getPosition()))
-			{
-				selectedBag = i;
-			}
-		}
-		if(menu ==3&&usesWindow)
-		{
-			for(Skill skill:Locker.player.skills)
-			{
-				if(skill.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(skill.getBounds().x,skill.getBounds().y,skill.getBounds().width,skill.getBounds().height)))
-				{
-					hoverPoints = new Point(skill.getBounds().x,skill.getBounds().y-position.y);
-					hoverDescription = skill.description;
-					skill.isHovered = true;
-					break;
-				}
-				else
-				{
-					skill.isHovered = false;
-					hoverDescription = "";
-				}
-			}
-		}
 		
+
+		/*for(MenuItem item:menuItems)
+		{
+			if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height)))
+			{
+				hoverPoints = new Point(item.getBounds().x,item.getBounds().y);
+				hoverDescription = item.description;
+				item.isHovered = true;
+				break;
+			}
+			else
+			{
+				item.isHovered = false;
+				hoverDescription = "";
+			}
+		}*/
 		if(menu ==1&&usesWindow)
 		{
-			/*for(Item item:Locker.player.inventorySlots.get(inventoryOpened))
+			for(Item item:Locker.player.bags[Locker.player.selectedBag].items)
 			{
-				if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(item.getBounds().x,item.getBounds().y,item.getBounds().width,item.getBounds().height)))
+				System.out.println("items hovered");
+				if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(position.x+item.getBounds().x,item.getBounds().y,item.getBounds().width,item.getBounds().height)))
 				{
-					hoverPoints = new Point(item.getBounds().x,item.getBounds().y-position.y);
+					hoverPoints = new Point(item.getBounds().x,item.getBounds().y-position.y);					
 					hoverDescription = item.description;
 					item.isHovered = true;
 					break;
@@ -285,9 +273,9 @@ public class Interface {
 					item.isHovered = false;
 					hoverDescription = "";
 				}
-			}		*/	
+			}	
 		}
-		if(menu ==2&&usesWindow)
+		else  if(menu ==2&&usesWindow)
 		{
 			if(new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(xpBounds))
 			{
@@ -314,22 +302,24 @@ public class Interface {
 				hoverDescription = "";
 			}
 		}
-		for(MenuItem item:menuItems)
+		else if(menu ==3&&usesWindow)
 		{
-			if(item.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(position.x+item.getBounds().x,position.y+item.getBounds().y,item.getBounds().width,item.getBounds().height)))
+			for(Skill skill:Locker.player.skills)
 			{
-				hoverPoints = new Point(item.getBounds().x,item.getBounds().y);
-				hoverDescription = item.description;
-				item.isHovered = true;
-				break;
-			}
-			else
-			{
-				item.isHovered = false;
-				hoverDescription = "";
+				if(skill.isHoverable&&new Rectangle(mouse.getPosition().x,mouse.getPosition().y,1,1).getBounds().intersects(new Rectangle(skill.getBounds().x,skill.getBounds().y,skill.getBounds().width,skill.getBounds().height)))
+				{
+					hoverPoints = new Point(skill.getBounds().x,skill.getBounds().y-position.y);
+					hoverDescription = skill.description;
+					skill.isHovered = true;
+					break;
+				}
+				else
+				{
+					skill.isHovered = false;
+					hoverDescription = "";
+				}
 			}
 		}
-		
 		
 		
 		for(MenuItem item:menuItems)
@@ -441,7 +431,7 @@ public class Interface {
 			case "selector":
 				return texture.getSubimage(96, 128, 32,32);
 			case "bag":
-				return texture.getSubimage(128, 32, 32,32);
+				return texture.getSubimage(0, 7*32, 32,32);
 			case "chara":
 				return texture.getSubimage(128, 192, 32,32);
 			case "skills":
