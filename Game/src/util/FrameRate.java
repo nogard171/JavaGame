@@ -4,7 +4,7 @@ public class FrameRate {
 	private String frameRate;
 	private long lastTime;
 	private long delta;
-	private int frameCount;
+	public int frameCount;
 
 	public void initialize() {
 		lastTime = System.currentTimeMillis();

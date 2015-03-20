@@ -166,7 +166,14 @@ public class Object {
 			Locker.sendLine = index + "";
 			harvested = true;
 			Harvester harvest = new Harvester();
-			item = harvest.getObjectItem(lowerType);
+			if(upperType!=Type.Blank)
+			{
+				item = harvest.getObjectItem(upperType);
+			}
+			else
+			{
+				item = harvest.getObjectItem(lowerType);
+			}
 			if (lowerType == Type.Rock) {
 				passable = true;
 			}

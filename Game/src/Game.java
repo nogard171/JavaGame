@@ -175,7 +175,7 @@ public class Game extends JFrame implements Runnable {
 
 	public void onSetup() {
 		onTextureLoading();
-
+		frameRate.calculate();
 		Locker.player.setName(Locker.username);
 		Locker.keys = new KeyBindings(KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
 				KeyEvent.VK_UP, KeyEvent.VK_DOWN);
@@ -227,7 +227,8 @@ public class Game extends JFrame implements Runnable {
 		uiItems.add(hideShow);
 		uiItems.add(exit);
 		ui.onLoad(uiItems);
-		loading.itemCount = 10;
+		frameRate.calculate();
+		loading.itemCount = 10-frameRate.frameCount;
 	}
 
 	boolean menuShown = false;
@@ -571,7 +572,6 @@ public class Game extends JFrame implements Runnable {
 			menu.onPaint(g, this);
 			g.setColor(Color.BLACK);
 		}
-		g.drawString(Locker.player.action.toString(), 200, 200);
 
 		if (debug) {
 			onDebug(g);

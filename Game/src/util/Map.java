@@ -22,13 +22,15 @@ public class Map {
 	public ArrayList<Object> arrayObjects = new ArrayList<Object>();
 	public BufferedImage texture;
 	public String title = "test";
-	
-
 
 	Random rand = new Random();
-	Type[] randomLowerTypes = { Type.Tree, Type.Blank, Type.Blank , Type.Blank };
-	Type[] randomUpperTypes = { Type.Bush, Type.Blank, Type.Blank, Type.Blank };
-	Type[] randomTileLowerTypes = { Type.Grass, Type.Dirt, Type.Grass , Type.Grass };
+	Type[] randomLowerTypes = { Type.Tree, Type.Tree, Type.Rock, Type.Tree,
+			Type.Blank, Type.Blank, Type.Blank };
+	Type[] randomUpperTypes = { Type.Bush, Type.Maple, Type.Blank, Type.Soul,
+			Type.Blank, Type.Blank, Type.Blank };
+	Type[] randomTileLowerTypes = { Type.Grass, Type.Dirt, Type.Grass,
+			Type.Grass };
+
 	public Map() {
 		texture = ImageLoader
 				.getImageFromResources("\\resources\\image\\tileset.png");
@@ -64,8 +66,8 @@ public class Map {
 		int y = 0;
 		for (int i = 0; i < numTiles; i++) {
 			Object obj = new Object();
-			int randomNum = rand.nextInt(randomTileLowerTypes.length-0) + 0;
-			obj.lowerType = randomTileLowerTypes[randomNum ];
+			int randomNum = rand.nextInt(randomTileLowerTypes.length - 0) + 0;
+			obj.lowerType = randomTileLowerTypes[randomNum];
 			obj.bounds = new Rectangle((x * 64) - point.x, (y * 64) - point.y,
 					64, 64);
 			obj.setTexture(objects.Type.getTexture(texture, obj.upperType),
@@ -87,26 +89,35 @@ public class Map {
 		int y = 0;
 		for (int i = 0; i < numTiles; i++) {
 			Object obj = new Object();
-			int randomNum = rand.nextInt(randomLowerTypes.length-0) + 0;//rand.nextInt(((randomLowerTypes.length - 1) - 0) + 1) + 1;
+			int randomNum = rand.nextInt(randomLowerTypes.length - 0) + 0;// rand.nextInt(((randomLowerTypes.length
+																			// -
+																			// 1)
+																			// -
+																			// 0)
+																			// +
+																			// 1)
+																			// +
+																			// 1;
 			// this is for map things
-			obj.bounds = new Rectangle(get64(((x) * 64) - position.x) + 8, get64(((y) * 64) - position.y) + 8, 24, 24);
-			Object tile = getTileAt(new Point(get64(((x) * 64) - position.x) + 8, get64(((y) * 64) - position.y) + 8));
-			Type lowerType = randomLowerTypes[randomNum ];
-			if(tile.lowerType==Type.Grass&&lowerType == Type.Tree)
-			{
-				obj.lowerType = lowerType ;
-				obj.upperType = randomUpperTypes[randomNum ];
-			}
-			else
-			{
-				
+			obj.bounds = new Rectangle(get64(((x) * 64) - position.x) + 8,
+					get64(((y) * 64) - position.y) + 8, 24, 24);
+			Object tile = getTileAt(new Point(
+					get64(((x) * 64) - position.x) + 8, get64(((y) * 64)
+							- position.y) + 8));
+			Type lowerType = randomLowerTypes[randomNum];
+			if (tile.lowerType == Type.Grass && lowerType == Type.Tree) {
+				obj.lowerType = lowerType;
+				obj.upperType = randomUpperTypes[randomNum];
+			} else if (tile.lowerType == Type.Dirt && lowerType == Type.Rock) {
+				obj.lowerType = lowerType;
+			} else {
+
 			}
 			obj.index = i;
 			if (obj.lowerType == Type.Tree) {
 				obj.passable = false;
 				obj.upperBounds = new Rectangle(-26, -106, 64, 128);
-			}
-			else if (obj.lowerType == Type.Rock) {
+			} else if (obj.lowerType == Type.Rock) {
 				obj.passable = false;
 			}
 			obj.index = i;
@@ -231,13 +242,9 @@ public class Map {
 				} else {
 					player.onCollide(tile);
 				}
-			}
-			else if(rec.intersects(player.getBounds()))
-			{
+			} else if (rec.intersects(player.getBounds())) {
 				tile.isColliding = true;
-			}
-			else
-			{
+			} else {
 				tile.isColliding = false;
 			}
 		}
@@ -252,13 +259,9 @@ public class Map {
 				} else {
 					player.onCollide(tile);
 				}
-			}
-			else if(rec.intersects(player.getBounds()))
-			{
+			} else if (rec.intersects(player.getBounds())) {
 				tile.isColliding = true;
-			}
-			else
-			{
+			} else {
 				tile.isColliding = false;
 			}
 		}
@@ -293,15 +296,19 @@ public class Map {
 	public Point position = new Point(0, 0);
 
 	public void onPaint(Graphics g, ImageObserver obj) {
-		for (Object tile : tiles) {
+		try {
+			for (Object tile : tiles) {
 
-			tile.onPaint(g, position, obj);
-		}
-		for (Object tile : arrayObjects) {
+				tile.onPaint(g, position, obj);
+			}
+			for (Object tile : arrayObjects) {
 
-			tile.onPaint(g, position, obj);
+				tile.onPaint(g, position, obj);
+			}
+		} catch (ConcurrentModificationException error) {
+			position = new Point(5,5);
 		}
-		g.drawRect(position.x, position.y, width*64,height*64);
+		g.drawRect(position.x, position.y, width * 64, height * 64);
 		/*
 		 * int width = (int)Math.ceil((double)(Locker.dim.width/64)); int height
 		 * = (int)Math.ceil((float)(Locker.dim.height/64)); int range =
@@ -363,11 +370,18 @@ public class Map {
 	}
 
 	public void onUpperPaint(Graphics g, ImageObserver obj) {
+		try
+		{
 		for (Object tile : tiles) {
 			tile.onUpperPaint(g, position, obj);
 		}
 		for (Object tile : arrayObjects) {
 			tile.onUpperPaint(g, position, obj);
+		}
+		}
+		catch(ConcurrentModificationException error)
+		{
+			
 		}
 	}
 

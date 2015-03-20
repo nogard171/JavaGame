@@ -166,13 +166,13 @@ public class Client extends Thread {
 									Integer.parseInt(tileData[10]),
 									Integer.parseInt(tileData[11]),
 									Integer.parseInt(tileData[12]));
-							if(Locker.map.tiles.size()<=i)
+							if(Locker.map.arrayObjects.size()>i&&Locker.map.arrayObjects.get(i)!=null)
 							{
-								Locker.map.tiles.add(obj);
+								Locker.map.arrayObjects.set(i, obj);
 							}
 							else
 							{
-								Locker.map.arrayObjects.set(i, obj);
+								Locker.map.arrayObjects.add(obj);
 							}
 						}
 					}
