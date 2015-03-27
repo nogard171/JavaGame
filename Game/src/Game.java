@@ -14,6 +14,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -119,6 +121,7 @@ public class Game extends JFrame implements Runnable {
 		canvas.createBufferStrategy(2);
 		bs = canvas.getBufferStrategy();
 	}
+
 	public void shutdown() {
 		try {
 			running = false;
@@ -219,7 +222,7 @@ public class Game extends JFrame implements Runnable {
 		// if shift is pressed
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 		space = input.isKeyDown(KeyEvent.VK_SPACE);
-		
+
 		if (left || right || up || down || shift || space) {
 			Locker.proticol = "move";
 			Locker.sendLine = delta + "/s" + left + "/s" + right + "/s" + up
@@ -233,26 +236,33 @@ public class Game extends JFrame implements Runnable {
 		if (input.isKeyDown(KeyEvent.VK_F2)) {
 			// set server to a new Server
 			server = new Server();
-			// check if the server is null
-			if (server != null && serverStatus) {
+			if (!isPortInUse(Locker.serverName, Locker.port)) {
+				// check if the server is null
+				if (server != null && serverStatus) {
 
-			} else {
-				// start the server thread
-				server.start();
-				// delay 1 second
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} else {
+
+					// start the server thread
+					server.start();
+					// delay 1 second
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-
+				// toggle serverstatus
+				serverStatus = !serverStatus;
+				// set the client to a new client
+				client = new Client();
+				client.master = true;
 			}
-			// toggle serverstatus
-			serverStatus = !serverStatus;
-			// set the client to a new client
-			client = new Client();
-			client.master = true;
+			else
+			{
+				// set the client to a new client
+				client = new Client();
+			}			
 			// check if the client is null
 			if (client != null && client.isAlive()) {
 				// disconnect the client if it's connected.
@@ -309,6 +319,21 @@ public class Game extends JFrame implements Runnable {
 		}
 		// check for networking data.
 		networkingData();
+	}
+
+	private boolean isPortInUse(String host, int port) {
+		// Assume no connection is possible.
+		boolean result = false;
+
+		try {
+			(new Socket(host, port)).close();
+			result = true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	public void networkingData() {
@@ -405,10 +430,11 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	Chat chat;
+
 	public void drawTitleBar(Graphics g) {
-		
+
 		if (clientStatus) {
-			
+
 			g.setColor(new Color(64, 64, 64, 128));
 			g.fillRect(0, 0, 200, 30);
 			g.setColor(Color.black);

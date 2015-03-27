@@ -8,6 +8,9 @@ import objects.Player;
 
 
 public class Locker {
+	public static String serverName = "localhost";
+	public static String backupServerName = "204.237.93.81";
+	public static int port = 81;
 	public static String ipAddress = "";
 	public static String sendLine ="";
 	public static String recieveLine ="";

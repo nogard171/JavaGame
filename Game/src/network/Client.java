@@ -20,21 +20,21 @@ public class Client extends Thread {
 	public String username = "";
 	public boolean connected = false;
 	public Socket client = null;
-	String serverName = "localhost";
-	String backupServerName = "204.237.93.81";
+
 	boolean logged = false;
-	int port = 81;
+
 	public boolean master = false;
 
 	public void run() {
 
-		System.out.println("Connecting to " + serverName + " on port " + port);
+		System.out.println("Connecting to " + Locker.serverName + " on port "
+				+ Locker.port);
 		try {
-			client = new Socket(serverName, port);
+			client = new Socket(Locker.serverName, Locker.port);
 		} catch (IOException e) {
 
 			try {
-				client = new Socket(backupServerName, port);
+				client = new Socket(Locker.backupServerName, Locker.port);
 			} catch (UnknownHostException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -87,16 +87,17 @@ public class Client extends Thread {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length())
 								.split("/s");
-						//System.out.println(Locker.username + "/" + data[0]);
+						// System.out.println(Locker.username + "/" + data[0]);
 						if (Locker.username.toLowerCase().equals(data[0])) {
-							Locker.player.setPosition(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
+							Locker.player.setPosition(
+									Float.parseFloat(data[1]),
+									Float.parseFloat(data[2]));
 							Locker.player.frameX = Float.parseFloat(data[3]);
 							Locker.player.frameY = Float.parseFloat(data[4]);
 						} else {
 							Locker.players.get(this.getPlayerIndex(data[0]))
-									.setPosition(
-													Float.parseFloat(data[1]),
-													Float.parseFloat(data[2]));
+									.setPosition(Float.parseFloat(data[1]),
+											Float.parseFloat(data[2]));
 							Locker.players.get(this.getPlayerIndex(data[0])).frameX = Float
 									.parseFloat(data[3]);
 							Locker.players.get(this.getPlayerIndex(data[0])).frameY = Float
@@ -116,27 +117,24 @@ public class Client extends Thread {
 					}
 					if (command.startsWith("attack/p")) {
 						String[] data = command.substring(
-								command.indexOf("/p") + 2, command.length()).split(
-								"/s");
+								command.indexOf("/p") + 2, command.length())
+								.split("/s");
 
-						System.out.println(data[0] +" has attacked you");
+						System.out.println(data[0] + " has attacked you");
 						Locker.player.minusHealth(Double.parseDouble(data[2]));
 					}
 					if (command.startsWith("dead/p")) {
 						String[] data = command.substring(
-								command.indexOf("/p") + 2, command.length()).split(
-								"/s");
-						System.out.println(data[1]+"/"+username);
-						if(data[1]==this.username)
-						{
-							System.out.println(data[0] +" has killed you");
+								command.indexOf("/p") + 2, command.length())
+								.split("/s");
+						System.out.println(data[1] + "/" + username);
+						if (data[1] == this.username) {
+							System.out.println(data[0] + " has killed you");
 							Locker.player.isDead = true;
-						}
-						else
-						{
-							System.out.println(data[0] +" has killed "+data[1]);
-							if(getPlayerIndex(data[1])>=0)
-							{
+						} else {
+							System.out.println(data[0] + " has killed "
+									+ data[1]);
+							if (getPlayerIndex(data[1]) >= 0) {
 								Locker.players.get(getPlayerIndex(data[1])).isDead = true;
 							}
 						}
@@ -145,13 +143,16 @@ public class Client extends Thread {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length())
 								.split("/s");
-						Locker.recieveLine = "chat/p"+data[1]+"/s"+data[2];
-						
+						Locker.recieveLine = "chat/p" + data[1] + "/s"
+								+ data[2];
+
 					}
 					if (command.startsWith("remove/p")) {
 						String user = command.substring(
 								command.indexOf("/p") + 2, command.length());
-						Locker.players.remove(this.getPlayerIndex(user));
+						if (getPlayerIndex(user) >= 0) {
+							Locker.players.remove(this.getPlayerIndex(user));
+						}
 					}
 				}
 			}
@@ -190,7 +191,6 @@ public class Client extends Thread {
 		out.writeUTF(text);
 		// out.close();
 	}
-
 
 	public void setMaster(boolean b) {
 		// TODO Auto-generated method stub
