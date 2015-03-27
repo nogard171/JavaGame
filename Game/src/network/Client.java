@@ -126,7 +126,7 @@ public class Client extends Thread {
 						String[] data = command.substring(
 								command.indexOf("/p") + 2, command.length()).split(
 								"/s");
-
+						System.out.println(data[1]+"/"+username);
 						if(data[1]==this.username)
 						{
 							System.out.println(data[0] +" has killed you");
@@ -135,7 +135,10 @@ public class Client extends Thread {
 						else
 						{
 							System.out.println(data[0] +" has killed "+data[1]);
-							Locker.players.get(getPlayerIndex(data[1])).isDead = true;
+							if(getPlayerIndex(data[1])>=0)
+							{
+								Locker.players.get(getPlayerIndex(data[1])).isDead = true;
+							}
 						}
 					}
 					if (command.startsWith("chat/p")) {

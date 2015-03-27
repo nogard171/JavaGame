@@ -110,7 +110,6 @@ public class Game extends JFrame implements Runnable {
 	public void setWindow() {
 		Canvas canvas = new Canvas();
 		canvas.setSize(width, height);
-		win = new Window(canvas, true);
 		// set the inputhandler to this
 		input = new InputHandler(canvas);
 		chat = new Chat(canvas);
@@ -120,9 +119,6 @@ public class Game extends JFrame implements Runnable {
 		canvas.createBufferStrategy(2);
 		bs = canvas.getBufferStrategy();
 	}
-
-	Window win = new Window(this, true);
-
 	public void shutdown() {
 		try {
 			running = false;
@@ -231,7 +227,6 @@ public class Game extends JFrame implements Runnable {
 		}
 		// start the server, then connect a client to it.
 		if (input.isKeyDown(KeyEvent.VK_I)) {
-			win.visible = true;
 
 		}
 		// start the server, then connect a client to it.
@@ -374,9 +369,7 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onPaint(Graphics g) {
-		win.titleString = "Inventory";
 		paintPlayers(g);
-		win.draw(g);
 		repaint();
 	}
 
