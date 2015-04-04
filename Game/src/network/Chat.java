@@ -11,7 +11,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import util.InputHandler;
@@ -98,12 +101,16 @@ public class Chat implements KeyListener, MouseListener, MouseMotionListener {
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
+		 DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		   //get current date time with Date()
+		   Date date = new Date();
 		if (focused) {
 			// TODO Auto-generated method stub
 			Pattern p = Pattern.compile("[^a-zA-Z0-9]");
 			String temp = arg0.getKeyChar() + "";
 			if (keyboard.isKeyDown(KeyEvent.VK_ENTER)&&input !="") {
 				Locker.proticol = "message";
+				Locker.sendTime=dateFormat.format(date);
 				Locker.sendLine = input;
 				input = "";
 			}

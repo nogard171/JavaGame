@@ -9,6 +9,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.Timer;
 
@@ -27,6 +30,7 @@ public class ServerClient extends Thread implements ActionListener {
 	public int index = -1;
 	boolean isOnline = false;
 	boolean isServer = false;
+	boolean isMonitor = false;
 	private long curTime;
 	private Object nsPerFrame;
 	private long lastTime;
@@ -51,8 +55,10 @@ public class ServerClient extends Thread implements ActionListener {
 	}
 
 	public void run() {
+		 DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		   //get current date time with Date()
+		   Date date = new Date();
 		System.out.println("Client Connected");
-
 		int maxClientsCount = this.maxClientsCount;
 		ServerClient[] threads = this.threads;
 		try {
@@ -63,21 +69,20 @@ public class ServerClient extends Thread implements ActionListener {
 						name.length()).split("/s");
 				username = data[0];
 				isServer = Boolean.parseBoolean(data[1]);
-				clientWidth = Integer.parseInt(data[2]);
-				clientHeight = Integer.parseInt(data[3]);
+				isMonitor = Boolean.parseBoolean(data[2]);
+				clientWidth = Integer.parseInt(data[3]);
+				clientHeight = Integer.parseInt(data[4]);
 				// name.length()));
 				this.isOnline = true;
-				Player player = new Player();
-				player.setName(username);
-				Locker.players.add(player);
+				if(!isMonitor)
+				{
+					Player player = new Player();
+					player.setName(username);
+					Locker.players.add(player);
+				}				
 			}
 			sendMessage(clientSocket, "login");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 
 			broadcast("player/p" + username);
 
@@ -100,10 +105,15 @@ public class ServerClient extends Thread implements ActionListener {
 			if (isServer) {
 
 				sendMessage(clientSocket,
-						"message/pSystem/sHello again Server.");
-			} else {
+						"message/p"+dateFormat.format(date)+"/sSystem/sHello again Server.");
+			}
+			if (isMonitor) {
+
 				sendMessage(clientSocket,
-						"message/pSystem/sWelcome to the world.");
+						"message/p"+dateFormat.format(date)+"/sSystem/sHello again Monitor.");
+			}else {
+				sendMessage(clientSocket,
+						"message/p"+dateFormat.format(date)+"/sSystem/sWelcome to the world.");
 			}
 			try {
 				Thread.sleep(100);
@@ -120,14 +130,19 @@ public class ServerClient extends Thread implements ActionListener {
 					break;
 				}
 				if (command.startsWith("message/p")) {
+					
 					String[] message = command.substring(
 							command.indexOf("/p") + 2, command.length()).split(
 							"/s");
-					if (message[1].startsWith(".die")) {
-						getPlayer(message[0]).isDead = true;
-						getPlayer(message[0]).setHealth(0);
+					System.out.println(message.length);
+					if(message.length>=3)
+					{
+					if (message[2].startsWith(".die")) {
+						getPlayer(message[1]).isDead = true;
+						getPlayer(message[1]).setHealth(0);
 					} else {
-						broadcast("message/p" + message[0] + "/s" + message[1]);
+						broadcast("message/p"+dateFormat.format(date)+"/s" + message[1] + "/s" + message[2]);
+					}
 					}
 				}
 				if (command.startsWith("player/p")) {
@@ -153,17 +168,6 @@ public class ServerClient extends Thread implements ActionListener {
 							command.indexOf("/p") + 2, command.length()).split(
 							"/s");
 					// System.out.println(data[0]+","+data[1]+","+data[2]+","+data[3]+","+data[4]);
-					if (Locker.players.get(getPlayerIndex(data[0])).isDead) {
-
-					} // else {
-					/*if (!playerExist(data[0])) {
-						Locker.recieveLine = data[0] + " added to players";
-						System.out.println(data[0] + " added to players");
-						Player player = new Player();
-						player.setName(data[0]);
-						Locker.players.add(player);
-					}*/
-
 					moveChara(data[0], Double.parseDouble(data[1]),
 							Boolean.parseBoolean(data[2]),
 							Boolean.parseBoolean(data[3]),

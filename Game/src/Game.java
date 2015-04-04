@@ -196,7 +196,7 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onUpdate(double d) {
-
+		frameRate.calculate();
 		Locker.clientWidth = width;
 		Locker.clientHeight = height;
 		processInput(d);
@@ -239,7 +239,7 @@ public class Game extends JFrame implements Runnable {
 			if (!isPortInUse(Locker.serverName, Locker.port)) {
 				// check if the server is null
 				if (server != null && serverStatus) {
-
+					System.out.println("Server could not be started");
 				} else {
 
 					// start the server thread
@@ -338,10 +338,18 @@ public class Game extends JFrame implements Runnable {
 
 	public void networkingData() {
 		// if sendline has data send it to the server.
-		if (Locker.sendLine != "" && clientStatus) {
-			sendMessage(Locker.proticol + "/p" + Locker.username + "/s"
+		if (Locker.sendLine != "" && clientStatus) 
+		{
+			if(Locker.proticol.startsWith("message"))
+			{
+			sendMessage(Locker.proticol + "/p" +Locker.sendTime+"/s"+ Locker.username + "/s"
 					+ Locker.sendLine);
-
+			}
+			else
+			{
+				sendMessage(Locker.proticol + "/p" + Locker.username + "/s"
+						+ Locker.sendLine);
+			}
 			// set sendline back to nothing
 			Locker.sendLine = "";
 		}
@@ -395,6 +403,8 @@ public class Game extends JFrame implements Runnable {
 
 	public void onPaint(Graphics g) {
 		paintPlayers(g);
+		drawTitleBar(g);
+		chat.draw(g);
 		repaint();
 	}
 
@@ -425,8 +435,6 @@ public class Game extends JFrame implements Runnable {
 		} catch (ConcurrentModificationException cme) {
 
 		}
-		drawTitleBar(g);
-		chat.draw(g);
 	}
 
 	Chat chat;
@@ -436,13 +444,14 @@ public class Game extends JFrame implements Runnable {
 		if (clientStatus) {
 
 			g.setColor(new Color(64, 64, 64, 128));
-			g.fillRect(0, 0, 200, 30);
+			g.fillRect(0, 0, 200, 45);
 			g.setColor(Color.black);
-			g.drawRect(0, 0, 200, 30);
+			g.drawRect(0, 0, 200, 45);
 
 			g.setColor(Color.white);
 			g.drawString("You are connected to:", 10, 10);
 			g.drawString(Locker.ipAddress, 10, 25);
+			g.drawString(frameRate.getFrameRate(), 10, 40);
 		}
 		g.setColor(Color.black);
 		g.drawString("stamina:" + Locker.player.getHealth(), 100, 100);

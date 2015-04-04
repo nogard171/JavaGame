@@ -54,7 +54,7 @@ public class Client extends Thread {
 				String greetings = getInput(client);
 
 				if (greetings.startsWith("Enter Username/p")) {
-					sendMessage(client, "LOG/p" + username + "/s" + master
+					sendMessage(client, "LOG/p" + username + "/s" + master +"/sfalse"
 							+ "/s" + Locker.clientWidth + "/s"
 							+ Locker.clientHeight);
 					String text = getInput(client);
@@ -67,12 +67,10 @@ public class Client extends Thread {
 					String command = getInput(client);
 					// System.out.println(command);
 					if (command.startsWith("message/p")) {
-						String user = command.substring(
-								command.indexOf("/p") + 2,
-								command.indexOf("/s"));
-						String message = command.substring(
-								command.indexOf("/s") + 2, command.length());
-						Locker.recieveLine = user + ": " + message;
+						String[] data = command.substring(
+								command.indexOf("/p") + 2, command.length())
+								.split("/s");
+						Locker.recieveLine = data[1] + ": " +data[2];
 					}
 					if (command.startsWith("stat/p")) {
 						String[] data = command.substring(

@@ -30,6 +30,7 @@ public class Server extends Thread {
 			 */
 			try {
 				serverSocket = new ServerSocket(portNumber);
+				System.out.println("Server Started");
 			} catch (IOException e) {
 				System.out.println(e);
 			}

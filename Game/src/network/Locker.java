@@ -21,4 +21,5 @@ public class Locker {
 	public static boolean grid = false;
 	public static int clientWidth = 0;
 	public static int clientHeight = 0;
+	public static String sendTime = "";
 }
