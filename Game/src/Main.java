@@ -21,7 +21,7 @@ public class Main {
 	            public void run() {
 	               //the main game as jframe
 	            	//System.out.println("hello world!");
-					String user=null;
+					/*String user=null;
 	            	while(user==""||user==null)
 	            	{
 	            		user = JOptionPane.showInputDialog("enter username:");
@@ -31,7 +31,7 @@ public class Main {
 	            			System.exit(1);
 	            		}
 	            	}
-	            	Locker.username = user;
+	            	Locker.username = user;*/
 	            	game.createAndShowGUI();
 	            }
 	        });

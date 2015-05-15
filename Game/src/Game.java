@@ -143,15 +143,26 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	boolean running = false;
+	boolean login = false;
 
 	public void run() {
-		running = true;
+		login = false;
 		System.out.println("game running");
 		frameRate.initialize();
-		onSetup();
 		long curTime = System.nanoTime();
 		long lastTime = curTime;
 		double nsPerFrame;
+		while (login) {
+			curTime = System.nanoTime();
+			nsPerFrame = curTime - lastTime;
+			loginLoop(nsPerFrame / 1.0E9);
+			lastTime = curTime;
+		}
+		
+		running = true;
+		onSetup();
+		curTime = System.nanoTime();
+		lastTime = curTime;
 		while (running) {
 			curTime = System.nanoTime();
 			nsPerFrame = curTime - lastTime;
@@ -164,6 +175,24 @@ public class Game extends JFrame implements Runnable {
 		onTextureLoading();
 
 		Locker.player.setName(Locker.username);
+	}
+
+	public void loginLoop(double d) {
+		Login login = new Login();
+		do {
+			do {
+				Graphics g = null;
+				if (bs == null) {
+					g = createImage(width, height).getGraphics();
+				} else {
+					g = bs.getDrawGraphics();
+				}
+				g.clearRect(0, 0, getWidth(), getHeight());
+				login.onUpdate(d);
+				login.onPaint(g);
+			} while (bs.contentsLost());
+			bs.show();
+		} while (bs.contentsLost());
 	}
 
 	public void gameLoop(double d) {
