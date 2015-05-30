@@ -47,16 +47,11 @@ public class Game extends JFrame implements Runnable {
 	private BufferStrategy bs;
 	private Thread gameThread;
 	boolean fullscreen = false;
-	boolean serverStatus = false;
-	// this is the clients status, if it connected to a server or not
-	boolean clientStatus = false;
-	int oldWidth = 0;
-	int oldHeight = 0;
 	// this declares the input object
 	InputHandler input;
 	// the server and client vars
-	Server server;
-	Client client;
+	//Server server;
+	//Client client;
 
 	public void createAndShowGUI() {
 		setIgnoreRepaint(true);
@@ -90,7 +85,6 @@ public class Game extends JFrame implements Runnable {
 		}
 		// set the inputhandler to this
 		input = new InputHandler(this);
-		chat = new Chat(this);
 
 		addKeyListener(new KeyAdapter() {
 
@@ -114,7 +108,6 @@ public class Game extends JFrame implements Runnable {
 		canvas.setSize(width, height);
 		// set the inputhandler to this
 		input = new InputHandler(canvas);
-		chat = new Chat(canvas);
 		getContentPane().add(canvas);
 		pack();
 		setVisible(true);
@@ -146,23 +139,13 @@ public class Game extends JFrame implements Runnable {
 	boolean login = false;
 
 	public void run() {
-		login = false;
+		running = true;
 		System.out.println("game running");
 		frameRate.initialize();
 		long curTime = System.nanoTime();
 		long lastTime = curTime;
 		double nsPerFrame;
-		while (login) {
-			curTime = System.nanoTime();
-			nsPerFrame = curTime - lastTime;
-			loginLoop(nsPerFrame / 1.0E9);
-			lastTime = curTime;
-		}
-		
-		running = true;
 		onSetup();
-		curTime = System.nanoTime();
-		lastTime = curTime;
 		while (running) {
 			curTime = System.nanoTime();
 			nsPerFrame = curTime - lastTime;
@@ -174,25 +157,6 @@ public class Game extends JFrame implements Runnable {
 	public void onSetup() {
 		onTextureLoading();
 
-		Locker.player.setName(Locker.username);
-	}
-
-	public void loginLoop(double d) {
-		Login login = new Login();
-		do {
-			do {
-				Graphics g = null;
-				if (bs == null) {
-					g = createImage(width, height).getGraphics();
-				} else {
-					g = bs.getDrawGraphics();
-				}
-				g.clearRect(0, 0, getWidth(), getHeight());
-				login.onUpdate(d);
-				login.onPaint(g);
-			} while (bs.contentsLost());
-			bs.show();
-		} while (bs.contentsLost());
 	}
 
 	public void gameLoop(double d) {
@@ -220,8 +184,7 @@ public class Game extends JFrame implements Runnable {
 
 	public void onTextureLoading() {
 
-		Locker.player.setTexture(TextureHandler
-				.textureLoad("/Game/resources/images/playerset.png"));
+		
 	}
 
 	public void onUpdate(double d) {
@@ -238,7 +201,10 @@ public class Game extends JFrame implements Runnable {
 	boolean shift = false;
 	boolean space = false;
 	boolean spaceDown = false;
-
+	float grav = 98;
+	float horizontalGrav = 0;
+	boolean jump = false;
+	int gravDir = 1;
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
 		right = input.isKeyDown(KeyEvent.VK_RIGHT);
@@ -252,160 +218,112 @@ public class Game extends JFrame implements Runnable {
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 		space = input.isKeyDown(KeyEvent.VK_SPACE);
 
-		if (left || right || up || down || shift || space) {
-			Locker.proticol = "move";
-			Locker.sendLine = delta + "/s" + left + "/s" + right + "/s" + up
-					+ "/s" + down + "/s" + shift + "/s" + space;
+		if(input.isKeyDown(KeyEvent.VK_1))
+		{
+			gravDir = 0;
+			grav=(float) -(200);
 		}
-		// start the server, then connect a client to it.
-		if (input.isKeyDown(KeyEvent.VK_I)) {
-
+		else if(input.isKeyDown(KeyEvent.VK_2))
+		{
+			gravDir = 1;
+			grav=(float) -(200);
 		}
-		// start the server, then connect a client to it.
-		if (input.isKeyDown(KeyEvent.VK_F2)) {
-			// set server to a new Server
-			server = new Server();
-			if (!isPortInUse(Locker.serverName, Locker.port)) {
-				// check if the server is null
-				if (server != null && serverStatus) {
-					System.out.println("Server could not be started");
-				} else {
-
-					// start the server thread
-					server.start();
-					// delay 1 second
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				// toggle serverstatus
-				serverStatus = !serverStatus;
-				// set the client to a new client
-				client = new Client();
-				client.master = true;
-			}
-			else
+		else if(input.isKeyDown(KeyEvent.VK_3))
+		{
+			gravDir = 2;
+			grav=(float) -(200);
+		}else if(input.isKeyDown(KeyEvent.VK_4))
+		{
+			gravDir = 3;
+			grav=(float) -(200);
+		}
+		
+		if(gravDir ==0)
+		{
+			if(right)
 			{
-				// set the client to a new client
-				client = new Client();
-			}			
-			// check if the client is null
-			if (client != null && client.isAlive()) {
-				// disconnect the client if it's connected.
-				client.disconnect();
-			} else {
-				// set the client's username to the local player one
-				client.username = Locker.username;
-				// start the client thread
-				client.start();
-				// delay 1 second
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				// if the client is connected set clientstatus to it.
-				if (client.connected) {
-					clientStatus = client.connected;
-				}
+				Locker.player.positionX+=delta*100;
 			}
-		}
-		// start the client if the server is not started.
-		if (input.isKeyDown(KeyEvent.VK_F3) && !serverStatus) {
-
-			// set the client to a new client
-			client = new Client();
-			// check if the client is null
-			if (client != null && client.isAlive()) {
-				// disconnect the client if it's connected.
-				client.disconnect();
-			} else {
-				// set the client's username to the local player one
-				client.username = Locker.username;
-				// start the client thread
-				client.start();
-				// delay 1 second
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				// if the client is connected set clientstatus to it.
-				if (client.connected) {
-					clientStatus = client.connected;
-				}
+			if(left)
+			{
+				Locker.player.positionX-=delta*100;
 			}
+			Locker.player.positionY+=delta*grav;
 		}
+		else if(gravDir ==1)
+		{
+			if(right)
+			{
+				Locker.player.positionX-=delta*100;
+			}
+			if(left)
+			{
+				Locker.player.positionX+=delta*100;
+			}
+			Locker.player.positionY-=delta*grav;
+		} 
+		else if(gravDir ==2)
+		{
+			if(right)
+			{
+				Locker.player.positionY+=delta*100;
+			}
+			if(left)
+			{
+				Locker.player.positionY-=delta*100;
+			}
+			Locker.player.positionX-=delta*grav;
+		} 
+		else if(gravDir ==3)
+		{
+			if(right)
+			{
+				Locker.player.positionY-=delta*100;
+			}
+			if(left)
+			{
+				Locker.player.positionY+=delta*100;
+			}
+			Locker.player.positionX+=delta*grav;
+		} 
+		if(new Rectangle((int)Locker.player.positionX,(int)Locker.player.positionY,32,32).intersects(new Rectangle((int)player.positionX,(int)player.positionY,32,32)))
+		{
+			grav=0;
+			jump =false;
+		}
+		else
+		{
+			grav+=0.1f;
+		}
+		if(space&&!jump)
+		{
+			jump =true;
+			grav=(float) -(200);
+		}
+		
+		if(Locker.player.positionY>this.height)
+		{
+			Locker.player.positionY=0;
+		}
+		if(Locker.player.positionY<0)
+		{
+			Locker.player.positionY=this.height;
+		}
+		if(Locker.player.positionX>this.width)
+		{
+			Locker.player.positionX=0;
+		}
+		if(Locker.player.positionX<0)
+		{
+			Locker.player.positionX=this.width;
+		}
+		
 		// if escape is pressed continue
 		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
 			// call countDownExit function
 			countDownExit(5);
 		}
 		// check for networking data.
-		networkingData();
-	}
-
-	private boolean isPortInUse(String host, int port) {
-		// Assume no connection is possible.
-		boolean result = false;
-
-		try {
-			(new Socket(host, port)).close();
-			result = true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
-	public void networkingData() {
-		// if sendline has data send it to the server.
-		if (Locker.sendLine != "" && clientStatus) 
-		{
-			if(Locker.proticol.startsWith("message"))
-			{
-			sendMessage(Locker.proticol + "/p" +Locker.sendTime+"/s"+ Locker.username + "/s"
-					+ Locker.sendLine);
-			}
-			else
-			{
-				sendMessage(Locker.proticol + "/p" + Locker.username + "/s"
-						+ Locker.sendLine);
-			}
-			// set sendline back to nothing
-			Locker.sendLine = "";
-		}
-		// if receiveline has something add it into the chat.
-		if (Locker.recieveLine != "") {
-			if (Locker.recieveLine.startsWith("chat/p")) {
-				String[] data = Locker.recieveLine.substring(
-						Locker.recieveLine.indexOf("/p") + 2,
-						Locker.recieveLine.length()).split("/s");
-				chat.position = new Point(Integer.parseInt(data[0]),
-						Integer.parseInt(data[1]));
-			} else {
-				chat.Lines.add(Locker.recieveLine);
-			}
-			// set the receiveline to nothing
-			Locker.recieveLine = "";
-		}
-	}
-
-	// the sendmessage function to send text to the server
-	public void sendMessage(String message) {
-		try {
-			client.sendMessage(client.client, message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	// count down to 0 from the inputted time
@@ -432,64 +350,38 @@ public class Game extends JFrame implements Runnable {
 
 	public void onPaint(Graphics g) {
 		paintPlayers(g);
-		drawTitleBar(g);
-		chat.draw(g);
 		repaint();
 	}
-
+	Player player = new Player(100,100);
 	private void paintPlayers(Graphics g) {
+		/*
+		if(gravDir ==0)
+		{
+			g.drawLine(this.width/2,this.height/2, this.width/2, (this.height/2)+32);
+		}
+		if(gravDir ==1)
+		{
+			g.drawLine(this.width/2,this.height/2, this.width/2, (this.height/2)-32);
+		}
+		if(gravDir ==2)
+		{
+			g.drawLine(this.width/2,this.height/2, (this.width/2)-32, (this.height/2));
+		}
+		if(gravDir ==3)
+		{
+			g.drawLine(this.width/2,this.height/2, (this.width/2)+32, (this.height/2));
+		}*/
 		// TODO Auto-generated method stub
 		try {
-			for (Player player : Locker.players) {
-				player.setTexture(TextureHandler
-						.textureLoad("/Game/resources/images/playerset.png"));
-
-				if (player.positionY <= Locker.player.positionY) {
-					player.draw(g);
-				}
-			}
-		} catch (ConcurrentModificationException cme) {
-
-		}
-
-		try {
 			Locker.player.draw(g);
-			for (Player player : Locker.players) {
-				player.setTexture(TextureHandler
-						.textureLoad("/Game/resources/images/playerset.png"));
-				if (player.positionY > Locker.player.positionY) {
-					player.draw(g);
-				}
-			}
 		} catch (ConcurrentModificationException cme) {
 
 		}
-	}
-
-	Chat chat;
-
-	public void drawTitleBar(Graphics g) {
-
-		if (clientStatus) {
-
-			g.setColor(new Color(64, 64, 64, 128));
-			g.fillRect(0, 0, 200, 45);
-			g.setColor(Color.black);
-			g.drawRect(0, 0, 200, 45);
-
-			g.setColor(Color.white);
-			g.drawString("You are connected to:", 10, 10);
-			g.drawString(Locker.ipAddress, 10, 25);
-			g.drawString(frameRate.getFrameRate(), 10, 40);
-		}
-		g.setColor(Color.black);
-		g.drawString("stamina:" + Locker.player.getHealth(), 100, 100);
+		player.draw(g);
 	}
 
 	public void onClose() {
 		System.out.println("Closing");
 	}
-
-	static BufferedImage texture;
 
 }

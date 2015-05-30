@@ -33,6 +33,12 @@ public class Player {
 	{
 		isDead = false;
 	}
+	public Player(float x, float y)
+	{
+		positionX = x;
+		positionY = y;
+		isDead = false;
+	}
 	public float getHealthRegen() {
 		return healthRegen;
 	}
