@@ -19,16 +19,11 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-
+import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import network.Chat;
-import network.Client;
-import network.Locker;
-import network.Server;
-import objects.*;
 import util.FrameRate;
 import util.InputHandler;
 import util.TextureHandler;
@@ -49,9 +44,6 @@ public class Game extends JFrame implements Runnable {
 	boolean fullscreen = false;
 	// this declares the input object
 	InputHandler input;
-	// the server and client vars
-	//Server server;
-	//Client client;
 
 	public void createAndShowGUI() {
 		setIgnoreRepaint(true);
@@ -95,10 +87,8 @@ public class Game extends JFrame implements Runnable {
 			}
 		});
 		graphicsDevice.setFullScreenWindow(this);
-
 		// recenter window
 		setLocationRelativeTo(null);
-
 		createBufferStrategy(2);
 		bs = getBufferStrategy();
 	}
@@ -177,8 +167,9 @@ public class Game extends JFrame implements Runnable {
 		} while (bs.contentsLost());
 	}
 
+   
 	public void loadClasses() {
-
+		//domidpoint();
 		frameRate = new FrameRate();
 	}
 
@@ -189,8 +180,6 @@ public class Game extends JFrame implements Runnable {
 
 	public void onUpdate(double d) {
 		frameRate.calculate();
-		Locker.clientWidth = width;
-		Locker.clientHeight = height;
 		processInput(d);
 	}
 
@@ -201,7 +190,7 @@ public class Game extends JFrame implements Runnable {
 	boolean shift = false;
 	boolean space = false;
 	boolean spaceDown = false;
-	float grav = 98;
+	float grav = -98;
 	float horizontalGrav = 0;
 	boolean jump = false;
 	int gravDir = 1;
@@ -218,7 +207,7 @@ public class Game extends JFrame implements Runnable {
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 		space = input.isKeyDown(KeyEvent.VK_SPACE);
 
-		if(input.isKeyDown(KeyEvent.VK_1))
+		/*if(input.isKeyDown(KeyEvent.VK_1))
 		{
 			gravDir = 0;
 			grav=(float) -(200);
@@ -272,7 +261,7 @@ public class Game extends JFrame implements Runnable {
 			{
 				Locker.player.positionY-=delta*100;
 			}
-			Locker.player.positionX-=delta*grav;
+			Locker.player.positionX-=delta*horizontalGrav;
 		} 
 		else if(gravDir ==3)
 		{
@@ -284,39 +273,9 @@ public class Game extends JFrame implements Runnable {
 			{
 				Locker.player.positionY+=delta*100;
 			}
-			Locker.player.positionX+=delta*grav;
-		} 
-		if(new Rectangle((int)Locker.player.positionX,(int)Locker.player.positionY,32,32).intersects(new Rectangle((int)player.positionX,(int)player.positionY,32,32)))
-		{
-			grav=0;
-			jump =false;
-		}
-		else
-		{
-			grav+=0.1f;
-		}
-		if(space&&!jump)
-		{
-			jump =true;
-			grav=(float) -(200);
-		}
+			Locker.player.positionX+=delta*horizontalGrav;
+		} */
 		
-		if(Locker.player.positionY>this.height)
-		{
-			Locker.player.positionY=0;
-		}
-		if(Locker.player.positionY<0)
-		{
-			Locker.player.positionY=this.height;
-		}
-		if(Locker.player.positionX>this.width)
-		{
-			Locker.player.positionX=0;
-		}
-		if(Locker.player.positionX<0)
-		{
-			Locker.player.positionX=this.width;
-		}
 		
 		// if escape is pressed continue
 		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
@@ -325,7 +284,6 @@ public class Game extends JFrame implements Runnable {
 		}
 		// check for networking data.
 	}
-
 	// count down to 0 from the inputted time
 	public void countDownExit(int time) {
 		// ouput text
@@ -349,35 +307,8 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onPaint(Graphics g) {
-		paintPlayers(g);
+		
 		repaint();
-	}
-	Player player = new Player(100,100);
-	private void paintPlayers(Graphics g) {
-		/*
-		if(gravDir ==0)
-		{
-			g.drawLine(this.width/2,this.height/2, this.width/2, (this.height/2)+32);
-		}
-		if(gravDir ==1)
-		{
-			g.drawLine(this.width/2,this.height/2, this.width/2, (this.height/2)-32);
-		}
-		if(gravDir ==2)
-		{
-			g.drawLine(this.width/2,this.height/2, (this.width/2)-32, (this.height/2));
-		}
-		if(gravDir ==3)
-		{
-			g.drawLine(this.width/2,this.height/2, (this.width/2)+32, (this.height/2));
-		}*/
-		// TODO Auto-generated method stub
-		try {
-			Locker.player.draw(g);
-		} catch (ConcurrentModificationException cme) {
-
-		}
-		player.draw(g);
 	}
 
 	public void onClose() {
