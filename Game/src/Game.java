@@ -307,7 +307,7 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onPaint(Graphics g) {
-		
+		g.drawString("test", 100, 100);
 		repaint();
 	}
 
