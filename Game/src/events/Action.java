@@ -1,4 +1,4 @@
-package obj;
+package events;
 import java.util.concurrent.Callable;
 
 public class Action

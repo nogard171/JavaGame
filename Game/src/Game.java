@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import obj.TextBox;
+import Objects.TextBox;
 import util.FrameRate;
 import util.InputHandler;
 import util.TextureHandler;
@@ -53,8 +53,7 @@ public class Game extends JFrame implements Runnable {
 		setTitle("Test title");
 		setBackground(Color.white);
 
-		GraphicsEnvironment ge = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		graphicsDevice = ge.getDefaultScreenDevice();
 
 		if (fullscreen) {
@@ -168,15 +167,13 @@ public class Game extends JFrame implements Runnable {
 		} while (bs.contentsLost());
 	}
 
-   
 	public void loadClasses() {
-		//domidpoint();
+		// domidpoint();
 		frameRate = new FrameRate();
 	}
 
 	public void onTextureLoading() {
 
-		
 	}
 
 	public void onUpdate(double d) {
@@ -195,6 +192,7 @@ public class Game extends JFrame implements Runnable {
 	float horizontalGrav = 0;
 	boolean jump = false;
 	int gravDir = 1;
+
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
 		right = input.isKeyDown(KeyEvent.VK_RIGHT);
@@ -208,77 +206,30 @@ public class Game extends JFrame implements Runnable {
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 		space = input.isKeyDown(KeyEvent.VK_SPACE);
 
-		/*if(input.isKeyDown(KeyEvent.VK_1))
-		{
-			gravDir = 0;
-			grav=(float) -(200);
-		}
-		else if(input.isKeyDown(KeyEvent.VK_2))
-		{
-			gravDir = 1;
-			grav=(float) -(200);
-		}
-		else if(input.isKeyDown(KeyEvent.VK_3))
-		{
-			gravDir = 2;
-			grav=(float) -(200);
-		}else if(input.isKeyDown(KeyEvent.VK_4))
-		{
-			gravDir = 3;
-			grav=(float) -(200);
-		}
-		
-		if(gravDir ==0)
-		{
-			if(right)
-			{
-				Locker.player.positionX+=delta*100;
-			}
-			if(left)
-			{
-				Locker.player.positionX-=delta*100;
-			}
-			Locker.player.positionY+=delta*grav;
-		}
-		else if(gravDir ==1)
-		{
-			if(right)
-			{
-				Locker.player.positionX-=delta*100;
-			}
-			if(left)
-			{
-				Locker.player.positionX+=delta*100;
-			}
-			Locker.player.positionY-=delta*grav;
-		} 
-		else if(gravDir ==2)
-		{
-			if(right)
-			{
-				Locker.player.positionY+=delta*100;
-			}
-			if(left)
-			{
-				Locker.player.positionY-=delta*100;
-			}
-			Locker.player.positionX-=delta*horizontalGrav;
-		} 
-		else if(gravDir ==3)
-		{
-			if(right)
-			{
-				Locker.player.positionY-=delta*100;
-			}
-			if(left)
-			{
-				Locker.player.positionY+=delta*100;
-			}
-			Locker.player.positionX+=delta*horizontalGrav;
-		} */
+		/*
+		 * if(input.isKeyDown(KeyEvent.VK_1)) { gravDir = 0; grav=(float)
+		 * -(200); } else if(input.isKeyDown(KeyEvent.VK_2)) { gravDir = 1;
+		 * grav=(float) -(200); } else if(input.isKeyDown(KeyEvent.VK_3)) {
+		 * gravDir = 2; grav=(float) -(200); }else
+		 * if(input.isKeyDown(KeyEvent.VK_4)) { gravDir = 3; grav=(float)
+		 * -(200); }
+		 * 
+		 * if(gravDir ==0) { if(right) { Locker.player.positionX+=delta*100; }
+		 * if(left) { Locker.player.positionX-=delta*100; }
+		 * Locker.player.positionY+=delta*grav; } else if(gravDir ==1) {
+		 * if(right) { Locker.player.positionX-=delta*100; } if(left) {
+		 * Locker.player.positionX+=delta*100; }
+		 * Locker.player.positionY-=delta*grav; } else if(gravDir ==2) {
+		 * if(right) { Locker.player.positionY+=delta*100; } if(left) {
+		 * Locker.player.positionY-=delta*100; }
+		 * Locker.player.positionX-=delta*horizontalGrav; } else if(gravDir ==3)
+		 * { if(right) { Locker.player.positionY-=delta*100; } if(left) {
+		 * Locker.player.positionY+=delta*100; }
+		 * Locker.player.positionX+=delta*horizontalGrav; }
+		 */
 		tex.click(input);
 		tex.input(input);
-		
+
 		input.poll();
 		// if escape is pressed continue
 		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
@@ -287,6 +238,7 @@ public class Game extends JFrame implements Runnable {
 		}
 		// check for networking data.
 	}
+
 	// count down to 0 from the inputted time
 	public void countDownExit(int time) {
 		// ouput text
@@ -308,7 +260,9 @@ public class Game extends JFrame implements Runnable {
 		// exit the current application
 		System.exit(0);
 	}
-TextBox tex = new TextBox(100,100);
+
+	TextBox tex = new TextBox(100, 100);
+
 	public void onPaint(Graphics g) {
 		g.drawString("test", 100, 100);
 		tex.Draw(g);

@@ -22,7 +22,6 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
 	public InputHandler(Component c) {
 		// adds the default false value to all the keys in the array
 		keys = new boolean[256];
-
 		mousePos = new Point(0, 0);
 		currentPos = new Point(0, 0);
 		mouse = new boolean[BUTTON_COUNT];
