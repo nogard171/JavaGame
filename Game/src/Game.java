@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import obj.TextBox;
 import util.FrameRate;
 import util.InputHandler;
 import util.TextureHandler;
@@ -275,8 +276,10 @@ public class Game extends JFrame implements Runnable {
 			}
 			Locker.player.positionX+=delta*horizontalGrav;
 		} */
+		tex.click(input);
+		tex.input(input);
 		
-		
+		input.poll();
 		// if escape is pressed continue
 		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
 			// call countDownExit function
@@ -305,9 +308,10 @@ public class Game extends JFrame implements Runnable {
 		// exit the current application
 		System.exit(0);
 	}
-
+TextBox tex = new TextBox(100,100);
 	public void onPaint(Graphics g) {
 		g.drawString("test", 100, 100);
+		tex.Draw(g);
 		repaint();
 	}
 
