@@ -2,6 +2,7 @@ package Objects;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -17,6 +18,8 @@ public class TextBox {
 	private String Text = "";
 	private String passwordText = "";
 	public boolean Focus = false;
+	private Font font = new Font ("Arial", this.style , 12);
+	private int style = Font.PLAIN;
 	private int X = 0;
 	private int Y = 0;
 	private int time = 0;
@@ -46,7 +49,7 @@ public class TextBox {
 	}
 
 	public void Draw(Graphics g) {
-
+		g.setFont(font);
 		g.setColor(Color.white);
 		g.fillRect(this.X, this.Y, width, height);
 
@@ -57,6 +60,7 @@ public class TextBox {
 		}
 		g.drawRect(this.X, this.Y, width, height);
 		g.setColor(Color.black);
+		
 		g.drawString(Text, this.X + 2, this.Y + 15);
 		if (Focus) {
 			time++;

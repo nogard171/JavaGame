@@ -2,6 +2,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
@@ -24,10 +25,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import Objects.TextBox;
-import util.FrameRate;
-import util.InputHandler;
-import util.TextureHandler;
+import Objects.*;
+import events.Action;
+import util.*;
 
 public class Game extends JFrame implements Runnable {
 
@@ -45,6 +45,7 @@ public class Game extends JFrame implements Runnable {
 	boolean fullscreen = false;
 	// this declares the input object
 	InputHandler input;
+	public Client network = new Client();
 
 	public void createAndShowGUI() {
 		setIgnoreRepaint(true);
@@ -129,6 +130,11 @@ public class Game extends JFrame implements Runnable {
 	boolean login = false;
 
 	public void run() {
+		if (network == null) {
+			network = new Client();
+		}
+		network.start();
+
 		running = true;
 		System.out.println("game running");
 		frameRate.initialize();
@@ -160,12 +166,20 @@ public class Game extends JFrame implements Runnable {
 					g = bs.getDrawGraphics();
 				}
 				g.clearRect(0, 0, getWidth(), getHeight());
-				onUpdate(d);
-				onPaint(g);
+				processInput(d);
+				if (game_state == Game_States.GAME) {
+					onGameUpdate(d);
+					onGamePaint(g);
+				} else if (game_state == Game_States.TITLE_SCREEN) {
+					onTitleUpdate(d);
+					onTitlePaint(g);
+				}
 			} while (bs.contentsLost());
 			bs.show();
 		} while (bs.contentsLost());
 	}
+
+	Game_States game_state = Game_States.TITLE_SCREEN;
 
 	public void loadClasses() {
 		// domidpoint();
@@ -176,11 +190,6 @@ public class Game extends JFrame implements Runnable {
 
 	}
 
-	public void onUpdate(double d) {
-		frameRate.calculate();
-		processInput(d);
-	}
-
 	boolean right = false;
 	boolean left = false;
 	boolean up = false;
@@ -188,10 +197,7 @@ public class Game extends JFrame implements Runnable {
 	boolean shift = false;
 	boolean space = false;
 	boolean spaceDown = false;
-	float grav = -98;
-	float horizontalGrav = 0;
-	boolean jump = false;
-	int gravDir = 1;
+	boolean tab = false;
 
 	public void processInput(double delta) {
 		// if right arrow is pressed, add to the players x position
@@ -205,31 +211,7 @@ public class Game extends JFrame implements Runnable {
 		// if shift is pressed
 		shift = input.isKeyDown(KeyEvent.VK_SHIFT);
 		space = input.isKeyDown(KeyEvent.VK_SPACE);
-
-		/*
-		 * if(input.isKeyDown(KeyEvent.VK_1)) { gravDir = 0; grav=(float)
-		 * -(200); } else if(input.isKeyDown(KeyEvent.VK_2)) { gravDir = 1;
-		 * grav=(float) -(200); } else if(input.isKeyDown(KeyEvent.VK_3)) {
-		 * gravDir = 2; grav=(float) -(200); }else
-		 * if(input.isKeyDown(KeyEvent.VK_4)) { gravDir = 3; grav=(float)
-		 * -(200); }
-		 * 
-		 * if(gravDir ==0) { if(right) { Locker.player.positionX+=delta*100; }
-		 * if(left) { Locker.player.positionX-=delta*100; }
-		 * Locker.player.positionY+=delta*grav; } else if(gravDir ==1) {
-		 * if(right) { Locker.player.positionX-=delta*100; } if(left) {
-		 * Locker.player.positionX+=delta*100; }
-		 * Locker.player.positionY-=delta*grav; } else if(gravDir ==2) {
-		 * if(right) { Locker.player.positionY+=delta*100; } if(left) {
-		 * Locker.player.positionY-=delta*100; }
-		 * Locker.player.positionX-=delta*horizontalGrav; } else if(gravDir ==3)
-		 * { if(right) { Locker.player.positionY-=delta*100; } if(left) {
-		 * Locker.player.positionY+=delta*100; }
-		 * Locker.player.positionX+=delta*horizontalGrav; }
-		 */
-		tex.click(input);
-		tex.input(input);
-
+		tab = input.isKeyDown(KeyEvent.VK_TAB);
 		input.poll();
 		// if escape is pressed continue
 		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
@@ -261,11 +243,61 @@ public class Game extends JFrame implements Runnable {
 		System.exit(0);
 	}
 
-	TextBox tex = new TextBox(100, 100);
+	int tab_Pressed = 0;
 
-	public void onPaint(Graphics g) {
+	public void onTitleUpdate(double d) {
+		if (tab) {
+			if (username.Focus && tab_Pressed <= 0) {
+				username.Focus = false;
+				password.Focus = true;
+
+			} else if (password.Focus && tab_Pressed <= 0) {
+				username.Focus = true;
+				password.Focus = false;
+			}
+			tab_Pressed++;
+		} else {
+			tab_Pressed = 0;
+		}
+
+		username.click(input);
+		username.input(input);
+		password.click(input);
+		password.input(input);
+		btn.click(input);
+		btn.onClick(new Action() {
+			public void actionPerformed() {
+				network.login(username.getText(), password.getText());
+			}
+		});
+	}
+
+	TextBox username = new TextBox((this.width / 2) - 50, this.height / 2);
+	TextBox password = new TextBox((this.width / 2) - 50, this.height / 2 + 30, true);
+	Button btn = new Button("Login", (this.width / 2) - 20, this.height / 2 + 60);
+	Label title = new Label("Title", (this.width / 2) - 50, 100, new Font("Arial", Font.PLAIN, 40));
+	Label error = new Label("Title", (this.width / 2) - 50, (this.height / 2) - 20);
+
+	public void onTitlePaint(Graphics g) {
+		if (network.error != "") {
+			error.setColor(Color.red);
+			error.setText(network.error);
+			error.Draw(g);
+		}
+		title.Draw(g);
+		username.Draw(g);
+		password.Draw(g);
+		btn.Draw(g);
+		repaint();
+	}
+
+	public void onGameUpdate(double d) {
+		frameRate.calculate();
+
+	}
+
+	public void onGamePaint(Graphics g) {
 		g.drawString("test", 100, 100);
-		tex.Draw(g);
 		repaint();
 	}
 
