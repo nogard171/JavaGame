@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
 
+import Objects.Account;
 import Objects.Data;
 
 public class Client extends Thread {
@@ -28,27 +29,46 @@ public class Client extends Thread {
 
 	boolean logged_in = false;
 
-	public void login(String username, String password) {
+	public Boolean login(String username, String password) {
 		if (error == "") {
-			MessageDigest md;
-			String hashtext = "";
-			try {
-				md = MessageDigest.getInstance("MD5");
 
-				byte[] messageDigest = md.digest(password.getBytes());
-				BigInteger number = new BigInteger(1, messageDigest);
-				hashtext = number.toString(16);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Data newData = new Data("LOGIN", username + "/" + hashtext);
-			System.out.println("User:" + username + "/pass:" + hashtext);
+			String hashtext = getHash(password);
+
+			Data newData = new Data("LOGIN");
+			Account newAccount = new Account(username, hashtext);
+			newData.account = newAccount;
 			SendData(newData);
-			System.out.println("Login Successful.");
+			System.out.println("Login Request Sent.");
+			newData = getData();
+			System.out.println("Login Request Received.");
+			if (newData.command.equals("OK")) {
+				System.out.println("Login Successful.");
+				logged_in = true;
+			} else if (newData.command.equals("FAILED")) {
+				System.out.println("Login Unsuccessful:" + newData.message);
+				newData.message = "";
+				logged_in = false;
+			}
+
 		} else {
 			JOptionPane.showMessageDialog(null, error, "Error", JOptionPane.ERROR_MESSAGE);
 		}
+		return logged_in;
+	}
+
+	public String getHash(String text) {
+		MessageDigest md;
+		String hashtext = "";
+		try {
+			md = MessageDigest.getInstance("MD5");
+			byte[] messageDigest = md.digest(text.getBytes());
+			BigInteger number = new BigInteger(1, messageDigest);
+			hashtext = number.toString(16);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return hashtext;
 	}
 
 	public void run() {
@@ -71,26 +91,21 @@ public class Client extends Thread {
 	}
 
 	public void clientLoop() {
-		try {
-			while (!logged_in) {
+		while (!logged_in) {
 
+		}
+		while (true) {
+
+			Data newData = getData();
+
+			System.out.println("FROM SERVER: " + modifiedSentence);
+
+			if (modifiedSentence.startsWith("CLOSE/C")) {
+				break;
 			}
-			while (true) {
-
-				modifiedSentence = inFromServer.readUTF();
-
-				System.out.println("FROM SERVER: " + modifiedSentence);
-
-				if (modifiedSentence.startsWith("CLOSE/C")) {
-					break;
-				}
-				if (error != "") {
-					break;
-				}
+			if (error != "") {
+				break;
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
 		}
 	}
 
@@ -133,10 +148,10 @@ public class Client extends Thread {
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			error = e.getLocalizedMessage();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			error = e.getLocalizedMessage();
 		}
 		return newData;
 	}

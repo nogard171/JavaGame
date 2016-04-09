@@ -8,6 +8,11 @@ public class Data implements Serializable {
 		this.message = newMessage;
 	}
 
+	public Data(String newCommand) {
+		this.command = newCommand;
+	}
+
 	public String command = "";
 	public String message = "";
+	public Account account = null;
 }

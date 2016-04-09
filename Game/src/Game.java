@@ -267,7 +267,11 @@ public class Game extends JFrame implements Runnable {
 		btn.click(input);
 		btn.onClick(new Action() {
 			public void actionPerformed() {
-				network.login(username.getText(), password.getText());
+				Boolean login = network.login(username.getText(), password.getText());
+				if(login)
+				{
+					game_state = Game_States.GAME;
+				}
 			}
 		});
 	}
