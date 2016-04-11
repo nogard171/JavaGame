@@ -49,16 +49,9 @@ public class Game extends JPanel implements Runnable {
 
 	@Override
 	public void paint(Graphics g) {
-		setIgnoreRepaint(true);
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		g2d.setColor(Color.RED);
-		g2d.fillOval(0, 0, 30, 30);
-		g2d.drawOval(0, 50, 30, 30);
-		g2d.fillRect(50, 0, 30, 30);
-		g2d.drawRect(50, 50, 30, 30);
 
 		processInput(0);
 		if (game_state == Game_States.GAME) { //
@@ -130,7 +123,7 @@ public class Game extends JPanel implements Runnable {
 		if (network == null) {
 			network = new Client();
 		}
-		// network.start();
+		 network.start();
 
 		running = true;
 		System.out.println("game running");
