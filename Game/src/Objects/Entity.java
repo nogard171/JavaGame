@@ -25,6 +25,7 @@ public class Entity {
 	public int shadow_x = 100;
 	public int shadow_y = 100;
 	public int float_height = 12;
+	public boolean drawn = false;
 
 	public Entity(int i, int j) {
 		this.x = i;
@@ -33,13 +34,19 @@ public class Entity {
 		this.shadow_y = j;
 	}
 
-	public Entity() {
-
+	public Entity(BufferedImage img2) {
+		if (img2 != null) {
+			img = img2.getSubimage(0, 37, 64, 37);
+		}
 	}
 
-	public void draw(Graphics g) {
+	BufferedImage img = null;
 
-		Graphics2D g2d = (Graphics2D) g;
+	public void LowDensityDraw(Graphics g) {
+		g.drawImage(img, x, y, null);
+	}
+	public void HighDensityDraw(Graphics gd) {
+		Graphics2D g = (Graphics2D)gd;
 		if (obj.shadow) {
 			int dist = this.shadow_y - this.y;
 			if (dist < float_height) {
@@ -74,10 +81,10 @@ public class Entity {
 			if (obj.textures.size() > 0) {
 				BufferedImage img = null;
 				try {
-					img = ImageIO.read(new File( obj.textures.get(f)));
+					img = ImageIO.read(new File(obj.textures.get(f)));
 				} catch (IOException e) {
 				}
-				
+
 				int darken = obj.dark.get(f);
 				for (int x = 0; x < img.getWidth(); x++) {
 					for (int y = 0; y < img.getHeight(); y++) {
@@ -95,19 +102,17 @@ public class Entity {
 						img.setRGB(x, y, col.getRGB());
 					}
 				}
-				 
 
 				TexturePaint paint = new TexturePaint(img,
 						new Rectangle2D.Double(0, 0, img.getWidth(), img.getHeight()));
-				g2d.setPaint(paint);
-				g2d.fillPolygon(polygon);
+				g.setPaint(paint);
+				g.fillPolygon(polygon);
 			} else {
 				g.setColor(obj.colors.get(f));
 				g.fillPolygon(polygon);
 			}
 			g.setColor(Color.black);
 			g.drawPolygon(polygon);
-
 		}
 	}
 }

@@ -1,0 +1,35 @@
+title tree
+shadow true
+vpf 3
+;top-left
+v 16 0
+v 16 40
+v 0 32
+;top-right
+v 16 0
+v 16 40
+v 32 32
+;bottom-left
+v 16 40
+v 16 56
+v 0 32
+;bottom-right
+v 16 40
+v 32 32
+v 16 56
+;faces
+f 0 1 2
+f 3 4 5
+f 6 7 8
+f 9 10 11
+;color
+c 100 255 251 128
+c 80 208 203 128
+c 80 208 203 128
+c 69 176 173 128
+;shadow
+sc 50 128 124 64
+s 16 16
+s 32 24
+s 16 32
+s 0 24
