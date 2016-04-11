@@ -150,10 +150,29 @@ public class Game extends JFrame implements Runnable {
 		}
 	}
 
+	ArrayList<Entity> objects = new ArrayList<Entity>();
+	Entity crystal = new Entity(300, 300);
+
 	public void onSetup() {
 		onTextureLoading();
+		OBJLoader loader = new OBJLoader();
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				Entity ground = new Entity();
+				ground.x = (x * 32) - (y * 32);
+				ground.y = (y * 16) + (x * 16);
+				ground.x += 300;
+				ground.y += 100;
 
+				ground.obj = loader.getOBJ("ground.obj");
+				objects.add(ground);
+			}
+		}
+
+		crystal.obj = loader.getOBJ("tree.obj");
+		y = crystal.y;
 	}
+
 
 	public void gameLoop(double d) {
 
@@ -179,7 +198,7 @@ public class Game extends JFrame implements Runnable {
 		} while (bs.contentsLost());
 	}
 
-	Game_States game_state = Game_States.TITLE_SCREEN;
+	Game_States game_state = Game_States.GAME;
 
 	public void loadClasses() {
 		// domidpoint();
@@ -268,8 +287,7 @@ public class Game extends JFrame implements Runnable {
 		btn.onClick(new Action() {
 			public void actionPerformed() {
 				Boolean login = network.login(username.getText(), password.getText());
-				if(login)
-				{
+				if (login) {
 					game_state = Game_States.GAME;
 				}
 			}
@@ -300,9 +318,29 @@ public class Game extends JFrame implements Runnable {
 
 	}
 
+	int y = 0;
+	boolean bounce = false;
+
 	public void onGamePaint(Graphics g) {
-		g.drawString("test", 100, 100);
-		repaint();
+		// g.drawString("test", 100, 100);
+		for (Entity obj : objects) {
+			obj.draw(g);
+		}
+		crystal.draw(g);
+		if (y < crystal.shadow_y) {
+			bounce = false;
+		} else if (y > crystal.shadow_y + crystal.float_height) {
+			bounce = true;
+		}
+
+		if (!bounce) {
+			y += 3;
+			crystal.y += 3;
+		} else if (bounce) {
+			y -= 3;
+			crystal.y -= 3;
+		}
+		// repaint();
 	}
 
 	public void onClose() {
