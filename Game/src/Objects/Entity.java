@@ -106,7 +106,7 @@ public class Entity {
 				g.fillPolygon(polygon);
 			}
 			g.setColor(Color.black);
-			g2d.drawPolygon(polygon);
+			g.drawPolygon(polygon);
 
 		}
 	}

@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
@@ -33,6 +34,7 @@ public class Game extends JFrame implements Runnable {
 
 	public Game() {
 		loadClasses();
+		createAndShowGUI();
 	}
 
 	int width = 800;
@@ -67,6 +69,7 @@ public class Game extends JFrame implements Runnable {
 
 		gameThread = new Thread(this);
 		gameThread.start();
+
 	}
 
 	public void setFullscreen() {
@@ -142,14 +145,20 @@ public class Game extends JFrame implements Runnable {
 		long lastTime = curTime;
 		double nsPerFrame;
 		onSetup();
+
 		while (running) {
+			Graphics g = null;
+			if (bs == null) {
+				g = createImage(width, height).getGraphics();
+			} else {
+				g = bs.getDrawGraphics();
+			}
 			curTime = System.nanoTime();
 			nsPerFrame = curTime - lastTime;
 			gameLoop(nsPerFrame / 1.0E9);
 			lastTime = curTime;
 		}
 	}
-
 	ArrayList<Entity> objects = new ArrayList<Entity>();
 	Entity crystal = new Entity(300, 300);
 
@@ -172,7 +181,6 @@ public class Game extends JFrame implements Runnable {
 		crystal.obj = loader.getOBJ("tree.obj");
 		y = crystal.y;
 	}
-
 
 	public void gameLoop(double d) {
 

@@ -10,16 +10,7 @@ public class Main {
 	public static void main(String[] args)
 	{
 		final Game game = new Game();
-		 SwingUtilities.invokeLater(new Runnable() {     
-	            private Object infoMessage="please login";
-				private String titleBar="login";
-				private boolean login;
-
-				@Override
-	            public void run() {
-	            	game.createAndShowGUI();
-	            }
-	        });
+		
 	}
 	
 }
