@@ -50,6 +50,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
+import com.sun.scenario.effect.Color4f;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -57,15 +58,15 @@ public class Game implements Runnable
 {
     // ----------- END: Variables added
     // width and height of the display
-    int	    width  = 800;
-    int	    height = 600;
+    static int width  = 800;
+    static int height = 600;
     // the grid boolean, used for render things as lines.
-    boolean grid   = false;
+    boolean    grid   = false;
     // the farest rendering distance
-    int	    far	   = 100;
+    int	       far    = 100;
 
-    int	    FOV	   = 60;
-    String  ip	   = "";
+    int	       FOV    = 60;
+    String     ip     = "";
 
     public void StartGame(String location)
     {
@@ -82,26 +83,18 @@ public class Game implements Runnable
 	Mouse.setGrabbed(true);
 	// TODO Auto-generated method stub
 	GL11.glMatrixMode(GL11.GL_PROJECTION);
-
 	GL11.glLoadIdentity();
-
 	GLU.gluPerspective(FOV, (width / height), 0.1f, far);
-
 	GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-	glEnable(GL_COLOR_MATERIAL);
-
-	GL11.glClearColor(1, 1, 1, 1.0f);
-
-	GLU.gluPerspective(FOV, (width / height), 0.1f, far);
-
+	GL11.glLoadIdentity();
 	GL11.glEnable(GL11.GL_DEPTH_TEST);
 	GL11.glEnable(GL11.GL_TEXTURE_2D);
+	GL11.glClearColor(1, 1, 1, 1.0f);
 
+	
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_BLEND);
-
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 
 	obj = new OBJLoader();
@@ -117,7 +110,7 @@ public class Game implements Runnable
 
     public void render()
     {
-
+	make3D();
 	GL11.glShadeModel(GL11.GL_SMOOTH);
 
 	obj.drawOBJ(terrainMode);
@@ -125,24 +118,55 @@ public class Game implements Runnable
 	switch (state)
 	{
 	    case GAME:
-		map.Render(terrainMode, renderBounds);
+		map.render(terrainMode);
 		break;
 	    case SPECTATOR:
 		// if grid is true
-		map.Render(terrainMode, renderBounds);
+		map.render(terrainMode);
 		break;
 	}
+	
 
-	gui.preRender();
+	make2D();
+	//gui.preRender();
 	if ((-camera.position.y) < 2)
 	{
-	    // gui.drawWater();
+	     //gui.drawWater();
 	}
 	gui.font.drawString(this.width / 2, 0, "Title=",
 		org.newdawn.slick.Color.black);
 
-	gui.postRender();
+	//gui.postRender();
+	make3D();
+    }
 
+    protected static void make2D()
+    {
+	// Remove the Z axis
+	// GL11.glDisable(GL11.GL_LIGHTING);
+    	glDisable(GL11.GL_TEXTURE);
+	glDisable(GL_CULL_FACE);
+	GL11.glDisable(GL11.GL_DEPTH_TEST);
+	GL11.glMatrixMode(GL11.GL_PROJECTION);
+	GL11.glPushMatrix();
+	GL11.glLoadIdentity();
+	//GL11.glOrtho(0, width, 0, height, -1, 1);
+	GLU.gluOrtho2D(0, width, height, 0);
+	GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	GL11.glPushMatrix();
+	GL11.glLoadIdentity();
+    }
+
+    protected static void make3D()
+    {
+	// Restore the Z axis
+	GL11.glMatrixMode(GL11.GL_PROJECTION);
+	GL11.glPopMatrix();
+	GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	GL11.glPopMatrix();
+	GL11.glEnable(GL11.GL_DEPTH_TEST);
+	glEnable(GL11.GL_TEXTURE);
+	 //GL11.glEnable(GL11.GL_LIGHTING);
     }
 
     long       pingSpeed       = 0;
@@ -172,36 +196,7 @@ public class Game implements Runnable
 	if (this.state == State.GAME)
 	{
 
-	    if (((-camera.position.y) - 4f) <= map.checkTile(
-		    (int) camera.position.x, (int) camera.position.z))
-	    {
-		groundCollision = true;
-		gravity = 0f;
-		camera.jumps = 0;
-		camera.flyUp(1);
-	    }
-
-	    if (((-camera.position.y) - 4.5f) <= map.checkTile(
-		    (int) camera.position.x, (int) camera.position.z))
-	    {
-		groundCollision = true;
-		// camera.jumping = false;
-		gravity = 0f;
-		camera.jumps = 0;
-	    }
-	    else
-	    {
-		groundCollision = false;
-		if (gravity <= 0.3f && (-camera.position.y) < 2)
-		{
-		    gravity += 0.05f;
-		}
-		else if (gravity <= 1f && (-camera.position.y) > 2)
-		{
-		    gravity += 0.05f;
-		}
-	    }
-	    camera.flyDown(gravity);
+	   
 	}
 	time++;
 
@@ -349,15 +344,15 @@ public class Game implements Runnable
 	    FOV = 60;
 	}
 
-	if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) // strafe
-						    // right
+	if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && state == State.SPECTATOR) // strafe
+	// right
 	{
-	    // camera.flyUp(speed);
+	    camera.flyUp(speed);
 	}
 
-	if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) // strafe
+	if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && state == State.SPECTATOR) // strafe
 	{
-	    // camera.flyDown(speed);
+	    camera.flyDown(speed);
 	}
 
 	while (Keyboard.next())
@@ -412,12 +407,6 @@ public class Game implements Runnable
 	// networkClient.player.y = camera.position.y;
 	// networkClient.player.z = camera.position.z;
 	// camera.grid = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-	// set the modelview matrix back to the identity
-	GL11.glLoadIdentity();
 
 	// look through the camera before you draw anything
 	camera.lookThrough();
@@ -494,14 +483,18 @@ public class Game implements Runnable
 	// state = State.GAME;
 	while (!Display.isCloseRequested())
 	{
+
+	    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+	    // set the modelview matrix back to the identity
+	    GL11.glLoadIdentity();
 	    // In game loop
 	    double delta = getDelta();
 	    pollInput(delta);
 	    // System.out.println(FOV);
-	    render();
+
 	    updateFPS();
 	    update();
-
+	    render();
 	    Display.update();
 	    Display.sync(60);
 	    if (closing)
