@@ -28,7 +28,7 @@ public class Client extends Thread {
 
 	boolean logged_in = false;
 
-	public Boolean login(String username, String password) {
+	public boolean login(String username, String password) {
 		if (error == "") {
 
 			String hashtext = getHash(password);
@@ -52,7 +52,7 @@ public class Client extends Thread {
 		} else {
 			JOptionPane.showMessageDialog(null, error, "Error", JOptionPane.ERROR_MESSAGE);
 		}
-		return logged_in;
+		return  logged_in;
 	}
 
 	public String getHash(String text) {

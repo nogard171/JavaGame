@@ -1,24 +1,4 @@
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_COLOR_MATERIAL;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_LIGHT0;
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
 
 import java.io.Serializable;
 
@@ -197,7 +177,7 @@ public class Camera implements Serializable
 	// roatate the yaw around the X axis
 	GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 	// translate to the position vector's location
-	GL11.glTranslatef(position.x, position.y + height, position.z - 10);
+	GL11.glTranslatef(position.x, position.y + height, position.z);
     }
 
     public void lookAt()
@@ -208,7 +188,7 @@ public class Camera implements Serializable
 	// roatate the yaw around the X axis
 	GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 	// translate to the position vector's location
-	GL11.glTranslatef(position.x, position.y + height, position.z - 10);
+	GL11.glTranslatef(position.x, position.y + height, position.z);
     }
 
     public void rotateY(float degrees)

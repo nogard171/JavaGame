@@ -1,8 +1,7 @@
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
-
-import com.sun.scenario.effect.Color4f;
+import org.newdawn.slick.Color;
 
 
 public class Chunk
@@ -13,7 +12,7 @@ public class Chunk
     int		  x	 = 0;
     int		  y	 = 0;
     int[][]	  map	 = null;
-    Color4f[][]	  mapColour;
+    Color[][]	  mapColour;
 
     float	  size	 = 1;
     public String title	 = "";
@@ -45,29 +44,29 @@ public class Chunk
 		if (mapColour[x][y] == null)
 		{
 		    float gradiant = 0;
-		    Color4f color = new Color4f(0, 0, 0, 0);
+		    Color color = new Color(0, 0, 0, 0);
 		    if (map[x][y] <= 50 && map[x][y] >= tooLow)
 		    {
 			float plus = 0.5f;
 			gradiant = ((float) 1f / ((-map[x][y]) + 6));
-			color = new Color4f((gradiant / 2) + plus,
+			color = new Color((gradiant / 2) + plus,
 				(gradiant / 2) + plus,
 				(gradiant / 4) + plus / 2, 1f);
 		    }
 		    else if (map[x][y] > 50 && map[x][y] < 100)
 		    {
 			gradiant = ((float) 1f / (map[x][y]));
-			color = new Color4f(0, gradiant + 0.2f, 0, 1);
+			color = new Color(0, gradiant + 0.2f, 0, 1);
 		    }
 		    else if (map[x][y] >= 100 && map[x][y] <= 150)
 		    {
 			gradiant = 1f - ((float) 1f / ((map[x][y] - 20) / 12));
-			color = new Color4f(0.6f + gradiant, 0.6f + gradiant,
+			color = new Color(0.6f + gradiant, 0.6f + gradiant,
 				0.6f + gradiant, 1);
 		    }
 		    else
 		    {
-			color = new Color4f(1, 1, 1, 1);
+			color = new Color(1, 1, 1, 1);
 		    }
 
 		    GL11.glColor4f(color.getRed(), color.getGreen(),
@@ -260,11 +259,11 @@ public class Chunk
 		{
 
 		    float gradiant = 0;
-		    Color4f color = new Color4f(0, 0, 0, 0);
+		    Color color = new Color(0, 0, 0, 0);
 		    if (map[x][y] < 5)
 		    {
 			gradiant = ((float) 1f / ((-map[x][y])));
-			color = new Color4f(0, 0, 0.3f + gradiant, 0.5f);
+			color = new Color(0, 0, 0.3f + gradiant, 0.5f);
 		    }
 		    GL11.glColor4f(color.getRed(), color.getGreen(),
 			    color.getBlue(), color.getAlpha());
@@ -288,7 +287,7 @@ public class Chunk
     public void domidpoint()
     {
 	map = new int[width][height];
-	mapColour = new Color4f[width][height];
+	mapColour = new Color[width][height];
 	// Erase the old map array..
 	for (int y = 0; y < height; y++)
 	{
