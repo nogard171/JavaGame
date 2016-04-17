@@ -10,8 +10,8 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.TrueTypeFont;
 
 public class Terrain {
-	int width = 100;
-	int height = 100;
+	int width = 10;
+	int height = 10;
 	int x = 0;
 	int y = 0;
 	boolean grid = false;
@@ -65,7 +65,7 @@ public class Terrain {
 		GL11.glTranslatef(x, 0, y);
 		for (int x = 0; x < objects.size(); x++) 
 		{
-			int dist = (int) -((-cam.position.x-objects.get(x).x)+(-cam.position.z-objects.get(x).z));
+			int dist = 0;//(int) -((-cam.position.x-objects.get(x).x)+(-cam.position.z-objects.get(x).z));
 			if(dist<5)
 			{
 			int[] sides = checkSides(objects.get(x));
