@@ -18,8 +18,8 @@ public class Window {
 	boolean vsync;
 
 	DisplayMode initDisplay = null;
-	int displayWidth = 1024;
-	int displayHeight = 768;
+	int displayWidth = 800;
+	int displayHeight = 600;
 	int displayFPS = 60;
 
 	public void start() {

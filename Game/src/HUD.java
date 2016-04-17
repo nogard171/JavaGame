@@ -16,8 +16,8 @@ public class HUD {
 		this.displayWidth = newWidth;
 		this.displayHeight = newHeight;
 		try {
-			texture = TextureLoader.getTexture("PNG", ResourceLoader
-					.getResourceAsStream("resources/images/test.png"));
+			texture = TextureLoader.getTexture("JPG", ResourceLoader
+					.getResourceAsStream("resources/images/test.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
