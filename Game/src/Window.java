@@ -179,6 +179,7 @@ public class Window {
 	}
 
 	public void initGL() {
+		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, displayWidth, displayHeight, 0, 1, -1);

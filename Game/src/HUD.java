@@ -16,8 +16,8 @@ public class HUD {
 		this.displayWidth = newWidth;
 		this.displayHeight = newHeight;
 		try {
-			texture = TextureLoader.getTexture("JPG", ResourceLoader
-					.getResourceAsStream("resources/images/test.jpg"));
+			texture = TextureLoader.getTexture("PNG", ResourceLoader
+					.getResourceAsStream("resources/images/test.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,6 +42,36 @@ public class HUD {
 		GL11.glEnd();
 		GL11.glPopMatrix();
 		GL11.glDisable(GL11.GL_TEXTURE_2D); 
+		RenderTextBox();
+	}
+	public void RenderTextBox()
+	{
+		int height = 20;
+		int width = 100;
+		int x=100;
+		int y=100;
+		
+		GL11.glTranslatef(x, y, 0);
+		GL11.glPushMatrix();
+		
+		GL11.glColor3f(0, 0, 0);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glVertex2f(0, 0);
+		GL11.glVertex2f(width, 0);
+		GL11.glVertex2f(width, height);
+		GL11.glVertex2f(0,height);
+		GL11.glEnd();	
+		
+		
+		GL11.glColor3f(1,1,1);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glVertex2f(1,1);
+		GL11.glVertex2f(width-1, 1);
+		GL11.glVertex2f(width-1, height-1);
+		GL11.glVertex2f(1, height-1);
+		GL11.glEnd();
+		GL11.glPopMatrix();
+		GL11.glTranslatef(-x, -y, 0);
 	}
 
 	public void Update(int delta) {
