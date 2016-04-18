@@ -1,9 +1,11 @@
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Point;
 
 public class Window {
 	/** time at last frame */
@@ -19,7 +21,7 @@ public class Window {
 
 	DisplayMode initDisplay = null;
 	int displayWidth = 800;
-	int displayHeight = 600;
+	int displayHeight = 300;
 	int displayFPS = 60;
 
 	public void start() {
@@ -38,7 +40,7 @@ public class Window {
 
 	public void Update(int delta) {
 
-		while (Keyboard.next()) {
+		/*while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
 				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 					try {
@@ -66,10 +68,11 @@ public class Window {
 					setDisplayMode(displayWidth, displayHeight, false);
 				}
 			}
-		}
-
+		}*/
+		mousePosition = new Point(Mouse.getX(),displayHeight-Mouse.getY());
 		updateFPS(); // update FPS Counter
 	}
+	Point mousePosition = new Point(0, 0);
 
 	/**
 	 * Set the display mode to be used
@@ -182,8 +185,11 @@ public class Window {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, displayWidth, displayHeight, 0, 1, -1);
+		GL11.glOrtho(0, displayWidth,displayHeight,0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	public void Render() {
