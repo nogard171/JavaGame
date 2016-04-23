@@ -1,3 +1,5 @@
+import javax.swing.JFrame;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -21,12 +23,13 @@ public class Window {
 
 	DisplayMode initDisplay = null;
 	int displayWidth = 800;
-	int displayHeight = 300;
+	int displayHeight = 600;
 	int displayFPS = 60;
+	boolean fullscreen = false;
 
 	public void start() {
 		Init();
-
+		Keyboard();
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
 			Update(delta);
@@ -34,44 +37,75 @@ public class Window {
 			Display.update();
 			Display.sync(displayFPS); // cap fps to 60fps
 		}
-
 		Display.destroy();
+		System.exit(0);
+	}
+
+	int keyCount = 256;
+	KeyState[] keys = {};
+	int[] keyPressed = {};
+	public enum KeyState {
+
+		RELEASED, // Not down
+
+		PRESSED, // Down, but not the first time
+
+		ONCE // Down for the first time
+
+	}
+
+	public void Keyboard() {
+		keys = new KeyState[keyCount];
+		keyPressed = new int[keyCount];
+		for (int i = 0; i < keyCount; i++) {
+			keys[i] = KeyState.RELEASED;
+			keyPressed[i] = 0;
+		}
+	}
+
+	public void poll() {
+		for (int i = 0; i < keyCount; i++) {
+			if (Keyboard.isKeyDown(i)&&keys[i] != KeyState.ONCE&&keys[i] != KeyState.PRESSED) {
+				keys[i] = KeyState.ONCE;
+				keyPressed[i]++;
+			} else if (Keyboard.isKeyDown(i)) {
+				keys[i] = KeyState.PRESSED;
+				keyPressed[i]++;
+			}else {
+				keys[i] = KeyState.RELEASED;
+			}
+		}
+	}
+
+	public boolean keyPressed(int key) {
+		return ((keys[key] == KeyState.PRESSED) ? true : false);
+	}
+	public boolean keyOnce(int key) {
+		return ((keys[key] == KeyState.ONCE) ? true : false);
 	}
 
 	public void Update(int delta) {
 
-		/*while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-					try {
-						if (Display.getDisplayMode() != initDisplay) {
-							Display.setDisplayMode(initDisplay);
-						}
-					} catch (LWJGLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.exit(0);
-				} else if (Keyboard.getEventKey() == Keyboard.KEY_F) {
-					// setDisplayMode(displayWidth,
-					// displayHeight,!Display.isFullscreen());
-				} else if (Keyboard.getEventKey() == Keyboard.KEY_V) {
-					vsync = !vsync;
-					Display.setVSyncEnabled(vsync);
-				} else if (Keyboard.getEventKey() == Keyboard.KEY_1) {
-					displayWidth = 800;
-					displayHeight = 600;
-					setDisplayMode(displayWidth, displayHeight, false);
-				} else if (Keyboard.getEventKey() == Keyboard.KEY_2) {
-					displayWidth = 1024;
-					displayHeight = 768;
-					setDisplayMode(displayWidth, displayHeight, false);
-				}
-			}
-		}*/
-		mousePosition = new Point(Mouse.getX(),displayHeight-Mouse.getY());
+		/*
+		 * while (Keyboard.next()) { if (Keyboard.getEventKeyState()) { if
+		 * (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) { try { if
+		 * (Display.getDisplayMode() != initDisplay) {
+		 * Display.setDisplayMode(initDisplay); } } catch (LWJGLException e) {
+		 * // TODO Auto-generated catch block e.printStackTrace(); }
+		 * System.exit(0); } else if (Keyboard.getEventKey() == Keyboard.KEY_F)
+		 * { fullscreen = !Display.isFullscreen(); setDisplayMode(displayWidth,
+		 * displayHeight,fullscreen); } else if (Keyboard.getEventKey() ==
+		 * Keyboard.KEY_V) { vsync = !vsync; Display.setVSyncEnabled(vsync); }
+		 * else if (Keyboard.getEventKey() == Keyboard.KEY_1) { displayWidth =
+		 * 800; displayHeight = 600; setDisplayMode(displayWidth,
+		 * displayHeight,fullscreen); } else if (Keyboard.getEventKey() ==
+		 * Keyboard.KEY_2) { displayWidth = 1024; displayHeight = 768;
+		 * setDisplayMode(displayWidth, displayHeight, fullscreen); } } }
+		 */
+		mousePosition = new Point(Mouse.getX(), displayHeight - Mouse.getY());
 		updateFPS(); // update FPS Counter
 	}
+
 	Point mousePosition = new Point(0, 0);
 
 	/**
@@ -86,8 +120,7 @@ public class Window {
 	 */
 	public void setDisplayMode(int width, int height, boolean fullscreen) {
 		// return if requested DisplayMode is already set
-		if ((Display.getDisplayMode().getWidth() == width)
-				&& (Display.getDisplayMode().getHeight() == height)
+		if ((Display.getDisplayMode().getWidth() == width) && (Display.getDisplayMode().getHeight() == height)
 				&& (Display.isFullscreen() == fullscreen)) {
 			return;
 		}
@@ -102,13 +135,10 @@ public class Window {
 				for (int i = 0; i < modes.length; i++) {
 					DisplayMode current = modes[i];
 
-					if ((current.getWidth() == width)
-							&& (current.getHeight() == height)) {
-						if ((targetDisplayMode == null)
-								|| (current.getFrequency() >= freq)) {
+					if ((current.getWidth() == width) && (current.getHeight() == height)) {
+						if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
 							if ((targetDisplayMode == null)
-									|| (current.getBitsPerPixel() > targetDisplayMode
-											.getBitsPerPixel())) {
+									|| (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
 								targetDisplayMode = current;
 								freq = targetDisplayMode.getFrequency();
 							}
@@ -119,10 +149,8 @@ public class Window {
 						// original display mode then it's probably best to go
 						// for this one
 						// since it's most likely compatible with the monitor
-						if ((current.getBitsPerPixel() == Display
-								.getDesktopDisplayMode().getBitsPerPixel())
-								&& (current.getFrequency() == Display
-										.getDesktopDisplayMode().getFrequency())) {
+						if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel())
+								&& (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency())) {
 							targetDisplayMode = current;
 							break;
 						}
@@ -133,8 +161,7 @@ public class Window {
 			}
 
 			if (targetDisplayMode == null) {
-				System.out.println("Failed to find value mode: " + width + "x"
-						+ height + " fs=" + fullscreen);
+				System.out.println("Failed to find value mode: " + width + "x" + height + " fs=" + fullscreen);
 				return;
 			}
 
@@ -142,8 +169,7 @@ public class Window {
 			Display.setFullscreen(fullscreen);
 
 		} catch (LWJGLException e) {
-			System.out.println("Unable to setup mode " + width + "x" + height
-					+ " fullscreen=" + fullscreen + e);
+			System.out.println("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + e);
 		}
 	}
 
@@ -185,9 +211,9 @@ public class Window {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, displayWidth,displayHeight,0, 1, -1);
+		GL11.glOrtho(0, displayWidth, displayHeight, 0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		
+
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}

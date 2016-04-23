@@ -11,45 +11,52 @@ public class Game extends Window {
 	float x = 400, y = 300;
 	/** angle of quad rotation */
 	float rotation = 0;
+	Client network = null;
 
 	public void Init() {
 		super.Init();
 		hud = new HUD(this.displayWidth, this.displayWidth);
+		network = new Client();
+		network.start();
 	}
-
 
 	public void Update(int delta) {
 		super.Update(delta);
-		hud.Update(delta,mousePosition);
+		super.poll();
+		hud.Update(delta, mousePosition);
 		// rotate quad
 		rotation += 0.15f * delta;
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+		if (keyOnce(Keyboard.KEY_RETURN)) {
+			System.out.println("Enter");
+		}
+		if (keyOnce(Keyboard.KEY_F1)) {
+			hud.debug = !hud.debug;
+			System.out.println("Debuged:" + hud.debug);
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
 			x -= 0.35f * delta;
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
 			x += 0.35f * delta;
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
 			y -= 0.35f * delta;
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
 			y += 0.35f * delta;
+		}
 		// keep quad on the screen
-		if (x < 0)
+		if (x < 0) {
 			x = 0;
-		if (x > super.displayWidth)
+		}
+		if (x > super.displayWidth) {
 			x = super.displayWidth;
-		if (y < 0)
+		}
+		if (y < 0) {
 			y = 0;
-		if (y > super.displayHeight)
+		}
+		if (y > super.displayHeight) {
 			y = super.displayHeight;
-		
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_F1) {
-					hud.debug = !hud.debug;
-					System.out.println("Debuged:"+hud.debug);
-				}
-			}
 		}
 	}
 

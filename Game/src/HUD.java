@@ -109,10 +109,10 @@ public class HUD {
 		 * 1); GL11.glEnd(); GL11.glPopMatrix();
 		 */
 
-		//drawString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 0, Color.green);
+		drawString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 0, Color.green);
 
 		GL11.glColor3f(0, 0, 0);
-		renderString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 0,8, Color.green);
+		renderString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 20,48, Color.green);
 		GL11.glTranslatef(-x, -y, 0);
 	}
 
@@ -122,54 +122,178 @@ public class HUD {
 			switch (c) {
 			case 'A':
 				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth);
-				GL11.glVertex2f(x+fontWidth, fontWidth);
-				GL11.glVertex2f(x+fontWidth,fontSize);
-				GL11.glVertex2f(x+0, fontSize);
+				GL11.glVertex2f(x+0, y+fontWidth);
+				GL11.glVertex2f(x+fontWidth,y+fontWidth);
+				GL11.glVertex2f(x+fontWidth,y+fontSize+(fontSize/8));
+				GL11.glVertex2f(x+0, y+fontSize+(fontSize/8));
 
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth);
-				GL11.glVertex2f(x+fontSize, fontWidth);
-				GL11.glVertex2f(x+fontSize, fontSize);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize);
+				GL11.glVertex2f(x+fontSize-fontWidth, y+fontWidth);
+				GL11.glVertex2f(x+fontSize, y+fontWidth);
+				GL11.glVertex2f(x+fontSize, y+fontSize+(fontSize/8));
+				GL11.glVertex2f(x+fontSize-fontWidth,y+ fontSize+(fontSize/8));
 
-				GL11.glVertex2f(x+fontWidth, 0);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth);
-				GL11.glVertex2f(x+fontWidth,fontWidth);
+				GL11.glVertex2f(x+fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+y);
 
-				GL11.glVertex2f(x+fontWidth, fontSize/2);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2);
-				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth);
-				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth);
+				GL11.glVertex2f(x+fontWidth, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
 				GL11.glEnd();
-				x+=8;
+				x+=fontSize;
 				break;
 			case 'B':
 				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth);
-				GL11.glVertex2f(x+fontWidth, fontWidth);
-				GL11.glVertex2f(x+fontWidth,fontSize);
-				GL11.glVertex2f(x+0, fontSize);
+				GL11.glVertex2f(x+0, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontSize+y);
+				GL11.glVertex2f(x+0, fontSize+y);
 
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth);
-				GL11.glVertex2f(x+fontSize, fontWidth);
-				GL11.glVertex2f(x+fontSize, fontSize);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontSize, fontWidth+y);
+				GL11.glVertex2f(x+fontSize, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
+				
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth + (fontSize/2)+y);
+				GL11.glVertex2f(x+fontSize, fontWidth + (fontSize/2)+y);
+				GL11.glVertex2f(x+fontSize, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
 
-				GL11.glVertex2f(x+fontWidth, 0);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth);
-				GL11.glVertex2f(x+fontWidth,fontWidth);
+				GL11.glVertex2f(x+fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+y);
 
-				GL11.glVertex2f(x+fontWidth, fontSize/2);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2);
-				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth);
-				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth);
+				GL11.glVertex2f(x+fontWidth, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
+				
+				
+				GL11.glVertex2f(x+fontWidth, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+fontSize+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+fontSize+y);
+				
 				GL11.glEnd();
-				x+=8;
+				x+=fontSize;
+				break;
+			case 'C':
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(x+0, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontSize+y);
+				GL11.glVertex2f(x+0, fontSize+y);
+
+				GL11.glVertex2f(x+fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+y);
+				
+				GL11.glVertex2f(x+fontWidth, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+fontSize+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+fontSize+y);
+				
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontSize, fontWidth+y);
+				GL11.glVertex2f(x+fontSize, y+(fontSize/4)+1);
+				GL11.glVertex2f(x+fontSize-fontWidth,y+(fontSize/4)+1);
+				
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize-(fontSize/4)+y);
+				GL11.glVertex2f(x+fontSize, fontSize-(fontSize/4)+ y);
+				GL11.glVertex2f(x+fontSize, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
+				
+				GL11.glEnd();
+				x+=fontSize;
+				break;
+			case 'D':
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(x+0, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontSize+y);
+				GL11.glVertex2f(x+0, fontSize+y);
+				
+				GL11.glVertex2f(x+fontSize-(fontSize/4), fontWidth+y);
+				GL11.glVertex2f(x+fontWidth+fontSize-(fontSize/4), fontWidth+y);
+				GL11.glVertex2f(x+fontWidth+fontSize-(fontSize/4),fontSize+y);
+				GL11.glVertex2f(x+fontSize-(fontSize/4), fontSize+y);
+
+				GL11.glVertex2f(x+fontWidth-(fontSize/8), 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), fontWidth+y);
+				GL11.glVertex2f(x+fontWidth-(fontSize/8),fontWidth+y);
+				
+				GL11.glVertex2f(x+fontWidth-(fontSize/8), fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), fontWidth+fontSize+y);
+				GL11.glVertex2f(x+fontWidth-(fontSize/8),fontWidth+fontSize+y);
+				
+				GL11.glEnd();
+				x+=fontSize;
+				break;
+			case 'E':
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(x+0, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontSize+y);
+				GL11.glVertex2f(x+0, fontSize+y);
+
+				GL11.glVertex2f(x+fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+y);
+
+				GL11.glVertex2f(x+fontWidth, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
+				
+				
+				GL11.glVertex2f(x+fontWidth, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+fontSize+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+fontSize+y);
+				
+				GL11.glEnd();
+				x+=fontSize;
+				break;
+			case 'F':
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(x+0, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontSize+y+1);
+				GL11.glVertex2f(x+0, fontSize+y+1);
+
+				GL11.glVertex2f(x+fontWidth-1, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
+				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
+				GL11.glVertex2f(x+fontWidth,fontWidth+y);
+
+				GL11.glVertex2f(x+fontWidth/2, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth-2, fontSize/2+y);
+				GL11.glVertex2f(x+fontSize-fontWidth-2, (fontSize/2)+fontWidth+y);
+				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
+				
+				GL11.glEnd();
+				x+=fontSize;
 				break;
 			case ' ':
-				x+=8;
+				GL11.glBegin(GL11.GL_QUADS);
+				for(int i = 0;i<fontSize;i+=2)
+				{
+					GL11.glVertex2f(x+i, fontSize+y);
+					GL11.glVertex2f(x+1+i, fontSize+y);
+					GL11.glVertex2f(x+1+i, fontWidth+fontSize+y);
+					GL11.glVertex2f(x+i,fontWidth+fontSize+y);
+				}
+				
+				
+				GL11.glEnd();
+				x+=fontSize;
 				break;
 			}
 		}
