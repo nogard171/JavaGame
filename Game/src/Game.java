@@ -6,6 +6,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
+
 public class Game extends Window {
 	/** position of quad */
 	float x = 400, y = 300;
@@ -22,63 +23,60 @@ public class Game extends Window {
 
 	public void Update(int delta) {
 		super.Update(delta);
-		super.poll();
-		hud.Update(delta, mousePosition);
+		hud.Update(delta, mouse,keyboard);
 		// rotate quad
-		rotation += 0.15f * delta;
-		if (keyOnce(Keyboard.KEY_RETURN)) {
+		//test.rotX += 0.15f * delta;
+		if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
 			System.out.println("Enter");
 		}
-		if (keyOnce(Keyboard.KEY_F1)) {
+		if (super.keyboard.keyOnce(Keyboard.KEY_F1)) {
 			hud.debug = !hud.debug;
 			System.out.println("Debuged:" + hud.debug);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-			x -= 0.35f * delta;
+		float speed = 0.35f * delta;
+		if (super.keyboard.keyPressed(Keyboard.KEY_LEFT)) {
+			test.Move(-speed, 0);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-			x += 0.35f * delta;
+		if (super.keyboard.keyPressed(Keyboard.KEY_RIGHT)) {
+			test.Move(speed, 0);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-			y -= 0.35f * delta;
+		if (super.keyboard.keyPressed(Keyboard.KEY_UP)) {
+			test.Move(0,-speed);
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-			y += 0.35f * delta;
+		if (super.keyboard.keyPressed(Keyboard.KEY_DOWN)) {
+			test.Move(0,speed);
 		}
 		// keep quad on the screen
-		if (x < 0) {
-			x = 0;
+		if (test.x < 0) {
+			test.x = 0;
 		}
-		if (x > super.displayWidth) {
-			x = super.displayWidth;
+		if (test.x > super.displayWidth) {
+			test.x = super.displayWidth;
 		}
-		if (y < 0) {
-			y = 0;
+		if (test.y < 0) {
+			test.y = 0;
 		}
-		if (y > super.displayHeight) {
-			y = super.displayHeight;
+		if (test.y > super.displayHeight) {
+			test.y = super.displayHeight;
 		}
+		
+		test.onClick(mouse,new Action(){
+			@Override
+			public void actionPerformed()
+			{
+			   System.out.println("clicked");
+			}
+		});
+		super.keyboard.endPoll();
 	}
 
 	HUD hud = null;
+	Entity test = new Entity(100, 100);
 
 	public void Render() {
 		super.Render();
 
-		// draw quad
-		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 0);
-		GL11.glRotatef(rotation, 0f, 0f, 1f);
-		GL11.glTranslatef(-x, -y, 0);
-
-		GL11.glColor3f(1, 0, 0);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(x - 50, y - 50);
-		GL11.glVertex2f(x + 50, y - 50);
-		GL11.glVertex2f(x + 50, y + 50);
-		GL11.glVertex2f(x - 50, y + 50);
-		GL11.glEnd();
-		GL11.glPopMatrix();
+		test.Render();
 
 		hud.Render();
 	}

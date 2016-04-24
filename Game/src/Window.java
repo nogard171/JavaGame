@@ -9,27 +9,29 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
+import javafx.scene.input.MouseButton;
+
 public class Window {
-	/** time at last frame */
-	long lastFrame;
-
-	/** frames per second */
-	int fps;
-	/** last fps time */
-	long lastFPS;
-
-	/** is VSync Enabled */
-	boolean vsync;
-
+	// display things
 	DisplayMode initDisplay = null;
 	int displayWidth = 800;
 	int displayHeight = 600;
 	int displayFPS = 60;
 	boolean fullscreen = false;
+	boolean vsync;
+	// fps things
+	long lastFrame;
+	int fps;
+	long lastFPS;
+	// inputs
+	MouseInput mouse = null;
+	KeyboardInput keyboard = null;
+	
 
 	public void start() {
 		Init();
-		Keyboard();
+		keyboard = new KeyboardInput();
+		mouse = new MouseInput();
 		while (!Display.isCloseRequested()) {
 			int delta = getDelta();
 			Update(delta);
@@ -41,48 +43,9 @@ public class Window {
 		System.exit(0);
 	}
 
-	int keyCount = 256;
-	KeyState[] keys = {};
-	int[] keyPressed = {};
-	public enum KeyState {
+	
 
-		RELEASED, // Not down
-
-		PRESSED, // Down, but not the first time
-
-		ONCE // Down for the first time
-
-	}
-
-	public void Keyboard() {
-		keys = new KeyState[keyCount];
-		keyPressed = new int[keyCount];
-		for (int i = 0; i < keyCount; i++) {
-			keys[i] = KeyState.RELEASED;
-			keyPressed[i] = 0;
-		}
-	}
-
-	public void poll() {
-		for (int i = 0; i < keyCount; i++) {
-			if (Keyboard.isKeyDown(i)&&keys[i] != KeyState.ONCE&&keys[i] != KeyState.PRESSED) {
-				keys[i] = KeyState.ONCE;
-				keyPressed[i]++;
-			} else if (Keyboard.isKeyDown(i)) {
-				keys[i] = KeyState.PRESSED;
-				keyPressed[i]++;
-			}else {
-				keys[i] = KeyState.RELEASED;
-			}
-		}
-	}
-
-	public boolean keyPressed(int key) {
-		return ((keys[key] == KeyState.PRESSED) ? true : false);
-	}
-	public boolean keyOnce(int key) {
-		return ((keys[key] == KeyState.ONCE) ? true : false);
-	}
+	
 
 	public void Update(int delta) {
 
@@ -102,11 +65,12 @@ public class Window {
 		 * Keyboard.KEY_2) { displayWidth = 1024; displayHeight = 768;
 		 * setDisplayMode(displayWidth, displayHeight, fullscreen); } } }
 		 */
-		mousePosition = new Point(Mouse.getX(), displayHeight - Mouse.getY());
+
+		keyboard.startPoll();
+		mouse.poll(this.displayHeight);
 		updateFPS(); // update FPS Counter
 	}
 
-	Point mousePosition = new Point(0, 0);
 
 	/**
 	 * Set the display mode to be used

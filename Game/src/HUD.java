@@ -37,6 +37,38 @@ public class HUD {
 		font = new TrueTypeFont(awtFont, false);
 	}
 
+	TrueTypeFont font;
+	boolean debug = false;
+
+	public void Update(int delta, MouseInput mouse,KeyboardInput keyboard) {
+
+		// System.out.println("X:" + mousePosition.getX() + " Y:" +
+		// mousePosition.getY());
+		textField.onClick(mouse, new Action() {
+			public void actionPerformed() {
+				System.out.println("clicked");
+			}
+		});
+		textField.onKey(keyboard, new Action(){	
+			@Override
+			public void actionPerformed()
+			{
+				boolean shift = keyboard.keyPressed(Keyboard.KEY_RSHIFT)||keyboard.keyPressed(Keyboard.KEY_LSHIFT);
+				//System.out.println("Key:"+keyboard.getKeyCode());
+				if(keyboard.getKeyChar(shift)!=""||keyboard.keyOnce(Keyboard.KEY_SPACE))
+				{
+					textField.addChar(keyboard.getKeyChar(shift));
+				}
+				if(keyboard.keyOnce(Keyboard.KEY_BACK))
+				{
+					//System.out.println("Backspace");
+					textField.backSpace();
+				}
+			}
+		});
+
+	}
+	Text textDisplay = new Text();
 	public void Render() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		texture.bind();
@@ -55,40 +87,16 @@ public class HUD {
 		GL11.glEnd();
 		GL11.glPopMatrix();
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		RenderTextBox();
+		
 		if (debug) {
 			RenderDebug();
 		}
+		textField.Render();
+		
+		
 	}
 
-	public void RenderTextBox() {
-		int height = 20;
-		int width = 100;
-		int x = 100;
-		int y = 100;
-
-		GL11.glTranslatef(x, y, 0);
-		GL11.glPushMatrix();
-
-		GL11.glColor3f(0, 0, 0);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(0, 0);
-		GL11.glVertex2f(width, 0);
-		GL11.glVertex2f(width, height);
-		GL11.glVertex2f(0, height);
-		GL11.glEnd();
-
-		GL11.glColor3f(1, 1, 1);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(1, 1);
-		GL11.glVertex2f(width - 1, 1);
-		GL11.glVertex2f(width - 1, height - 1);
-		GL11.glVertex2f(1, height - 1);
-		GL11.glEnd();
-		GL11.glPopMatrix();
-
-		GL11.glTranslatef(-x, -y, 0);
-	}
+	TextBox textField = new TextBox(100, 100);
 
 	public void RenderDebug() {
 		int height = 20;
@@ -110,194 +118,13 @@ public class HUD {
 		 */
 
 		drawString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 0, Color.green);
-
+		
 		GL11.glColor3f(0, 0, 0);
-		renderString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 20,48, Color.green);
+		text.Render("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 20, Color.green);
 		GL11.glTranslatef(-x, -y, 0);
 	}
+	Text text = new Text();
 
-	public void renderString(String s, int x, int y, int fontSize, Color color) {
-		int fontWidth = fontSize/6;
-		for (char c : s.toCharArray()) {
-			switch (c) {
-			case 'A':
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, y+fontWidth);
-				GL11.glVertex2f(x+fontWidth,y+fontWidth);
-				GL11.glVertex2f(x+fontWidth,y+fontSize+(fontSize/8));
-				GL11.glVertex2f(x+0, y+fontSize+(fontSize/8));
-
-				GL11.glVertex2f(x+fontSize-fontWidth, y+fontWidth);
-				GL11.glVertex2f(x+fontSize, y+fontWidth);
-				GL11.glVertex2f(x+fontSize, y+fontSize+(fontSize/8));
-				GL11.glVertex2f(x+fontSize-fontWidth,y+ fontSize+(fontSize/8));
-
-				GL11.glVertex2f(x+fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+y);
-
-				GL11.glVertex2f(x+fontWidth, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			case 'B':
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontSize+y);
-				GL11.glVertex2f(x+0, fontSize+y);
-
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontSize, fontWidth+y);
-				GL11.glVertex2f(x+fontSize, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
-				
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth + (fontSize/2)+y);
-				GL11.glVertex2f(x+fontSize, fontWidth + (fontSize/2)+y);
-				GL11.glVertex2f(x+fontSize, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
-
-				GL11.glVertex2f(x+fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+y);
-
-				GL11.glVertex2f(x+fontWidth, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
-				
-				
-				GL11.glVertex2f(x+fontWidth, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+fontSize+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+fontSize+y);
-				
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			case 'C':
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontSize+y);
-				GL11.glVertex2f(x+0, fontSize+y);
-
-				GL11.glVertex2f(x+fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+y);
-				
-				GL11.glVertex2f(x+fontWidth, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+fontSize+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+fontSize+y);
-				
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontSize, fontWidth+y);
-				GL11.glVertex2f(x+fontSize, y+(fontSize/4)+1);
-				GL11.glVertex2f(x+fontSize-fontWidth,y+(fontSize/4)+1);
-				
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize-(fontSize/4)+y);
-				GL11.glVertex2f(x+fontSize, fontSize-(fontSize/4)+ y);
-				GL11.glVertex2f(x+fontSize, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
-				
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			case 'D':
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontSize+y);
-				GL11.glVertex2f(x+0, fontSize+y);
-				
-				GL11.glVertex2f(x+fontSize-(fontSize/4), fontWidth+y);
-				GL11.glVertex2f(x+fontWidth+fontSize-(fontSize/4), fontWidth+y);
-				GL11.glVertex2f(x+fontWidth+fontSize-(fontSize/4),fontSize+y);
-				GL11.glVertex2f(x+fontSize-(fontSize/4), fontSize+y);
-
-				GL11.glVertex2f(x+fontWidth-(fontSize/8), 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), fontWidth+y);
-				GL11.glVertex2f(x+fontWidth-(fontSize/8),fontWidth+y);
-				
-				GL11.glVertex2f(x+fontWidth-(fontSize/8), fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth-(fontSize/8), fontWidth+fontSize+y);
-				GL11.glVertex2f(x+fontWidth-(fontSize/8),fontWidth+fontSize+y);
-				
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			case 'E':
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontSize+y);
-				GL11.glVertex2f(x+0, fontSize+y);
-
-				GL11.glVertex2f(x+fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+y);
-
-				GL11.glVertex2f(x+fontWidth, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, (fontSize/2)+fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
-				
-				
-				GL11.glVertex2f(x+fontWidth, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontSize+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+fontSize+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+fontSize+y);
-				
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			case 'F':
-				GL11.glBegin(GL11.GL_QUADS);
-				GL11.glVertex2f(x+0, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontSize+y+1);
-				GL11.glVertex2f(x+0, fontSize+y+1);
-
-				GL11.glVertex2f(x+fontWidth-1, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, 0+y);
-				GL11.glVertex2f(x+fontSize-fontWidth, fontWidth+y);
-				GL11.glVertex2f(x+fontWidth,fontWidth+y);
-
-				GL11.glVertex2f(x+fontWidth/2, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth-2, fontSize/2+y);
-				GL11.glVertex2f(x+fontSize-fontWidth-2, (fontSize/2)+fontWidth+y);
-				GL11.glVertex2f(x+fontWidth, (fontSize/2)+fontWidth+y);
-				
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			case ' ':
-				GL11.glBegin(GL11.GL_QUADS);
-				for(int i = 0;i<fontSize;i+=2)
-				{
-					GL11.glVertex2f(x+i, fontSize+y);
-					GL11.glVertex2f(x+1+i, fontSize+y);
-					GL11.glVertex2f(x+1+i, fontWidth+fontSize+y);
-					GL11.glVertex2f(x+i,fontWidth+fontSize+y);
-				}
-				
-				
-				GL11.glEnd();
-				x+=fontSize;
-				break;
-			}
-		}
-	}
 
 	public static void drawString(String s, int x, int y, Color color) {
 		GL11.glColor3f(color.r, color.g, color.b);
@@ -775,13 +602,4 @@ public class HUD {
 		GL11.glEnd();
 	}
 
-	TrueTypeFont font;
-	boolean debug = false;
-
-	public void Update(int delta, Point mousePosition) {
-
-		// System.out.println("X:" + mousePosition.getX() + " Y:" +
-		// mousePosition.getY());
-
-	}
 }
