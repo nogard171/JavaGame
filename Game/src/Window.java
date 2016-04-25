@@ -9,7 +9,6 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
-import javafx.scene.input.MouseButton;
 
 public class Window {
 	// display things

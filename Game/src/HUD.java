@@ -40,7 +40,7 @@ public class HUD {
 	TrueTypeFont font;
 	boolean debug = false;
 
-	public void Update(int delta, MouseInput mouse,KeyboardInput keyboard) {
+	public void Update(int delta, MouseInput mouse,final KeyboardInput keyboard) {
 
 		// System.out.println("X:" + mousePosition.getX() + " Y:" +
 		// mousePosition.getY());

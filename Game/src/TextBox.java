@@ -58,7 +58,7 @@ public class TextBox extends Entity {
 		    {
 		    	GL11.glColor3f(0,0,0);
 		    }
-		    int textWidth =(this.text.length()*(fontSize+1));
+		    int textWidth =(this.text.length()*(fontSize));
 			GL11.glVertex2f(2+textWidth, 2);
 			GL11.glVertex2f(4+textWidth, 2);
 			GL11.glVertex2f(4+textWidth, height-2);
