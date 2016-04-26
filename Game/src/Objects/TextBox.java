@@ -9,7 +9,6 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import javax.xml.soap.Text;
 
 import events.Action;
 import util.*;

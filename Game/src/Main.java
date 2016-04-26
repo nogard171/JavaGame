@@ -15,7 +15,6 @@ public class Main {
 				private String titleBar="login";
 				private boolean login;
 
-				@Override
 	            public void run() {
 	            	game.createAndShowGUI();
 	            }

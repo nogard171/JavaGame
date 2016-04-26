@@ -51,7 +51,7 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
 
 	// if key is being pressed, set the boolean for the specific key
 	// to true
-	@Override
+	
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() > 0 && e.getKeyCode() < 256) {
 			keys[e.getKeyCode()] = true;
@@ -69,7 +69,7 @@ public class InputHandler implements KeyListener, MouseListener, MouseMotionList
 	}
 
 	// if a key is just typed do nothing
-	@Override
+	
 	public void keyTyped(KeyEvent arg0) {
 
 	}
