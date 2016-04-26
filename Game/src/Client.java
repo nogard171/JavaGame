@@ -10,8 +10,9 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
 
-import objects.Account;
-import objects.Data;
+import Objects.Account;
+import Objects.NetworkData;
+
 
 public class Client extends Thread {
 	static String sentence;
@@ -34,7 +35,7 @@ public class Client extends Thread {
 
 			String hashtext = getHash(password);
 
-			Data newData = new Data("LOGIN");
+			NetworkData newData = new NetworkData("LOGIN");
 			
 			Account newAccount = new Account(username, hashtext);
 			newData.account = newAccount;
@@ -100,7 +101,7 @@ public class Client extends Thread {
 		}
 		while (true) {
 
-			Data newData = getData();
+			NetworkData newData = getData();
 
 			System.out.println("FROM SERVER: " + modifiedSentence);
 
@@ -125,7 +126,7 @@ public class Client extends Thread {
 		System.exit(0);
 	}
 
-	public void SendData(Data data) {
+	public void SendData(NetworkData data) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
 			oos.writeObject(data);
@@ -139,12 +140,12 @@ public class Client extends Thread {
 		}
 	}
 
-	public Data getData() {
-		Data newData = null;
+	public NetworkData getData() {
+		NetworkData newData = null;
 		try {
 
 			ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
-			newData = (Data) ois.readObject();
+			newData = (NetworkData) ois.readObject();
 
 			// inFromServer = new
 			// DataInputStream(clientSocket.getInputStream());

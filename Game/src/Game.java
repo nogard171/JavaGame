@@ -79,7 +79,7 @@ public class Game extends Window {
 		} else if (game_State == State.LOGIN) {
 			
 			if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
-				network.login("alex", "tesT");
+				network.login("alex", "test");
 			}
 			textField.onClick(mouse, new Action() {
 				public void actionPerformed() {
@@ -131,5 +131,6 @@ public class Game extends Window {
 	public static void main(String[] argv) {
 		Game displayExample = new Game();
 		displayExample.start();
+		
 	}
 }
