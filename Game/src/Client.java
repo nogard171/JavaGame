@@ -10,6 +10,9 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
 
+import objects.Account;
+import objects.Data;
+
 public class Client extends Thread {
 	static String sentence;
 	static String modifiedSentence;
@@ -32,11 +35,16 @@ public class Client extends Thread {
 			String hashtext = getHash(password);
 
 			Data newData = new Data("LOGIN");
+			
 			Account newAccount = new Account(username, hashtext);
 			newData.account = newAccount;
 			SendData(newData);
 			System.out.println("Login Request Sent.");
 			newData = getData();
+			if(newData==null)
+			{
+				System.out.println("failed");
+			}
 			System.out.println("Login Request Received.");
 			if (newData.command.equals("OK")) {
 				System.out.println("Login Successful.");
