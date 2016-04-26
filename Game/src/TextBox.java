@@ -22,8 +22,7 @@ public class TextBox extends Entity {
 			GL11.glColor3f(0.75f, 0.75f, 0.75f);
 		} else {
 			GL11.glColor3f(0, 0, 0);
-		}
-		
+		}		
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2f(0, 0);

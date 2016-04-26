@@ -46,7 +46,6 @@ public class Client extends Thread {
 				newData.message = "";
 				logged_in = false;
 			}
-
 		} else {
 			JOptionPane.showMessageDialog(null, error, "Error", JOptionPane.ERROR_MESSAGE);
 		}

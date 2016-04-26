@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+
+import org.lwjgl.util.Rectangle;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -6,79 +10,122 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
-
 public class Game extends Window {
 	/** position of quad */
 	float x = 400, y = 300;
 	/** angle of quad rotation */
 	float rotation = 0;
 	Client network = null;
+	private Rectangle window = new Rectangle(0, 0, 0, 0);
 
 	public void Init() {
 		super.Init();
+		window = new Rectangle(0, 0, this.displayWidth, this.displayHeight);
 		hud = new HUD(this.displayWidth, this.displayWidth);
 		network = new Client();
 		network.start();
+		int x = 0;
+		int y = 0;
+		int width = 10;
+		for (int i = 0; i < 100; i++) {
+			Entity obj = new Entity(x * 32, y * 32);
+			objects.add(obj);
+			if (x >= width) {
+				y++;
+				x = 0;
+			} else {
+				x++;
+			}
+		}
 	}
+
+	ArrayList<Entity> objects = new ArrayList<Entity>();
 
 	public void Update(int delta) {
 		super.Update(delta);
-		hud.Update(delta, mouse,keyboard);
-		// rotate quad
-		//test.rotX += 0.15f * delta;
-		if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
-			System.out.println("Enter");
-		}
-		if (super.keyboard.keyOnce(Keyboard.KEY_F1)) {
-			hud.debug = !hud.debug;
-			System.out.println("Debuged:" + hud.debug);
-		}
-		float speed = 0.35f * delta;
-		if (super.keyboard.keyPressed(Keyboard.KEY_LEFT)) {
-			test.Move(-speed, 0);
-		}
-		if (super.keyboard.keyPressed(Keyboard.KEY_RIGHT)) {
-			test.Move(speed, 0);
-		}
-		if (super.keyboard.keyPressed(Keyboard.KEY_UP)) {
-			test.Move(0,-speed);
-		}
-		if (super.keyboard.keyPressed(Keyboard.KEY_DOWN)) {
-			test.Move(0,speed);
-		}
-		// keep quad on the screen
-		if (test.x < 0) {
-			test.x = 0;
-		}
-		if (test.x > super.displayWidth) {
-			test.x = super.displayWidth;
-		}
-		if (test.y < 0) {
-			test.y = 0;
-		}
-		if (test.y > super.displayHeight) {
-			test.y = super.displayHeight;
-		}
-		
-		test.onClick(mouse,new Action(){
-			@Override
-			public void actionPerformed()
-			{
-			   System.out.println("clicked");
+		if (game_State == State.GAME) {
+
+			hud.Update(delta, mouse, keyboard);
+			// rotate quad
+			// test.rotX += 0.15f * delta;
+			if (super.keyboard.keyOnce(Keyboard.KEY_F1)) {
+				hud.debug = !hud.debug;
+				System.out.println("Debuged:" + hud.debug);
 			}
-		});
+			float speed = 0.35f * delta;
+			if (super.keyboard.keyPressed(Keyboard.KEY_LEFT)
+					&& test.getPosition().x > 0) {
+				test.Move(-speed, 0);
+			}
+			if (super.keyboard.keyPressed(Keyboard.KEY_RIGHT)
+					&& test.getPosition().x + test.width < super.displayWidth) {
+				test.Move(speed, 0);
+			}
+			if (super.keyboard.keyPressed(Keyboard.KEY_UP)
+					&& test.getPosition().y > 0) {
+				test.Move(0, -speed);
+			}
+			if (super.keyboard.keyPressed(Keyboard.KEY_DOWN)
+					&& test.getPosition().y + test.height < super.displayHeight) {
+				test.Move(0, speed);
+			}
+
+			test.onClick(mouse, new Action() {
+				@Override
+				public void actionPerformed() {
+					System.out.println("clicked");
+				}
+			});
+		} else if (game_State == State.LOGIN) {
+			
+			if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
+				network.login("alex", "tesT");
+			}
+			textField.onClick(mouse, new Action() {
+				public void actionPerformed() {
+					System.out.println("clicked");
+				}
+			});
+			textField.onKey(keyboard, new Action() {
+				@Override
+				public void actionPerformed() {
+					boolean shift = keyboard.keyPressed(Keyboard.KEY_RSHIFT)
+							|| keyboard.keyPressed(Keyboard.KEY_LSHIFT);
+					// System.out.println("Key:"+keyboard.getKeyCode());
+					if (keyboard.getKeyChar(shift) != ""
+							|| keyboard.keyOnce(Keyboard.KEY_SPACE)) {
+						textField.addChar(keyboard.getKeyChar(shift));
+					}
+					if (keyboard.keyOnce(Keyboard.KEY_BACK)) {
+						// System.out.println("Backspace");
+						textField.backSpace();
+					}
+				}
+			});
+		}
 		super.keyboard.endPoll();
 	}
 
+	State game_State = State.LOGIN;
 	HUD hud = null;
-	Entity test = new Entity(100, 100);
+	Entity test = new Entity(100, 100, 32, 32);
+
+	Entity obj = new Entity(120, 100);
+	TextBox textField = new TextBox(100, 100);
 
 	public void Render() {
 		super.Render();
+		if (game_State == State.GAME) {
+			test.Render();
 
-		test.Render();
-
-		hud.Render();
+			test.collide(obj);
+			obj.Render();
+			hud.Render();
+		} else if (game_State == State.LOGIN) {
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			textField.Render();
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
 	}
 
 	public static void main(String[] argv) {
