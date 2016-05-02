@@ -120,7 +120,7 @@ public class HUD {
 		drawString("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 0, Color.green);
 		
 		GL11.glColor3f(0, 0, 0);
-		text.Render("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 20, Color.green);
+		text.Render("A B C D E F G H I J K L M O N P Q R S T U V W X Y Z", 0, 20,8, Color.green);
 		GL11.glTranslatef(-x, -y, 0);
 	}
 	Text text = new Text();

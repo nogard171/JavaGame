@@ -1,5 +1,5 @@
 
 public enum State {
-LOGIN,GAME,TITLE
+LOGIN,GAME,TITLE, LOADING
 
 }

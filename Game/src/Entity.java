@@ -1,3 +1,4 @@
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -28,6 +29,7 @@ public class Entity extends Sprite {
 	public Direction isFacing = Direction.NORTH;
 	protected boolean isHovered;
 	protected boolean Focus = false;
+	public boolean isSolid = false;
 
 	public Entity(int i, int j) {
 		this.x = i;
@@ -83,7 +85,7 @@ public class Entity extends Sprite {
 		if (texture != null) {
 			texture.bind();
 		} else {
-			GL11.glColor3f(1, 0, 0);
+			GL11.glColor3f(0, 1, 0);
 		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef(x, y, 0);
@@ -96,6 +98,18 @@ public class Entity extends Sprite {
 		GL11.glVertex2f(x + width, y + height);
 		GL11.glVertex2f(x, y + height);
 		GL11.glEnd();
+		
+		if(isSolid)
+		{
+			GL11.glColor3f(1, 0, 0);
+			GL11.glBegin(GL11.GL_LINE_LOOP);
+			GL11.glVertex2f(x, y);
+			GL11.glVertex2f(x + width, y);
+			GL11.glVertex2f(x + width, y + height);
+			GL11.glVertex2f(x, y + height);
+			GL11.glEnd();
+		}
+		
 		GL11.glPopMatrix();
 	}
 	
@@ -135,7 +149,7 @@ public class Entity extends Sprite {
 	Point test = new Point(0,0);
 	Direction collosionDir = null;
 	public void collide(Entity obj) {
-		if(new Rectangle(this.x,this.y,this.width,this.height).intersects(new Rectangle(obj.x,obj.y,obj.width,obj.height))){
+		if(obj.isSolid&&new Rectangle(this.x,this.y,this.width,this.height).intersects(new Rectangle(obj.x,obj.y,obj.width,obj.height))){
 			if(collosionDir==null)
 			{
 				collosionDir = this.isFacing;

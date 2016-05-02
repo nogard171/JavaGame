@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 
 import org.lwjgl.util.Rectangle;
+import org.newdawn.slick.Color;
+
+import Objects.MapData;
+import Objects.NetworkData;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -17,6 +21,7 @@ public class Game extends Window {
 	float rotation = 0;
 	Client network = null;
 	private Rectangle window = new Rectangle(0, 0, 0, 0);
+	MapData map = null;
 
 	public void Init() {
 		super.Init();
@@ -24,22 +29,15 @@ public class Game extends Window {
 		hud = new HUD(this.displayWidth, this.displayWidth);
 		network = new Client();
 		network.start();
-		int x = 0;
-		int y = 0;
-		int width = 10;
-		for (int i = 0; i < 100; i++) {
-			Entity obj = new Entity(x * 32, y * 32);
-			objects.add(obj);
-			if (x >= width) {
-				y++;
-				x = 0;
-			} else {
-				x++;
-			}
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		network.login("alex", "test");
 	}
 
-	ArrayList<Entity> objects = new ArrayList<Entity>();
 
 	public void Update(int delta) {
 		super.Update(delta);
@@ -53,16 +51,14 @@ public class Game extends Window {
 				System.out.println("Debuged:" + hud.debug);
 			}
 			float speed = 0.35f * delta;
-			if (super.keyboard.keyPressed(Keyboard.KEY_LEFT)
-					&& test.getPosition().x > 0) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_LEFT) && test.getPosition().x > 0) {
 				test.Move(-speed, 0);
 			}
 			if (super.keyboard.keyPressed(Keyboard.KEY_RIGHT)
 					&& test.getPosition().x + test.width < super.displayWidth) {
 				test.Move(speed, 0);
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_UP)
-					&& test.getPosition().y > 0) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_UP) && test.getPosition().y > 0) {
 				test.Move(0, -speed);
 			}
 			if (super.keyboard.keyPressed(Keyboard.KEY_DOWN)
@@ -77,7 +73,7 @@ public class Game extends Window {
 				}
 			});
 		} else if (game_State == State.LOGIN) {
-			
+
 			if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
 				network.login("alex", "test");
 			}
@@ -92,8 +88,7 @@ public class Game extends Window {
 					boolean shift = keyboard.keyPressed(Keyboard.KEY_RSHIFT)
 							|| keyboard.keyPressed(Keyboard.KEY_LSHIFT);
 					// System.out.println("Key:"+keyboard.getKeyCode());
-					if (keyboard.getKeyChar(shift) != ""
-							|| keyboard.keyOnce(Keyboard.KEY_SPACE)) {
+					if (keyboard.getKeyChar(shift) != "" || keyboard.keyOnce(Keyboard.KEY_SPACE)) {
 						textField.addChar(keyboard.getKeyChar(shift));
 					}
 					if (keyboard.keyOnce(Keyboard.KEY_BACK)) {
@@ -102,6 +97,10 @@ public class Game extends Window {
 					}
 				}
 			});
+			if(network.logged_in)
+			{
+				game_State = State.LOADING;
+			}
 		}
 		super.keyboard.endPoll();
 	}
@@ -116,9 +115,15 @@ public class Game extends Window {
 	public void Render() {
 		super.Render();
 		if (game_State == State.GAME) {
+			if(network.map!=null)
+			{
+				//System.out.println("map count:" + network.map.ground.size());				
+				network.map.Render();
+			}
 			test.Render();
 
 			test.collide(obj);
+			obj.isSolid = true;
 			obj.Render();
 			hud.Render();
 		} else if (game_State == State.LOGIN) {
@@ -126,11 +131,30 @@ public class Game extends Window {
 			textField.Render();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
+		 else if (game_State == State.LOADING) {
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				new Text().Render("Loading: " + network.map.ground.size()+"/"+network.mapCount,100,100, 8, Color.black);
+				if(network.map.ground.size()>=network.mapCount)
+				{
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					game_State = State.GAME;
+				}
+				else
+				{
+					System.out.println("Loading: " + network.map.ground.size()+"/"+network.mapCount);
+				}
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+			}
 	}
 
 	public static void main(String[] argv) {
 		Game displayExample = new Game();
 		displayExample.start();
-		
+
 	}
 }

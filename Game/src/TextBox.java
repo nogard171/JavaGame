@@ -39,7 +39,7 @@ public class TextBox extends Entity {
 		GL11.glVertex2f(1, height - 1);
 		GL11.glEnd();
 		int fontSize = 8;
-		textDisplay.Render(this.text, 0,0, Color.black);
+		textDisplay.Render(this.text, 0,0,8, Color.black);
 		
 		if (this.Focus)
 		{
