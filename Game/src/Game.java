@@ -38,7 +38,6 @@ public class Game extends Window {
 		network.login("alex", "test");
 	}
 
-
 	public void Update(int delta) {
 		super.Update(delta);
 		if (game_State == State.GAME) {
@@ -51,14 +50,16 @@ public class Game extends Window {
 				System.out.println("Debuged:" + hud.debug);
 			}
 			float speed = 0.35f * delta;
-			if (super.keyboard.keyPressed(Keyboard.KEY_LEFT) && test.getPosition().x > 0) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_LEFT)
+					&& test.getPosition().x > 0) {
 				test.Move(-speed, 0);
 			}
 			if (super.keyboard.keyPressed(Keyboard.KEY_RIGHT)
 					&& test.getPosition().x + test.width < super.displayWidth) {
 				test.Move(speed, 0);
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_UP) && test.getPosition().y > 0) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_UP)
+					&& test.getPosition().y > 0) {
 				test.Move(0, -speed);
 			}
 			if (super.keyboard.keyPressed(Keyboard.KEY_DOWN)
@@ -88,7 +89,8 @@ public class Game extends Window {
 					boolean shift = keyboard.keyPressed(Keyboard.KEY_RSHIFT)
 							|| keyboard.keyPressed(Keyboard.KEY_LSHIFT);
 					// System.out.println("Key:"+keyboard.getKeyCode());
-					if (keyboard.getKeyChar(shift) != "" || keyboard.keyOnce(Keyboard.KEY_SPACE)) {
+					if (keyboard.getKeyChar(shift) != ""
+							|| keyboard.keyOnce(Keyboard.KEY_SPACE)) {
 						textField.addChar(keyboard.getKeyChar(shift));
 					}
 					if (keyboard.keyOnce(Keyboard.KEY_BACK)) {
@@ -97,8 +99,7 @@ public class Game extends Window {
 					}
 				}
 			});
-			if(network.logged_in)
-			{
+			if (network.logged_in) {
 				game_State = State.LOADING;
 			}
 		}
@@ -115,9 +116,8 @@ public class Game extends Window {
 	public void Render() {
 		super.Render();
 		if (game_State == State.GAME) {
-			if(network.map!=null)
-			{
-				//System.out.println("map count:" + network.map.ground.size());				
+			if (network.map != null) {
+				// System.out.println("map count:" + network.map.ground.size());
 				network.map.Render();
 			}
 			test.Render();
@@ -130,12 +130,12 @@ public class Game extends Window {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			textField.Render();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-		}
-		 else if (game_State == State.LOADING) {
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-				new Text().Render("Loading: " + network.map.ground.size()+"/"+network.mapCount,100,100, 8, Color.black);
-				if(network.map.ground.size()>=network.mapCount)
-				{
+		} else if (game_State == State.LOADING) {
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			if (network.map != null && network.map.ground != null) {
+				new Text().Render("Loading: " + network.map.ground.size() + "/"
+						+ network.mapCount, 100, 100, 8, Color.black);
+				if (network.map.ground.size() >= network.mapCount) {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -143,13 +143,13 @@ public class Game extends Window {
 						e.printStackTrace();
 					}
 					game_State = State.GAME;
+				} else {
+					System.out.println("Loading: " + network.map.ground.size()
+							+ "/" + network.mapCount);
 				}
-				else
-				{
-					System.out.println("Loading: " + network.map.ground.size()+"/"+network.mapCount);
-				}
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
 			}
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
 	}
 
 	public static void main(String[] argv) {

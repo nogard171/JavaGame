@@ -124,7 +124,7 @@ public class Client extends Thread {
 			}
 			String command = data.command;
 			if (data.command.startsWith("MAP")) {
-				map = new Map();
+				map = new Map(data.map.width,data.map.height);
 				mapCount = data.map.count;
 			}
 			if(data.command.startsWith("TILE")) {

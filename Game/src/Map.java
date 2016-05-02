@@ -22,10 +22,16 @@ public class Map extends MapData {
 		// TODO Auto-generated constructor stub
 	}
 
+	public Map(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
 	public Texture loadTexture(String texture_url) {
 		Texture texture = null;
 		try {
-			texture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream(texture_url));
+			texture = TextureLoader.getTexture("JPG",
+					ResourceLoader.getResourceAsStream(texture_url));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,7 +42,8 @@ public class Map extends MapData {
 	public void addTile(TileData tileData) {
 		this.ground.add(tileData);
 
-		Tile tile = new Tile(this.ground.size(),tileData.x, tileData.y, tileData.width, tileData.height);
+		Tile tile = new Tile(this.ground.size(), tileData.x, tileData.y,
+				tileData.width, tileData.height);
 		// tiles.add(tile);
 		tiles.put(tileData.x + "," + tileData.y, tile);
 	}
@@ -44,11 +51,22 @@ public class Map extends MapData {
 	public void Render() {
 		GL11.glPushMatrix();
 		GL11.glColor3f(1, 1, 1);
-		for (int x = 0; x < Display.getWidth()/32; x++) {
-			for (int y = 0; y < Display.getHeight()/32; y++) {
-				String key = (x*32)+","+(y*32);
+		int newWidth = Math.round((Display.getWidth() / 32));
+		int newHeight = Math.round((Display.getHeight() / 32))+1;
+		if (newWidth > width) {
+			newWidth = width;
+		}
+		if (newHeight > height) {
+			newHeight = height;
+		}
+
+		for (int x = 0; x < newWidth; x++) {
+			for (int y = 0; y < newHeight; y++) {
+				String key = (x * 32) + "," + (y * 32);
+
 				if (tiles.get(key).texture == null) {
-					Texture tex = loadTexture(this.ground.get(tiles.get(key).index).texture);
+					Texture tex = loadTexture(this.ground
+							.get(tiles.get(key).index).texture);
 					tiles.get(key).texture = tex;
 				}
 				tiles.get(key).Render();
