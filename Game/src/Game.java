@@ -1,7 +1,10 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.util.Rectangle;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 import Objects.MapData;
 import Objects.NetworkData;
@@ -36,6 +39,13 @@ public class Game extends Window {
 			e.printStackTrace();
 		}
 		network.login("alex", "test");
+		
+		try {
+			test.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/images/grass.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void Update(int delta) {
@@ -66,7 +76,6 @@ public class Game extends Window {
 					&& test.getPosition().y + test.height < super.displayHeight) {
 				test.Move(0, speed);
 			}
-
 			test.onClick(mouse, new Action() {
 				@Override
 				public void actionPerformed() {

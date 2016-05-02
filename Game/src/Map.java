@@ -54,10 +54,10 @@ public class Map extends MapData {
 		int newWidth = Math.round((Display.getWidth() / 32));
 		int newHeight = Math.round((Display.getHeight() / 32))+1;
 		if (newWidth > width) {
-			newWidth = width;
+			newWidth = width-1;
 		}
 		if (newHeight > height) {
-			newHeight = height;
+			newHeight = height-1;
 		}
 
 		for (int x = 0; x < newWidth; x++) {
