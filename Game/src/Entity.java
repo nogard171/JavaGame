@@ -48,22 +48,21 @@ public class Entity extends Sprite {
 		this.width = k;
 		this.height = l;
 	}
-int clicked = 0;
+
+	int clicked = 0;
+
 	public void onClick(MouseInput mouse, Action act) {
 		this.onHover(mouse);
 		if (mouse.mouseDown(0)) {
 			// TODO Auto-generated method stub
 			if (this.isHovered) {
 				this.Focus = true;
-				
-				if(clicked==0)
-				{
+
+				if (clicked == 0) {
 					clicked++;
 					act.actionPerformed();
-				}
-				else
-				{
-					clicked=0;
+				} else {
+					clicked = 0;
 				}
 
 			} else {
@@ -79,8 +78,7 @@ int clicked = 0;
 
 	public void onHover(MouseInput mouse) {
 
-		if (new Rectangle(this.x, this.x, this.width, this.height)
-				.contains(mouse.getPosition())) {
+		if (new Rectangle(this.x, this.x, this.width, this.height).contains(mouse.getPosition())) {
 			this.isHovered = true;
 		} else {
 			this.isHovered = false;
@@ -136,12 +134,10 @@ int clicked = 0;
 	}
 
 	public void Move(float xSpeed, float ySpeed) {
-		if ((xSpeed < 0 && collosionDir == Direction.EAST)
-				|| (xSpeed > 0 && collosionDir == Direction.WEST)) {
+		if ((xSpeed < 0 && collosionDir == Direction.EAST) || (xSpeed > 0 && collosionDir == Direction.WEST)) {
 			xSpeed = 0;
 		}
-		if ((ySpeed < 0 && collosionDir == Direction.NORTH)
-				|| (ySpeed > 0 && collosionDir == Direction.SOUTH)) {
+		if ((ySpeed < 0 && collosionDir == Direction.NORTH) || (ySpeed > 0 && collosionDir == Direction.SOUTH)) {
 			ySpeed = 0;
 		}
 		this.x += xSpeed;
@@ -167,10 +163,8 @@ int clicked = 0;
 	Direction collosionDir = null;
 
 	public void collide(Entity obj) {
-		if (obj.isSolid
-				&& new Rectangle(this.x, this.y, this.width, this.height)
-						.intersects(new Rectangle(obj.x, obj.y, obj.width,
-								obj.height))) {
+		if (obj.isSolid && new Rectangle(this.x, this.y, this.width, this.height)
+				.intersects(new Rectangle(obj.x, obj.y, obj.width, obj.height))) {
 			if (collosionDir == null) {
 				collosionDir = this.isFacing;
 			}

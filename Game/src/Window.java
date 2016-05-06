@@ -17,6 +17,7 @@ public class Window {
 	int displayHeight = 600;
 	int displayFPS = 60;
 	boolean fullscreen = false;
+	boolean resizable = true;
 	boolean vsync;
 	// fps things
 	long lastFrame;
@@ -47,7 +48,8 @@ public class Window {
 	
 
 	public void Update(int delta) {
-
+		this.displayWidth = Display.getWidth();
+		this.displayHeight = Display.getHeight();
 		/*
 		 * while (Keyboard.next()) { if (Keyboard.getEventKeyState()) { if
 		 * (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) { try { if
@@ -195,6 +197,7 @@ public class Window {
 		initDisplay = Display.getDisplayMode();
 		try {
 			Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
+			Display.setResizable(resizable);
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();

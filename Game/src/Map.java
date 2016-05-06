@@ -12,10 +12,14 @@ import Objects.MapData;
 import Objects.TileData;
 
 public class Map extends MapData {
-	HashMap<String, Tile> tiles = new HashMap<String, Tile>();
+	HashMap<String, Tile> objects = new HashMap<String, Tile>();
 
 	public Map(ArrayList<TileData> ground) {
 		this.ground = ground;
+	}
+
+	public Map(HashMap<String, TileData> tiles) {
+		this.tiles = tiles;
 	}
 
 	public Map() {
@@ -30,8 +34,7 @@ public class Map extends MapData {
 	public Texture loadTexture(String texture_url) {
 		Texture texture = null;
 		try {
-			texture = TextureLoader.getTexture("JPG",
-					ResourceLoader.getResourceAsStream(texture_url));
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(texture_url));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,37 +43,37 @@ public class Map extends MapData {
 	}
 
 	public void addTile(TileData tileData) {
-		this.ground.add(tileData);
-
-		Tile tile = new Tile(this.ground.size(), tileData.x, tileData.y,
-				tileData.width, tileData.height);
+		// this.tiles.put(tileData.x+","+tileData.y,tileData);
+		Tile tile = new Tile(tileData.x, tileData.y, tileData.width, tileData.height);
 		// tiles.add(tile);
-		tiles.put(tileData.x + "," + tileData.y, tile);
+		objects.put(tileData.x + "," + tileData.y, tile);
+		tiles.put(tileData.x + "," + tileData.y, tileData);
 	}
 
 	public void Render() {
 		GL11.glPushMatrix();
 		GL11.glColor3f(1, 1, 1);
 		int newWidth = Math.round((Display.getWidth() / 32));
-		int newHeight = Math.round((Display.getHeight() / 32))+1;
-		if (newWidth > width) {
-			newWidth = width-1;
-		}
-		if (newHeight > height) {
-			newHeight = height-1;
-		}
+		int newHeight = Math.round((Display.getHeight() / 32)) + 1;
 
-		for (int x = 0; x < newWidth; x++) {
-			for (int y = 0; y < newHeight; y++) {
-				String key = (x * 32) + "," + (y * 32);
-
-				if (tiles.get(key).texture == null) {
-					Texture tex = loadTexture(this.ground
-							.get(tiles.get(key).index).texture);
-					tiles.get(key).texture = tex;
+		int count = 0;
+		if (objects.size() > 0) {
+			for (int x = 0; x < newWidth; x++) {
+				for (int y = 0; y < newHeight; y++) {
+					String key = (x * 32) + "," + (y * 32);
+					if (objects.containsKey(key)) {
+						if (objects.get(key) != null) {
+							if (objects.get(key).texture == null && tiles.containsKey(key)) {
+								Texture tex = loadTexture(tiles.get(key).texture);
+								objects.get(key).texture = tex;
+							}
+							objects.get(key).Render();
+							count++;
+						}
+					}
 				}
-				tiles.get(key).Render();
 			}
+			System.out.println(count);
 		}
 		GL11.glPopMatrix();
 	}

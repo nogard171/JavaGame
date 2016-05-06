@@ -26,7 +26,6 @@ public class Tile extends Sprite {
 	}
 
 	public void Render() {
-		if (this.x >= 0 && this.x + this.width <= Display.getWidth()&&this.y >= 0 && this.y-this.height <= Display.getHeight()) {
 			GL11.glColor3f(1, 1, 1);
 			if (texture != null) {
 
@@ -61,6 +60,6 @@ public class Tile extends Sprite {
 				GL11.glVertex2f(this.x, this.y + this.height);
 				GL11.glEnd();
 			}
-		}
+		
 	}
 }

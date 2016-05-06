@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.swing.JOptionPane;
 
+import org.lwjgl.opengl.Display;
+
 import Objects.Account;
 import Objects.MapData;
 import Objects.NetworkData;
@@ -55,13 +57,22 @@ public class Client extends Thread {
 			}
 			System.out.println("Login Request Received.");
 			if (newData.command.equals("OK")) {
-				System.out.println("Login Successful.");
+				this.map = new Map(10,10);
+				this.map.count = newData.map.count;
+				System.out.println("Login Successful.");			
+				NetworkData mapdata = new NetworkData("MAP");
+				int newWidth = Math.round((Display.getWidth() / 32));
+				int newHeight = Math.round((Display.getHeight() / 32)) + 1;
+				mapdata.map = new MapData(0,0,newWidth,newHeight);				
+				SendData(mapdata);				
 				logged_in = true;
 			} else if (newData.command.equals("FAILED")) {
 				System.out.println("Login Unsuccessful:" + newData.message);
 				newData.message = "";
 				logged_in = false;
 			}
+			
+			
 		} else {
 			JOptionPane.showMessageDialog(null, error, "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -111,6 +122,7 @@ public class Client extends Thread {
 				e.printStackTrace();
 			}
 		}
+		
 		while (logged_in) {
 			NetworkData data = new NetworkData("");
 			try {
@@ -123,14 +135,11 @@ public class Client extends Thread {
 				e.printStackTrace();
 			}
 			String command = data.command;
-			if (data.command.startsWith("MAP")) {
-				map = new Map(data.map.width,data.map.height);
-				mapCount = data.map.count;
-			}
 			if(data.command.startsWith("TILE")) {
-				for(int i = 0;i<data.map.ground.size();i++)
+				for(int i = 0;i<data.map.tiles.size();i++)
 				{
-					this.map.addTile(data.map.ground.get(i));
+					String key = data.map.ground.get(i).x+","+data.map.ground.get(i).y;
+					this.map.addTile(data.map.tiles.get(key));
 				}
 			}
 			if (command.startsWith("CLOSE/C")) {

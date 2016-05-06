@@ -141,10 +141,10 @@ public class Game extends Window {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		} else if (game_State == State.LOADING) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			if (network.map != null && network.map.ground != null) {
+			if (network.map != null && network.map.tiles != null) {
 				new Text().Render("Loading: " + network.map.ground.size() + "/"
 						+ network.mapCount, 100, 100, 8, Color.black);
-				if (network.map.ground.size() >= network.mapCount) {
+				if (network.map.tiles.size() >= network.mapCount) {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
@@ -153,7 +153,7 @@ public class Game extends Window {
 					}
 					game_State = State.GAME;
 				} else {
-					System.out.println("Loading: " + network.map.ground.size()
+					System.out.println("Loading: " + network.map.tiles.size()
 							+ "/" + network.mapCount);
 				}
 			}
