@@ -39,13 +39,13 @@ public class Game extends Window {
 			e.printStackTrace();
 		}
 		network.login("alex", "test");
-		
+		/*
 		try {
 			test.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/images/grass.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void Update(int delta) {
@@ -131,9 +131,9 @@ public class Game extends Window {
 			}
 			test.Render();
 
-			test.collide(obj);
-			obj.isSolid = true;
-			obj.Render();
+			//test.collide(obj);
+			//obj.isSolid = true;
+			//obj.Render();
 			hud.Render();
 		} else if (game_State == State.LOGIN) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);

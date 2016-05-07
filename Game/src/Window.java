@@ -17,7 +17,7 @@ public class Window {
 	int displayHeight = 600;
 	int displayFPS = 60;
 	boolean fullscreen = false;
-	boolean resizable = true;
+	boolean resizable = false;
 	boolean vsync;
 	// fps things
 	long lastFrame;
@@ -48,8 +48,6 @@ public class Window {
 	
 
 	public void Update(int delta) {
-		this.displayWidth = Display.getWidth();
-		this.displayHeight = Display.getHeight();
 		/*
 		 * while (Keyboard.next()) { if (Keyboard.getEventKeyState()) { if
 		 * (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) { try { if
@@ -178,7 +176,6 @@ public class Window {
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, displayWidth, displayHeight, 0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
@@ -188,7 +185,7 @@ public class Window {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 		// R,G,B,A Set The Color To Blue One Time Only
-		GL11.glColor3f(0.5f, 0.5f, 1.0f);
+		GL11.glColor3f(1, 1, 1);
 
 	}
 

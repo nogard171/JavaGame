@@ -51,6 +51,8 @@ public class Map extends MapData {
 	}
 
 	public void Render() {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		
 		GL11.glPushMatrix();
 		GL11.glColor3f(1, 1, 1);
 		int newWidth = Math.round((Display.getWidth() / 32));
@@ -73,8 +75,9 @@ public class Map extends MapData {
 					}
 				}
 			}
-			System.out.println(count);
 		}
 		GL11.glPopMatrix();
+		//GL11.glColor3f(0,0,0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 }

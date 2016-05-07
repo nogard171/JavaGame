@@ -66,6 +66,7 @@ public class TextBox extends Entity {
 		}
 		GL11.glPopMatrix();
 		GL11.glTranslatef(-x, -y, 0);
+		GL11.glColor3f(1, 1, 1);
 	}
 
 	public void addChar(String keyChar) {

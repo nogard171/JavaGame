@@ -95,7 +95,7 @@ public class Entity extends Sprite {
 			GL11.glColor3f(1, 1, 1);
 			texture.bind();
 		} else {
-			GL11.glColor3f(0, 1, 0);
+			GL11.glColor3f(1,0,0);
 		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef(x, y, 0);
