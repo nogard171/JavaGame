@@ -9,16 +9,16 @@ import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import Objects.MapData;
-import Objects.TileData;
+import Objects.ObjectData;
 
 public class Map extends MapData {
 	HashMap<String, Tile> objects = new HashMap<String, Tile>();
 
-	public Map(ArrayList<TileData> ground) {
+	public Map(ArrayList<ObjectData> ground) {
 		this.ground = ground;
 	}
 
-	public Map(HashMap<String, TileData> tiles) {
+	public Map(HashMap<String, ObjectData> tiles) {
 		this.tiles = tiles;
 	}
 
@@ -42,7 +42,7 @@ public class Map extends MapData {
 		return texture;
 	}
 
-	public void addTile(TileData tileData) {
+	public void addTile(ObjectData tileData) {
 		// this.tiles.put(tileData.x+","+tileData.y,tileData);
 		Tile tile = new Tile(tileData.x, tileData.y, tileData.width, tileData.height);
 		// tiles.add(tile);
