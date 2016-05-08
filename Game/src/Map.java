@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,5 +100,19 @@ public class Map extends MapData {
 			break;
 		}
 		return loadTexture(textureURL);
+	}
+	public Color getColor(ObjectType objType) {
+		Color color = Color.white;
+		switch (objType) {
+		case GRASS:
+			color = Color.green;
+			break;
+		case DIRT:
+			color = new Color(139,69,19);
+			break;
+		default:
+			break;
+		}
+		return color;
 	}
 }
