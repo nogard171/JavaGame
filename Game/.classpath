@@ -10,5 +10,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/SharedLibrary"/>
+	<classpathentry kind="lib" path="resources/jar/luaj-jse-3.0.1.jar"/>
+	<classpathentry kind="lib" path="resources/jar/luaj-jme-3.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

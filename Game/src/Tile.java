@@ -1,12 +1,16 @@
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
+
+import Objects.ObjectType;
 
 public class Tile extends Sprite {
 	Texture texture = null;
 	public int x = 0;
 	public int y = 0;
 	private boolean border;
+	public ObjectType type = ObjectType.OTHER;
 
 	public Tile(int x2, int y2, int width, int height) {
 		this.x = x2;

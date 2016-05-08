@@ -10,6 +10,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import Objects.MapData;
 import Objects.ObjectData;
+import Objects.ObjectType;
 
 public class Map extends MapData {
 	HashMap<String, Tile> objects = new HashMap<String, Tile>();
@@ -43,31 +44,34 @@ public class Map extends MapData {
 	}
 
 	public void addTile(ObjectData tileData) {
-		// this.tiles.put(tileData.x+","+tileData.y,tileData);
 		Tile tile = new Tile(tileData.x, tileData.y, tileData.width, tileData.height);
+		tile.type = tileData.type;
 		// tiles.add(tile);
 		objects.put(tileData.x + "," + tileData.y, tile);
-		tiles.put(tileData.x + "," + tileData.y, tileData);
 	}
 
-	public void Render() {
+	
+	
+	public void Render(int playerX, int playerY) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		
+
 		GL11.glPushMatrix();
 		GL11.glColor3f(1, 1, 1);
-		int newWidth = Math.round((Display.getWidth() / 32));
-		int newHeight = Math.round((Display.getHeight() / 32)) + 1;
-
+		int newWidth = Math.round((Display.getWidth() / 32)) + 3;
+		int newHeight = Math.round((Display.getHeight() / 32)) + 3;
 		int count = 0;
+		int texturedCount = 0;
+		int newX = (playerX / 32)-1;
+		int newY = (playerY / 32)-1;
 		if (objects.size() > 0) {
-			for (int x = 0; x < newWidth; x++) {
-				for (int y = 0; y < newHeight; y++) {
+			for (int x = newX; x < (newX + newWidth); x++) {
+				for (int y = newY; y < newY + newHeight; y++) {
 					String key = (x * 32) + "," + (y * 32);
 					if (objects.containsKey(key)) {
 						if (objects.get(key) != null) {
-							if (objects.get(key).texture == null && tiles.containsKey(key)) {
-								Texture tex = loadTexture(tiles.get(key).texture);
-								objects.get(key).texture = tex;
+							if (objects.get(key).texture == null&&texturedCount<=(newWidth+newHeight)/2) {
+								objects.get(key).texture = getTexture(objects.get(key).type);
+								texturedCount++;
 							}
 							objects.get(key).Render();
 							count++;
@@ -76,8 +80,24 @@ public class Map extends MapData {
 				}
 			}
 		}
+		System.out.println("Count:" + count);
 		GL11.glPopMatrix();
-		//GL11.glColor3f(0,0,0);
+		// GL11.glColor3f(0,0,0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
+
+	public Texture getTexture(ObjectType objType) {
+		String textureURL = "";
+		switch (objType) {
+		case GRASS:
+			textureURL = "resources/images/grass.png";
+			break;
+		case DIRT:
+			textureURL = "resources/images/dirt.png";
+			break;
+		default:
+			break;
+		}
+		return loadTexture(textureURL);
 	}
 }

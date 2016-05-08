@@ -70,11 +70,13 @@ public class TextBox extends Entity {
 	}
 
 	public void addChar(String keyChar) {
+		if(this.Focus)
+		{
 		this.text += keyChar;
-		
+		}		
 	}
 	public void backSpace() {
-		if(this.text.length()>0)
+		if(this.text.length()>0&&this.Focus)
 		{
 			this.text = this.text.substring(0, this.text.length()-1);			
 		}		

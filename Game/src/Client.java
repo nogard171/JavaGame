@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
@@ -24,9 +26,10 @@ public class Client extends Thread {
 	static DataOutputStream outToServer = null;
 	static DataInputStream inFromServer = null;
 	public String error = "";
+	private int port = 2222;
 
 	public void initilize() throws UnknownHostException, IOException {
-		clientSocket = new Socket("localhost", 2222);
+		clientSocket = new Socket("localhost", port);
 	}
 
 	boolean logged_in = false;
@@ -57,26 +60,30 @@ public class Client extends Thread {
 			}
 			System.out.println("Login Request Received.");
 			if (newData.command.equals("OK")) {
-				this.map = new Map(10,10);
+				this.map = new Map(10, 10);
 				this.map.count = newData.map.count;
-				System.out.println("Login Successful.");			
-				NetworkData mapdata = new NetworkData("MAP");
+				System.out.println("Login Successful.");
 				int newWidth = Math.round((Display.getWidth() / 32));
 				int newHeight = Math.round((Display.getHeight() / 32)) + 1;
-				mapdata.map = new MapData(0,0,newWidth,newHeight);				
-				SendData(mapdata);				
+				getMap(0, 0, newHeight, newWidth);
 				logged_in = true;
 			} else if (newData.command.equals("FAILED")) {
 				System.out.println("Login Unsuccessful:" + newData.message);
 				newData.message = "";
 				logged_in = false;
 			}
-			
-			
+
 		} else {
 			JOptionPane.showMessageDialog(null, error, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return logged_in;
+	}
+
+	public void getMap(int i, int j, int newHeight, int newWidth) {
+		// TODO Auto-generated method stub
+		NetworkData mapdata = new NetworkData("MAP");
+		mapdata.map = new MapData(i, j, newWidth, newHeight);
+		SendData(mapdata);
 	}
 
 	public String getHash(String text) {
@@ -95,6 +102,8 @@ public class Client extends Thread {
 	}
 
 	public void run() {
+		HashMap<String, String> options = new Config().getConfig("network");
+		this.port = Integer.parseInt(options.get("port"));
 		try {
 			initilize();
 		} catch (ConnectException err) {
@@ -112,7 +121,9 @@ public class Client extends Thread {
 		closeClient();
 		System.out.println("Connection Terminated.");
 	}
-	public int mapCount  = 0;
+
+	public int mapCount = 0;
+
 	public void clientLoop() {
 		while (!logged_in) {
 			try {
@@ -122,7 +133,7 @@ public class Client extends Thread {
 				e.printStackTrace();
 			}
 		}
-		
+
 		while (logged_in) {
 			NetworkData data = new NetworkData("");
 			try {
@@ -135,11 +146,12 @@ public class Client extends Thread {
 				e.printStackTrace();
 			}
 			String command = data.command;
-			if(data.command.startsWith("TILE")) {
-				for(int i = 0;i<data.map.tiles.size();i++)
-				{
-					String key = data.map.ground.get(i).x+","+data.map.ground.get(i).y;
-					this.map.addTile(data.map.tiles.get(key));
+			
+			if (data.command.startsWith("TILE")) {
+				for (int i = 0; i < data.map.ground.size(); i++) {
+					if (data.map.ground.get(i) != null) {
+						this.map.addTile(data.map.ground.get(i));
+					}
 				}
 			}
 			if (command.startsWith("CLOSE/C")) {

@@ -23,16 +23,19 @@ import org.lwjgl.util.Rectangle;
 public class Entity extends Sprite {
 	public int x = 100;
 	public int y = 100;
+	public Point screenPosition = new Point(0, 0);
 	public int rotX = 0;
 	public int rotY = 0;
 	public Direction isFacing = Direction.NORTH;
 	protected boolean isHovered;
 	protected boolean Focus = false;
 	public boolean isSolid = false;
+	public boolean movable = false;
 
 	public Entity(int i, int j) {
 		this.x = i;
 		this.y = j;
+		screenPosition = new Point(i, j);
 		this.width = 32;
 		this.height = 32;
 	}
@@ -43,6 +46,7 @@ public class Entity extends Sprite {
 
 	public Entity(int i, int j, int k, int l) {
 		// TODO Auto-generated constructor stub
+		screenPosition = new Point(i, j);
 		this.x = i;
 		this.y = j;
 		this.width = k;
@@ -86,6 +90,7 @@ public class Entity extends Sprite {
 	}
 
 	public void Update(float delta) {
+
 	}
 
 	int time = 0;
@@ -95,53 +100,92 @@ public class Entity extends Sprite {
 			GL11.glColor3f(1, 1, 1);
 			texture.bind();
 		} else {
-			GL11.glColor3f(1,0,0);
+			GL11.glColor3f(1, 0, 0);
 		}
 		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 0);
+		GL11.glTranslatef(screenPosition.x, screenPosition.y, 0);
 		GL11.glRotatef(rotX, 0f, 0f, 1f);
-		GL11.glTranslatef(-x, -y, 0);
 
 		GL11.glBegin(GL11.GL_QUADS);
 		if (texture != null) {
 			GL11.glTexCoord2f(0, 0);
-			GL11.glVertex2f(x, y);
+			GL11.glVertex2f(0, 0);
 			GL11.glTexCoord2f(1, 0);
-			GL11.glVertex2f(x + width, y);
+			GL11.glVertex2f(width, 0);
 			GL11.glTexCoord2f(1, 1);
-			GL11.glVertex2f(x + width, y + height);
+			GL11.glVertex2f(width, height);
 			GL11.glTexCoord2f(0, 1);
-			GL11.glVertex2f(x, y + height);
+			GL11.glVertex2f(0, height);
 		} else {
-			GL11.glVertex2f(x, y);
-			GL11.glVertex2f(x + width, y);
-			GL11.glVertex2f(x + width, y + height);
-			GL11.glVertex2f(x, y + height);
+			GL11.glVertex2f(0, 0);
+			GL11.glVertex2f(width, 0);
+			GL11.glVertex2f(width, height);
+			GL11.glVertex2f(0, height);
 		}
 		GL11.glEnd();
+		GL11.glColor3f(0, 0, 1);
+		if (this.isFacing == Direction.EAST) {
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f(0, 0);
+			GL11.glVertex2f(width / 4, 0);
+			GL11.glVertex2f(width / 4, height);
+			GL11.glVertex2f(0, height);
+			GL11.glEnd();
+		}
+		else if (this.isFacing == Direction.WEST) {
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f((width / 4)*3, 0);
+			GL11.glVertex2f(width , 0);
+			GL11.glVertex2f(width, height);
+			GL11.glVertex2f((width / 4)*3, height);
+			GL11.glEnd();
+		}
+		else if (this.isFacing == Direction.NORTH) {
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f(0, 0);
+			GL11.glVertex2f(width, 0);
+			GL11.glVertex2f(width, height/4);
+			GL11.glVertex2f(0, height/4);
+			GL11.glEnd();
+		}
+		else if (this.isFacing == Direction.SOUTH) {
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f(0, (height / 4)*3);
+			GL11.glVertex2f(width , (height / 4)*3);
+			GL11.glVertex2f(width, height);
+			GL11.glVertex2f(0, height);
+			GL11.glEnd();
+		}
 
 		if (isSolid) {
 			GL11.glColor3f(1, 0, 0);
 			GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex2f(x, y);
-			GL11.glVertex2f(x + width, y);
-			GL11.glVertex2f(x + width, y + height);
-			GL11.glVertex2f(x, y + height);
+			GL11.glVertex2f(0, 0);
+			GL11.glVertex2f(width, 0);
+			GL11.glVertex2f(width, height);
+			GL11.glVertex2f(0, height);
 			GL11.glEnd();
 		}
 
+		GL11.glTranslatef(-screenPosition.x, -screenPosition.y, 0);
 		GL11.glPopMatrix();
 	}
 
 	public void Move(float xSpeed, float ySpeed) {
+
 		if ((xSpeed < 0 && collosionDir == Direction.EAST) || (xSpeed > 0 && collosionDir == Direction.WEST)) {
 			xSpeed = 0;
 		}
 		if ((ySpeed < 0 && collosionDir == Direction.NORTH) || (ySpeed > 0 && collosionDir == Direction.SOUTH)) {
 			ySpeed = 0;
 		}
+
 		this.x += xSpeed;
 		this.y += ySpeed;
+		if (movable) {
+			this.screenPosition.x = this.x;
+			this.screenPosition.y = this.y;
+		}
 		if (xSpeed < 0) {
 			this.isFacing = Direction.EAST;
 		} else if (xSpeed > 0) {

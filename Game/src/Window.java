@@ -1,3 +1,9 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javax.swing.JFrame;
 
 import org.lwjgl.LWJGLException;
@@ -8,7 +14,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
-
 
 public class Window {
 	// display things
@@ -26,7 +31,6 @@ public class Window {
 	// inputs
 	MouseInput mouse = null;
 	KeyboardInput keyboard = null;
-	
 
 	public void start() {
 		Init();
@@ -43,44 +47,13 @@ public class Window {
 		System.exit(0);
 	}
 
-	
-
-	
-
 	public void Update(int delta) {
-		/*
-		 * while (Keyboard.next()) { if (Keyboard.getEventKeyState()) { if
-		 * (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) { try { if
-		 * (Display.getDisplayMode() != initDisplay) {
-		 * Display.setDisplayMode(initDisplay); } } catch (LWJGLException e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); }
-		 * System.exit(0); } else if (Keyboard.getEventKey() == Keyboard.KEY_F)
-		 * { fullscreen = !Display.isFullscreen(); setDisplayMode(displayWidth,
-		 * displayHeight,fullscreen); } else if (Keyboard.getEventKey() ==
-		 * Keyboard.KEY_V) { vsync = !vsync; Display.setVSyncEnabled(vsync); }
-		 * else if (Keyboard.getEventKey() == Keyboard.KEY_1) { displayWidth =
-		 * 800; displayHeight = 600; setDisplayMode(displayWidth,
-		 * displayHeight,fullscreen); } else if (Keyboard.getEventKey() ==
-		 * Keyboard.KEY_2) { displayWidth = 1024; displayHeight = 768;
-		 * setDisplayMode(displayWidth, displayHeight, fullscreen); } } }
-		 */
 
 		keyboard.startPoll();
 		mouse.poll(this.displayHeight);
 		updateFPS(); // update FPS Counter
 	}
 
-
-	/**
-	 * Set the display mode to be used
-	 * 
-	 * @param width
-	 *            The width of the display required
-	 * @param height
-	 *            The height of the display required
-	 * @param fullscreen
-	 *            True if we want fullscreen mode
-	 */
 	public void setDisplayMode(int width, int height, boolean fullscreen) {
 		// return if requested DisplayMode is already set
 		if ((Display.getDisplayMode().getWidth() == width) && (Display.getDisplayMode().getHeight() == height)
@@ -190,6 +163,8 @@ public class Window {
 	}
 
 	public void Init() {
+		
+
 		// TODO Auto-generated method stub
 		initDisplay = Display.getDisplayMode();
 		try {

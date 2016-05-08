@@ -47,7 +47,7 @@ public class Game extends Window {
 			e.printStackTrace();
 		}*/
 	}
-
+	boolean moved = false;
 	public void Update(int delta) {
 		super.Update(delta);
 		if (game_State == State.GAME) {
@@ -59,22 +59,22 @@ public class Game extends Window {
 				hud.debug = !hud.debug;
 				System.out.println("Debuged:" + hud.debug);
 			}
-			float speed = 0.35f * delta;
-			if (super.keyboard.keyPressed(Keyboard.KEY_LEFT)
-					&& test.getPosition().x > 0) {
+			float speed = 0.15f * delta;
+			if (super.keyboard.keyPressed(Keyboard.KEY_A)) {
 				test.Move(-speed, 0);
+				moved = true;
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_RIGHT)
-					&& test.getPosition().x + test.width < super.displayWidth) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_D)) {
 				test.Move(speed, 0);
+				moved = true;
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_UP)
-					&& test.getPosition().y > 0) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_W)) {
 				test.Move(0, -speed);
+				moved = true;
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_DOWN)
-					&& test.getPosition().y + test.height < super.displayHeight) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_S)) {
 				test.Move(0, speed);
+				moved = true;
 			}
 			test.onClick(mouse, new Action() {
 				@Override
@@ -82,6 +82,13 @@ public class Game extends Window {
 					System.out.println("clicked");
 				}
 			});
+			if(moved)
+			{
+				int newWidth = Math.round((Display.getWidth() / 32))+2;
+				int newHeight = Math.round((Display.getHeight() / 32)) + 2;
+				network.getMap(test.x,test.y,newHeight,newWidth);
+				moved = false;
+			}
 		} else if (game_State == State.LOGIN) {
 
 			if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
@@ -117,7 +124,7 @@ public class Game extends Window {
 
 	State game_State = State.LOGIN;
 	HUD hud = null;
-	Entity test = new Entity(100, 100, 32, 32);
+	Entity test = new Entity(400,300, 32, 32);
 
 	Entity obj = new Entity(120, 100);
 	TextBox textField = new TextBox(100, 100);
@@ -127,9 +134,20 @@ public class Game extends Window {
 		if (game_State == State.GAME) {
 			if (network.map != null) {
 				// System.out.println("map count:" + network.map.ground.size());
-				network.map.Render();
+				GL11.glTranslatef(-test.x,-test.y, 0);
+				network.map.Render(test.x,test.y);
+				GL11.glTranslatef(test.x,test.y, 0);
 			}
+			//GL11.glTranslatef(test.x,test.y, 0);
 			test.Render();
+			//GL11.glTranslatef(-test.x,-test.y, 0);
+			int newWidth = Display.getWidth()/32;
+			int newHeight = Display.getHeight()/32;
+
+			if(network.map!=null&&network.map.tiles.containsKey(test.x+","+test.y))
+			{
+				System.out.println("worked");
+			}
 
 			//test.collide(obj);
 			//obj.isSolid = true;
@@ -145,12 +163,7 @@ public class Game extends Window {
 				new Text().Render("Loading: " + network.map.ground.size() + "/"
 						+ network.mapCount, 100, 100, 8, Color.black);
 				if (network.map.tiles.size() >= network.mapCount) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					
 					game_State = State.GAME;
 				} else {
 					System.out.println("Loading: " + network.map.tiles.size()
