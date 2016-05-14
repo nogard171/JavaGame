@@ -97,6 +97,7 @@ public class Entity extends Sprite {
 
 	public void Render() {
 		if (texture != null) {
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glColor3f(1, 1, 1);
 			texture.bind();
 		} else {
@@ -123,52 +124,51 @@ public class Entity extends Sprite {
 			GL11.glVertex2f(0, height);
 		}
 		GL11.glEnd();
-		GL11.glColor3f(0, 0, 1);
-		if (this.isFacing == Direction.EAST) {
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(0, 0);
-			GL11.glVertex2f(width / 4, 0);
-			GL11.glVertex2f(width / 4, height);
-			GL11.glVertex2f(0, height);
-			GL11.glEnd();
+		if (this.movable) {
+			GL11.glColor3f(0, 0, 1);
+			if (this.isFacing == Direction.EAST) {
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(0, 0);
+				GL11.glVertex2f(width / 4, 0);
+				GL11.glVertex2f(width / 4, height);
+				GL11.glVertex2f(0, height);
+				GL11.glEnd();
+			} else if (this.isFacing == Direction.WEST) {
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f((width / 4) * 3, 0);
+				GL11.glVertex2f(width, 0);
+				GL11.glVertex2f(width, height);
+				GL11.glVertex2f((width / 4) * 3, height);
+				GL11.glEnd();
+			} else if (this.isFacing == Direction.NORTH) {
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(0, 0);
+				GL11.glVertex2f(width, 0);
+				GL11.glVertex2f(width, height / 4);
+				GL11.glVertex2f(0, height / 4);
+				GL11.glEnd();
+			} else if (this.isFacing == Direction.SOUTH) {
+				GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2f(0, (height / 4) * 3);
+				GL11.glVertex2f(width, (height / 4) * 3);
+				GL11.glVertex2f(width, height);
+				GL11.glVertex2f(0, height);
+				GL11.glEnd();
+			}
 		}
-		else if (this.isFacing == Direction.WEST) {
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f((width / 4)*3, 0);
-			GL11.glVertex2f(width , 0);
-			GL11.glVertex2f(width, height);
-			GL11.glVertex2f((width / 4)*3, height);
-			GL11.glEnd();
-		}
-		else if (this.isFacing == Direction.NORTH) {
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(0, 0);
-			GL11.glVertex2f(width, 0);
-			GL11.glVertex2f(width, height/4);
-			GL11.glVertex2f(0, height/4);
-			GL11.glEnd();
-		}
-		else if (this.isFacing == Direction.SOUTH) {
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2f(0, (height / 4)*3);
-			GL11.glVertex2f(width , (height / 4)*3);
-			GL11.glVertex2f(width, height);
-			GL11.glVertex2f(0, height);
-			GL11.glEnd();
-		}
-
-		if (isSolid) {
-			GL11.glColor3f(1, 0, 0);
-			GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex2f(0, 0);
-			GL11.glVertex2f(width, 0);
-			GL11.glVertex2f(width, height);
-			GL11.glVertex2f(0, height);
-			GL11.glEnd();
-		}
-
+			if (isSolid) {
+				GL11.glColor3f(1, 0, 0);
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+				GL11.glVertex2f(0, 0);
+				GL11.glVertex2f(width, 0);
+				GL11.glVertex2f(width, height);
+				GL11.glVertex2f(0, height);
+				GL11.glEnd();
+			}
+		
 		GL11.glTranslatef(-screenPosition.x, -screenPosition.y, 0);
 		GL11.glPopMatrix();
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 
 	public void Move(float xSpeed, float ySpeed) {

@@ -1,8 +1,10 @@
+import java.awt.Font;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.util.Rectangle;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
@@ -25,27 +27,25 @@ public class Game extends Window {
 	Client network = null;
 	private Rectangle window = new Rectangle(0, 0, 0, 0);
 	MapData map = null;
-
+	TrueTypeFont font = null;
 	public void Init() {
 		super.Init();
+		Font awtFont = new Font("Times New Roman", Font.BOLD, 14);
+		font = new TrueTypeFont(awtFont, false);
 		window = new Rectangle(0, 0, this.displayWidth, this.displayHeight);
 		hud = new HUD(this.displayWidth, this.displayWidth);
 		network = new Client();
 		network.start();
+		
+		//network.login("alex", "test");
+		
 		try {
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		network.login("alex", "test");
-		/*
-		try {
-			test.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/images/grass.png"));
+			login_bg.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/images/bg.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
+		
 	}
 	boolean moved = false;
 	public void Update(int delta) {
@@ -128,9 +128,10 @@ public class Game extends Window {
 
 	Entity obj = new Entity(120, 100);
 	TextBox textField = new TextBox(100, 100);
-
+	Entity login_bg = new Entity(0,0,1024,1024);
 	public void Render() {
 		super.Render();
+		Color.white.bind();
 		if (game_State == State.GAME) {
 			if (network.map != null) {
 				// System.out.println("map count:" + network.map.ground.size());
@@ -138,6 +139,8 @@ public class Game extends Window {
 				network.map.Render(test.x,test.y);
 				GL11.glTranslatef(test.x,test.y, 0);
 			}
+			
+			
 			//GL11.glTranslatef(test.x,test.y, 0);
 			test.Render();
 			//GL11.glTranslatef(-test.x,-test.y, 0);
@@ -155,13 +158,14 @@ public class Game extends Window {
 			hud.Render();
 		} else if (game_State == State.LOGIN) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			login_bg.Render();
 			textField.Render();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		} else if (game_State == State.LOADING) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			if (network.map != null && network.map.tiles != null) {
-				new Text().Render("Loading: " + network.map.ground.size() + "/"
-						+ network.mapCount, 100, 100, 8, Color.black);
+				font.drawString(100,100, "Loading: " + network.map.ground.size() + "/"
+						+ network.mapCount, Color.black);
 				if (network.map.tiles.size() >= network.mapCount) {
 					
 					game_State = State.GAME;

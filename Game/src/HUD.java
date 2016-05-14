@@ -68,7 +68,6 @@ public class HUD {
 		});
 
 	}
-	Text textDisplay = new Text();
 	public void Render() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		texture.bind();
@@ -124,7 +123,6 @@ public class HUD {
 		GL11.glTranslatef(-x, -y, 0);
 		GL11.glColor3f(1,1,1);
 	}
-	Text text = new Text();
 
 
 	public static void drawString(String s, int x, int y, Color color) {
