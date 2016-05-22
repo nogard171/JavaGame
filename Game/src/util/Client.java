@@ -12,6 +12,9 @@ import javax.swing.JOptionPane;
 
 import Objects.Account;
 import Objects.Data;
+import Objects.Map;
+import Objects.MapData;
+import Objects.NetworkData;
 
 public class Client extends Thread {
 	static String sentence;
@@ -22,6 +25,7 @@ public class Client extends Thread {
 	static DataOutputStream outToServer = null;
 	static DataInputStream inFromServer = null;
 	public String error = "";
+	public Map map = null;
 
 	public void initilize() throws UnknownHostException, IOException {
 		clientSocket = new Socket("localhost", 2222);
@@ -34,15 +38,32 @@ public class Client extends Thread {
 
 			String hashtext = getHash(password);
 
-			Data newData = new Data("LOGIN");
+			NetworkData newData = new NetworkData("LOGIN");
+
 			Account newAccount = new Account(username, hashtext);
 			newData.account = newAccount;
 			SendData(newData);
 			System.out.println("Login Request Sent.");
-			newData = getData();
+			try {
+				newData = getData();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (newData == null) {
+				System.out.println("failed");
+			}
 			System.out.println("Login Request Received.");
 			if (newData.command.equals("OK")) {
+				this.map = new Map(10, 10);
+				this.map.count = newData.map.count;
 				System.out.println("Login Successful.");
+				int newWidth = Math.round((Display.getWidth() / 32));
+				int newHeight = Math.round((Display.getHeight() / 32)) + 1;
+				getMap(0, 0, newHeight, newWidth);
 				logged_in = true;
 			} else if (newData.command.equals("FAILED")) {
 				System.out.println("Login Unsuccessful:" + newData.message);
@@ -54,6 +75,12 @@ public class Client extends Thread {
 			JOptionPane.showMessageDialog(null, error, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return logged_in;
+	}
+	public void getMap(int i, int j, int newHeight, int newWidth) {
+		// TODO Auto-generated method stub
+		NetworkData mapdata = new NetworkData("MAP");
+		mapdata.map = new MapData(i, j, newWidth, newHeight);
+		SendData(mapdata);
 	}
 
 	public String getHash(String text) {
