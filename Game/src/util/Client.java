@@ -7,14 +7,15 @@ import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
 import Objects.Account;
-import Objects.Data;
-import Objects.Map;
 import Objects.MapData;
 import Objects.NetworkData;
+import Objects.Map;
 
 public class Client extends Thread {
 	static String sentence;
@@ -25,13 +26,14 @@ public class Client extends Thread {
 	static DataOutputStream outToServer = null;
 	static DataInputStream inFromServer = null;
 	public String error = "";
-	public Map map = null;
+	private int port = 2222;
 
 	public void initilize() throws UnknownHostException, IOException {
-		clientSocket = new Socket("localhost", 2222);
+		clientSocket = new Socket("localhost", port);
 	}
 
 	boolean logged_in = false;
+	public Map map = null;
 
 	public Boolean login(String username, String password) {
 		if (error == "") {
@@ -61,9 +63,7 @@ public class Client extends Thread {
 				this.map = new Map(10, 10);
 				this.map.count = newData.map.count;
 				System.out.println("Login Successful.");
-				int newWidth = Math.round((Display.getWidth() / 32));
-				int newHeight = Math.round((Display.getHeight() / 32)) + 1;
-				getMap(0, 0, newHeight, newWidth);
+				getMap(0, 0, 800,600);
 				logged_in = true;
 			} else if (newData.command.equals("FAILED")) {
 				System.out.println("Login Unsuccessful:" + newData.message);
@@ -76,6 +76,7 @@ public class Client extends Thread {
 		}
 		return logged_in;
 	}
+
 	public void getMap(int i, int j, int newHeight, int newWidth) {
 		// TODO Auto-generated method stub
 		NetworkData mapdata = new NetworkData("MAP");
@@ -99,6 +100,8 @@ public class Client extends Thread {
 	}
 
 	public void run() {
+		HashMap<String, String> options = new Config().getConfig("network");
+		this.port = Integer.parseInt(options.get("port"));
 		try {
 			initilize();
 		} catch (ConnectException err) {
@@ -117,20 +120,44 @@ public class Client extends Thread {
 		System.out.println("Connection Terminated.");
 	}
 
+	public int mapCount = 0;
+
 	public void clientLoop() {
 		while (!logged_in) {
-
-		}
-		while (true) {
-
-			Data newData = getData();
-
-			System.out.println("FROM SERVER: " + modifiedSentence);
-
-			if (modifiedSentence.startsWith("CLOSE/C")) {
-				break;
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			if (error != "") {
+		}
+
+		while (logged_in) {
+			NetworkData data = new NetworkData("");
+			try {
+				data = getData();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String command = data.command;
+			
+			if (data.command.startsWith("TILE")) {
+				for (int i = 0; i < data.map.ground.size(); i++) {
+					if (data.map.ground.get(i) != null) {
+						this.map.addTile(data.map.ground.get(i));
+					}
+				}
+				for (int i = 0; i < data.map.objectArray.size(); i++) {
+					if (data.map.objectArray.get(i) != null) {
+						this.map.addObject(data.map.objectArray.get(i));
+					}
+				}
+			}
+			if (command.startsWith("CLOSE/C")) {
 				break;
 			}
 		}
@@ -148,9 +175,12 @@ public class Client extends Thread {
 		System.exit(0);
 	}
 
-	public void SendData(Data data) {
+	ObjectOutputStream oos = null;
+
+	public void SendData(NetworkData data) {
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+			oos = new ObjectOutputStream(clientSocket.getOutputStream());
+
 			oos.writeObject(data);
 			oos.flush();
 
@@ -162,24 +192,14 @@ public class Client extends Thread {
 		}
 	}
 
-	public Data getData() {
-		Data newData = null;
-		try {
+	ObjectInputStream ois = null;
 
-			ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
-			newData = (Data) ois.readObject();
+	public NetworkData getData() throws IOException, ClassNotFoundException {
+		NetworkData newData = new NetworkData("");
 
-			// inFromServer = new
-			// DataInputStream(clientSocket.getInputStream());
-			// String cmd = inFromServer.readUTF();
+		ois = new ObjectInputStream(clientSocket.getInputStream());
 
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			error = e.getLocalizedMessage();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			error = e.getLocalizedMessage();
-		}
+		newData = (NetworkData) ois.readObject();
 		return newData;
 	}
 

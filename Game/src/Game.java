@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import Objects.*;
 import events.Action;
 import util.*;
+import util.Client;
 
 public class Game extends JFrame implements Runnable {
 
