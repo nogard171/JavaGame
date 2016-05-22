@@ -175,12 +175,6 @@ public class Game extends JFrame implements Runnable {
 					onTitleUpdate(d);
 					onTitlePaint(g);
 				}
-				else if (game_state == Game_States.LOADING) {
-					if(network.map.tiles.size()<=0)
-					{
-						network.SendData(data);
-					}
-				}
 			} while (bs.contentsLost());
 			bs.show();
 		} while (bs.contentsLost());
@@ -232,7 +226,7 @@ public class Game extends JFrame implements Runnable {
 		}
 		// check for networking data.
 	}
-
+	boolean moved = true;
 	// count down to 0 from the inputted time
 	public void countDownExit(int time) {
 		// ouput text
@@ -282,7 +276,7 @@ public class Game extends JFrame implements Runnable {
 				Boolean login = network.login(username.getText(), password.getText());
 				if(login)
 				{
-					game_state = Game_States.LOADING;
+					game_state = Game_States.GAME;
 				}
 			}
 		});
@@ -309,11 +303,17 @@ public class Game extends JFrame implements Runnable {
 
 	public void onGameUpdate(double d) {
 		frameRate.calculate();
-
+		if(moved)
+		{
+			network.getMap(0,0,this.width,this.height);
+			moved = false;
+		}
 	}
 
 	public void onGamePaint(Graphics g) {
 		g.drawString("test", 100, 100);
+		System.out.println(network.map.tiles.size());
+		network.map.Render(0, 0);
 		repaint();
 	}
 
