@@ -175,6 +175,12 @@ public class Game extends JFrame implements Runnable {
 					onTitleUpdate(d);
 					onTitlePaint(g);
 				}
+				else if (game_state == Game_States.LOADING) {
+					if(network.map.tiles.size()<=0)
+					{
+						network.SendData(data);
+					}
+				}
 			} while (bs.contentsLost());
 			bs.show();
 		} while (bs.contentsLost());
@@ -276,7 +282,7 @@ public class Game extends JFrame implements Runnable {
 				Boolean login = network.login(username.getText(), password.getText());
 				if(login)
 				{
-					game_state = Game_States.GAME;
+					game_state = Game_States.LOADING;
 				}
 			}
 		});
