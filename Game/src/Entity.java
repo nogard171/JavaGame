@@ -100,23 +100,25 @@ public class Entity extends Sprite {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glColor3f(1, 1, 1);
 			texture.bind();
+			
 		} else {
 			GL11.glColor3f(1, 0, 0);
 		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef(screenPosition.x, screenPosition.y, 0);
 		GL11.glRotatef(rotX, 0f, 0f, 1f);
-
+		
 		GL11.glBegin(GL11.GL_QUADS);
 		if (texture != null) {
+			
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2f(0, 0);
 			GL11.glTexCoord2f(1, 0);
-			GL11.glVertex2f(width, 0);
+			GL11.glVertex2f(texture.getImageWidth(), 0);
 			GL11.glTexCoord2f(1, 1);
-			GL11.glVertex2f(width, height);
+			GL11.glVertex2f(texture.getImageWidth(), texture.getImageHeight());
 			GL11.glTexCoord2f(0, 1);
-			GL11.glVertex2f(0, height);
+			GL11.glVertex2f(0, texture.getImageHeight());
 		} else {
 			GL11.glVertex2f(0, 0);
 			GL11.glVertex2f(width, 0);
@@ -124,6 +126,23 @@ public class Entity extends Sprite {
 			GL11.glVertex2f(0, height);
 		}
 		GL11.glEnd();
+		
+		if (topTexture != null) {
+			GL11.glColor3f(1, 1, 1);
+			topTexture.bind();
+			
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glTexCoord2f(0, 0);
+			GL11.glVertex2f(0, 0);
+			GL11.glTexCoord2f(1, 0);
+			GL11.glVertex2f(topTexture.getImageWidth(), 0);
+			GL11.glTexCoord2f(1, 1);
+			GL11.glVertex2f(topTexture.getImageWidth(), topTexture.getImageHeight());
+			GL11.glTexCoord2f(0, 1);
+			GL11.glVertex2f(0, topTexture.getImageHeight());
+			GL11.glEnd();
+		}
+		
 		if (this.movable) {
 			GL11.glColor3f(0, 0, 1);
 			if (this.isFacing == Direction.EAST) {

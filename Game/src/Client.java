@@ -153,6 +153,11 @@ public class Client extends Thread {
 						this.map.addTile(data.map.ground.get(i));
 					}
 				}
+				for (int i = 0; i < data.map.objectArray.size(); i++) {
+					if (data.map.objectArray.get(i) != null) {
+						this.map.addObject(data.map.objectArray.get(i));
+					}
+				}
 			}
 			if (command.startsWith("CLOSE/C")) {
 				break;

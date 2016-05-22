@@ -14,7 +14,8 @@ import Objects.ObjectData;
 import Objects.ObjectType;
 
 public class Map extends MapData {
-	HashMap<String, Tile> objects = new HashMap<String, Tile>();
+	HashMap<String, Tile> mapTiles = new HashMap<String, Tile>();
+	HashMap<String, Tile> mapObjects = new HashMap<String, Tile>();
 
 	public Map(ArrayList<ObjectData> ground) {
 		this.ground = ground;
@@ -47,12 +48,18 @@ public class Map extends MapData {
 	public void addTile(ObjectData tileData) {
 		Tile tile = new Tile(tileData.x, tileData.y, tileData.width, tileData.height);
 		tile.type = tileData.type;
-		// tiles.add(tile);
-		objects.put(tileData.x + "," + tileData.y, tile);
+		tile.topType = tileData.topType;
+		mapTiles.put(tileData.x + "," + tileData.y, tile);
 	}
 
-	
-	
+	public void addObject(ObjectData objectData) {
+		// TODO Auto-generated method stub
+		Tile tile = new Tile(objectData.x, objectData.y, objectData.width, objectData.height);
+		tile.type = objectData.type;
+		tile.topType = objectData.topType;
+		mapObjects.put(objectData.x + "," + objectData.y, tile);
+	}
+
 	public void Render(int playerX, int playerY) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -62,26 +69,46 @@ public class Map extends MapData {
 		int newHeight = Math.round((Display.getHeight() / 32)) + 3;
 		int count = 0;
 		int texturedCount = 0;
-		int newX = (playerX / 32)-1;
-		int newY = (playerY / 32)-1;
-		if (objects.size() > 0) {
+		int newX = (playerX / 32) - 1;
+		int newY = (playerY / 32) - 1;
+		if (mapTiles.size() > 0) {
 			for (int x = newX; x < (newX + newWidth); x++) {
 				for (int y = newY; y < newY + newHeight; y++) {
 					String key = (x * 32) + "," + (y * 32);
-					if (objects.containsKey(key)) {
-						if (objects.get(key) != null) {
-							if (objects.get(key).texture == null&&texturedCount<=(newWidth+newHeight)/2) {
-								objects.get(key).texture = getTexture(objects.get(key).type);
+					if (mapTiles.containsKey(key)) {
+						if (mapTiles.get(key) != null) {
+							if (mapTiles.get(key).type != ObjectType.OTHER && mapTiles.get(key).texture == null
+									&& texturedCount <= (newWidth + newHeight) / 2) {
+								mapTiles.get(key).texture = getTexture(mapTiles.get(key).type);
 								texturedCount++;
 							}
-							objects.get(key).Render();
+							mapTiles.get(key).Render();
+							count++;
+						}
+					}
+					if (mapObjects.containsKey(key)) {
+						if (mapObjects.get(key) != null) {
+							if ( mapObjects.get(key).type != ObjectType.OTHER
+									&& mapObjects.get(key).texture == null
+									&& texturedCount <= (newWidth + newHeight) / 2) {
+								
+								mapObjects.get(key).texture = getTexture(mapObjects.get(key).type);
+								
+								texturedCount++;
+							}
+							if ( mapObjects.get(key).topType != ObjectType.OTHER
+									&& mapObjects.get(key).topTexture == null
+									&& texturedCount <= (newWidth + newHeight) / 2) {
+								mapObjects.get(key).topTexture = getTexture(mapObjects.get(key).topType);
+								texturedCount++;
+							}
+							mapObjects.get(key).Render();
 							count++;
 						}
 					}
 				}
 			}
 		}
-		System.out.println("Count:" + count);
 		GL11.glPopMatrix();
 		// GL11.glColor3f(0,0,0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -96,11 +123,18 @@ public class Map extends MapData {
 		case DIRT:
 			textureURL = "resources/images/dirt.png";
 			break;
+		case TREE:
+			textureURL = "resources/images/tree.png";
+			break;
+		case TRUNK:
+			textureURL = "resources/images/trunk.png";
+			break;
 		default:
 			break;
 		}
 		return loadTexture(textureURL);
 	}
+
 	public Color getColor(ObjectType objType) {
 		Color color = Color.white;
 		switch (objType) {
@@ -108,11 +142,12 @@ public class Map extends MapData {
 			color = Color.green;
 			break;
 		case DIRT:
-			color = new Color(139,69,19);
+			color = new Color(139, 69, 19);
 			break;
 		default:
 			break;
 		}
 		return color;
 	}
+
 }
