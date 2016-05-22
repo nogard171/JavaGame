@@ -219,6 +219,11 @@ public class Game extends JFrame implements Runnable {
 			// call countDownExit function
 			countDownExit(5);
 		}
+		
+		if (input.isKeyDown(KeyEvent.VK_ENTER)) {
+			// call countDownExit function
+			network.login("alex", "test");
+		}
 		// check for networking data.
 	}
 

@@ -1,9 +1,9 @@
 package Objects;
-import org.newdawn.slick.opengl.Texture;
+import java.awt.image.BufferedImage;
 
 public class Sprite {
-	Texture texture = null;
-	Texture topTexture = null;
+	BufferedImage texture = null;
+	BufferedImage topTexture = null;
 	int width = 0;
 	int height = 0;
 }
