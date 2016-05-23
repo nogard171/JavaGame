@@ -1,12 +1,18 @@
 package Objects;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.imageio.ImageIO;
+
 import Objects.MapData;
 import Objects.ObjectData;
 import Objects.ObjectType;
+import util.TextureHandler;
 
 public class Map extends MapData {
 	HashMap<String, Tile> mapTiles = new HashMap<String, Tile>();
@@ -43,74 +49,49 @@ public class Map extends MapData {
 		tile.topType = objectData.topType;
 		mapObjects.put(objectData.x + "," + objectData.y, tile);
 	}
-
-	public void Render(int playerX, int playerY) {
-		/*GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-		GL11.glPushMatrix();
-		GL11.glColor3f(1, 1, 1);
-		int newWidth = Math.round((Display.getWidth() / 32)) + 3;
-		int newHeight = Math.round((Display.getHeight() / 32)) + 3;
-		int count = 0;
-		int texturedCount = 0;
-		int newX = (playerX / 32) - 1;
-		int newY = (playerY / 32) - 1;
-		if (mapTiles.size() > 0) {
-			for (int x = newX; x < (newX + newWidth); x++) {
-				for (int y = newY; y < newY + newHeight; y++) {
-					String key = (x * 32) + "," + (y * 32);
-					if (mapTiles.containsKey(key)) {
-						if (mapTiles.get(key) != null) {
-							if (mapTiles.get(key).type != ObjectType.OTHER && mapTiles.get(key).texture == null
-									&& texturedCount <= (newWidth + newHeight) / 2) {
-								mapTiles.get(key).texture = getTexture(mapTiles.get(key).type);
-								texturedCount++;
-							}
-							mapTiles.get(key).Render();
-							count++;
-						}
+	int textureCount =0;
+	public void Draw(Graphics g)
+	{
+		textureCount =0;
+		for(int x=0;x<10;x++)
+		{
+			for(int y=0;y<10;y++)
+			{
+				String key = (x*32) +","+(y*32);
+				if(mapTiles.containsKey(key))
+				{
+					Tile tile = mapTiles.get(key);
+					if(tile.texture==null&&textureCount<10)
+					{
+						tile.texture = this.getTexture(tile.type);
+						textureCount++;
 					}
-					if (mapObjects.containsKey(key)) {
-						if (mapObjects.get(key) != null) {
-							if ( mapObjects.get(key).type != ObjectType.OTHER
-									&& mapObjects.get(key).texture == null
-									&& texturedCount <= (newWidth + newHeight) / 2) {
-								
-								mapObjects.get(key).texture = getTexture(mapObjects.get(key).type);
-								
-								texturedCount++;
-							}
-							if ( mapObjects.get(key).topType != ObjectType.OTHER
-									&& mapObjects.get(key).topTexture == null
-									&& texturedCount <= (newWidth + newHeight) / 2) {
-								mapObjects.get(key).topTexture = getTexture(mapObjects.get(key).topType);
-								texturedCount++;
-							}
-							mapObjects.get(key).Render();
-							count++;
-						}
-					}
+					tile.Draw(g);
 				}
 			}
 		}
-		GL11.glPopMatrix();
-		// GL11.glColor3f(0,0,0);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);*/
 	}
 
-	public Color getColor(ObjectType objType) {
-		Color color = Color.white;
+	public BufferedImage getTexture(ObjectType objType) {
+		String location = "resources/images/grass.png";
 		switch (objType) {
 		case GRASS:
-			color = Color.green;
+			location = "resources/images/grass.png";
 			break;
 		case DIRT:
-			color = new Color(139, 69, 19);
+			location = "resources/images/dirt.png";
 			break;
-		default:
+		case PLAYER:
+			location = "resources/images/player.png";
 			break;
 		}
-		return color;
+		try {
+			File file = new File(location);
+			return ImageIO.read(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
 	}
 
 }

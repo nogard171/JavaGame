@@ -63,7 +63,7 @@ public class Client extends Thread {
 				this.map = new Map(10, 10);
 				this.map.count = newData.map.count;
 				System.out.println("Login Successful.");
-				getMap(0, 0, 800,600);
+				getMap(0, 0, 10,10);
 				logged_in = true;
 			} else if (newData.command.equals("FAILED")) {
 				System.out.println("Login Unsuccessful:" + newData.message);
@@ -149,11 +149,6 @@ public class Client extends Thread {
 				for (int i = 0; i < data.map.ground.size(); i++) {
 					if (data.map.ground.get(i) != null) {
 						this.map.addTile(data.map.ground.get(i));
-					}
-				}
-				for (int i = 0; i < data.map.objectArray.size(); i++) {
-					if (data.map.objectArray.get(i) != null) {
-						this.map.addObject(data.map.objectArray.get(i));
 					}
 				}
 			}

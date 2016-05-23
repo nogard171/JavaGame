@@ -188,7 +188,8 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	public void onTextureLoading() {
-
+		player.type = ObjectType.PLAYER;
+		
 	}
 
 	boolean right = false;
@@ -214,18 +215,34 @@ public class Game extends JFrame implements Runnable {
 		space = input.isKeyDown(KeyEvent.VK_SPACE);
 		tab = input.isKeyDown(KeyEvent.VK_TAB);
 		input.poll();
+		if(left)
+		{
+			player.x-=1;
+		}
+		else if(right)
+		{
+			player.x+=1;
+		}
+		if(up)
+		{
+			player.y-=1;
+		}
+		else if(down)
+		{
+			player.y+=1;
+		}
+		if(up||down||left||right)
+		{
+			moved = true;
+		}
 		// if escape is pressed continue
 		if (input.isKeyDown(KeyEvent.VK_ESCAPE)) {
 			// call countDownExit function
 			countDownExit(5);
 		}
-		
-		if (input.isKeyDown(KeyEvent.VK_ENTER)) {
-			// call countDownExit function
-			network.login("alex", "test");
-		}
 		// check for networking data.
 	}
+	Tile player = new Tile(0,0,32,32);
 	boolean moved = true;
 	// count down to 0 from the inputted time
 	public void countDownExit(int time) {
@@ -305,15 +322,16 @@ public class Game extends JFrame implements Runnable {
 		frameRate.calculate();
 		if(moved)
 		{
-			network.getMap(0,0,this.width,this.height);
+			network.getMap(player.x,player.y,this.width/32,this.height/32);
 			moved = false;
 		}
 	}
 
 	public void onGamePaint(Graphics g) {
 		g.drawString("test", 100, 100);
-		System.out.println(network.map.tiles.size());
-		network.map.Render(0, 0);
+		//System.out.println(network.map.tiles.size());
+		network.map.Draw(g);
+		player.Draw(g);
 		repaint();
 	}
 

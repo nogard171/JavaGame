@@ -32,8 +32,15 @@ public class Tile extends Sprite {
 		this.height = height;
 	}
 	public void Draw(Graphics g) {
-		g.drawRect(this.x,this.y, width, height);
-		g.setColor(Color.black);		
+		if(texture!=null)
+		{
+			g.drawImage(texture, this.x, this.x, null);
+		}
+		else
+		{
+			g.setColor(this.getColor(this.type));
+			g.fillRect(this.x,this.y, width, height);
+		}	
 	}
 
 	boolean isSolid = false;
