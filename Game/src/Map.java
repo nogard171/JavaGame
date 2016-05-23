@@ -15,7 +15,7 @@ import Objects.ObjectType;
 
 public class Map extends MapData {
 	HashMap<String, Tile> mapTiles = new HashMap<String, Tile>();
-	HashMap<String, Tile> mapObjects = new HashMap<String, Tile>();
+	HashMap<String, Entity> mapObjects = new HashMap<String, Entity>();
 
 	public Map(ArrayList<ObjectData> ground) {
 		this.ground = ground;
@@ -54,17 +54,49 @@ public class Map extends MapData {
 
 	public void addObject(ObjectData objectData) {
 		// TODO Auto-generated method stub
-		Tile tile = new Tile(objectData.x, objectData.y, objectData.width, objectData.height);
+		Entity tile = new Entity(objectData.x, objectData.y, objectData.width, objectData.height);
 		tile.type = objectData.type;
 		tile.topType = objectData.topType;
 		mapObjects.put(objectData.x + "," + objectData.y, tile);
 	}
-
-	public void Render(int playerX, int playerY) {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-		GL11.glPushMatrix();
-		GL11.glColor3f(1, 1, 1);
+	public Entity getEntity(int x, int y)
+	{
+		String key = x+","+y;
+		if (mapObjects.containsKey(key)) {
+			return mapObjects.get(key);
+		}
+		return null;		
+	}
+	public void RenderTop(int playerX, int playerY) {
+		int newWidth = Math.round((Display.getWidth() / 32)) + 3;
+		int newHeight = Math.round((Display.getHeight() / 32)) + 3;
+		int count = 0;
+		int texturedCount = 0;
+		int newX = (playerX / 32) - 1;
+		int newY = (playerY / 32) - 1;
+		if (mapObjects.size() > 0) {
+			for (int x = newX; x < (newX + newWidth); x++) {
+				for (int y = newY; y < newY + newHeight; y++) {
+					String key = (x * 32) + "," + (y * 32);
+					if (mapObjects.containsKey(key)) {
+						Entity object = mapObjects.get(key);
+						if (object != null) {
+							if (object.topType != ObjectType.OTHER && object.topTexture == null
+									&& texturedCount <= (newWidth + newHeight) / 2) {
+								object.topTexture = getTexture(object.topType);
+								texturedCount++;
+							}
+							object.RenderTop();
+							count++;
+						}
+					}
+				}
+			}
+		}	
+	}
+	
+	
+	public void RenderBottom(int playerX, int playerY) {
 		int newWidth = Math.round((Display.getWidth() / 32)) + 3;
 		int newHeight = Math.round((Display.getHeight() / 32)) + 3;
 		int count = 0;
@@ -88,18 +120,9 @@ public class Map extends MapData {
 					}
 					if (mapObjects.containsKey(key)) {
 						if (mapObjects.get(key) != null) {
-							if ( mapObjects.get(key).type != ObjectType.OTHER
-									&& mapObjects.get(key).texture == null
+							if (mapObjects.get(key).type != ObjectType.OTHER && mapObjects.get(key).texture == null
 									&& texturedCount <= (newWidth + newHeight) / 2) {
-								
 								mapObjects.get(key).texture = getTexture(mapObjects.get(key).type);
-								
-								texturedCount++;
-							}
-							if ( mapObjects.get(key).topType != ObjectType.OTHER
-									&& mapObjects.get(key).topTexture == null
-									&& texturedCount <= (newWidth + newHeight) / 2) {
-								mapObjects.get(key).topTexture = getTexture(mapObjects.get(key).topType);
 								texturedCount++;
 							}
 							mapObjects.get(key).Render();
@@ -109,9 +132,6 @@ public class Map extends MapData {
 				}
 			}
 		}
-		GL11.glPopMatrix();
-		// GL11.glColor3f(0,0,0);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 
 	public Texture getTexture(ObjectType objType) {

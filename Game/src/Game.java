@@ -41,11 +41,12 @@ public class Game extends Window {
 		
 		try {
 			login_bg.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/images/bg.png"));
+			test.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/images/character_set.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		test.spriteSheet = true;
 	}
 	boolean moved = false;
 	public void Update(int delta) {
@@ -75,6 +76,9 @@ public class Game extends Window {
 			if (super.keyboard.keyPressed(Keyboard.KEY_S)) {
 				test.Move(0, speed);
 				moved = true;
+			}
+			if (super.keyboard.keyPressed(Keyboard.KEY_SPACE)&&network.map.getEntity(0,0).rotX<90) {
+				network.map.getEntity(0,0).rotX+=1;
 			}
 			test.onClick(mouse, new Action() {
 				@Override
@@ -136,13 +140,20 @@ public class Game extends Window {
 			if (network.map != null) {
 				// System.out.println("map count:" + network.map.ground.size());
 				GL11.glTranslatef(-test.x,-test.y, 0);
-				network.map.Render(test.x,test.y);
+				network.map.RenderBottom(test.x,test.y);
 				GL11.glTranslatef(test.x,test.y, 0);
 			}
 			
 			
 			//GL11.glTranslatef(test.x,test.y, 0);
 			test.Render();
+			
+			if (network.map != null) {
+				// System.out.println("map count:" + network.map.ground.size());
+				GL11.glTranslatef(-test.x,-test.y, 0);
+				network.map.RenderTop(test.x,test.y);
+				GL11.glTranslatef(test.x,test.y, 0);
+			}
 			//GL11.glTranslatef(-test.x,-test.y, 0);
 			int newWidth = Display.getWidth()/32;
 			int newHeight = Display.getHeight()/32;

@@ -20,6 +20,8 @@ import javax.imageio.ImageIO;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
 
+import Objects.ObjectType;
+
 public class Entity extends Sprite {
 	public int x = 100;
 	public int y = 100;
@@ -31,6 +33,10 @@ public class Entity extends Sprite {
 	protected boolean Focus = false;
 	public boolean isSolid = false;
 	public boolean movable = false;
+	public ObjectType type = ObjectType.OTHER;
+	public ObjectType topType = ObjectType.OTHER;
+	boolean spriteSheet = false;
+	Point spriteDimensions = new Point(32,64);
 
 	public Entity(int i, int j) {
 		this.x = i;
@@ -94,31 +100,71 @@ public class Entity extends Sprite {
 	}
 
 	int time = 0;
+	org.lwjgl.util.Color color = new org.lwjgl.util.Color(1,1,1,1);
+	public void RenderTop()
+	{
+		if (topTexture != null) {
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glColor4f(color.getRed(),color.getGreen(),color.getBlue(),color.getAlpha());
+			topTexture.bind();
+			
+			GL11.glPushMatrix();
+			GL11.glTranslated(screenPosition.x-(topTexture.getTextureWidth()/4),(screenPosition.y-(topTexture.getTextureHeight()/2)-32), 0);			
+			//GL11.glRotatef(rotX, 0f, 0f, -1f);
+			
 
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glTexCoord2f(0, 0);
+			GL11.glVertex2f(0, 0);
+			GL11.glTexCoord2f(1, 0);
+			GL11.glVertex2f(topTexture.getTextureWidth(), 0);
+			GL11.glTexCoord2f(1, 1);
+			GL11.glVertex2f(topTexture.getTextureWidth(),topTexture.getTextureHeight());
+			GL11.glTexCoord2f(0, 1);
+			GL11.glVertex2f(0, topTexture.getTextureHeight());
+			GL11.glEnd();
+			GL11.glTranslatef(-screenPosition.x+(topTexture.getTextureWidth()/4),-screenPosition.y+(topTexture.getTextureHeight()/2)+32, 0);
+			GL11.glPopMatrix();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+	}
+	public double toDegrees (int angle) {
+		  return angle * (180 / Math.PI);
+		}
+	public double toRadians (int angle) {
+		  return angle * (Math.PI / 180);
+		}
 	public void Render() {
 		if (texture != null) {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glColor3f(1, 1, 1);
+			GL11.glColor4f(color.getRed(),color.getGreen(),color.getBlue(),color.getAlpha());
 			texture.bind();
 			
 		} else {
 			GL11.glColor3f(1, 0, 0);
 		}
-		GL11.glPushMatrix();
-		GL11.glTranslatef(screenPosition.x, screenPosition.y, 0);
-		GL11.glRotatef(rotX, 0f, 0f, 1f);
 		
+		GL11.glPushMatrix();
+		GL11.glTranslated(screenPosition.x, screenPosition.y, 0);
+		//GL11.glRotatef(rotX, 0f, 0f, 0f);
+		float xValue = 1f/(float)(texture.getImageWidth()/spriteDimensions.x);
+		float yValue = 1f/(float)(texture.getImageHeight()/spriteDimensions.y);
+		if(!spriteSheet)
+		{
+			yValue = 1;
+			xValue = 1;
+		}
 		GL11.glBegin(GL11.GL_QUADS);
 		if (texture != null) {
 			
-			GL11.glTexCoord2f(0, 0);
+			GL11.glTexCoord2f((textureX*xValue), (textureY*yValue));
 			GL11.glVertex2f(0, 0);
-			GL11.glTexCoord2f(1, 0);
+			GL11.glTexCoord2f(((textureX+1)*xValue), (textureY*yValue));
 			GL11.glVertex2f(texture.getImageWidth(), 0);
-			GL11.glTexCoord2f(1, 1);
-			GL11.glVertex2f(texture.getImageWidth(), texture.getImageHeight());
-			GL11.glTexCoord2f(0, 1);
-			GL11.glVertex2f(0, texture.getImageHeight());
+			GL11.glTexCoord2f(((textureX+1)*xValue), ((textureY+1)*yValue));
+			GL11.glVertex2f(texture.getImageWidth(), texture.getImageHeight()*yValue);
+			GL11.glTexCoord2f((textureX*xValue), ((textureY+1)*yValue));
+			GL11.glVertex2f(0, texture.getImageHeight()*yValue);
 		} else {
 			GL11.glVertex2f(0, 0);
 			GL11.glVertex2f(width, 0);
@@ -126,22 +172,6 @@ public class Entity extends Sprite {
 			GL11.glVertex2f(0, height);
 		}
 		GL11.glEnd();
-		
-		if (topTexture != null) {
-			GL11.glColor3f(1, 1, 1);
-			topTexture.bind();
-			
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glTexCoord2f(0, 0);
-			GL11.glVertex2f(0, 0);
-			GL11.glTexCoord2f(1, 0);
-			GL11.glVertex2f(topTexture.getImageWidth(), 0);
-			GL11.glTexCoord2f(1, 1);
-			GL11.glVertex2f(topTexture.getImageWidth(), topTexture.getImageHeight());
-			GL11.glTexCoord2f(0, 1);
-			GL11.glVertex2f(0, topTexture.getImageHeight());
-			GL11.glEnd();
-		}
 		
 		if (this.movable) {
 			GL11.glColor3f(0, 0, 1);
@@ -198,6 +228,23 @@ public class Entity extends Sprite {
 		if ((ySpeed < 0 && collosionDir == Direction.NORTH) || (ySpeed > 0 && collosionDir == Direction.SOUTH)) {
 			ySpeed = 0;
 		}
+		
+		if(this.isFacing == Direction.EAST)
+		{
+			textureY = 3;
+		}
+		else if(this.isFacing == Direction.WEST)
+		{
+			textureY = 2;
+		}
+		else if(this.isFacing == Direction.NORTH)
+		{
+			textureY = 1;
+		}
+		else if(this.isFacing == Direction.SOUTH)
+		{
+			textureY = 0;
+		}
 
 		this.x += xSpeed;
 		this.y += ySpeed;
@@ -224,6 +271,8 @@ public class Entity extends Sprite {
 
 	Point test = new Point(0, 0);
 	Direction collosionDir = null;
+	public int textureX = 0;
+	public int textureY = 0;
 
 	public void collide(Entity obj) {
 		if (obj.isSolid && new Rectangle(this.x, this.y, this.width, this.height)
