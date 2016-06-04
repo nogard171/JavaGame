@@ -38,7 +38,7 @@ public class Tile extends Sprite {
 			texture.bind();
 
 		} else {
-			GL11.glColor3f(1, 0, 0);
+			GL11.glColor3f(0.25f,0.5f,0.1f);
 		}
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.x, this.y, 0);

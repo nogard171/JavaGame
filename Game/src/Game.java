@@ -93,6 +93,7 @@ public class Game extends Window {
 				network.getMap(test.x,test.y,newHeight,newWidth);
 				moved = false;
 			}
+			network.map.colide(test);
 		} else if (game_State == State.LOGIN) {
 
 			if (super.keyboard.keyOnce(Keyboard.KEY_RETURN)) {
