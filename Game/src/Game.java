@@ -36,7 +36,7 @@ public class Game extends Window {
 		hud = new HUD(this.displayWidth, this.displayWidth);
 		network = new Client();
 		network.start();
-		
+		//
 		//network.login("alex", "test");
 		
 		try {
