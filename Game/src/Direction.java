@@ -1,7 +1,7 @@
 import java.awt.Point;
 
 public enum Direction {
-	NORTH, SOUTH, EAST, WEST;
+	NORTH, SOUTH, EAST, WEST,NONE;
 	public Direction ParseDirection(String dir)
 	{
 		Direction newDir = Direction.NORTH;

@@ -1,4 +1,5 @@
 import java.awt.Font;
+import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -47,6 +48,7 @@ public class Game extends Window {
 			e.printStackTrace();
 		}
 		test.spriteSheet = true;
+		test.movable = true;
 	}
 	boolean moved = false;
 	public void Update(int delta) {
@@ -61,19 +63,19 @@ public class Game extends Window {
 				System.out.println("Debuged:" + hud.debug);
 			}
 			float speed = 0.15f * delta;
-			if (super.keyboard.keyPressed(Keyboard.KEY_A)) {
+			if (super.keyboard.keyPressed(Keyboard.KEY_A)||super.keyboard.keyPressed(Keyboard.KEY_LEFT)) {
 				test.Move(-speed, 0);
 				moved = true;
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_D)) {
+			else if (super.keyboard.keyPressed(Keyboard.KEY_D)||super.keyboard.keyPressed(Keyboard.KEY_RIGHT)) {
 				test.Move(speed, 0);
 				moved = true;
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_W)) {
+			else if (super.keyboard.keyPressed(Keyboard.KEY_W)||super.keyboard.keyPressed(Keyboard.KEY_UP)) {
 				test.Move(0, -speed);
 				moved = true;
 			}
-			if (super.keyboard.keyPressed(Keyboard.KEY_S)) {
+			else if (super.keyboard.keyPressed(Keyboard.KEY_S)||super.keyboard.keyPressed(Keyboard.KEY_DOWN)) {
 				test.Move(0, speed);
 				moved = true;
 			}
@@ -167,7 +169,7 @@ public class Game extends Window {
 			//test.collide(obj);
 			//obj.isSolid = true;
 			//obj.Render();
-			hud.Render();
+			//hud.Render();
 		} else if (game_State == State.LOGIN) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			login_bg.Render();

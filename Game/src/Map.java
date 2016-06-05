@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -225,9 +226,21 @@ public class Map extends MapData
 		    if (mapObjects.containsKey(key))
 		    {
 			//System.out.println((test.x+test.screenPosition.x)+","+(test.y+test.screenPosition.y));
-			if (mapObjects.get(key) != null&&new Rectangle(x*32,y*32,32,32).intersects(new Rectangle(playerX,playerY+32,32,32)))
+			if (mapObjects.get(key) != null&&new Rectangle(x*32,y*32,32,32).intersects(new Rectangle(playerX,playerY+32,32,32))&&test.collosionDir==Direction.NONE)
 			{
 			   System.out.println("true");
+			   test.color = new org.lwjgl.util.Color(255,0,0);
+			   //mapObjects.get(key).color= new org.lwjgl.util.Color(255,0,0);
+			   test.collosionDir=test.isFacing;
+			}
+			else if(test.collosionDir==Direction.NONE)
+			{
+			    test.color = test.defaultColor;
+			    //mapObjects.get(key).color= mapObjects.get(key).defaultColor;
+			}
+			else if(test.collosionDir!=Direction.NONE)
+			{
+			    test.collosionDir=Direction.NONE;
 			}
 		    }
 		}
