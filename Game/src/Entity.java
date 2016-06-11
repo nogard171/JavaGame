@@ -163,12 +163,14 @@ public class Entity extends Sprite
 
     public void Render()
     {
+	float xValue=0,yValue=0;
 	if (texture != null)
 	{
 	    GL11.glEnable(GL11.GL_TEXTURE_2D);
 	    GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	    texture.bind();
-
+	    xValue = 1f / (float) (texture.getImageWidth() / spriteDimensions.x);
+	    yValue = 1f / (float) (texture.getImageHeight() / spriteDimensions.y);
 	}
 	else
 	{
@@ -178,8 +180,7 @@ public class Entity extends Sprite
 	GL11.glPushMatrix();
 	GL11.glTranslated(screenPosition.x, screenPosition.y, 0);
 	// GL11.glRotatef(rotX, 0f, 0f, 0f);
-	float xValue = 1f / (float) (texture.getImageWidth() / spriteDimensions.x);
-	float yValue = 1f / (float) (texture.getImageHeight() / spriteDimensions.y);
+	
 	if (!spriteSheet)
 	{
 	    yValue = 1;
@@ -324,6 +325,7 @@ public class Entity extends Sprite
     Direction  collosionDir = null;
     public int textureX	    = 0;
     public int textureY	    = 0;
+    public int depth =0;
 
     public void collide(Entity obj)
     {

@@ -1,6 +1,10 @@
 
+import java.awt.Font;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
 import Objects.ObjectType;
@@ -21,7 +25,7 @@ public class Tile extends Sprite {
 	}
 
 	public int index = -1;
-
+	 TrueTypeFont font;
 	public Tile(int size, int x2, int y2, int width, int height) {
 		// TODO Auto-generated constructor stub
 		index = size;
@@ -32,6 +36,7 @@ public class Tile extends Sprite {
 	}
 
 	public void Render() {
+	    
 		if (texture != null) {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glColor3f(1, 1, 1);
@@ -85,11 +90,16 @@ public class Tile extends Sprite {
 			GL11.glVertex2f(0, height);
 			GL11.glEnd();
 		}
-
+		if(font!=null)
+		{
+		    font.drawString(16,16,depth+"",Color.white);
+		}
 		GL11.glTranslatef(-this.x, -this.y, 0);
 		GL11.glPopMatrix();
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		
 	}
 
 	boolean isSolid = false;
+	public int depth =0;
 }

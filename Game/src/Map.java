@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -51,7 +53,7 @@ public class Map extends MapData
 	catch (IOException e)
 	{
 	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    // e.printStackTrace();
 	}
 	return texture;
     }
@@ -59,6 +61,7 @@ public class Map extends MapData
     public void addTile(ObjectData tileData)
     {
 	Tile tile = new Tile(tileData.x, tileData.y, tileData.width, tileData.height);
+	tile.depth = tileData.depth;
 	tile.type = tileData.type;
 	tile.topType = tileData.topType;
 	mapTiles.put(tileData.x + "," + tileData.y, tile);
@@ -93,10 +96,11 @@ public class Map extends MapData
 	int newY = (playerY / 32) - 1;
 	if (mapObjects.size() > 0)
 	{
-	    for (int x = newX; x < (newX + newWidth); x++)
+	    for (int y = newY; y < newY + newHeight; y++)
 	    {
-		for (int y = newY; y < newY + newHeight; y++)
+		for (int x = newX; x < (newX + newWidth); x++)
 		{
+
 		    String key = (x * 32) + "," + (y * 32);
 		    if (mapObjects.containsKey(key))
 		    {
@@ -183,6 +187,21 @@ public class Map extends MapData
 	    case TRUNK:
 		textureURL = "resources/images/trunk.png";
 		break;
+	    case WATER:
+		textureURL = "resources/images/water.png";
+		break;
+	    case DEEPWATER:
+		textureURL = "resources/images/deepwater.png";
+		break;
+	    case SNOW:
+		textureURL = "resources/images/snow.png";
+		break;
+	    case STONE:
+		textureURL = "resources/images/stone.png";
+		break;
+	    case SAND:
+		textureURL = "resources/images/sand.png";
+		break;
 	    default:
 		break;
 	}
@@ -208,8 +227,8 @@ public class Map extends MapData
 
     public void colide(Entity test)
     {
-	int playerY =test.y+test.screenPosition.y;
-	int playerX = test.x+test.screenPosition.x;
+	int playerY = test.y + test.screenPosition.y;
+	int playerX = test.x + test.screenPosition.x;
 	int newWidth = Math.round((Display.getWidth() / 32)) + 3;
 	int newHeight = Math.round((Display.getHeight() / 32)) + 3;
 	int count = 0;
@@ -218,35 +237,40 @@ public class Map extends MapData
 	int newY = (playerY / 32) - 1;
 	if (mapTiles.size() > 0)
 	{
-	    for (int x = newX-2; x < (newX + 4); x++)
+	    for (int x = newX - 2; x < (newX + 4); x++)
 	    {
-		for (int y = newY-2; y < newY + 4; y++)
+		for (int y = newY - 2; y < newY + 4; y++)
 		{
 		    String key = (x * 32) + "," + (y * 32);
 		    if (mapObjects.containsKey(key))
 		    {
-			//System.out.println((test.x+test.screenPosition.x)+","+(test.y+test.screenPosition.y));
-			if (mapObjects.get(key) != null&&new Rectangle(x*32,y*32,32,32).intersects(new Rectangle(playerX,playerY+32,32,32))&&test.collosionDir==Direction.NONE)
+			// System.out.println((test.x+test.screenPosition.x)+","+(test.y+test.screenPosition.y));
+			if (mapObjects.get(key) != null
+				&& new Rectangle(x * 32, y * 32, 32, 32)
+					.intersects(new Rectangle(playerX, playerY + 32, 32, 32))
+				&& test.collosionDir == Direction.NONE)
 			{
-			   System.out.println("true");
-			   test.color = new org.lwjgl.util.Color(255,0,0);
-			   //mapObjects.get(key).color= new org.lwjgl.util.Color(255,0,0);
-			   test.collosionDir=test.isFacing;
+			    System.out.println("true");
+			    test.color = new org.lwjgl.util.Color(255, 0, 0);
+			    // mapObjects.get(key).color= new
+			    // org.lwjgl.util.Color(255,0,0);
+			    test.collosionDir = test.isFacing;
 			}
-			else if(test.collosionDir==Direction.NONE)
+			else if (test.collosionDir == Direction.NONE)
 			{
 			    test.color = test.defaultColor;
-			    //mapObjects.get(key).color= mapObjects.get(key).defaultColor;
+			    // mapObjects.get(key).color=
+			    // mapObjects.get(key).defaultColor;
 			}
-			else if(test.collosionDir!=Direction.NONE)
+			else if (test.collosionDir != Direction.NONE)
 			{
-			    test.collosionDir=Direction.NONE;
+			    test.collosionDir = Direction.NONE;
 			}
 		    }
 		}
 	    }
 	}
-	
+
     }
 
 }
