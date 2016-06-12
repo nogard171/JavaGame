@@ -21,26 +21,9 @@ public class Map extends MapData
 {
     HashMap<String, Tile>   mapTiles   = new HashMap<String, Tile>();
     HashMap<String, Entity> mapObjects = new HashMap<String, Entity>();
-
-    public Map(ArrayList<ObjectData> ground)
-    {
-	this.ground = ground;
-    }
-
-    public Map(HashMap<String, ObjectData> tiles)
-    {
-	this.tiles = tiles;
-    }
-
     public Map()
     {
 	// TODO Auto-generated constructor stub
-    }
-
-    public Map(int width, int height)
-    {
-	this.width = width;
-	this.height = height;
     }
 
     public Texture loadTexture(String texture_url)
@@ -124,50 +107,51 @@ public class Map extends MapData
 
     public void RenderBottom(int playerX, int playerY)
     {
-	int newWidth = Math.round((Display.getWidth() / 32)) + 3;
-	int newHeight = Math.round((Display.getHeight() / 32)) + 3;
+	//System.out.println("Count:"+mapTiles.size());
+	int newWidth = Math.round((Display.getWidth() / 1024)) + 3;
+	int newHeight = Math.round((Display.getHeight() / 1024)) + 3;
 	int count = 0;
 	int texturedCount = 0;
-	int newX = (playerX / 32) - 1;
-	int newY = (playerY / 32) - 1;
-	if (mapTiles.size() > 0)
+	int newX = (playerX / 1024) - 1;
+	int newY = (playerY / 1024) - 1;
+	for (int x = 0; x < 32; x++)
 	{
-	    for (int x = newX; x < (newX + newWidth); x++)
+	    for (int y = 0; y < 32; y++)
 	    {
-		for (int y = newY; y < newY + newHeight; y++)
+		String key = (x * 32) + "," + (y * 32);
+
+		if (mapTiles.containsKey(key))
 		{
-		    String key = (x * 32) + "," + (y * 32);
-		    if (mapTiles.containsKey(key))
+			
+		    if (mapTiles.get(key) != null)
 		    {
-			if (mapTiles.get(key) != null)
+			if (mapTiles.get(key).type != ObjectType.OTHER && mapTiles.get(key).texture == null
+				&& texturedCount <= (newWidth + newHeight) / 2)
 			{
-			    if (mapTiles.get(key).type != ObjectType.OTHER && mapTiles.get(key).texture == null
-				    && texturedCount <= (newWidth + newHeight) / 2)
-			    {
-				mapTiles.get(key).texture = getTexture(mapTiles.get(key).type);
-				texturedCount++;
-			    }
-			    mapTiles.get(key).Render();
-			    count++;
+			    mapTiles.get(key).texture = getTexture(mapTiles.get(key).type);
+			    texturedCount++;
 			}
-		    }
-		    if (mapObjects.containsKey(key))
-		    {
-			if (mapObjects.get(key) != null)
-			{
-			    if (mapObjects.get(key).type != ObjectType.OTHER && mapObjects.get(key).texture == null
-				    && texturedCount <= (newWidth + newHeight) / 2)
-			    {
-				mapObjects.get(key).texture = getTexture(mapObjects.get(key).type);
-				texturedCount++;
-			    }
-			    mapObjects.get(key).Render();
-			    count++;
-			}
+			mapTiles.get(key).Render();
+			count++;
 		    }
 		}
+		/*if (mapObjects.containsKey(key))
+		{
+		    if (mapObjects.get(key) != null)
+		    {
+			if (mapObjects.get(key).type != ObjectType.OTHER && mapObjects.get(key).texture == null
+				&& texturedCount <= (newWidth + newHeight) / 2)
+			{
+			    mapObjects.get(key).texture = getTexture(mapObjects.get(key).type);
+			    texturedCount++;
+			}
+			mapObjects.get(key).Render();
+			count++;
+		    }
+		}*/
 	    }
 	}
+
     }
 
     public Texture getTexture(ObjectType objType)
@@ -214,10 +198,25 @@ public class Map extends MapData
 	switch (objType)
 	{
 	    case GRASS:
-		color = new Color(77, 134, 53);
+		  color = new Color(74, 131, 50);
 		break;
 	    case DIRT:
 		color = new Color(139, 69, 19);
+		break;
+	    case SAND:
+		color = new Color(255, 242, 170);
+		break;
+	    case DEEPWATER:
+		 color = new Color(0, 94, 158);
+		break;
+	    case WATER:
+		 color = new Color(22, 130, 194);
+		break;
+	    case STONE:
+		 color = new Color(198, 198, 198);
+		break;
+	    case SNOW:
+		color = new Color(239, 239, 239);
 		break;
 	    default:
 		break;
