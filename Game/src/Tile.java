@@ -1,6 +1,5 @@
 
 import java.awt.Font;
-import java.nio.channels.NetworkChannel;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -17,7 +16,6 @@ public class Tile extends Sprite {
 	private boolean border;
 	public ObjectType type = ObjectType.OTHER;
 	public ObjectType topType = ObjectType.OTHER;
-	public ObjectType[] sides = {ObjectType.OTHER,ObjectType.OTHER,ObjectType.OTHER,ObjectType.OTHER};
 
 	public Tile(int x2, int y2, int width, int height) {
 		this.x = x2;
