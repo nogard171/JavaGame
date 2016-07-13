@@ -20,9 +20,9 @@ public class Window {
 	DisplayMode initDisplay = null;
 	int displayWidth = 800;
 	int displayHeight = 600;
-	int displayFPS = 60;
+	int displayFPS = 120;
 	boolean fullscreen = false;
-	boolean resizable = false;
+	boolean resizable = true;
 	boolean vsync;
 	// fps things
 	long lastFrame;
@@ -41,14 +41,13 @@ public class Window {
 			Update(delta);
 			Render();
 			Display.update();
-			Display.sync(displayFPS); // cap fps to 60fps
+			Display.sync(displayFPS);
 		}
 		Display.destroy();
 		System.exit(0);
 	}
 
 	public void Update(int delta) {
-
 		keyboard.startPoll();
 		mouse.poll(this.displayHeight);
 		updateFPS(); // update FPS Counter
@@ -118,7 +117,6 @@ public class Window {
 		long time = getTime();
 		int delta = (int) (time - lastFrame);
 		lastFrame = time;
-
 		return delta;
 	}
 
@@ -147,7 +145,7 @@ public class Window {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, displayWidth, displayHeight, 0, 1, -1);
+		GL11.glOrtho(0, displayWidth, 0, displayHeight, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -156,26 +154,28 @@ public class Window {
 	public void Render() {
 		// Clear The Screen And The Depth Buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
 		// R,G,B,A Set The Color To Blue One Time Only
 		GL11.glColor3f(1, 1, 1);
 
 	}
 
 	public void Init() {
-		
-
-		// TODO Auto-generated method stub
+	
+		//set the initial display, so the game can revert back to original display.
 		initDisplay = Display.getDisplayMode();
 		try {
+			//set the display to the display width and display height
 			Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
+			//set the display resizable if the resizable is true
 			Display.setResizable(resizable);
+			//create the display.
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		initGL(); // init OpenGL
+		//init opengl
+		initGL();
 		getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer
 	}

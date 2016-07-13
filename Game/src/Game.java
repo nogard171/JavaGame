@@ -30,12 +30,10 @@ public class Game extends Window {
 		
 		super.keyboard.endPoll();
 	}
+	Sprite test = new Sprite(32,32);
 	public void Render() {
 		super.Render();
-		
-		GL11.glBegin(GL11.GL_QUADS);
-		
-		GL11.glEnd();
+		test.Render(0,0);
 	}
 
 	public static void main(String[] argv) {
