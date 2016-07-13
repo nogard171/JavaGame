@@ -227,8 +227,8 @@ public class Map extends MapData
 
     public void colide(Entity test)
     {
-	int playerY = test.y + test.screenPosition.y;
-	int playerX = test.x + test.screenPosition.x;
+	int playerY = test.y ;
+	int playerX = test.x ;
 	int newWidth = Math.round((Display.getWidth() / 32)) + 3;
 	int newHeight = Math.round((Display.getHeight() / 32)) + 3;
 	int count = 0;
