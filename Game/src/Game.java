@@ -36,7 +36,6 @@ public class Game extends Window {
 	int jump = 0;
 	public void Update(int delta) {
 		super.Update(delta);
-		Display.setTitle("delta:"+grav);
 		speed = delta/4;
 		grav-= 0.01*delta;
 		if(test.y-test.getHeight()<=ground.y)
@@ -126,8 +125,11 @@ public class Game extends Window {
 	Person test = new Person();
 	Person test2 = new Person();
 	Entity ground = new Entity();
+	Tree tree = new Tree(100,100);
 	public void Render() {
 		super.Render();
+		
+		tree.Render();
 		test.Render();
 		test2.Render();
 		ground.Render();
