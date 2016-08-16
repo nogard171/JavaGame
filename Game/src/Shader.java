@@ -8,8 +8,8 @@ import org.lwjgl.util.glu.GLU;
 
 public class Shader {
 	// Shader variables
-    private int vsId = 0;
-    private int fsId = 0;
+	public  int vsId = 0;
+    public  int fsId = 0;
     public int pId = 0;
 	public void setupShaders() {
         int errorCheckValue = GL11.glGetError();

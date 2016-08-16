@@ -42,6 +42,21 @@ public class GLWindow {
 	public void update() {
 
 	}
+	
+	public Quad findQuad(String name)
+	{
+		Quad return_Quad = null;
+		for (Quad quad : quads) {
+			if (quad.initilized) {
+				if(quad.name == name)
+				{
+					return_Quad = quad;
+					break;
+				}
+			}
+		}
+		return return_Quad;
+	}
 
 	public void render() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
