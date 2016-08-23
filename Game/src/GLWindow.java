@@ -15,7 +15,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
-public class Window {
+public class GLWindow {
 	// display things
 	DisplayMode initDisplay = null;
 	int displayWidth = 800;
