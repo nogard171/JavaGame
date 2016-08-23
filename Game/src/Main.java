@@ -18,33 +18,37 @@ public class Main extends GLWindow {
 	public static void main(String[] args) {
 		new Main();
 	}
-	
-	
+
 	public void setup() {
-		super.setup();		
+		super.setup();
+		//for (int i = 0; i < 100; i++) {
+			//this.addQuad(new Quad("test"+i));
+		//}
 		this.addQuad(new Quad("test"));
 	}
+
 	Quad quad = null;
+
 	@Override
-	public void render()
-	{	super.render();
-	if(quad==null)
-	{
-		quad = findQuad("test");
-	}
-	 while(Keyboard.next()) {
-         // Only listen to events where the key was pressed (down event)
-         if (!Keyboard.getEventKeyState()) continue;
-          
-         // Switch textures depending on the key released
-         switch (Keyboard.getEventKey()) {
-         case Keyboard.KEY_1:
-        	 quad.textureSelector = 0;
-             break;
-         case Keyboard.KEY_2:
-        	 quad.textureSelector = 1;
-             break;
-         }
-     }
+	public void render() {
+		super.render();
+		if (quad == null) {
+			quad = findQuad("test");
+		}
+		while (Keyboard.next()) {
+			// Only listen to events where the key was pressed (down event)
+			if (!Keyboard.getEventKeyState())
+				continue;
+
+			// Switch textures depending on the key released
+			switch (Keyboard.getEventKey()) {
+			case Keyboard.KEY_1:
+				quad.textureSelector = 0;
+				break;
+			case Keyboard.KEY_2:
+				quad.textureSelector = 1;
+				break;
+			}
+		}
 	}
 }

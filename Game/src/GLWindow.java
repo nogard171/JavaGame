@@ -10,14 +10,15 @@ import org.lwjgl.opengl.PixelFormat;
 
 public class GLWindow {
 	private final String WINDOW_TITLE = "The Quad: glDrawElements";
-	private final int WIDTH = 800;
-	private final int HEIGHT = 600;
-	
+	public final int WIDTH = 800;
+	public final int HEIGHT = 600;
+
 	ArrayList<Quad> quads = new ArrayList<Quad>();
 
 	public void addQuad(Quad object) {
-		quads.add(object);		
+		quads.add(object);
 	}
+
 	public GLWindow() {
 		// Initialize OpenGL (Display)
 		this.setupOpenGL();
@@ -42,14 +43,12 @@ public class GLWindow {
 	public void update() {
 
 	}
-	
-	public Quad findQuad(String name)
-	{
+
+	public Quad findQuad(String name) {
 		Quad return_Quad = null;
 		for (Quad quad : quads) {
 			if (quad.initilized) {
-				if(quad.name == name)
-				{
+				if (quad.name == name) {
 					return_Quad = quad;
 					break;
 				}
@@ -61,29 +60,29 @@ public class GLWindow {
 	public void render() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-		
+		int count = 0;
 		for (Quad quad : quads) {
 			if (quad.initilized) {
 				quad.Render();
-			}
-			else
-			{
+			} else {
 				quad.setup();
 				quad.initilized = true;
 			}
+			count++;
 		}
+		Display.setTitle("Count:" + count);
 	}
 
 	public void setup() {
-		
+
 	}
 
 	public void setupOpenGL() {
 		// Setup an OpenGL context with API version 3.2
 		try {
 			PixelFormat pixelFormat = new PixelFormat();
-			ContextAttribs contextAtrributes = new ContextAttribs(3, 2).withProfileCore(true)
-					.withForwardCompatible(true);
+			ContextAttribs contextAtrributes = new ContextAttribs(3, 2).withForwardCompatible(true)
+					.withProfileCore(true);
 
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.setTitle(WINDOW_TITLE);
@@ -100,6 +99,7 @@ public class GLWindow {
 
 		// Map the internal OpenGL coordinate system to the entire screen
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
+
 	}
 
 	public void destroy() {
