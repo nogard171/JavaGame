@@ -18,8 +18,8 @@ import org.lwjgl.util.Point;
 public class GLWindow {
 	// display things
 	DisplayMode initDisplay = null;
-	int displayWidth = 800;
-	int displayHeight = 600;
+	int Width = 800;
+	int Height = 600;
 	int displayFPS = 120;
 	boolean fullscreen = false;
 	boolean resizable = true;
@@ -37,6 +37,10 @@ public class GLWindow {
 		keyboard = new KeyboardInput();
 		mouse = new MouseInput();
 		while (!Display.isCloseRequested()) {
+			if (Display.wasResized()) {
+				this.Height = Display.getHeight();
+				Resized();
+			}
 			int delta = getDelta();
 			Update(delta);
 			Render();
@@ -48,9 +52,13 @@ public class GLWindow {
 	}
 
 	public void Update(int delta) {
+
 		keyboard.startPoll();
-		mouse.poll(this.displayHeight);
+		mouse.poll(this.Height);
 		updateFPS(); // update FPS Counter
+	}
+
+	public void Resized() {
 	}
 
 	public void setDisplayMode(int width, int height, boolean fullscreen) {
@@ -145,7 +153,7 @@ public class GLWindow {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, displayWidth, 0, displayHeight, 1, -1);
+		GL11.glOrtho(0, this.Width, 0, this.Height, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -160,21 +168,22 @@ public class GLWindow {
 	}
 
 	public void Init() {
-	
-		//set the initial display, so the game can revert back to original display.
+
+		// set the initial display, so the game can revert back to original
+		// display.
 		initDisplay = Display.getDisplayMode();
 		try {
-			//set the display to the display width and display height
-			Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
-			//set the display resizable if the resizable is true
+			// set the display to the display width and display height
+			Display.setDisplayMode(new DisplayMode(this.Width, this.Height));
+			// set the display resizable if the resizable is true
 			Display.setResizable(resizable);
-			//create the display.
+			// create the display.
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		//init opengl
+		// init opengl
 		initGL();
 		getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer

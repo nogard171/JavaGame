@@ -27,9 +27,14 @@ public class Game extends GLWindow {
 		test.setSize(24, 48);
 		ground.x = 0;
 		ground.y = 100;
-		ground.setSize(this.displayWidth, 100);
+		ground.setSize(this.Width, 100);
 		hud.init();
-		hud.setHeight(this.displayHeight);
+		hud.setHeight(this.Height);
+
+		for (int i = 0; i < 1; i++) {
+			Person person = new Person();
+			people.add(person);
+		}
 	}
 
 	float speed = 0;
@@ -46,8 +51,10 @@ public class Game extends GLWindow {
 			grav = 0;
 			jump = 0;
 		}
-		if (test2.y - test2.getHeight() <= ground.y) {
-			test2.y = ground.y + test2.getHeight();
+		for (Person person : people) {
+			if (person.y - person.getHeight() <= ground.y) {
+				person.y = ground.y + person.getHeight();
+			}
 		}
 		int x = 0;
 
@@ -75,25 +82,30 @@ public class Game extends GLWindow {
 		if (!keyboard.keyPressed(Keyboard.KEY_D) && !keyboard.keyPressed(Keyboard.KEY_A)) {
 			test.EndMove();
 		}
-		if (time >= 100) {
-			move = ran.nextInt(10 - 1 + 1) + 1;
-			time = 0;
-		}
 
 		if (keyboard.keyPressed(Keyboard.KEY_E)) {
 			test.point = true;
 		} else {
 			test.point = false;
 		}
+		if (time >= 100) {
+			for (Person person : people) {
+				person.move = ran.nextInt(10 - 1 + 1) + 1;
+			}
+			time = 0;
+		}
+		for (Person person : people) {
 
-		if (move < 4) {
-			test2.EndMove();
-		} else if (move >= 4 && move < 6) {
-			// test2.point = true;
-		} else if (move >= 6 && move < 8 && test2.x < this.displayWidth) {
-			test2.Move(1, 0);
-		} else if (move >= 8 && test2.x > 0) {
-			test2.Move(-1, 0);
+			if (person.move < 4) {
+				person.EndMove();
+			} else if (person.move >= 4 && person.move < 6) {
+				// test2.point = true;
+			} else if (person.move >= 6 && person.move < 8 && person.x < this.Width) {
+				person.Move(1, 0);
+			} else if (person.move >= 8 && person.x > 0) {
+				person.Move(-1, 0);
+			}
+
 		}
 
 		time++;
@@ -101,22 +113,33 @@ public class Game extends GLWindow {
 		super.keyboard.endPoll();
 	}
 
+	@Override
+	public void Resized() {
+		super.Resized();
+		System.out.println("height:" + this.Height);
+		hud.setHeight(this.Height);
+	}
+
 	int time = 0;
-	int move = 0;
+	// int move = 0;
 	Random ran = new Random();
 	boolean move_test2 = false;
 	Person test = new Person();
-	Person test2 = new Person();
+	// Person test2 = new Person();
 	Entity ground = new Entity();
 	Tree tree = new Tree(100, 100);
 	HUD hud = new HUD();
+	ArrayList<Person> people = new ArrayList<Person>();
 
 	public void Render() {
 		super.Render();
 
 		// tree.Render();
 		test.Render();
-		test2.Render();
+		// test2.Render();
+		for (Person person : people) {
+			person.Render();
+		}
 		ground.Render();
 		hud.Render();
 	}

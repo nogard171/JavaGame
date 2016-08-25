@@ -22,8 +22,14 @@ public class Object extends Sprite {
 
 	int mouseClicked = 0;
 
+	public void Render() {
+		this.Render(this.position.getX(), this.position.getY());
+	}
+
 	public void pollMouse(MouseInput mouse) {
-		if (this.position.contains(mouse.getPosition().getX(), mouse.getPosition().getY() - 32)) {
+
+		if (this.position.contains(mouse.getPosition().getX(),
+				mouse.getPosition().getY() + this.position.getHeight())) {
 			this.isHovered = true;
 		} else {
 			this.isHovered = false;

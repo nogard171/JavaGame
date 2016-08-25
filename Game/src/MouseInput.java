@@ -13,7 +13,7 @@ public class MouseInput {
 		for (int i = 0; i < java.awt.MouseInfo.getNumberOfButtons(); i++) {
 			mouseButtons[i] = Mouse.isButtonDown(i);
 		}
-		mousePosition = new Point(Mouse.getX(), displayHeight - Mouse.getY());
+		mousePosition = new Point(Mouse.getX(),  Mouse.getY());
 	}
 
 	public Point getPosition() {
