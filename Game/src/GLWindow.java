@@ -18,10 +18,12 @@ import org.lwjgl.util.Point;
 public class GLWindow {
 	// display things
 	DisplayMode initDisplay = null;
+	int DefaultWidth = 800;
+	int DefaultHeight = 600;
 	int Width = 800;
 	int Height = 600;
 	int displayFPS = 120;
-	boolean fullscreen = false;
+	boolean Fullscreen = false;
 	boolean resizable = true;
 	boolean vsync;
 	// fps things
@@ -37,9 +39,9 @@ public class GLWindow {
 		keyboard = new KeyboardInput();
 		mouse = new MouseInput();
 		while (!Display.isCloseRequested()) {
+			this.sync(getTime());
 			if (Display.wasResized()) {
-				this.Height = Display.getHeight();
-				Resized();
+				this.Resized();
 			}
 			int delta = getDelta();
 			Update(delta);
@@ -51,6 +53,17 @@ public class GLWindow {
 		System.exit(0);
 	}
 
+	private void sync(double loopStartTime) {
+		float loopSlot = 1f / 50;
+		double endTime = loopStartTime + loopSlot;
+		while (getTime() < endTime) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException ie) {
+			}
+		}
+	}
+
 	public void Update(int delta) {
 
 		keyboard.startPoll();
@@ -59,6 +72,13 @@ public class GLWindow {
 	}
 
 	public void Resized() {
+		this.Height = Display.getHeight();
+		this.Width = Display.getWidth();
+
+		GL11.glViewport(0, 0, Width, Height);
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, Width, 0, Height, -1, 1);
 	}
 
 	public void setDisplayMode(int width, int height, boolean fullscreen) {
@@ -167,14 +187,35 @@ public class GLWindow {
 
 	}
 
-	public void Init() {
+	public void changeDispalyMode(int width, int height, boolean fullscreen) {
 
+		this.Fullscreen = fullscreen;
+		this.Width = width;
+		this.Height = height;
+		this.setDisplayMode(this.Width, this.Height, this.Fullscreen);
+		this.Resized();
+	}
+
+	public void ToggleFullscreen() {
+
+		this.Fullscreen = !this.Fullscreen;
+		this.Width = Display.getDesktopDisplayMode().getWidth();
+		this.Height = Display.getDesktopDisplayMode().getHeight();
+		if (!this.Fullscreen) {
+			Width = DefaultWidth;
+			Height = DefaultHeight;
+		}
+		this.setDisplayMode(Width, Height, this.Fullscreen);
+		this.Resized();
+	}
+
+	public void Init() {
 		// set the initial display, so the game can revert back to original
 		// display.
 		initDisplay = Display.getDisplayMode();
 		try {
 			// set the display to the display width and display height
-			Display.setDisplayMode(new DisplayMode(this.Width, this.Height));
+			this.setDisplayMode(this.Width, this.Height, this.Fullscreen);
 			// set the display resizable if the resizable is true
 			Display.setResizable(resizable);
 			// create the display.

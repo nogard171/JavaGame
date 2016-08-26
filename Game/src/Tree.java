@@ -3,37 +3,26 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 public class Tree {
-	Sprite sprite = new Sprite(32, 128);
-	ArrayList<Leaf> leaves = new ArrayList<Leaf>();
+	Object sprite = new Object(32, 128);
+	ArrayList<Branch> branches = new ArrayList<Branch>();
 	int x = 0;
 	int y = 0;
 
 	public Tree() {
-		Init_Leaves();
+		initBranches();
 	}
 
 	public Tree(int i, int j) {
 		this.x = i;
 		this.y = j;
-		Init_Leaves();
+		initBranches();
 	}
 
 	Dimension leaf_field_size = new Dimension(20, 20);
 
-	public void Init_Leaves() {
-		for (int Y = 0; Y < leaf_field_size.height; Y++) {
-			for (int X = 0; X < leaf_field_size.width; X++) {
-
-				
-					Leaf leaf = new Leaf(4, 8);
-					leaf.x = X * 6;
-					leaf.y = Y * 8;
-					leaf.sprite.rot = 180;
-					leaves.add(leaf);
-				
-			}
-		}
-
+	public void initBranches() {
+		Branch branch = new Branch();
+		branches.add(branch);
 	}
 
 	int wind = 0;
@@ -51,12 +40,10 @@ public class Tree {
 		} else if (wind < -30) {
 			blow = false;
 		}
-		
-		sprite.Render(this.x, this.y + this.sprite.height);
-		for (Leaf leaf : leaves) {
-			//leaf.sprite.rot = wind;
-			leaf.Render(this.x - ((leaf_field_size.width / 2) * 4),
-					this.y + this.sprite.height - ((leaf_field_size.height / 2) * 6));
+		sprite.setPosition(this.x, this.y + this.sprite.height);
+		sprite.Render();
+		for (Branch branch : branches) {
+			branch.Render(this.x, this.y + this.sprite.height);
 		}
 	}
 }

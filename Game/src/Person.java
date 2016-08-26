@@ -1,26 +1,27 @@
-import java.awt.Point;
+import org.lwjgl.util.Point;
+import org.newdawn.slick.Color;
 
 public class Person extends Entity {
-	Sprite right_leg = new Sprite(8, 32);
-	Sprite left_leg = new Sprite(8, 32);
+	Object right_leg = new Object(8, 32);
+	Object left_leg = new Object(8, 32);
 
-	Sprite right_arm = new Sprite(8, 32);
-	Sprite left_arm = new Sprite(8, 32);
+	Object right_arm = new Object(8, 32);
+	Object left_arm = new Object(8, 32);
 
-	Sprite head = new Sprite(24, 24);
+	Object head = new Object(24, 24);
 	int right_offset_x = 8;
 	int left_offset_x = 4;
 	int left_offset_y = 40;
 	int right_offset_y = 40;
-	
+
 	int move = 0;
 
-	boolean is_left_handed = true;
+	boolean is_left_handed = false;
 
 	public Person() {
 
-		this.offset = new Point(0, 24);
-		setOrigin(16, 16);
+		super.origin = new Point(0, 24);
+		super.setOrigin(16, 16);
 		setSize(24, 48);
 
 		left_arm.origin = new Point(left_arm.width / 2, left_arm.width / 2);
@@ -41,8 +42,7 @@ public class Person extends Entity {
 	boolean forward = true;
 
 	@Override
-	public void Render() {
-
+	public void Update() {
 		if (dir == Direction.EAST) {
 			right_offset_x = 10;
 			left_offset_x = 6;
@@ -101,6 +101,11 @@ public class Person extends Entity {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void Render() {
+
 		//
 		/*
 		 * else if(right_punch_rot >0) { right_punch_rot += 5; }
@@ -110,17 +115,35 @@ public class Person extends Entity {
 		right_arm.rot = rot + right_punch_rot;
 		right_leg.rot = -rot;
 		left_arm.rot = -rot + left_punch_rot;
-		right_leg.Render(x + right_offset_x, y - this.sprite.height + offset.y + 8);
-		right_arm.Render(x + right_offset_x, y - this.sprite.height + offset.y + 40);
-		head.Render(x, y - this.sprite.height + this.sprite.height + head.height + 24);
-
+		right_leg.setPosition(super.position.getX() + right_offset_x,
+				super.position.getY() - super.height + origin.getY() + 16);
+		right_leg.Render();
+		right_arm.setPosition(super.position.getX() + right_offset_x,
+				super.position.getY() - super.height + origin.getY() + 48);
+		right_arm.Render();
+		head.setPosition(super.position.getX(), super.position.getY() - super.height + super.height + head.height + 24);
+		head.Render();
+		super.offset = new Point(0, 24);
 		super.Render();
-
-		left_leg.Render(x + left_offset_x, y - this.sprite.height + offset.y + 8);
-		left_arm.Render(x + left_offset_x, y - this.sprite.height + offset.y + 40);
+		left_leg.setPosition(super.position.getX() + left_offset_x,
+				super.position.getY() - super.height + origin.getY() + 16);
+		left_leg.Render();
+		left_arm.setPosition(super.position.getX() + left_offset_x,
+				super.position.getY() - super.height + origin.getY() + 48);
+		left_arm.Render();
 	}
 
 	boolean point = false;
 	int left_punch_rot = 0;
 	int right_punch_rot = 0;
+
+	@Override
+	public void setColor(Color newColor) {
+		super.color = newColor;
+		left_arm.setColor(newColor);
+		left_leg.setColor(newColor);
+		right_arm.setColor(newColor);
+		right_leg.setColor(newColor);
+		head.setColor(newColor);
+	}
 }

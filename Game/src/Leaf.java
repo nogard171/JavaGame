@@ -9,6 +9,6 @@ public class Leaf {
 	}
 	public void Render(int X,int Y)
 	{
-		sprite.Render(X+this.x, Y+this.y);
+		//sprite.Render(X+this.x, Y+this.y);
 	}
 }

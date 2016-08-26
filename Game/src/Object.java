@@ -1,47 +1,42 @@
 import java.awt.event.MouseEvent;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
 
 public class Object extends Sprite {
 
 	Rectangle position = new Rectangle(0, 0, 32, 32);
+	Point offset = new Point(0, 0);
 	boolean isSolid = false;
-	boolean isClicked = false;
-	boolean isHovered = false;
-	private Action action = new Action();
-
-	public void onClick(Action act) {
-		if (act == null) {
-			act = this.action;
-		}
-		if (isClicked) {
-			act.run();
-		}
-	}
+	int rot = 0;
 
 	int mouseClicked = 0;
 
-	public void Render() {
-		this.Render(this.position.getX(), this.position.getY());
+	public Object() {
+		super(32, 32);
 	}
 
-	public void pollMouse(MouseInput mouse) {
+	public Object(int width, int height) {
+		super(width, height);
+	}
 
-		if (this.position.contains(mouse.getPosition().getX(),
-				mouse.getPosition().getY() + this.position.getHeight())) {
-			this.isHovered = true;
-		} else {
-			this.isHovered = false;
-		}
-		if (mouse.mouseDown(0) && this.isHovered && this.mouseClicked == 0) {
-			this.isClicked = true;
-			this.mouseClicked++;
-		} else if (!mouse.mouseDown(0)) {
-			this.mouseClicked = 0;
-			this.isClicked = false;
-		} else {
-			this.isClicked = false;
-		}
+	public void setPosition(int x, int y) {
+		this.position = new Rectangle(x, y, position.getWidth(), position.getHeight());
+	}
+
+	public void Render() {
+		GL11.glPushMatrix();
+		GL11.glTranslatef(this.position.getX() + origin.getX() + offset.getX(),
+				this.position.getY() - origin.getY()  + offset.getY(), 0);
+		GL11.glRotatef(rot, 0, 0, 1);
+		GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
+
+		super.Render();
+
+		GL11.glTranslatef(origin.getX(), -origin.getY() , 0);
+		GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
+				-this.position.getY() + origin.getY()  - offset.getY(), 0);
+		GL11.glPopMatrix();
 	}
 }

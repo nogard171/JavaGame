@@ -23,16 +23,23 @@ public class Game extends GLWindow {
 
 	public void Init() {
 		super.Init();
+		test.setPosition(100, 100);
 		test.setOrigin(16, 16);
 		test.setSize(24, 48);
-		ground.x = 0;
-		ground.y = 100;
+		ground.setPosition(0, 100);
 		ground.setSize(this.Width, 100);
 		hud.init();
 		hud.setHeight(this.Height);
 
 		for (int i = 0; i < 1; i++) {
 			Person person = new Person();
+			Random rand = new Random();
+			// Java 'Color' class takes 3 floats, from 0 to 1.
+			float r = rand.nextFloat();
+			float g = rand.nextFloat();
+			float b = rand.nextFloat();
+			Color randomColor = new Color(r, g, b);
+			person.setColor(randomColor);
 			people.add(person);
 		}
 	}
@@ -42,20 +49,23 @@ public class Game extends GLWindow {
 	boolean moved = false;
 	int jump = 0;
 
+	@Override
 	public void Update(int delta) {
 		super.Update(delta);
 		speed = delta / 4;
 		grav -= 0.01 * delta;
-		if (test.y - test.getHeight() <= ground.y) {
-			test.y = ground.y + test.getHeight();
+		if (test.position.getY() - test.height <= ground.position.getY()) {
+			test.position.setY(ground.position.getY() + test.height);
 			grav = 0;
 			jump = 0;
 		}
+
 		for (Person person : people) {
-			if (person.y - person.getHeight() <= ground.y) {
-				person.y = ground.y + person.getHeight();
+			if (person.position.getY() - person.height <= ground.position.getY()) {
+				person.position.setY(ground.position.getY() + person.height);
 			}
 		}
+
 		int x = 0;
 
 		if (keyboard.keyPressed(Keyboard.KEY_D)) {
@@ -63,7 +73,7 @@ public class Game extends GLWindow {
 		} else if (keyboard.keyPressed(Keyboard.KEY_A)) {
 			x = (int) -speed;
 		}
-
+		//
 		if (keyboard.keyPressed(Keyboard.KEY_LSHIFT)) {
 			test.velocity_rate = 2;
 		} else {
@@ -82,12 +92,15 @@ public class Game extends GLWindow {
 		if (!keyboard.keyPressed(Keyboard.KEY_D) && !keyboard.keyPressed(Keyboard.KEY_A)) {
 			test.EndMove();
 		}
-
+		if (keyboard.keyPressed(Keyboard.KEY_ESCAPE)) {
+			System.exit(0); 
+		}
 		if (keyboard.keyPressed(Keyboard.KEY_E)) {
 			test.point = true;
 		} else {
 			test.point = false;
 		}
+
 		if (time >= 100) {
 			for (Person person : people) {
 				person.move = ran.nextInt(10 - 1 + 1) + 1;
@@ -95,15 +108,17 @@ public class Game extends GLWindow {
 			time = 0;
 		}
 		for (Person person : people) {
-
-			if (person.move < 4) {
+			speed = ran.nextInt((int) (5 - 1 + 1)) + 1;
+			if (person.move < 2) {
 				person.EndMove();
 			} else if (person.move >= 4 && person.move < 6) {
-				// test2.point = true;
-			} else if (person.move >= 6 && person.move < 8 && person.x < this.Width) {
-				person.Move(1, 0);
-			} else if (person.move >= 8 && person.x > 0) {
-				person.Move(-1, 0);
+				// person.point = true;
+			} else if (person.move >= 6 && person.move < 8 && person.position.getX() < this.Width) {
+				person.Move((int) speed, 0);
+			} else if (person.move >= 8 && person.move < 10 && person.position.getX() > 0) {
+				person.Move((int) -speed, 0);
+			} else if (person.move >= 10 && person.position.getX() > 0) {
+
 			}
 
 		}
@@ -116,8 +131,9 @@ public class Game extends GLWindow {
 	@Override
 	public void Resized() {
 		super.Resized();
-		System.out.println("height:" + this.Height);
+		System.out.println("width:" + this.Width);
 		hud.setHeight(this.Height);
+		ground.setSize(this.Width, 100);
 	}
 
 	int time = 0;
@@ -125,22 +141,24 @@ public class Game extends GLWindow {
 	Random ran = new Random();
 	boolean move_test2 = false;
 	Person test = new Person();
-	// Person test2 = new Person();
-	Entity ground = new Entity();
+	Object ground = new Object();
 	Tree tree = new Tree(100, 100);
 	HUD hud = new HUD();
 	ArrayList<Person> people = new ArrayList<Person>();
+	Object go = new Object();
 
 	public void Render() {
 		super.Render();
 
 		// tree.Render();
-		test.Render();
-		// test2.Render();
+
 		for (Person person : people) {
 			person.Render();
 		}
+		test.setColor(new Color(255, 0, 0));
+		test.Render();
 		ground.Render();
+
 		hud.Render();
 	}
 

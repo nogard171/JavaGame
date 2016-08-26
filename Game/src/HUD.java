@@ -31,14 +31,7 @@ public class HUD {
 			this.updateObjects();
 		}
 
-		if (mouse != null) {
-			test.pollMouse(mouse);
-		}
-		test.onClick(new Action() {
-			public void run() {
-				System.out.println("worked");
-			}
-		});
+		
 	}
 
 	public void Render() {
