@@ -42,6 +42,7 @@ public class Tree {
 		}
 		sprite.setPosition(this.x, this.y + this.sprite.height);
 		sprite.Render();
+		
 		for (Branch branch : branches) {
 			branch.Render(this.x, this.y + this.sprite.height);
 		}

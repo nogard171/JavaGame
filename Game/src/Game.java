@@ -42,6 +42,17 @@ public class Game extends GLWindow {
 			person.setColor(randomColor);
 			people.add(person);
 		}
+		setTexture(hud.test, "/res/img/window.png");
+	}
+
+	public void setTexture(Sprite sprite, String string) {
+		try {
+			sprite.texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(string));
+		} catch (RuntimeException ioe) {
+			System.out.println(ioe);
+		} catch (IOException ioe) {
+			System.out.println(ioe);
+		}
 	}
 
 	float speed = 0;
@@ -93,7 +104,7 @@ public class Game extends GLWindow {
 			test.EndMove();
 		}
 		if (keyboard.keyPressed(Keyboard.KEY_ESCAPE)) {
-			System.exit(0); 
+			System.exit(0);
 		}
 		if (keyboard.keyPressed(Keyboard.KEY_E)) {
 			test.point = true;
@@ -147,10 +158,12 @@ public class Game extends GLWindow {
 	ArrayList<Person> people = new ArrayList<Person>();
 	Object go = new Object();
 
+	
+
 	public void Render() {
 		super.Render();
 
-		// tree.Render();
+		tree.Render();
 
 		for (Person person : people) {
 			person.Render();

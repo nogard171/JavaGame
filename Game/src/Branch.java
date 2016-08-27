@@ -21,20 +21,24 @@ public class Branch {
 	}
 
 	public void initLeaves() {
-		/*
-		 * for (int Y = 0; Y < leaf_field_size.height; Y++) { for (int X = 0; X
-		 * < leaf_field_size.width; X++) {
-		 * 
-		 * Leaf leaf = new Leaf(4, 8); leaf.x = X * 6; leaf.y = Y * 8;
-		 * leaf.sprite.rot = 180; leaves.add(leaf);
-		 * 
-		 * } }
-		 */
+
+		for (int Y = 0; Y < leaf_field_size.height; Y++) {
+			for (int X = 0; X < leaf_field_size.width; X++) {
+
+				Leaf leaf = new Leaf(4, 8);
+				leaf.x = X * 6;
+				leaf.y = Y * 8;
+				// leaf.sprite.rot = 180;
+				// leaves.add(leaf);
+
+			}
+		}
+
 		Leaf leaf = new Leaf(4, 8);
-		// leaf.x = -32;
-		// leaf.y = 0;
+		leaf.x = 0;
+		leaf.y = 0;
 		// leaf.sprite.rot = 180;
-		// leaves.add(leaf);
+		leaves.add(leaf);
 		int num_Leaves = this.sprite.height / 6;
 
 	}
@@ -54,12 +58,13 @@ public class Branch {
 		} else if (wind < -30) {
 			blow = false;
 		}
-
-		// sprite.Render(this.x + X, this.y + Y + this.sprite.height);
+		sprite.setPosition(this.x + X, this.y + Y + this.sprite.height);
+		sprite.Render();
 
 		for (Leaf leaf : leaves) {
-			// leaf.sprite.rot = wind;
-			// leaf.Render(this.x + X, this.y + Y + this.sprite.height);
+			// leaf.rot = wind;
+			leaf.setPosition(this.x + X, this.y + Y + this.sprite.height);
+			leaf.Render();
 		}
 	}
 }

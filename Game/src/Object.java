@@ -1,8 +1,11 @@
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 public class Object extends Sprite {
 
@@ -28,15 +31,17 @@ public class Object extends Sprite {
 	public void Render() {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.position.getX() + origin.getX() + offset.getX(),
-				this.position.getY() - origin.getY()  + offset.getY(), 0);
+				this.position.getY() - origin.getY() + offset.getY(), 0);
 		GL11.glRotatef(rot, 0, 0, 1);
 		GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
 
 		super.Render();
 
-		GL11.glTranslatef(origin.getX(), -origin.getY() , 0);
+		GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
 		GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
-				-this.position.getY() + origin.getY()  - offset.getY(), 0);
+				-this.position.getY() + origin.getY() - offset.getY(), 0);
 		GL11.glPopMatrix();
 	}
+
+	
 }
