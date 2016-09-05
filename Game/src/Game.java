@@ -1,5 +1,7 @@
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.RenderingHints.Key;
+import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,28 +23,45 @@ import org.lwjgl.opengl.GL11;
 
 public class Game extends GLWindow {
 
+	Object[][][] objects = null;
+	int width = 10;
+	int height = 2;
+	int depth = 10;
+
 	public void Init() {
 		super.Init();
-		test.setPosition(100, 100);
-		test.setOrigin(16, 16);
-		test.setSize(24, 48);
-		ground.setPosition(0, 100);
-		ground.setSize(this.Width, 100);
-		hud.init();
-		hud.setHeight(this.Height);
+		// go.setPosition(100, 100);
+		if (objects == null) {
+			int newX = 400;
+			int newY = 400;
+			objects = new Object[width][depth][height];
+			for (int x = 0; x < objects.length; x++) {
+				for (int y = 0; y < objects[x].length; y++) {
+					for (int z = 0; z < objects[x][y].length; z++) {
+						objects[x][y][z] = new Object();
+						objects[x][y][z].setPosition(newX + ((x * 32) + (y * -32)),
+								newY + ((y * -16) - (x * 16) - (z * -32)));
+						if (z == 0) {
 
-		for (int i = 0; i < 1; i++) {
-			Person person = new Person();
-			Random rand = new Random();
-			// Java 'Color' class takes 3 floats, from 0 to 1.
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			Color randomColor = new Color(r, g, b);
-			person.setColor(randomColor);
-			people.add(person);
+							if (x + y == 10) {
+								objects[x][y][z].type = Type.DIRT;
+							}
+							if (x == 9) {
+								objects[x][y][z].type = Type.WATER;
+							}
+
+						} else {
+
+							objects[x][y][z].type = Type.BLANK;
+							if (x == 1) {
+								objects[x][y][z].type = Type.TREE;
+							}
+						}
+
+					}
+				}
+			}
 		}
-		setTexture(hud.test, "/res/img/window.png");
 	}
 
 	public void setTexture(Sprite sprite, String string) {
@@ -63,116 +82,66 @@ public class Game extends GLWindow {
 	@Override
 	public void Update(int delta) {
 		super.Update(delta);
-		speed = delta / 4;
-		grav -= 0.01 * delta;
-		if (test.position.getY() - test.height <= ground.position.getY()) {
-			test.position.setY(ground.position.getY() + test.height);
-			grav = 0;
-			jump = 0;
-		}
 
-		for (Person person : people) {
-			if (person.position.getY() - person.height <= ground.position.getY()) {
-				person.position.setY(ground.position.getY() + person.height);
+		for (int x = 0; x < objects.length; x++) {
+			for (int y = 0; y < objects[x].length; y++) {
+				for (int z = 0; z < objects[x][y].length; z++) {
+					Object test = objects[x][y][z];
+					if (test.type != Type.BLANK) {
+						Rectangle rec = new Rectangle(test.position.getX() + 16, test.position.getY(), 32, 32);
+						if (rec.contains(mouse.getPosition().getX() - camx,
+								mouse.getPosition().getY() + (height * 32) - camy)) {
+							test.setColor(new Color(255, 0, 0));
+						} else {
+							test.resetSprite();
+						}
+					}
+				}
 			}
 		}
 
-		int x = 0;
-
+		if (keyboard.keyPressed(Keyboard.KEY_A)) {
+			camx += 10;
+		}
 		if (keyboard.keyPressed(Keyboard.KEY_D)) {
-			x = (int) speed;
-		} else if (keyboard.keyPressed(Keyboard.KEY_A)) {
-			x = (int) -speed;
-		}
-		//
-		if (keyboard.keyPressed(Keyboard.KEY_LSHIFT)) {
-			test.velocity_rate = 2;
-		} else {
-			test.velocity_rate = 1;
+			camx -= 10;
 		}
 
-		if (keyboard.keyOnce(Keyboard.KEY_SPACE) && jump < 2) {
-			// test.rot +=5;
-			grav += 4;
-			jump++;
+		if (keyboard.keyPressed(Keyboard.KEY_W)) {
+			camy -= 10;
 		}
-		int y = (int) grav;
-
-		test.Move(x, y);
-
-		if (!keyboard.keyPressed(Keyboard.KEY_D) && !keyboard.keyPressed(Keyboard.KEY_A)) {
-			test.EndMove();
+		if (keyboard.keyPressed(Keyboard.KEY_S)) {
+			camy += 10;
 		}
-		if (keyboard.keyPressed(Keyboard.KEY_ESCAPE)) {
-			System.exit(0);
-		}
-		if (keyboard.keyPressed(Keyboard.KEY_E)) {
-			test.point = true;
-		} else {
-			test.point = false;
-		}
-
-		if (time >= 100) {
-			for (Person person : people) {
-				person.move = ran.nextInt(10 - 1 + 1) + 1;
-			}
-			time = 0;
-		}
-		for (Person person : people) {
-			speed = ran.nextInt((int) (5 - 1 + 1)) + 1;
-			if (person.move < 2) {
-				person.EndMove();
-			} else if (person.move >= 4 && person.move < 6) {
-				// person.point = true;
-			} else if (person.move >= 6 && person.move < 8 && person.position.getX() < this.Width) {
-				person.Move((int) speed, 0);
-			} else if (person.move >= 8 && person.move < 10 && person.position.getX() > 0) {
-				person.Move((int) -speed, 0);
-			} else if (person.move >= 10 && person.position.getX() > 0) {
-
-			}
-
-		}
-
-		time++;
-		hud.update(super.mouse);
 		super.keyboard.endPoll();
 	}
+
+	int camx = 0;
+	int camy = 0;
 
 	@Override
 	public void Resized() {
 		super.Resized();
-		System.out.println("width:" + this.Width);
-		hud.setHeight(this.Height);
-		ground.setSize(this.Width, 100);
 	}
 
-	int time = 0;
-	// int move = 0;
-	Random ran = new Random();
-	boolean move_test2 = false;
-	Person test = new Person();
 	Object ground = new Object();
-	Tree tree = new Tree(100, 100);
-	HUD hud = new HUD();
-	ArrayList<Person> people = new ArrayList<Person>();
 	Object go = new Object();
-
-	
 
 	public void Render() {
 		super.Render();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(camx, camy - (height * 32), 0);
 
-		tree.Render();
-
-		for (Person person : people) {
-			person.Render();
+		for (int x = 0; x < objects.length; x++) {
+			for (int y = 0; y < objects[x].length; y++) {
+				for (int z = 0; z < objects[x][y].length; z++) {
+					objects[x][y][z].Render();
+				}
+			}
 		}
-		test.setColor(new Color(255, 0, 0));
-		test.Render();
-		ground.Render();
 
-		hud.Render();
+		GL11.glTranslatef(-camx, -camy + (10 * 32), 0);
+		GL11.glPopMatrix();
 	}
 
 	public static void main(String[] argv) {
