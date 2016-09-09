@@ -2,6 +2,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.RenderingHints.Key;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import org.newdawn.slick.util.ResourceLoader;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -25,22 +27,19 @@ public class Game extends GLWindow {
 
 	Object[][][] objects = null;
 	int width = 10;
-	int height = 2;
+	int height = 10;
 	int depth = 10;
+	int level = 0;
 
 	public void Init() {
 		super.Init();
-		go.setPosition(100, 100);
 		if (objects == null) {
-			int newX = 400;
-			int newY = 400;
+
 			objects = new Object[width][depth][height];
 			for (int x = 0; x < objects.length; x++) {
 				for (int y = 0; y < objects[x].length; y++) {
 					for (int z = 0; z < objects[x][y].length; z++) {
 						objects[x][y][z] = new Object();
-						objects[x][y][z].setPosition(newX + ((x * 32) + (y * -32)),
-								newY + ((y * -16) - (x * 16) - (z * -32)));
 						if (z == 0) {
 
 							if (x + y == 10) {
@@ -53,8 +52,15 @@ public class Game extends GLWindow {
 						} else {
 
 							objects[x][y][z].type = Type.BLANK;
-							if (x == 1) {
+							if (x == 1 && z <= 2) {
+								if (z > 1) {
+									objects[x][y][z].shadow = false;
+								}
 								objects[x][y][z].type = Type.TREE;
+							}
+							if (x == 1 && z == 3) {
+								objects[x][y][z].shadow = false;
+								objects[x][y][z].type = Type.GRASS;
 							}
 						}
 
@@ -78,6 +84,7 @@ public class Game extends GLWindow {
 	float grav = 0;
 	boolean moved = false;
 	int jump = 0;
+	int clicked = 0;
 
 	@Override
 	public void Update(int delta) {
@@ -94,6 +101,26 @@ public class Game extends GLWindow {
 							test.setColor(new Color(255, 0, 0));
 						} else {
 							test.resetSprite();
+						}
+
+						if (rec.contains(mouse.getPosition().getX() - camx,
+								mouse.getPosition().getY() + (height * 32) - camy) && clicked <= 0d) {
+							test.isHovered = true;
+
+						} else {
+							test.isHovered = false;
+						}
+						if (test.isHovered && mouse.mouseDown(0) && insideBounds(x, y, z + 1) && z == level) {
+							Object obj = new Object();
+							obj.setPosition(objects[x][y][z].position.getX(), objects[x][y][z].position.getY() + 16);
+							objects[x][y][z + 1] = obj;
+							System.out.println("X:" + x + "/Y:" + y);
+							clicked++;
+						} else if (!mouse.mouseDown(0)) {
+							clicked = 0;
+						}
+						if ((insideBounds(x, y + 1, z) && objects[x][y + 1][z].type != Type.BLANK)) {
+							test.shadow = false;
 						}
 					}
 				}
@@ -113,7 +140,24 @@ public class Game extends GLWindow {
 		if (keyboard.keyPressed(Keyboard.KEY_S)) {
 			camy += 10;
 		}
+		if (keyboard.keyOnce(Keyboard.KEY_DOWN) && level > -1) {
+			level--;
+		}
+		if (keyboard.keyOnce(Keyboard.KEY_UP)) {
+			level++;
+		}
+
+		System.out.println("Level:" + level);
 		super.keyboard.endPoll();
+	}
+
+	private boolean insideBounds(int newX, int newY, int newZ) {
+		boolean inside = false;
+		if (newX >= 0 && newX < width && newY >= 0 && newY < height && newZ >= 0 && newZ < depth) {
+			inside = true;
+		}
+
+		return inside;
 	}
 
 	int camx = 0;
@@ -124,25 +168,30 @@ public class Game extends GLWindow {
 		super.Resized();
 	}
 
-	Object ground = new Object();
-	Object go = new Object();
-
 	public void Render() {
 		super.Render();
-		
-		 
-		
+
+		int newX = 400;
+		int newY = 400;
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camx, camy - (height * 32), 0);
-
+		int newHeight = depth;
+		if (level < depth - 1) {
+			newHeight = level + 2;
+		}
 		for (int x = 0; x < objects.length; x++) {
-			for (int y = 0; y < objects[x].length; y++) {
-				for (int z = 0; z < objects[x][y].length; z++) {
+			for (int y = objects[x].length - 1; y >= 0; y--) {
+				for (int z = 0; z < newHeight; z++) {
+					objects[x][y][z].setPosition(newX + ((x * 32) + (y * 32)),
+							newY + ((y * 16) - (x * 16) - (z * -32)));
+					if (newHeight - 1 == z) {
+						objects[x][y][z].setTransparent(0.5f);
+					}
+
 					objects[x][y][z].Render();
 				}
 			}
 		}
-		go.Render();
 
 		GL11.glTranslatef(-camx, -camy + (10 * 32), 0);
 		GL11.glPopMatrix();

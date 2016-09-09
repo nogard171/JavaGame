@@ -23,6 +23,9 @@ public class Sprite {
 	int[][] faces = null;
 	Color[] colors = null;
 	int[] topFaces = { 0, 1, 2, 5 };
+	Vector2f[] shadowVertex = null;
+	int[][] shadowFaces = null;
+	boolean shadow = true;
 
 	public Sprite(int new_Width, int new_Height) {
 		this.width = new_Width;
@@ -59,6 +62,13 @@ public class Sprite {
 		if (this.colors != spriteData.colors) {
 			this.colors = spriteData.colors;
 		}
+		if (this.shadowVertex != spriteData.shadowVertex) {
+			this.shadowVertex = spriteData.shadowVertex;
+		}
+		if (this.shadowFaces != spriteData.shadowFaces) {
+			this.shadowFaces = spriteData.shadowFaces;
+		}
+		this.shadow = spriteData.shadow;
 	}
 
 	public Sprite() {
@@ -88,6 +98,7 @@ public class Sprite {
 	public void RenderTop() {
 		Render(true);
 	}
+
 	public void RenderBottom() {
 		Render(false);
 	}
@@ -96,42 +107,73 @@ public class Sprite {
 		if (vertex == null) {
 			this.resetSprite();
 		}
-		if (texture != null) {
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			texture.bind();
-		}
+		if (this.type != Type.BLANK) {
+			if (texture != null) {
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				texture.bind();
+			}
 
-		GL11.glBegin(GL11.GL_TRIANGLES);
-		if (texture != null) {
-			GL11.glTexCoord2f(0, 0);
-			GL11.glVertex2f(0, 0);
-			GL11.glTexCoord2f(1, 0);
-			GL11.glVertex2f(this.width, 0);
-			GL11.glTexCoord2f(1, 1);
-			GL11.glVertex2f(this.width, 0 - this.height);
-			GL11.glTexCoord2f(0, 1);
-			GL11.glVertex2f(0, 0 - this.height);
-		} else {
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			if (texture != null) {
+				GL11.glTexCoord2f(0, 0);
+				GL11.glVertex2f(0, 0);
+				GL11.glTexCoord2f(1, 0);
+				GL11.glVertex2f(this.width, 0);
+				GL11.glTexCoord2f(1, 1);
+				GL11.glVertex2f(this.width, 0 - this.height);
+				GL11.glTexCoord2f(0, 1);
+				GL11.glVertex2f(0, 0 - this.height);
+			} else {
+				for (int f1 = 0; f1 < faces.length; f1++) {
+					if (hasValue(topFaces, f1) && top) {
+						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
+						for (int f2 = 0; f2 < faces[f1].length; f2++) {
+							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
+									vertex[faces[f1][f2]].y * this.height);
+						}
+					} else if (!hasValue(topFaces, f1) && !top) {
+						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
+						for (int f2 = 0; f2 < faces[f1].length; f2++) {
+							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
+									vertex[faces[f1][f2]].y * this.height);
+						}
+					}
+				}
+			}
+			GL11.glEnd();
+
+			GL11.glBegin(GL11.GL_LINES);
 			for (int f1 = 0; f1 < faces.length; f1++) {
 				if (hasValue(topFaces, f1) && top) {
 					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
 					for (int f2 = 0; f2 < faces[f1].length; f2++) {
 						GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
 					}
-				} else if (!hasValue(topFaces, f1) &&!top) {
+				} else if (!hasValue(topFaces, f1) && !top) {
 					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
 					for (int f2 = 0; f2 < faces[f1].length; f2++) {
 						GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
 					}
 				}
 			}
-		}
+			GL11.glEnd();
 
-		GL11.glEnd();
+			if (shadow) {
+				GL11.glBegin(GL11.GL_TRIANGLES);
+				GL11.glColor4f(0, 0, 0, 0.2f);
+				for (int f1 = 0; f1 < shadowFaces.length; f1++) {
 
-		if (texture != null) {
-			// texture.release();
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
+					for (int f2 = 0; f2 < shadowFaces[f1].length; f2++) {
+						GL11.glVertex2f(shadowVertex[shadowFaces[f1][f2]].x * this.width,
+								shadowVertex[shadowFaces[f1][f2]].y * this.height);
+					}
+				}
+				GL11.glEnd();
+			}
+			if (texture != null) {
+				// texture.release();
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+			}
 		}
 	}
 

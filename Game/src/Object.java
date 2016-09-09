@@ -15,6 +15,7 @@ public class Object extends Sprite {
 	int rot = 0;
 
 	int mouseClicked = 0;
+	public boolean isHovered = false;
 
 	public Object() {
 		super(32, 32);

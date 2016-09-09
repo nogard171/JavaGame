@@ -13,7 +13,23 @@ public class MouseInput {
 		for (int i = 0; i < java.awt.MouseInfo.getNumberOfButtons(); i++) {
 			mouseButtons[i] = Mouse.isButtonDown(i);
 		}
-		mousePosition = new Point(Mouse.getX(),  Mouse.getY());
+		mousePosition = new Point(Mouse.getX(), Mouse.getY());
+	}
+
+	public int getDWheel() {
+		return Mouse.getDWheel();
+	}
+
+	public int mouseScrolled() {
+		int scrolled = 0;
+		int dWheel = Mouse.getDWheel();
+		if (dWheel < 0) {
+			scrolled = 1;
+		}
+		if (dWheel > 0) {
+			scrolled = 2;
+		}
+		return scrolled;
 	}
 
 	public Point getPosition() {
