@@ -28,14 +28,14 @@ public class Object extends Sprite {
 		this.position = new Rectangle(x, y, position.getWidth(), position.getHeight());
 	}
 
-	public void Render() {
+	public void RenderBottom() {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.position.getX() + origin.getX() + offset.getX(),
 				this.position.getY() - origin.getY() + offset.getY(), 0);
 		GL11.glRotatef(rot, 0, 0, 1);
 		GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
 
-		super.Render();
+		super.RenderBottom();
 
 		GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
 		GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
@@ -43,7 +43,24 @@ public class Object extends Sprite {
 		GL11.glPopMatrix();
 	}
 
-	
+	public void Render() {
+		this.RenderBottom();
+		this.RenderTop();
+	}
 
-	
+	public void RenderTop() {
+		GL11.glPushMatrix();
+		GL11.glTranslatef(this.position.getX() + origin.getX() + offset.getX(),
+				this.position.getY() - origin.getY() + offset.getY(), 0);
+		GL11.glRotatef(rot, 0, 0, 1);
+		GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
+
+		super.RenderTop();
+
+		GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
+		GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
+				-this.position.getY() + origin.getY() - offset.getY(), 0);
+		GL11.glPopMatrix();
+	}
+
 }

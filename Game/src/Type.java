@@ -17,9 +17,11 @@ public enum Type {
 			b = 64;// 64, 128, 64
 			for (int c = 0; c < spriteData.colors.length; c++) {
 				spriteData.colors[c] = new Color(r, g, b);
-				r -= 16;
-				g -= 16;
-				b -= 16;
+				if ((c %2)!= 0) {
+					r -= 16;
+					g -= 16;
+					b -= 16;
+				}
 			}
 			return spriteData;
 		case BLANK:
@@ -36,9 +38,11 @@ public enum Type {
 			b = 16;// 97, 63, 16
 			for (int c = 0; c < spriteData.colors.length; c++) {
 				spriteData.colors[c] = new Color(r, g, b);
+				if ((c %2)!= 0) {
 				r -= 16;
 				g -= 16;
 				b -= 16;
+				}
 			}
 			return spriteData;
 		case SAND:
@@ -48,9 +52,11 @@ public enum Type {
 			b = 175;// 97, 63, 16
 			for (int c = 0; c < spriteData.colors.length; c++) {
 				spriteData.colors[c] = new Color(r, g, b);
+				if ((c %2)!= 0) {
 				r -= 16;
 				g -= 16;
 				b -= 16;
+				}
 			}
 			return spriteData;
 		case WATER:
@@ -61,9 +67,11 @@ public enum Type {
 			a = 224;
 			for (int c = 0; c < spriteData.colors.length; c++) {
 				spriteData.colors[c] = new Color(r, g, b, a);
-				r -= 16;
-				g -= 16;
-				b -= 16;
+				if ((c %2)!= 0) {
+					r -= 16;
+					g -= 16;
+					b -= 16;
+				}
 			}
 			return spriteData;
 		default:

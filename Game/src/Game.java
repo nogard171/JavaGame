@@ -30,7 +30,7 @@ public class Game extends GLWindow {
 
 	public void Init() {
 		super.Init();
-		// go.setPosition(100, 100);
+		go.setPosition(100, 100);
 		if (objects == null) {
 			int newX = 400;
 			int newY = 400;
@@ -129,6 +129,9 @@ public class Game extends GLWindow {
 
 	public void Render() {
 		super.Render();
+		
+		 
+		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camx, camy - (height * 32), 0);
 
@@ -139,6 +142,7 @@ public class Game extends GLWindow {
 				}
 			}
 		}
+		go.Render();
 
 		GL11.glTranslatef(-camx, -camy + (10 * 32), 0);
 		GL11.glPopMatrix();

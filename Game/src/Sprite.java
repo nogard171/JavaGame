@@ -22,6 +22,7 @@ public class Sprite {
 	Vector2f[] vertex = null;
 	int[][] faces = null;
 	Color[] colors = null;
+	int[] topFaces = { 0, 1, 2, 5 };
 
 	public Sprite(int new_Width, int new_Height) {
 		this.width = new_Width;
@@ -30,8 +31,9 @@ public class Sprite {
 	}
 
 	public void setColor(Color newColor) {
-		if (colors != null && colors[0] != newColor) {
+		if (colors != null && colors[0] != newColor && colors[1] != newColor) {
 			colors[0] = newColor;
+			colors[1] = newColor;
 		}
 	}
 
@@ -83,7 +85,14 @@ public class Sprite {
 		this.origin = new Point(x, y);
 	}
 
-	public void Render() {
+	public void RenderTop() {
+		Render(true);
+	}
+	public void RenderBottom() {
+		Render(false);
+	}
+
+	public void Render(boolean top) {
 		if (vertex == null) {
 			this.resetSprite();
 		}
@@ -92,7 +101,7 @@ public class Sprite {
 			texture.bind();
 		}
 
-		GL11.glBegin(render_Type);
+		GL11.glBegin(GL11.GL_TRIANGLES);
 		if (texture != null) {
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2f(0, 0);
@@ -103,17 +112,19 @@ public class Sprite {
 			GL11.glTexCoord2f(0, 1);
 			GL11.glVertex2f(0, 0 - this.height);
 		} else {
-
 			for (int f1 = 0; f1 < faces.length; f1++) {
-				GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
-				for (int f2 = 0; f2 < faces[f1].length; f2++) {
-					GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
+				if (hasValue(topFaces, f1) && top) {
+					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
+					for (int f2 = 0; f2 < faces[f1].length; f2++) {
+						GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
+					}
+				} else if (!hasValue(topFaces, f1) &&!top) {
+					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
+					for (int f2 = 0; f2 < faces[f1].length; f2++) {
+						GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
+					}
 				}
 			}
-			// GL11.glVertex2f(0, 0);
-			// GL11.glVertex2f(, 0);
-			// GL11.glVertex2f(this.width, 0 - this.height);
-			// GL11.glVertex2f(0, 0 - this.height);
 		}
 
 		GL11.glEnd();
@@ -122,5 +133,16 @@ public class Sprite {
 			// texture.release();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
+	}
+
+	public boolean hasValue(int[] array, int value) {
+		boolean has = false;
+		for (int f1 = 0; f1 < array.length; f1++) {
+			if (array[f1] == value) {
+				has = true;
+				break;
+			}
+		}
+		return has;
 	}
 }
