@@ -85,7 +85,7 @@ public class Game extends GLWindow {
 	boolean moved = false;
 	int jump = 0;
 	int clicked = 0;
-
+	int tileZ = 0;
 	@Override
 	public void Update(int delta) {
 		super.Update(delta);
@@ -106,7 +106,6 @@ public class Game extends GLWindow {
 						if (rec.contains(mouse.getPosition().getX() - camx,
 								mouse.getPosition().getY() + (height * 32) - camy) && clicked <= 0d) {
 							test.isHovered = true;
-
 						} else {
 							test.isHovered = false;
 						}
@@ -114,8 +113,9 @@ public class Game extends GLWindow {
 							Object obj = new Object();
 							obj.setPosition(objects[x][y][z].position.getX(), objects[x][y][z].position.getY() + 16);
 							objects[x][y][z + 1] = obj;
-							System.out.println("X:" + x + "/Y:" + y);
+							System.out.println("X:" + x + "/Y:" + y);							
 							clicked++;
+							break;
 						} else if (!mouse.mouseDown(0)) {
 							clicked = 0;
 						}
