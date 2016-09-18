@@ -31,6 +31,8 @@ public class Game extends GLWindow {
 		hud.init();
 		hud.setHeight(this.Height);
 
+		go.setPosition(200, 200);
+
 		for (int i = 0; i < 1; i++) {
 			Person person = new Person();
 			Random rand = new Random();
@@ -65,8 +67,15 @@ public class Game extends GLWindow {
 		super.Update(delta);
 		speed = delta / 4;
 		grav -= 0.01 * delta;
-		if (test.position.getY() - test.height <= ground.position.getY()) {
+		if ((test.position.getY() - test.height <= ground.position.getY())) {
 			test.position.setY(ground.position.getY() + test.height);
+			grav = 0;
+			jump = 0;
+		}
+		if (test.position.getY() - test.height <= go.position.getY() && ((test.position.getX() >= go.position.getX()
+				&& test.position.getX() <= go.position.getX() + go.width)
+				||( test.position.getX() + test.width <= go.position.getX() + go.width
+				&& test.position.getX() + test.width >= go.position.getX()))) {
 			grav = 0;
 			jump = 0;
 		}
@@ -74,6 +83,13 @@ public class Game extends GLWindow {
 		for (Person person : people) {
 			if (person.position.getY() - person.height <= ground.position.getY()) {
 				person.position.setY(ground.position.getY() + person.height);
+			}
+			if (test.position.getY() - test.height <= person.position.getY() +person.height&& ((test.position.getX() >= person.position.getX()
+					&& test.position.getX() <= person.position.getX() + person.width)
+					||( test.position.getX() + test.width <= person.position.getX() + person.width
+					&& test.position.getX() + test.width >= person.position.getX()))) {
+				grav = 0;
+				jump = 0;
 			}
 		}
 
@@ -156,9 +172,7 @@ public class Game extends GLWindow {
 	Tree tree = new Tree(100, 100);
 	HUD hud = new HUD();
 	ArrayList<Person> people = new ArrayList<Person>();
-	Object go = new Object();
-
-	
+	Object go = new Object(300,32);
 
 	public void Render() {
 		super.Render();
@@ -171,6 +185,8 @@ public class Game extends GLWindow {
 		test.setColor(new Color(255, 0, 0));
 		test.Render();
 		ground.Render();
+
+		go.Render();
 
 		hud.Render();
 	}

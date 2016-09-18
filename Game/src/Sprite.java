@@ -44,9 +44,7 @@ public class Sprite {
 		if (texture != null) {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			texture.bind();
-			// System.out.println("testure:" + texture.getImageWidth());
 		}
-
 		// background
 		if (texture == null) {
 			GL11.glBegin(GL11.GL_QUADS);
@@ -80,7 +78,7 @@ public class Sprite {
 		GL11.glEnd();
 
 		if (texture != null) {
-			// texture.release();
+			 //texture.release();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
 	}

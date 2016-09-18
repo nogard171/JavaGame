@@ -31,7 +31,7 @@ public class HUD {
 	}
 
 	public void updateObjects() {
-		test.position = new Rectangle(x, y, 32, 32);
+		test.position = new Rectangle(x+50, y, 32, 32);
 	}
 
 	public void update(MouseInput mouse) {

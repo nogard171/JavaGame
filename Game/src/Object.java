@@ -38,6 +38,7 @@ public class Object extends Sprite {
 		super.Render();
 
 		GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
+		GL11.glRotatef(rot, 0, 0, -1);
 		GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
 				-this.position.getY() + origin.getY() - offset.getY(), 0);
 		GL11.glPopMatrix();
