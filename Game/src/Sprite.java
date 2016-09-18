@@ -26,6 +26,7 @@ public class Sprite {
 	Vector2f[] shadowVertex = null;
 	int[][] shadowFaces = null;
 	boolean shadow = true;
+	boolean grid = true;
 
 	public Sprite(int new_Width, int new_Height) {
 		this.width = new_Width;
@@ -34,13 +35,24 @@ public class Sprite {
 	}
 
 	public void setColor(Color newColor) {
-		if (colors != null && colors[0] != newColor && colors[1] != newColor) {
-			colors[0] = newColor;
-			colors[1] = newColor;
+		grid = false;
+		int r, g, b, a = 0;
+		if (colors != null) {
+			colors = new Color[faces.length];
+			r = 255;
+			g = 0;
+			b = 0;
+			for (int c = 0; c < colors.length; c++) {
+				colors[c] = new Color(r, g, b);
+				if ((c % 2) != 0) {
+					r -= 64;
+				}
+			}
 		}
 	}
 
 	public Color getColor() {
+		grid = true;
 		this.resetSprite();
 		if (spriteData != null) {
 			return spriteData.colors[0];
@@ -81,7 +93,6 @@ public class Sprite {
 		if (colors != null) {
 			for (int c = 0; c < colors.length; c++) {
 				colors[c] = new Color(colors[c].r, colors[c].g, colors[c].b, amount);
-				System.out.println("Color");
 			}
 		}
 	}
@@ -141,22 +152,25 @@ public class Sprite {
 				}
 			}
 			GL11.glEnd();
-
-			GL11.glBegin(GL11.GL_LINES);
-			for (int f1 = 0; f1 < faces.length; f1++) {
-				if (hasValue(topFaces, f1) && top) {
-					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
-					for (int f2 = 0; f2 < faces[f1].length; f2++) {
-						GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
-					}
-				} else if (!hasValue(topFaces, f1) && !top) {
-					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
-					for (int f2 = 0; f2 < faces[f1].length; f2++) {
-						GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width, vertex[faces[f1][f2]].y * this.height);
+			if (grid) {
+				GL11.glBegin(GL11.GL_LINES);
+				for (int f1 = 0; f1 < faces.length; f1++) {
+					if (hasValue(topFaces, f1) && top) {
+						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
+						for (int f2 = 0; f2 < faces[f1].length; f2++) {
+							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
+									vertex[faces[f1][f2]].y * this.height);
+						}
+					} else if (!hasValue(topFaces, f1) && !top) {
+						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
+						for (int f2 = 0; f2 < faces[f1].length; f2++) {
+							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
+									vertex[faces[f1][f2]].y * this.height);
+						}
 					}
 				}
+				GL11.glEnd();
 			}
-			GL11.glEnd();
 
 			if (shadow) {
 				GL11.glBegin(GL11.GL_TRIANGLES);
@@ -164,7 +178,7 @@ public class Sprite {
 				for (int f1 = 0; f1 < shadowFaces.length; f1++) {
 
 					for (int f2 = 0; f2 < shadowFaces[f1].length; f2++) {
-						GL11.glVertex2f(shadowVertex[shadowFaces[f1][f2]].x * this.width,
+						GL11.glVertex2f((shadowVertex[shadowFaces[f1][f2]].x * this.width),
 								shadowVertex[shadowFaces[f1][f2]].y * this.height);
 					}
 				}

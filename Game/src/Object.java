@@ -10,6 +10,7 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Object extends Sprite {
 
 	Rectangle position = new Rectangle(0, 0, 32, 32);
+	
 	Point offset = new Point(0, 0);
 	boolean isSolid = false;
 	int rot = 0;
@@ -35,9 +36,7 @@ public class Object extends Sprite {
 				this.position.getY() - origin.getY() + offset.getY(), 0);
 		GL11.glRotatef(rot, 0, 0, 1);
 		GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
-
 		super.RenderBottom();
-
 		GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
 		GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
 				-this.position.getY() + origin.getY() - offset.getY(), 0);
@@ -47,6 +46,8 @@ public class Object extends Sprite {
 	public void Render() {
 		this.RenderBottom();
 		this.RenderTop();
+		
+		
 	}
 
 	public void RenderTop() {

@@ -39,31 +39,30 @@ public class Game extends GLWindow {
 			for (int x = 0; x < objects.length; x++) {
 				for (int y = 0; y < objects[x].length; y++) {
 					for (int z = 0; z < objects[x][y].length; z++) {
-						objects[x][y][z] = new Object();
+						Object obj = new Object();
 						if (z == 0) {
-
 							if (x + y == 10) {
-								objects[x][y][z].type = Type.DIRT;
+								obj.type = Type.DIRT;
 							}
 							if (x == 9) {
-								objects[x][y][z].type = Type.WATER;
+								obj.type = Type.WATER;
 							}
 
 						} else {
 
-							objects[x][y][z].type = Type.BLANK;
+							obj.type = Type.BLANK;
 							if (x == 1 && z <= 2) {
 								if (z > 1) {
-									objects[x][y][z].shadow = false;
+									obj.shadow = false;
 								}
-								objects[x][y][z].type = Type.TREE;
+								obj.type = Type.TREE;
 							}
 							if (x == 1 && z == 3) {
-								objects[x][y][z].shadow = false;
-								objects[x][y][z].type = Type.GRASS;
+								obj.shadow = false;
+								obj.type = Type.GRASS;
 							}
 						}
-
+						objects[x][y][z] = obj;
 					}
 				}
 			}
@@ -86,10 +85,14 @@ public class Game extends GLWindow {
 	int jump = 0;
 	int clicked = 0;
 	int tileZ = 0;
+
 	@Override
 	public void Update(int delta) {
 		super.Update(delta);
-
+		Object obj = null;
+		int objX = 0;
+		int objY = 0;
+		int objZ = 0;
 		for (int x = 0; x < objects.length; x++) {
 			for (int y = 0; y < objects[x].length; y++) {
 				for (int z = 0; z < objects[x][y].length; z++) {
@@ -104,18 +107,25 @@ public class Game extends GLWindow {
 						}
 
 						if (rec.contains(mouse.getPosition().getX() - camx,
-								mouse.getPosition().getY() + (height * 32) - camy) && clicked <= 0d) {
+								mouse.getPosition().getY() + (height * 32) - camy) &&mouse.mouseDown(0)) {
 							test.isHovered = true;
+							System.out.println("Z:" + z + "\nTile Z:" + tileZ);
+							
 						} else {
 							test.isHovered = false;
 						}
-						if (test.isHovered && mouse.mouseDown(0) && insideBounds(x, y, z + 1) && z == level) {
-							Object obj = new Object();
-							obj.setPosition(objects[x][y][z].position.getX(), objects[x][y][z].position.getY() + 16);
-							objects[x][y][z + 1] = obj;
-							System.out.println("X:" + x + "/Y:" + y);							
+						if (test.isHovered && mouse.mouseDown(0) && insideBounds(x, y, z + 1)) {
+							// Object obj = new Object();
+							// obj.setPosition(objects[x][y][z].position.getX(),
+							// objects[x][y][z].position.getY() + 16);
+							// objects[x][y][z + 1] = obj;
+							System.out.println("Z:" + z + "\nTile Z:" + tileZ);
+							objX = x;
+							objY = y;
+							objZ = z;
 							clicked++;
-							break;
+							tileZ = z;
+							obj = objects[x][y][z];
 						} else if (!mouse.mouseDown(0)) {
 							clicked = 0;
 						}
@@ -125,6 +135,19 @@ public class Game extends GLWindow {
 					}
 				}
 			}
+		}
+
+		if (obj != null&&keyboard.keyPressed(Keyboard.KEY_LCONTROL)) {
+			Object object = new Object();
+			object.setPosition(objects[objX][objY][objZ].position.getX(),
+					objects[objX][objY][objZ].position.getY() + 16);
+			objects[objX][objY][objZ] = object;
+		}
+		else if (obj != null) {
+			Object object = new Object();
+			object.setPosition(objects[objX][objY][objZ].position.getX(),
+					objects[objX][objY][objZ].position.getY() + 16);
+			objects[objX][objY][objZ+1] = object;
 		}
 
 		if (keyboard.keyPressed(Keyboard.KEY_A)) {
@@ -147,7 +170,7 @@ public class Game extends GLWindow {
 			level++;
 		}
 
-		System.out.println("Level:" + level);
+	//	System.out.println("Level:" + level);
 		super.keyboard.endPoll();
 	}
 
@@ -181,11 +204,11 @@ public class Game extends GLWindow {
 		}
 		for (int x = 0; x < objects.length; x++) {
 			for (int y = objects[x].length - 1; y >= 0; y--) {
-				for (int z = 0; z < newHeight; z++) {
+				for (int z = 0; z < objects[x][y].length; z++) {
 					objects[x][y][z].setPosition(newX + ((x * 32) + (y * 32)),
 							newY + ((y * 16) - (x * 16) - (z * -32)));
 					if (newHeight - 1 == z) {
-						objects[x][y][z].setTransparent(0.5f);
+						//objects[x][y][z].setTransparent(0.5f);
 					}
 
 					objects[x][y][z].Render();
