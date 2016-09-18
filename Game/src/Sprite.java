@@ -52,7 +52,6 @@ public class Sprite {
 	}
 
 	public Color getColor() {
-		grid = true;
 		this.resetSprite();
 		if (spriteData != null) {
 			return spriteData.colors[0];
@@ -62,6 +61,7 @@ public class Sprite {
 	}
 
 	public void resetSprite() {
+		grid = true;
 		if (spriteData == null || spriteData != Type.getSpriteData(this.type)) {
 			this.spriteData = Type.getSpriteData(this.type);
 		}
@@ -153,16 +153,17 @@ public class Sprite {
 			}
 			GL11.glEnd();
 			if (grid) {
+				
 				GL11.glBegin(GL11.GL_LINES);
+			
 				for (int f1 = 0; f1 < faces.length; f1++) {
+					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
 					if (hasValue(topFaces, f1) && top) {
-						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
 						for (int f2 = 0; f2 < faces[f1].length; f2++) {
 							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
 									vertex[faces[f1][f2]].y * this.height);
 						}
 					} else if (!hasValue(topFaces, f1) && !top) {
-						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
 						for (int f2 = 0; f2 < faces[f1].length; f2++) {
 							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
 									vertex[faces[f1][f2]].y * this.height);
