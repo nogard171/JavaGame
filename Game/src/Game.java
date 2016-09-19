@@ -26,9 +26,9 @@ import org.lwjgl.opengl.GL11;
 public class Game extends GLWindow {
 
 	Object[][][] objects = null;
-	int width = 10;
+	int width = 30;
 	int height = 10;
-	int depth = 10;
+	int depth = 30;
 	int level = 0;
 
 	public static void drawString(String s, int x, int y) {
@@ -530,16 +530,6 @@ public class Game extends GLWindow {
 						} else {
 
 							obj.type = Type.BLANK;
-							if (x == 1 && z <= 3) {
-								if (z > 1) {
-									obj.shadow = false;
-								}
-								obj.type = Type.TREE;
-							}
-							if (x == 1 && z == 4) {
-								obj.shadow = false;
-								obj.type = Type.GRASS;
-							}
 						}
 						objects[x][y][z] = obj;
 					}
@@ -573,6 +563,7 @@ public class Game extends GLWindow {
 		int objX = 0;
 		int objY = 0;
 		int objZ = 0;
+
 		for (int x = 0; x < objects.length; x++) {
 			for (int y = 0; y < objects[x].length; y++) {
 				for (int z = 0; z < objects[x][y].length; z++) {
@@ -589,6 +580,7 @@ public class Game extends GLWindow {
 						if (rec.contains(mouse.getPosition().getX() - camx,
 								mouse.getPosition().getY() + (height * 32) - camy)) {
 							test.isHovered = true;
+							System.out.println("type:"+test.type);
 							type = test.type;
 							if (z - 1 >= 0 && objects[x][y][z - 1].type == Type.TREE) {
 								type = Type.LEAVES;
@@ -597,12 +589,13 @@ public class Game extends GLWindow {
 						} else {
 							test.isHovered = false;
 						}
+						
+						if (insideBounds(x - 1, y, z) && insideBounds(x + 1, y, z)&& insideBounds(x , y, z+1)) {
+							if (objects[x - 1][y][z].type != Type.BLANK && objects[x + 1][y][z].type != Type.BLANK&& objects[x][y][z+1].type != Type.BLANK) {
+								test.render = false;
+							}
+						}
 						if (test.isHovered && mouse.mouseDown(0) && insideBounds(x, y, z + 1)) {
-							// Object obj = new Object();
-							// obj.setPosition(objects[x][y][z].position.getX(),
-							// objects[x][y][z].position.getY() + 16);
-							// objects[x][y][z + 1] = obj;
-							System.out.println("Z:" + z + "\nTile Z:" + tileZ);
 							objX = x;
 							objY = y;
 							objZ = z;
@@ -621,12 +614,12 @@ public class Game extends GLWindow {
 		}
 
 		if (obj != null && keyboard.keyPressed(Keyboard.KEY_LCONTROL)) {
-			Object object = new Object();
+			Object object = new Object(Type.STONE);
 			object.setPosition(objects[objX][objY][objZ].position.getX(),
 					objects[objX][objY][objZ].position.getY() + 16);
 			objects[objX][objY][objZ] = object;
 		} else if (obj != null) {
-			Object object = new Object();
+			Object object = new Object(Type.STONE);
 			object.setPosition(objects[objX][objY][objZ].position.getX(),
 					objects[objX][objY][objZ].position.getY() + 16);
 			objects[objX][objY][objZ + 1] = object;
@@ -652,35 +645,23 @@ public class Game extends GLWindow {
 			level++;
 		}
 
-		if (keyboard.keyOnce(Keyboard.KEY_LEFT) ) {
+		if (keyboard.keyOnce(Keyboard.KEY_LEFT)) {
 			season--;
 		}
 		if (keyboard.keyOnce(Keyboard.KEY_RIGHT)) {
 			season++;
-			
+
 		}
-		if(season>3)
-		{
+		if (season > 3) {
 			season = 0;
-		}
-		else if(season<0)
-		{
+		} else if (season < 0) {
 			season = 3;
 		}
 		Color seasonColor = new Color(Type.getSpriteData(Type.GRASS).colors[0]);
-		if(season == 0)
-		{
-			seasonColor = new Color(224,160,64);
+		if (season == 0) {
+			seasonColor = new Color(224, 160, 64);
 		}
-		
-		for (int x = 0; x < objects.length; x++) {
-			for (int y = 0; y < objects[x].length; y++) {
-				for (int z = 0; z < objects[x][y].length; z++) {
-					Object test = objects[x][y][z];
-					test.setColor(seasonColor);
-				}
-			}
-		}
+
 		// System.out.println("Level:" + level);
 		super.keyboard.endPoll();
 	}
@@ -689,7 +670,7 @@ public class Game extends GLWindow {
 
 	private boolean insideBounds(int newX, int newY, int newZ) {
 		boolean inside = false;
-		if (newX >= 0 && newX < width && newY >= 0 && newY < height && newZ >= 0 && newZ < depth) {
+		if (newX >= 0 && newX < width && newY >= 0 && newY < depth && newZ >= 0 && newZ < height) {
 			inside = true;
 		}
 
@@ -717,14 +698,17 @@ public class Game extends GLWindow {
 		}
 		for (int x = 0; x < objects.length; x++) {
 			for (int y = objects[x].length - 1; y >= 0; y--) {
-				for (int z = 0; z < newHeight; z++) {
-					objects[x][y][z].setPosition(newX + ((x * 32) + (y * 32)),
-							newY + ((y * 16) - (x * 16) - (z * -32)));
+				for (int z = 0; z < objects[x][y].length; z++) {
+					Object obj = objects[x][y][z];
+					obj.setPosition(newX + ((x * 32) + (y * 32)), newY + ((y * 16) - (x * 16) - (z * -32)));
 					if (newHeight - 1 == z) {
-						objects[x][y][z].setTransparent(0.5f);
+						obj.setTransparent(0.5f);
 					}
-
-					objects[x][y][z].Render();
+					else if (newHeight - 1 < z) {
+						obj.setTransparent(0);
+					}
+					obj.z = z;
+					obj.Render();
 				}
 			}
 		}

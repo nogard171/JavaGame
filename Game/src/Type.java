@@ -2,7 +2,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
 public enum Type {
-	UNKNOWN, BLANK, GRASS, DIRT, SAND, WATER, TREE,LEAVES;
+	UNKNOWN, BLANK, GRASS, DIRT, SAND, WATER, TREE,LEAVES,STONE;
 	public static SpriteData getSpriteData(Type type) {
 		SpriteData spriteData = new SpriteData();
 		int r = 0;
@@ -15,6 +15,20 @@ public enum Type {
 			r = 64;
 			g = 128;
 			b = 64;// 64, 128, 64
+			for (int c = 0; c < spriteData.colors.length; c++) {
+				spriteData.colors[c] = new Color(r, g, b);
+				if ((c % 2) != 0) {
+					r -= 16;
+					g -= 16;
+					b -= 16;
+				}
+			}
+			return spriteData;
+		case STONE:
+			spriteData.colors = new Color[spriteData.faces.length];
+			r = 128;
+			g = 128;
+			b = 128;// 64, 128, 64
 			for (int c = 0; c < spriteData.colors.length; c++) {
 				spriteData.colors[c] = new Color(r, g, b);
 				if ((c % 2) != 0) {
