@@ -46,7 +46,6 @@ public enum Type {
 			}
 			return spriteData;
 		case UNKNOWN:
-			spriteData.shadow=false;
 			spriteData.colors = new Color[spriteData.faces.length];
 			r = 64;
 			g = 64;
@@ -89,34 +88,8 @@ public enum Type {
 			g = 88;
 			b = 121;
 			a = 224;
-			spriteData.shadow = false;
 			for (int c = 0; c < spriteData.colors.length; c++) {
 				spriteData.colors[c] = new Color(r, g, b, a);
-				if ((c % 2) != 0) {
-					r -= 16;
-					g -= 16;
-					b -= 16;
-				}
-			}
-			return spriteData;
-		case TREE:
-			spriteData.colors = new Color[spriteData.faces.length];
-			r = 103;
-			g = 72;
-			b = 24;// 97, 63, 16
-			spriteData.vertex[0] = new Vector2f(1f, 0.25f);
-			spriteData.vertex[1] = new Vector2f(1.5f, 0.5f);
-			spriteData.vertex[2] = new Vector2f(1f, 0.75f);
-			spriteData.vertex[3] = new Vector2f(0.5f, 0.5f);
-			spriteData.vertex[4] = new Vector2f(0.5f, -0.5f);
-			spriteData.vertex[5] = new Vector2f(1f, -0.75f);
-			spriteData.vertex[6] = new Vector2f(1.5f, -0.5f);
-
-			spriteData.shadowVertex[0] = new Vector2f(1.5f, 0.5f);
-			spriteData.shadowVertex[1] = new Vector2f(2.5f, 0f);
-			spriteData.shadowVertex[2] = new Vector2f(1.5f, -0.5f);
-			for (int c = 0; c < spriteData.colors.length; c++) {
-				spriteData.colors[c] = new Color(r, g, b);
 				if ((c % 2) != 0) {
 					r -= 16;
 					g -= 16;

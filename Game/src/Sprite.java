@@ -22,16 +22,15 @@ public class Sprite {
 	Vector2f[] vertex = null;
 	int[][] faces = null;
 	Color[] colors = null;
-	int[] topFaces = { 0, 1, 2, 5 };
-	Vector2f[] shadowVertex = null;
-	int[][] shadowFaces = null;
-	boolean shadow = true;
+	Vector2f[] gridVertex =null;
+	int[][] gridFaces = null;
 	boolean grid = true;
+	
+	private int displayListHandle = -1;
 
 	public Sprite(int new_Width, int new_Height) {
 		this.width = new_Width;
 		this.height = new_Height;
-		// this.getSpriteData();
 	}
 
 	public void setColor(Color newColor) {
@@ -76,19 +75,17 @@ public class Sprite {
 		if (this.colors != spriteData.colors) {
 			this.colors = spriteData.colors;
 		}
-		if (this.shadowVertex != spriteData.shadowVertex) {
-			this.shadowVertex = spriteData.shadowVertex;
+		if (this.gridFaces != spriteData.gridFaces) {
+			this.gridFaces = spriteData.gridFaces;
 		}
-		if (this.shadowFaces != spriteData.shadowFaces) {
-			this.shadowFaces = spriteData.shadowFaces;
+		if (this.gridVertex != spriteData.gridVertex) {
+			this.gridVertex = spriteData.gridVertex;
 		}
-		this.shadow = spriteData.shadow;
 	}
 
 	public Sprite() {
 		this.width = 32;
 		this.height = 32;
-		// this.getSpriteData();
 	}
 
 	public void setTransparent(float amount) {
@@ -108,15 +105,33 @@ public class Sprite {
 		this.origin = new Point(x, y);
 	}
 
-	public void RenderTop() {
-		Render(true);
-	}
 
-	public void RenderBottom() {
-		Render(false);
+	public void Render() {
+		if(displayListHandle<0)
+		{
+			// Generate one (!) display list.
+				// The handle is used to identify the
+				// list later.
+				displayListHandle = GL11.glGenLists(1);
+		 
+				// Start recording the new display list.
+				GL11.glNewList(displayListHandle, GL11.GL_COMPILE);
+		 
+				// Render a single cube
+				RawRender();
+		 
+				// End the recording of the current display list.
+				GL11.glEndList();
+		}
+		else			
+		{
+			
+			GL11.glCallList(displayListHandle);
+		}
 	}
-
-	public void Render(boolean top) {
+	
+	public void RawRender()
+	{
 		if (vertex == null) {
 			this.resetSprite();
 		}
@@ -126,6 +141,9 @@ public class Sprite {
 				texture.bind();
 			}
 
+			
+			
+			
 			GL11.glBegin(GL11.GL_TRIANGLES);
 			if (texture != null) {
 				GL11.glTexCoord2f(0, 0);
@@ -138,65 +156,30 @@ public class Sprite {
 				GL11.glVertex2f(0, 0 - this.height);
 			} else {
 				for (int f1 = 0; f1 < faces.length; f1++) {
-					if (hasValue(topFaces, f1) && top) {
 						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
 						for (int f2 = 0; f2 < faces[f1].length; f2++) {
 							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
 									vertex[faces[f1][f2]].y * this.height);
-						}
-					} else if (!hasValue(topFaces, f1) && !top) {
-						GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
-						for (int f2 = 0; f2 < faces[f1].length; f2++) {
-							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
-									vertex[faces[f1][f2]].y * this.height);
-						}
-					}
+						}					
 				}
 			}
 			GL11.glEnd();
-			if (grid) {
+		//	if (grid) {
 
-				GL11.glBegin(GL11.GL_LINES);
-
-				for (int f1 = 0; f1 < faces.length; f1++) {
-					GL11.glColor4f(colors[f1].r, colors[f1].g, colors[f1].b, colors[f1].a);
-					if (hasValue(topFaces, f1) && top) {
-						for (int f2 = 0; f2 < faces[f1].length; f2++) {
-							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
-									vertex[faces[f1][f2]].y * this.height);
-						}
-					} else if (!hasValue(topFaces, f1) && !top) {
-						for (int f2 = 0; f2 < faces[f1].length; f2++) {
-							GL11.glVertex2f(vertex[faces[f1][f2]].x * this.width,
-									vertex[faces[f1][f2]].y * this.height);
-						}
-					}
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glColor4f(0,0,0,1);
+			for (int f1 = 0; f1 < gridFaces.length; f1++) {
+				
+					for (int f2 = 0; f2 < gridFaces[f1].length; f2++) {
+						GL11.glVertex2f(gridVertex[gridFaces[f1][f2]].x * this.width,
+								gridVertex[gridFaces[f1][f2]].y * this.height);
+					
 				}
-				GL11.glEnd();
 			}
+			GL11.glEnd();
+			//}
 
-			if (shadow) {
-
-				if (z >= 3) {
-					shadowFaces[0][3] = 3;
-					GL11.glBegin(GL11.GL_QUADS);
-				}
-				else
-				{
-					GL11.glBegin(GL11.GL_TRIANGLES);
-				}
-				GL11.glColor4f(0, 0, 0, 0.2f);
-				for (int f1 = 0; f1 < shadowFaces.length; f1++) {
-
-					for (int f2 = 0; f2 < shadowFaces[f1].length; f2++) {
-						if (shadowFaces[f1][f2] != -1) {
-							GL11.glVertex2f((shadowVertex[shadowFaces[f1][f2]].x * this.width) + (32 * (z - 2)),
-									shadowVertex[shadowFaces[f1][f2]].y * this.height - (16 * (z - 2)));
-						}
-					}
-				}
-				GL11.glEnd();
-			}
+			
 			if (texture != null) {
 				// texture.release();
 				GL11.glDisable(GL11.GL_TEXTURE_2D);

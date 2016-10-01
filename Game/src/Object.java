@@ -36,48 +36,24 @@ public class Object extends Sprite {
 		this.position = new Rectangle(x, y, position.getWidth(), position.getHeight());
 	}
 
-	public void RenderBottom() {
-		if (render) {
-			GL11.glPushMatrix();
-			GL11.glTranslatef(this.position.getX() + origin.getX() + offset.getX(),
-					this.position.getY() - origin.getY() + offset.getY(), 0);
-			GL11.glRotatef(rot, 0, 0, 1);
-			GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
-			super.RenderBottom();
-			GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
-			GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
-					-this.position.getY() + origin.getY() - offset.getY(), 0);
-			GL11.glPopMatrix();
-		}
-	}
-
 	public void Render() {
 		if (this.type == Type.BLANK) {
 			render = false;
 		} 
 		if (render) {
-			this.RenderBottom();
-			this.RenderTop();
-		}
-
-	}
-
-	public void RenderTop() {
-		if (render) {
 			GL11.glPushMatrix();
-
 			GL11.glTranslatef(this.position.getX() + origin.getX() + offset.getX(),
 					this.position.getY() - origin.getY() + offset.getY(), 0);
 			GL11.glRotatef(rot, 0, 0, 1);
 			GL11.glTranslatef(-origin.getX(), origin.getY(), 0);
-
-			super.RenderTop();
-
+			super.Render();
 			GL11.glTranslatef(origin.getX(), -origin.getY(), 0);
 			GL11.glTranslatef(-this.position.getX() - origin.getX() - offset.getX(),
 					-this.position.getY() + origin.getY() - offset.getY(), 0);
 			GL11.glPopMatrix();
 		}
+
 	}
+
 
 }
