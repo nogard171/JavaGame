@@ -16,6 +16,7 @@ public class Sprite {
 	int spriteMode = GL11.GL_TRIANGLES;
 	public Point origin = new Point(0, 0);
 	Texture texture = null;
+	boolean solid = true;
 
 	Vector2f[] vectors = { new Vector2f(0, 0), new Vector2f(1, 0), new Vector2f(1, 1), new Vector2f(0, 1) };
 	int[][] faces = { { 0, 1, 2 }, { 0, 3, 2 } };
@@ -26,7 +27,7 @@ public class Sprite {
 
 	public void setColor(Color newColor) {
 		this.color = newColor;
-
+		render_Update = true;
 	}
 
 	public Sprite() {
@@ -47,6 +48,7 @@ public class Sprite {
 
 	public void Render() {
 		if (this.displayListHandle < 0 || render_Update) {
+			System.out.println("preRendering");
 			// Generate one (!) display list.
 			// The handle is used to identify the
 			// list later.
@@ -60,6 +62,7 @@ public class Sprite {
 
 			// End the recording of the current display list.
 			GL11.glEndList();
+			render_Update = false;
 		} else {
 			GL11.glCallList(displayListHandle);
 		}
@@ -75,7 +78,6 @@ public class Sprite {
 			GL11.glBegin(spriteMode);
 			for (int fv = 0; fv < faces[f].length; fv++) {
 				Vector2f vec = vectors[faces[f][fv]];
-				Vector2f tex = null;
 				if (texture != null) {
 					GL11.glTexCoord2f(vec.x, vec.y);
 				}
