@@ -28,20 +28,25 @@ public class Game extends GLWindow {
 
 	public void Init() {
 		super.Init();
-
-		// setTexture(hud.test, "/res/img/window.png");
-		this.addSprite("GRASS", "/res/img/grass.png", null);
-		this.addSprite("PLAYER", "", new Dimension(32, 64));
-		
-
-		for (int x = 0; x < 5; x++) {
-			addObject("GRASS",sprites.get("GRASS"),new Vector2f(x * 128, this.Height - 32));
+		for (int x = 0; x < 20; x++) {
+			for (int y = 0; y < 20; y++) {
+				addObject("GRASS", "/res/img/grass.png", new Dimension(32, 32), new Vector2f(x * 32, y * 32));
+			}
 		}
-
+		addObject("PLAYER", "", new Dimension(32, 64), null);
 	}
 
-	HashMap<String, Sprite> sprites = new HashMap<String, Sprite>();
-	HashMap<String, Object> objects = new HashMap<String, Object>();
+	ArrayList<Object> objects = new ArrayList<Object>();
+
+	public ArrayList<Object> getObjects(String name) {
+		ArrayList<Object> newObjects = new ArrayList<Object>();
+		for (Object obj : objects) {
+			if (obj.name == name) {
+				newObjects.add(obj);
+			}
+		}
+		return newObjects;
+	}
 
 	public Texture getTexture(String string) {
 		Texture texture = null;
@@ -54,33 +59,32 @@ public class Game extends GLWindow {
 		}
 		return texture;
 	}
-	public void addObject(String name, Sprite sprite, Vector2f newPosition) {
-		Object newSprite = new Object();
-		newSprite.name =name;
-		newSprite.position = newPosition;
-		if (sprite != null) {
-			newSprite.texture = sprite.texture;
-			newSprite.faces = sprite.faces;
-			newSprite.vectors = sprite.vectors;
-		} 		
-		objects.put(name, newSprite);		
-	}
-	public void addSprite(String name, String sprite, Dimension newSize) {
-		Sprite newSprite = new Sprite();
+
+	public void addObject(String name, String sprite, Dimension newSize, Vector2f newPosition) {
+		Object obj = new Object();
+		obj.name = name;
+		if (newPosition != null) {
+			obj.position = newPosition;
+		} else {
+			obj.position = new Vector2f(100, 100);
+		}
 		if (sprite != "") {
-			newSprite.texture = this.getTexture(sprite);
+			obj.texture = this.getTexture(sprite);
 			if (newSize == null) {
-				newSprite.width = newSprite.texture.getImageWidth();
-				newSprite.height = newSprite.texture.getImageHeight();
+				obj.width = obj.texture.getImageWidth();
+				obj.height = obj.texture.getImageHeight();
 			}
 		} else {
-			newSprite.color = new Color(255, 0, 0);
+			obj.color = new Color(255, 0, 0);
 		}
 		if (newSize != null) {
-			newSprite.width = newSize.getWidth();
-			newSprite.height = newSize.getHeight();
+			obj.width = newSize.getWidth();
+			obj.height = newSize.getHeight();
+		} else {
+			obj.width = 32;
+			obj.height = 32;
 		}
-		sprites.put(name, newSprite);
+		objects.add(obj);
 	}
 
 	float grav = 0;
@@ -90,36 +94,21 @@ public class Game extends GLWindow {
 		super.Update(delta);
 		float speed = delta / 2;
 
-		grav += 0.098f;
-		Sprite player = sprites.get("PLAYER");
-		if (position.y + player.height > this.Height) {
-			grav = 0;
-		}
-		if (keyboard.keyPressed(Keyboard.KEY_SPACE)) {
-			grav = -5;
-		}
-
-		for (Object obj : objects.values()) {
-			Sprite sprite = sprites.get(obj.name);
-
-			if (collision(obj,sprite)) {
-				sprite.setColor(new Color(255,0,0));
-			}
-			else
-			{
-				sprite.setColor( new Color(255,255,255));
-			}
-		} // (this.Width / 2) - (player.width / 2), (this.Height / 2) -
-			// (player.height / 2)
-
+		// (this.Width / 2) - (player.width / 2), (this.Height / 2) -
+		// (player.height / 2)
+		Object player = getObjects("PLAYER").get(0);
 		if (keyboard.keyPressed(Keyboard.KEY_A)) {
-			position.x -= speed;
+			player.position.x -= speed;
 		}
 		if (keyboard.keyPressed(Keyboard.KEY_D)) {
-			position.x += speed;
+			player.position.x += speed;
 		}
-
-		position.y += grav;
+		if (keyboard.keyPressed(Keyboard.KEY_W)) {
+			player.position.y -= speed;
+		}
+		if (keyboard.keyPressed(Keyboard.KEY_S)) {
+			player.position.y += speed;
+		}
 
 		// position.x = x;
 		// position.y = y;
@@ -127,14 +116,13 @@ public class Game extends GLWindow {
 		super.keyboard.endPoll();
 	}
 
-	public boolean collision(Object obj, Sprite sprite) {
-		Sprite player = sprites.get("PLAYER");
+	public boolean collision(Object obj) {
 		boolean collides = false;
-		System.out.println("X:"+position.x+"/"+obj.position.x);
-		if((position.x>obj.position.x&&position.x<obj.position.x+(sprite.width/2)))//||(position.x+player.width>obj.position.x&&position.x+player.width<obj.position.x+sprite.width))
+		System.out.println("X:" + position.x + "/" + obj.position.x);
+		if ((position.x > obj.position.x && position.x < obj.position.x + (obj.width / 2)))// ||(position.x+player.width>obj.position.x&&position.x+player.width<obj.position.x+sprite.width))
 		{
-			collides= true;
-		}		
+			collides = true;
+		}
 		return collides;
 	}
 
@@ -155,23 +143,19 @@ public class Game extends GLWindow {
 	@Override
 	public void Render() {
 		super.Render();
-		GL11.glPushMatrix();
-		Sprite player = sprites.get("PLAYER");
-		GL11.glTranslatef(position.x, position.y, 0);
-		player.Render();
-		GL11.glPopMatrix();
 
-		for (Object obj : objects.values()) {
+		// System.out.println("Count:"+objects.size());
+		for (Object obj : objects) {
 			obj.Render();
-
 		}
+
 	}
 
 	@Override
 	public void Destroy() {
 		super.Destroy();
-		for (Sprite sprite : sprites.values()) {
-			sprite.Destroy();
+		for (Object obj : objects) {
+			obj.Destroy();
 		}
 	}
 

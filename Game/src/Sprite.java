@@ -48,7 +48,7 @@ public class Sprite {
 
 	public void Render() {
 		if (this.displayListHandle < 0 || render_Update) {
-			System.out.println("preRendering");
+			System.out.println("preRendering="+this.displayListHandle);
 			// Generate one (!) display list.
 			// The handle is used to identify the
 			// list later.
