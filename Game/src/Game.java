@@ -38,7 +38,7 @@ public class Game extends GLWindow {
 			Sprite newSprite = new Sprite();
 			newSprite.type = types[t];
 			sprites.put(types[t], newSprite);
-		}
+		}//
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
 				Object obj = new Object();
