@@ -24,7 +24,7 @@ public class Sprite {
 	Color[] colors = null;
 	Vector2f[] gridVertex =null;
 	int[][] gridFaces = null;
-	boolean grid = true;
+	boolean grid = false;
 	
 	private int displayListHandle = -1;
 
@@ -62,7 +62,7 @@ public class Sprite {
 	}
 
 	public void resetSprite() {
-		grid = true;
+		//grid = true;
 		if (spriteData == null || spriteData != Type.getSpriteData(this.type)) {
 			this.spriteData = Type.getSpriteData(this.type);
 		}
@@ -164,7 +164,7 @@ public class Sprite {
 				}
 			}
 			GL11.glEnd();
-		//	if (grid) {
+			if (grid) {
 
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor4f(0,0,0,1);
@@ -177,7 +177,7 @@ public class Sprite {
 				}
 			}
 			GL11.glEnd();
-			//}
+			}
 
 			
 			if (texture != null) {

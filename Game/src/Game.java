@@ -25,16 +25,35 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 public class Game extends GLWindow {
-	Type[] types = { Type.GRASS, Type.DIRT };
+	Type[] types = { Type.GRASS, Type.DIRT,Type.SAND,Type.STONE };
 	// ArrayList<Sprite> sprites = new ArrayList<Sprite>();
 	HashMap<Type, Sprite> sprites = new HashMap<Type, Sprite>();
+	ArrayList<Object> objects = new ArrayList<Object>();
 
 	public void Init() {
 		super.Init();
+		types = Type.getTypes();
+		
 		for (int t = 0; t < types.length; t++) {
 			Sprite newSprite = new Sprite();
 			newSprite.type = types[t];
 			sprites.put(types[t], newSprite);
+		}
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				Object obj = new Object();
+				int newX = (x * 32) - (y * 32);
+				int newY = (y * 16) + (x * 16);
+				obj.position = new Rectangle(newX, newY, 32, 32);
+				if (x == 0) {
+					obj.type = Type.DIRT;
+				} else if (x == 4) {
+					obj.type = Type.DIRT;
+				} else {
+					obj.type = Type.GRASS;
+				}
+				objects.add(obj);
+			}
 		}
 	}
 
@@ -68,6 +87,16 @@ public class Game extends GLWindow {
 			camy -= 10;
 		}
 
+		for (Object obj : objects) {
+			if (obj.position.contains(super.mouse.getPosition().getX()-camx,(super.Height-super.mouse.getPosition().getY())-camy)) {
+				obj.type = Type.TREE;
+				System.out.println("test");
+			} else {
+				obj.type = Type.GRASS;
+			}
+
+		}
+
 		// System.out.println("Level:" + level);
 		super.keyboard.endPoll();
 	}
@@ -85,37 +114,23 @@ public class Game extends GLWindow {
 		super.Render();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camx, camy, 0);
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
-				for (int z = 0; z < 2; z++) {
-					int newX = (x*32)-(y*32);
-					int newY = (y*16)+(x*16);
-					GL11.glPushMatrix();
-					GL11.glTranslatef(newX,newY, 0);
-					if(x==0)
-					{
-						RenderSprite(Type.DIRT);
-					}
-					else if(x==4)
-					{
-						RenderSprite(Type.DIRT);
-					}
-					else
-					{
-						RenderSprite(Type.GRASS);
-					}
-
-					GL11.glPopMatrix();
-				}
-			}
+		
+		for (Object obj : objects) {
+			GL11.glPushMatrix();
+			GL11.glTranslatef(obj.position.getX(), obj.position.getY(), 0);
+			RenderSprite(obj.type);
+			GL11.glPopMatrix();
 		}
+
 		GL11.glPopMatrix();
 		GL11.glColor3f(1, 1, 1);
 	}
 
 	private void RenderSprite(Type type) {
-		sprites.get(type).Render();
-		;
+		Sprite sprite = sprites.get(type);
+		if (sprite != null) {
+			sprite.Render();
+		}
 	}
 
 	public static void main(String[] argv) {
