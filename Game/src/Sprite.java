@@ -12,7 +12,7 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Sprite {
 	int width = 32;
 	int height = 32;
-	Color color = new Color(255,255,255);
+	Color color = new Color(255, 255, 255);
 	int spriteMode = GL11.GL_TRIANGLES;
 	public Point origin = new Point(0, 0);
 	Texture texture = null;
@@ -26,8 +26,10 @@ public class Sprite {
 	}
 
 	public void setColor(Color newColor) {
-		this.color = newColor;
-		render_Update = true;
+		if (this.color != newColor) {
+			this.color = newColor;
+			this.render_Update = true;
+		}
 	}
 
 	public Sprite() {
@@ -47,8 +49,9 @@ public class Sprite {
 	boolean render_Update = false;
 
 	public void Render() {
-		if (this.displayListHandle < 0 || render_Update) {
-			System.out.println("preRendering="+this.displayListHandle);
+		GL11.glColor3f(color.r, color.g, color.b);
+		if (this.displayListHandle < 0 ) {
+			// System.out.println("preRendering="+this.displayListHandle);
 			// Generate one (!) display list.
 			// The handle is used to identify the
 			// list later.
@@ -73,7 +76,7 @@ public class Sprite {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
-		GL11.glColor3f(color.r, color.g, color.b);
+		
 		for (int f = 0; f < faces.length; f++) {
 			GL11.glBegin(spriteMode);
 			for (int fv = 0; fv < faces[f].length; fv++) {
@@ -89,8 +92,8 @@ public class Sprite {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
 	}
-	public void Destroy()
-	{
+
+	public void Destroy() {
 		texture.release();
 	}
 }

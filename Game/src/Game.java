@@ -110,16 +110,45 @@ public class Game extends GLWindow {
 			player.position.y += speed;
 		}
 
-		// position.x = x;
+		if (player.position.x < camera.x + 100) {
+
+			camera.x -= speed;
+		}
+		if (player.position.x > (camera.x + super.Width) - 132) {
+
+			camera.x += speed;
+		}
+
+		if (player.position.y + (player.height / 2) < camera.y + 100) {
+
+			camera.y -= speed;
+		}
+		if (player.position.y > (camera.y + super.Height) - 132) {
+
+			camera.y += speed;
+		}
+
+		for (Object obj : objects) {
+			if (collision(obj, player)) {
+				obj.setColor(new Color(255,0,0));
+			}
+			else
+			{
+				obj.setColor(new Color(255,255,255));
+			}
+		}
+
+		// position.x = x;d
 		// position.y = y;
 
 		super.keyboard.endPoll();
 	}
 
-	public boolean collision(Object obj) {
+	public boolean collision(Object obj, Object obj2) {
 		boolean collides = false;
-		System.out.println("X:" + position.x + "/" + obj.position.x);
-		if ((position.x > obj.position.x && position.x < obj.position.x + (obj.width / 2)))// ||(position.x+player.width>obj.position.x&&position.x+player.width<obj.position.x+sprite.width))
+		System.out.println("X:" + obj2.position.x + "/" + obj.position.x);
+		if ((obj2.position.x >= obj.position.x && obj2.position.x <= obj.position.x + obj.width )||
+				(obj2.position.x+ obj2.width >= obj.position.x && obj2.position.x + obj2.width<= obj.position.x + obj.width ))
 		{
 			collides = true;
 		}
@@ -138,17 +167,18 @@ public class Game extends GLWindow {
 	// int move = 0;
 	Random ran = new Random();
 	boolean move_test2 = false;
-	Vector2f position = new Vector2f(0, 0);
+	Vector2f camera = new Vector2f(0, 0);
 
 	@Override
 	public void Render() {
 		super.Render();
-
+		GL11.glPushMatrix();
+		GL11.glTranslatef(-camera.x, -camera.y, 0);
 		// System.out.println("Count:"+objects.size());
 		for (Object obj : objects) {
 			obj.Render();
 		}
-
+		GL11.glPopMatrix();
 	}
 
 	@Override
