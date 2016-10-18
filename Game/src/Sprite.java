@@ -28,7 +28,6 @@ public class Sprite {
 	public void setColor(Color newColor) {
 		if (this.color != newColor) {
 			this.color = newColor;
-			this.render_Update = true;
 		}
 	}
 
@@ -50,7 +49,7 @@ public class Sprite {
 
 	public void Render() {
 		GL11.glColor3f(color.r, color.g, color.b);
-		if (this.displayListHandle < 0 ) {
+		if (this.displayListHandle < 0 || render_Update) {
 			// System.out.println("preRendering="+this.displayListHandle);
 			// Generate one (!) display list.
 			// The handle is used to identify the
@@ -66,9 +65,26 @@ public class Sprite {
 			// End the recording of the current display list.
 			GL11.glEndList();
 			render_Update = false;
-		} else {
+		}
+
+		if (this.displayListHandle >= 0) {
 			GL11.glCallList(displayListHandle);
 		}
+	}
+
+	public void changeTexture(String location) {
+		if (location == null) {
+			texture = null;
+		} else {
+			try {
+				texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(location));
+			} catch (RuntimeException ioe) {
+				System.out.println(ioe);
+			} catch (IOException ioe) {
+				System.out.println(ioe);
+			}
+		}
+		this.render_Update = true;
 	}
 
 	public void PreRender() {
@@ -76,7 +92,6 @@ public class Sprite {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
-		
 		for (int f = 0; f < faces.length; f++) {
 			GL11.glBegin(spriteMode);
 			for (int fv = 0; fv < faces[f].length; fv++) {

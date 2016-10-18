@@ -97,6 +97,15 @@ public class Game extends GLWindow {
 		// (this.Width / 2) - (player.width / 2), (this.Height / 2) -
 		// (player.height / 2)
 		Object player = getObjects("PLAYER").get(0);
+		
+		
+		if (keyboard.keyPressed(Keyboard.KEY_2)) {
+			player.changeTexture("/res/img/grass.png");
+		}
+		if (keyboard.keyPressed(Keyboard.KEY_1)) {
+			player.changeTexture(null);
+		}
+		
 		if (keyboard.keyPressed(Keyboard.KEY_A)) {
 			player.position.x -= speed;
 		}
@@ -146,9 +155,11 @@ public class Game extends GLWindow {
 
 	public boolean collision(Object obj, Object obj2) {
 		boolean collides = false;
-		System.out.println("X:" + obj2.position.x + "/" + obj.position.x);
-		if ((obj2.position.x >= obj.position.x && obj2.position.x <= obj.position.x + obj.width )||
-				(obj2.position.x+ obj2.width >= obj.position.x && obj2.position.x + obj2.width<= obj.position.x + obj.width ))
+		if (((obj2.position.x >= obj.position.x && obj2.position.x <= obj.position.x + obj.width )||
+				(obj2.position.x+ obj2.width >= obj.position.x && obj2.position.x + obj2.width<= obj.position.x + obj.width ))&&
+				((obj2.position.y>=obj.position.y && obj2.position.y <= obj.position.y + obj.height)||
+						(obj2.position.y+obj2.height>=obj.position.y && obj2.position.y+obj2.height <= obj.position.y + obj.height)||
+						(obj2.position.y<=obj.position.y && obj2.position.y+obj2.height >= obj.position.y + obj.height)))
 		{
 			collides = true;
 		}
