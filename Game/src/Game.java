@@ -24,142 +24,178 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-public class Game extends GLWindow {
+public class Game extends GLWindow
+{
 
-	public void Init() {
+	public void Init()
+	{
 		super.Init();
-		for (int x = 0; x < 20; x++) {
-			for (int y = 0; y < 20; y++) {
-				addObject("GRASS", "/res/img/grass.png", new Dimension(32, 32), new Vector2f(x * 32, y * 32));
+
+		Sprite sprite = new Sprite();
+		sprite.texture = this.getTexture("res/img/grass.png");
+		sprites.put("GRASS", sprite);
+
+		Sprite sprite2 = new Sprite();
+		sprite2.texture = this.getTexture("res/img/dirt.png");
+		sprites.put("DIRT", sprite2);
+
+
+		for (int x = 0; x < 20; x++)
+		{
+			for (int y = 0; y < 20; y++)
+			{
+				Object obj = new Object();
+				obj._type = "GRASS";
+				obj.SetPosition(x * 32, y * 32);
+				objects.add(obj);
 			}
 		}
-		addObject("PLAYER", "", new Dimension(32, 64), null);
+		Object obj = new Object();
+		obj._name = "PLAYER";
+		obj._type = "PLAYER";
+		obj.SetPosition(100, 100);
+		obj.setSize(32, 64);
+		objects.add(obj);
+
+		// addObject("PLAYER", "", new Dimension(32, 64), null);
 	}
 
 	ArrayList<Object> objects = new ArrayList<Object>();
+	HashMap<String, Sprite> sprites = new HashMap<String, Sprite>();
 
-	public ArrayList<Object> getObjects(String name) {
+	public ArrayList<Object> getObjects(String name)
+	{
 		ArrayList<Object> newObjects = new ArrayList<Object>();
-		for (Object obj : objects) {
-			if (obj.name == name) {
+		for (Object obj : objects)
+		{
+			if (obj._name == name)
+			{
 				newObjects.add(obj);
 			}
 		}
 		return newObjects;
 	}
 
-	public Texture getTexture(String string) {
+	public Object getObject(String name)
+	{
+		Object newObjects = null;
+		for (Object obj : objects)
+		{
+			if (obj._name == name)
+			{
+				newObjects = obj;
+			}
+		}
+		return newObjects;
+	}
+
+	public Texture getTexture(String string)
+	{
 		Texture texture = null;
-		try {
+		try
+		{
 			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(string));
-		} catch (RuntimeException ioe) {
+		} catch (RuntimeException ioe)
+		{
 			System.out.println(ioe);
-		} catch (IOException ioe) {
+		} catch (IOException ioe)
+		{
 			System.out.println(ioe);
 		}
 		return texture;
 	}
 
-	public void addObject(String name, String sprite, Dimension newSize, Vector2f newPosition) {
-		Object obj = new Object();
-		obj.name = name;
-		if (newPosition != null) {
-			obj.position = newPosition;
-		} else {
-			obj.position = new Vector2f(100, 100);
-		}
-		if (sprite != "") {
-			obj.texture = this.getTexture(sprite);
-			if (newSize == null) {
-				obj.width = obj.texture.getImageWidth();
-				obj.height = obj.texture.getImageHeight();
-			}
-		} else {
-			obj.color = new Color(255, 0, 0);
-		}
-		if (newSize != null) {
-			obj.width = newSize.getWidth();
-			obj.height = newSize.getHeight();
-		} else {
-			obj.width = 32;
-			obj.height = 32;
-		}
-		objects.add(obj);
-	}
-
-	float grav = 0;
-
 	@Override
-	public void Update(int delta) {
+	public void Update(int delta)
+	{
 		super.Update(delta);
-		float speed = delta / 2;
+		int speed = delta / 4;
 
 		// (this.Width / 2) - (player.width / 2), (this.Height / 2) -
 		// (player.height / 2)
-		Object player = getObjects("PLAYER").get(0);
-		
-		
-		if (keyboard.keyPressed(Keyboard.KEY_2)) {
-			player.changeTexture("/res/img/grass.png");
-		}
-		if (keyboard.keyPressed(Keyboard.KEY_1)) {
-			player.changeTexture(null);
-		}
-		
-		if (keyboard.keyPressed(Keyboard.KEY_A)) {
-			player.position.x -= speed;
-		}
-		if (keyboard.keyPressed(Keyboard.KEY_D)) {
-			player.position.x += speed;
-		}
-		if (keyboard.keyPressed(Keyboard.KEY_W)) {
-			player.position.y -= speed;
-		}
-		if (keyboard.keyPressed(Keyboard.KEY_S)) {
-			player.position.y += speed;
-		}
-
-		if (player.position.x < camera.x + 100) {
-
-			camera.x -= speed;
-		}
-		if (player.position.x > (camera.x + super.Width) - 132) {
-
-			camera.x += speed;
-		}
-
-		if (player.position.y + (player.height / 2) < camera.y + 100) {
-
-			camera.y -= speed;
-		}
-		if (player.position.y > (camera.y + super.Height) - 132) {
-
-			camera.y += speed;
-		}
-
-		for (Object obj : objects) {
-			if (collision(obj, player)) {
-				obj.setColor(new Color(255,0,0));
-			}
-			else
+		Object player = getObject("PLAYER");
+		if (player != null)
+		{
+			if (keyboard.keyPressed(Keyboard.KEY_2))
 			{
-				obj.setColor(new Color(255,255,255));
+				player.setType("grass");
+			}
+			if (keyboard.keyPressed(Keyboard.KEY_1))
+			{
+				player.setType(null);
+			}
+
+			if (keyboard.keyPressed(Keyboard.KEY_A))
+			{
+				player.move(-speed, 0);
+			}
+			if (keyboard.keyPressed(Keyboard.KEY_D))
+			{
+				player.move(speed, 0);
+			}
+			if (keyboard.keyPressed(Keyboard.KEY_W))
+			{
+				player.move(0, -speed);
+			}
+			if (keyboard.keyPressed(Keyboard.KEY_S))
+			{
+				player.move(0, speed);
+			}
+
+			if (player.getPosition().x < camera.x + 100)
+			{
+
+				camera.x -= speed;
+			}
+			if (player.getPosition().x > (camera.x + super.Width) - 132)
+			{
+
+				camera.x += speed;
+			}
+
+			if (player.getPosition().y + (player.getSize().getHeight() / 2) < camera.y + 100)
+			{
+
+				camera.y -= speed;
+			}
+			if (player.getPosition().y > (camera.y + super.Height) - 132)
+			{
+
+				camera.y += speed;
 			}
 		}
 
-		// position.x = x;d
-		// position.y = y;
+		for (Object obj : objects)
+		{
+			if (obj.getName()!="PLAYER")
+			{
+				if (collision(obj, player))
+				{
+					obj.setType("DIRT");
 
+				} else
+				{
+					obj.setType("GRASS");
+				}
+			}
+		}
 		super.keyboard.endPoll();
 	}
 
-	public boolean collision(Object obj, Object obj2) {
+	public boolean collision(Object obj, Object obj2)
+	{
 		boolean collides = false;
-		if (((obj2.position.x >= obj.position.x && obj2.position.x <= obj.position.x + obj.width )||
-				(obj2.position.x+ obj2.width >= obj.position.x && obj2.position.x + obj2.width<= obj.position.x + obj.width ))&&
-				((obj2.position.y>=obj.position.y && obj2.position.y <= obj.position.y + obj.height)||
-						(obj2.position.y+obj2.height>=obj.position.y && obj2.position.y+obj2.height <= obj.position.y + obj.height)||
-						(obj2.position.y<=obj.position.y && obj2.position.y+obj2.height >= obj.position.y + obj.height)))
+		if (((obj2.getPosition().x >= obj.getPosition().x
+				&& obj2.getPosition().x <= obj.getPosition().x + obj.getSize().getWidth())
+				|| (obj2.getPosition().x + obj2.getSize().getWidth() >= obj.getPosition().x && obj2.getPosition().x
+						+ obj2.getSize().getWidth() <= obj.getPosition().x + obj.getSize().getWidth()))
+				&& ((obj2.getPosition().y >= obj.getPosition().y && obj2.getPosition().y
+						+ (obj2.getSize().getHeight() / 2) <= obj.getPosition().y + obj.getSize().getHeight())
+						|| (obj2.getPosition().y + obj2.getSize().getHeight() >= obj.getPosition().y
+								&& obj2.getPosition().y + obj2.getSize().getHeight() <= obj.getPosition().y
+										+ obj.getSize().getHeight())
+						|| (obj2.getPosition().y <= obj.getPosition().y && obj2.getPosition().y
+								+ obj2.getSize().getHeight() >= obj.getPosition().y + obj.getSize().getHeight())))
 		{
 			collides = true;
 		}
@@ -167,40 +203,57 @@ public class Game extends GLWindow {
 	}
 
 	@Override
-	public void Resized() {
+	public void Resized()
+	{
 		super.Resized();
 	}
 
-	int x = 0;
-	int y = 0;
-
-	int time = 0;
-	// int move = 0;
-	Random ran = new Random();
-	boolean move_test2 = false;
 	Vector2f camera = new Vector2f(0, 0);
 
+	public Sprite getSprite(Object obj)
+	{
+		Sprite sprite = new Sprite();
+		if (sprites.containsKey(obj._type))
+		{
+			sprite = sprites.get(obj._type);
+
+		} else
+		{
+			sprite.color = Color.red;
+		}
+		sprite.setSize(obj.getSize().width, obj.getSize().height);
+		return sprite;
+	}
+
 	@Override
-	public void Render() {
+	public void Render()
+	{
 		super.Render();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
-		// System.out.println("Count:"+objects.size());
-		for (Object obj : objects) {
-			obj.Render();
+
+		for (Object obj : objects)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslatef(obj.getPosition().x, obj.getPosition().y, 0);
+			getSprite(obj).Render();
+			GL11.glPopMatrix();
 		}
 		GL11.glPopMatrix();
 	}
 
 	@Override
-	public void Destroy() {
+	public void Destroy()
+	{
 		super.Destroy();
-		for (Object obj : objects) {
-			obj.Destroy();
+		for (Object obj : objects)
+		{
+			// obj.Destroy();
 		}
 	}
 
-	public static void main(String[] argv) {
+	public static void main(String[] argv)
+	{
 		Game displayExample = new Game();
 		displayExample.start();
 
