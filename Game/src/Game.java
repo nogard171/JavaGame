@@ -39,13 +39,17 @@ public class Game extends GLWindow
 		sprite2.texture = this.getTexture("res/img/dirt.png");
 		sprites.put("DIRT", sprite2);
 
-
 		for (int x = 0; x < 20; x++)
 		{
 			for (int y = 0; y < 20; y++)
 			{
 				Object obj = new Object();
 				obj._type = "GRASS";
+				if (x + y % 7 == 0)
+				{
+					obj._type = "DIRT";
+				}
+
 				obj.SetPosition(x * 32, y * 32);
 				objects.add(obj);
 			}
@@ -118,30 +122,33 @@ public class Game extends GLWindow
 		{
 			if (keyboard.keyPressed(Keyboard.KEY_2))
 			{
-				player.setType("grass");
+				player.setType("GRASS");
 			}
 			if (keyboard.keyPressed(Keyboard.KEY_1))
 			{
 				player.setType(null);
 			}
-
-			if (keyboard.keyPressed(Keyboard.KEY_A))
+			int xSpeed = 0;
+			int ySpeed = 0;
+			if (keyboard.keyPressed(Keyboard.KEY_W)&&xSpeed==0)
 			{
-				player.move(-speed, 0);
+				ySpeed = -speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_D))
+			else if (keyboard.keyPressed(Keyboard.KEY_S)&&xSpeed==0)
 			{
-				player.move(speed, 0);
+				ySpeed = speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_W))
+			if (keyboard.keyPressed(Keyboard.KEY_A)&&ySpeed==0)
 			{
-				player.move(0, -speed);
+				xSpeed = -speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_S))
+			else if (keyboard.keyPressed(Keyboard.KEY_D)&&ySpeed==0)
 			{
-				player.move(0, speed);
+				xSpeed = speed;
 			}
-
+			
+			System.out.println("Facing:" + player.collisionDir);
+			player.move(xSpeed, ySpeed);
 			if (player.getPosition().x < camera.x + 100)
 			{
 
@@ -164,20 +171,24 @@ public class Game extends GLWindow
 				camera.y += speed;
 			}
 		}
-
+		int collosions = 0;
 		for (Object obj : objects)
 		{
-			if (obj.getName()!="PLAYER")
+			if (obj.getName() != "PLAYER")
 			{
-				if (collision(obj, player))
+				if (collision(obj, player) && obj.getType() == "DIRT")
 				{
-					obj.setType("DIRT");
+					collosions++;
 
-				} else
-				{
-					obj.setType("GRASS");
 				}
 			}
+		}
+		if (collosions > 0)
+		{
+			player.collosion = true;
+		} else
+		{
+			player.collosion = false;
 		}
 		super.keyboard.endPoll();
 	}

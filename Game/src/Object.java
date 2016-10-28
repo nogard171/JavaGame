@@ -4,6 +4,8 @@ import java.awt.Rectangle;
 
 public class Object extends ObjectData
 {
+	public boolean collosion = false;
+
 	public Point getPosition()
 	{
 		return new Point(this._bounds.x, this._bounds.y);
@@ -19,9 +21,47 @@ public class Object extends ObjectData
 		this._bounds = new Rectangle(x, y, this._bounds.width, this._bounds.height);
 	}
 
+	Direction direction = Direction.NORTH;
+	Direction collisionDir = Direction.NONE;
+
 	public void move(int x, int y)
 	{
-		this.SetPosition(getPosition().x+x,getPosition().y+y);
+		int xSpeed = getPosition().x;
+		int ySpeed = getPosition().y;
+
+		if (x < 0)
+		{
+			direction = Direction.WEST;
+		}
+		else if (x > 0)
+		{
+			direction = Direction.EAST;
+		}
+		if (y < 0)
+		{
+			direction = Direction.NORTH;
+		}
+		else if (y > 0)
+		{
+			direction = Direction.SOUTH;
+		}
+		if (direction != collisionDir&&(direction!=Direction.EAST||direction!=Direction.WEST))
+		{
+			ySpeed += y;
+		}
+		if (direction != collisionDir&&(direction!=Direction.NORTH||direction!=Direction.SOUTH))
+		{
+			xSpeed += x;
+		}
+		this.SetPosition(xSpeed, ySpeed);
+		if (collosion && collisionDir == Direction.NONE)
+		{
+			collisionDir = direction;
+		} else if (!collosion)
+		{
+			collisionDir = Direction.NONE;
+		}
+
 	}
 
 	public Dimension getSize()
