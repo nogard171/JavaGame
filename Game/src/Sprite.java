@@ -16,6 +16,9 @@ public class Sprite {
 	int spriteMode = GL11.GL_TRIANGLES;
 	public Point origin = new Point(0, 0);
 	Texture texture = null;
+	Point texture_Coords = new Point(0,0);
+	Point sprite_size= new Point(32,32);
+	
 	boolean solid = true;
 
 	Vector2f[] vectors = { new Vector2f(0, 0), new Vector2f(1, 0), new Vector2f(1, 1), new Vector2f(0, 1) };
@@ -88,16 +91,21 @@ public class Sprite {
 	}
 
 	public void PreRender() {
+		float texture_sprite_width = 0;
+		float texture_sprite_height=0;
 		if (texture != null) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			texture_sprite_width= texture.getImageWidth()/sprite_size.getX();
+			texture_sprite_height= texture.getImageHeight()/sprite_size.getY();
 		}
+		
 		for (int f = 0; f < faces.length; f++) {
 			GL11.glBegin(spriteMode);
 			for (int fv = 0; fv < faces[f].length; fv++) {
 				Vector2f vec = vectors[faces[f][fv]];
 				if (texture != null) {
-					GL11.glTexCoord2f(vec.x, vec.y);
+					GL11.glTexCoord2f((vec.x/texture_sprite_width)+((texture_Coords.getX())/texture_sprite_width), (vec.y/texture_sprite_width)+(texture_Coords.getY()/texture_sprite_width));
 				}
 				GL11.glVertex2f(vec.x * this.width, vec.y * this.height);
 			}
