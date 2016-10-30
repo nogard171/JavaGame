@@ -1,7 +1,9 @@
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import org.lwjgl.util.Point;
+import org.newdawn.slick.Color;
 
 public class Object extends ObjectData
 {
@@ -26,6 +28,7 @@ public class Object extends ObjectData
 	Direction collisionDir = Direction.NONE;
 	public org.lwjgl.util.Point texture_Coords = new Point(0, 0);
 	float tex_X = 0;
+	public Color color = Color.white;
 
 	public void move(int x, int y)
 	{
@@ -52,12 +55,12 @@ public class Object extends ObjectData
 			direction = Direction.SOUTH;
 			this.texture_Coords = new Point(0, 0);
 		}
-		if (direction != collisionDir && (direction != Direction.EAST || direction != Direction.WEST))
+		if (!collisionDirection.contains(direction))
 		{
 			ySpeed += y;
 
 		}
-		if (direction != collisionDir && (direction != Direction.NORTH || direction != Direction.SOUTH))
+		if (!collisionDirection.contains(direction))
 		{
 			xSpeed += x;
 		}
@@ -75,15 +78,16 @@ public class Object extends ObjectData
 			this.setTextureX(0);
 		}
 		this.SetPosition(xSpeed, ySpeed);
-		if (collosion && collisionDir == Direction.NONE)
+		if (collosion)
 		{
-			collisionDir = direction;
+			collisionDirection.add(direction);
 		} else if (!collosion)
 		{
-			collisionDir = Direction.NONE;
+			collisionDirection.clear();
 		}
 
 	}
+	ArrayList<Direction> collisionDirection = new ArrayList<Direction>();
 	public void setTextureX(float value)
 	{
 		this.texture_Coords = new Point((int) value, this.texture_Coords.getY());

@@ -69,7 +69,7 @@ public class GLWindow {
 	}
 
 	public void Update(int delta) {
-
+Display.setTitle("FPS:"+this._fps);
 		this.keyboard.startPoll();
 		this.mouse.poll(this._height);
 		this.updateFPS(); // update FPS Counter
