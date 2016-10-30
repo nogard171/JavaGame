@@ -151,7 +151,7 @@ public class Game extends GLWindow
 
 				camera.x -= speed;
 			}
-			if (player.getPosition().getX() > (camera.x + super.Width) - 132)
+			if (player.getPosition().getX() > (camera.x + super._width) - 132)
 			{
 
 				camera.x += speed;
@@ -162,7 +162,7 @@ public class Game extends GLWindow
 
 				camera.y -= speed;
 			}
-			if (player.getPosition().getY() > (camera.y + super.Height) - 132)
+			if (player.getPosition().getY() > (camera.y + super._height) - 132)
 			{
 
 				camera.y += speed;

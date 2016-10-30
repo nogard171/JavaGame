@@ -17,12 +17,12 @@ import org.lwjgl.util.Point;
 
 public class GLWindow {
 	// display things
-	DisplayMode initDisplay = null;
-	int DefaultWidth = 800;
-	int DefaultHeight = 600;
-	int Width = 800;
-	int Height = 600;
-	int displayFPS = 120;
+	DisplayMode _initDisplay = null;
+	int _defaultWidth = 800;
+	int _defaultHeight = 600;
+	int _width = 800;
+	int _height = 600;
+	int _fps = 120;
 	boolean Fullscreen = false;
 	boolean resizable = true;
 	boolean vsync;
@@ -44,10 +44,10 @@ public class GLWindow {
 				this.Resized();
 			}
 			int delta = getDelta();
-			Update(delta);
-			Render();
+			this.Update(delta);
+			this.Render();
 			Display.update();
-			Display.sync(displayFPS);
+			Display.sync(this._fps);
 		}
 		this.Destroy();		
 	}
@@ -70,19 +70,19 @@ public class GLWindow {
 
 	public void Update(int delta) {
 
-		keyboard.startPoll();
-		mouse.poll(this.Height);
-		updateFPS(); // update FPS Counter
+		this.keyboard.startPoll();
+		this.mouse.poll(this._height);
+		this.updateFPS(); // update FPS Counter
 	}
 
 	public void Resized() {
-		this.Height = Display.getHeight();
-		this.Width = Display.getWidth();
+		this._height = Display.getHeight();
+		this._width = Display.getWidth();
 
-		GL11.glViewport(0, 0, Width, Height);
+		GL11.glViewport(0, 0, this._width, this._height);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, this.Width, this.Height,0, 1, -1);
+		GL11.glOrtho(0, this._width, this._height,0, 1, -1);
 	}
 
 	public void setDisplayMode(int width, int height, boolean fullscreen) {
@@ -146,9 +146,9 @@ public class GLWindow {
 	 * @return milliseconds passed since last frame
 	 */
 	public int getDelta() {
-		long time = getTime();
-		int delta = (int) (time - lastFrame);
-		lastFrame = time;
+		long time = this.getTime();
+		int delta = (int) (time - this.lastFrame);
+		this.lastFrame = time;
 		return delta;
 	}
 
@@ -165,19 +165,19 @@ public class GLWindow {
 	 * Calculate the FPS and set it in the title bar
 	 */
 	public void updateFPS() {
-		if (getTime() - lastFPS > 1000) {
+		if (this.getTime() - this.lastFPS > 1000) {
 			//Display.setTitle("FPS: " + fps);
-			fps = 0;
-			lastFPS += 1000;
+			this.fps = 0;
+			this.lastFPS += 1000;
 		}
-		fps++;
+		this.fps++;
 	}
 
 	public void initGL() {
 		GL11.glClearColor(1,1,1, 1);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, this.Width, this.Height,0, 1, -1);
+		GL11.glOrtho(0, this._width, this._height,0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -193,32 +193,32 @@ public class GLWindow {
 	public void changeDispalyMode(int width, int height, boolean fullscreen) {
 
 		this.Fullscreen = fullscreen;
-		this.Width = width;
-		this.Height = height;
-		this.setDisplayMode(this.Width, this.Height, this.Fullscreen);
+		this._width = width;
+		this._height = height;
+		this.setDisplayMode(this._width, this._height, this.Fullscreen);
 		this.Resized();
 	}
 
 	public void ToggleFullscreen() {
 
 		this.Fullscreen = !this.Fullscreen;
-		this.Width = Display.getDesktopDisplayMode().getWidth();
-		this.Height = Display.getDesktopDisplayMode().getHeight();
+		this._width = Display.getDesktopDisplayMode().getWidth();
+		this._height = Display.getDesktopDisplayMode().getHeight();
 		if (!this.Fullscreen) {
-			Width = DefaultWidth;
-			Height = DefaultHeight;
+			this._width = _defaultWidth;
+			this._height = _defaultHeight;
 		}
-		this.setDisplayMode(Width, Height, this.Fullscreen);
+		this.setDisplayMode(this._width, this._height, this.Fullscreen);
 		this.Resized();
 	}
 
 	public void Init() {
 		// set the initial display, so the game can revert back to original
 		// display.
-		initDisplay = Display.getDisplayMode();
+		this._initDisplay = Display.getDisplayMode();
 		try {
 			// set the display to the display width and display height
-			this.setDisplayMode(this.Width, this.Height, this.Fullscreen);
+			this.setDisplayMode(this._width, this._height, this.Fullscreen);
 			// set the display resizable if the resizable is true
 			Display.setResizable(resizable);
 			// create the display.
@@ -228,8 +228,8 @@ public class GLWindow {
 			System.exit(0);
 		}
 		// init opengl
-		initGL();
-		getDelta(); // call once before loop to initialise lastFrame
+		this.initGL();
+		this.getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer
 	}
 }
