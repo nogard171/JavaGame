@@ -55,7 +55,39 @@ public class Object extends ObjectData
 			direction = Direction.SOUTH;
 			this.texture_Coords = new Point(0, 0);
 		}
-		if (!collisionDirection.contains(direction))
+		int backStep = 4;
+		if(collisionDirection.contains(Direction.WEST)||collisionDirection.contains(Direction.EAST))
+		{
+			x= -x;
+		}
+		
+		if(collisionDirection.contains(Direction.EAST))
+		{
+			xSpeed-=backStep;
+		}
+		if(collisionDirection.contains(Direction.WEST))
+		{
+			xSpeed+=backStep;
+		}
+		
+		
+		if(collisionDirection.contains(Direction.NORTH)||collisionDirection.contains(Direction.SOUTH))
+		{
+			y= -y;
+		}
+		
+		if(collisionDirection.contains(Direction.NORTH))
+		{
+			ySpeed+=backStep;
+		}
+		if(collisionDirection.contains(Direction.SOUTH))
+		{
+			ySpeed-=backStep;
+		}
+		
+		xSpeed += x;
+		ySpeed += y;
+		/*if (!collisionDirection.contains(direction))
 		{
 			ySpeed += y;
 
@@ -63,7 +95,8 @@ public class Object extends ObjectData
 		if (!collisionDirection.contains(direction))
 		{
 			xSpeed += x;
-		}
+		}*/
+		
 		if (x != 0 || y != 0)
 		{
 			this.setTextureX(tex_X);

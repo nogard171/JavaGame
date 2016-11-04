@@ -59,6 +59,7 @@ public class Game extends GLWindow
 		sprite30.texture = this.getTexture("res/img/guy.png");
 		sprite30.sprite_size = new Point(32, 64);
 		sprites.put("PLAYER", sprite30);
+		
 		haspMapObject = new HashMap<Point, Object>();
 
 		map = new int[100][100];
@@ -259,19 +260,19 @@ public class Game extends GLWindow
 		{
 			int xSpeed = 0;
 			int ySpeed = 0;
-			if (keyboard.keyPressed(Keyboard.KEY_W) && xSpeed == 0)
+			if (keyboard.keyPressed(Keyboard.KEY_W) )
 			{
 				ySpeed = -speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_S) && xSpeed == 0)
+			if (keyboard.keyPressed(Keyboard.KEY_S) )
 			{
 				ySpeed = speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_A) && ySpeed == 0)
+			if (keyboard.keyPressed(Keyboard.KEY_A) )
 			{
 				xSpeed = -speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_D) && ySpeed == 0)
+			if (keyboard.keyPressed(Keyboard.KEY_D) )
 			{
 				xSpeed = speed;
 			}
@@ -309,7 +310,7 @@ public class Game extends GLWindow
 					if (collision(obj, player) && (obj.getType() == "DEEP" || obj.getType() == "SHALLOW"))
 					{
 						collosions++;
-						obj.color = Color.red;
+						obj.color = new Color(1,0,0);
 						collisionObjects.add(obj);
 					} else
 					{
@@ -318,70 +319,72 @@ public class Game extends GLWindow
 				}
 			}
 		}
-		int playerX = (((int)player.getPosition().getX()/32)*32);
-		int playerY = (((int)player.getPosition().getY()/32)*32);
+		int playerX = (((int) player.getPosition().getX() / 32) * 32);
+		int playerY = (((int) player.getPosition().getY() / 32) * 32);
 		for (Object obj : collisionObjects)
-		{			
-			double angle = GetAngleOfLineBetweenTwoPoints(obj.getPosition(),player.getPosition());
-			System.out.println("angle:"+angle);
-			if(angle>315||angle<=45)
+		{
+			double angle = GetAngleOfLineBetweenTwoPoints(obj.getPosition(), player.getPosition());
+			System.out.println("angle:" + angle);
+			if (angle > 315 || angle <= 45)
 			{
 				System.out.println("LEFT");
 				player.collisionDirection.add(Direction.WEST);
 			}
-			if(angle>45&&angle<=135)
+			if (angle > 45 && angle <= 135)
 			{
 				System.out.println("NORTH");
 				player.collisionDirection.add(Direction.NORTH);
 			}
-			if(angle>135&&angle<=225)
+			if (angle > 135 && angle <= 225)
 			{
 				System.out.println("RIGHT");
 				player.collisionDirection.add(Direction.EAST);
 			}
-			if(angle>225&&angle<=315)
+			if (angle > 225 && angle <= 315)
 			{
 				System.out.println("SOUTH");
 				player.collisionDirection.add(Direction.SOUTH);
 			}
-			
+
 		}
 
-		/*if (collosions > 0)
-		{
-			player.collosion = true;
-		} else
-		{
-			player.collosion = false;
-		}*/
+		/*
+		 * if (collosions > 0) { player.collosion = true; } else {
+		 * player.collosion = false; }
+		 */
 		setDisplayObject();
 		super.keyboard.endPoll();
 	}
-	
-	 public static double GetAngleOfLineBetweenTwoPoints(Point p1, Point p2)
-	    {
-	        double xDiff = p2.getX() - p1.getX();
-	        double yDiff = (p2.getY()+32) - p1.getY();
-	        double angle = Math.toDegrees(Math.atan2(yDiff, xDiff));
-	        if(angle<0)
-	        {
-	        	angle+=360;
-	        }
-	        if(angle>=360)
-	        {
-	        	angle-=360;
-	        }
-	        return angle;
-	    }
-	public float getAngle(Point target, Point player) {
-	    float angle = (float) Math.toDegrees(Math.atan2(target.getY() - player.getY()+32, target.getX() - player.getX()));
 
-	    if(angle < 0){
-	        angle += 360;
-	    }
-
-	    return angle;
+	public static double GetAngleOfLineBetweenTwoPoints(Point p1, Point p2)
+	{
+		double xDiff = p2.getX() - p1.getX();
+		double yDiff = (p2.getY() + 32) - p1.getY();
+		double angle = Math.toDegrees(Math.atan2(yDiff, xDiff));
+		if (angle < 0)
+		{
+			angle += 360;
+		}
+		if (angle >= 360)
+		{
+			angle -= 360;
+		}
+		return angle;
 	}
+
+	public float getAngle(Point target, Point player)
+	{
+		float angle = (float) Math
+				.toDegrees(Math.atan2(target.getY() - player.getY() + 32, target.getX() - player.getX()));
+
+		if (angle < 0)
+		{
+			angle += 360;
+		}
+
+		return angle;
+	}
+
 	public boolean collision(Object obj, Object obj2)
 	{
 		boolean collides = false;
@@ -451,10 +454,14 @@ public class Game extends GLWindow
 			{
 				for (int y = newY; y < newHeight; y++)
 				{
-					diaplayObjects.add(this.haspMapObject.get(new Point(x, y)));
+					Object obj = this.haspMapObject.get(new Point(x, y));
+					if (obj != null)
+					{
+						diaplayObjects.add(obj);
+					}
 				}
 			}
-			diaplayObjects.add(this.getObject("PLAYER"));
+			//diaplayObjects.add(this.getObject("PLAYER"));
 		}
 	}
 
@@ -470,7 +477,19 @@ public class Game extends GLWindow
 			{
 				GL11.glPushMatrix();
 				GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(), 0);
-				Sprite sprite = getSprite(obj);
+				Sprite sprite = getSprite(obj);				
+				sprite.color = obj.color;
+				sprite.Render();
+				GL11.glPopMatrix();
+			}
+		}
+		for (Object obj : objects)
+		{
+			if (obj != null)
+			{
+				GL11.glPushMatrix();
+				GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(), 0);
+				Sprite sprite = getSprite(obj);				
 				if (obj.getType() == "PLAYER")
 				{
 					sprite.texture_Coords = obj.texture_Coords;
