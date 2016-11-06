@@ -59,7 +59,7 @@ public class Game extends GLWindow
 		sprite30.texture = this.getTexture("res/img/guy.png");
 		sprite30.sprite_size = new Point(32, 64);
 		sprites.put("PLAYER", sprite30);
-		
+
 		haspMapObject = new HashMap<Point, Object>();
 
 		map = new int[100][100];
@@ -73,32 +73,29 @@ public class Game extends GLWindow
 				Object obj = new Object();
 
 				int height = map[x][y];
-				if (height < 0)
-				{
-					obj._type = "DEEP";
-				}
+				System.out.println("done:" + height);
+				obj._type = getTypeByHeight(height);
+				obj._name = getTypeByHeight(height);
 
-				else if (height >= 0 && height < 10)
+				if (y - 1 >= 0 && y + 1 < map[x].length && x - 1 >= 0 && x + 1 < map.length)
 				{
-					obj._type = "SHALLOW";
-				}
-
-				else if (height >= 10 && height < 15)
-				{
-					obj._type = "SAND";
-				}
-
-				else
-				{
-					obj._type = "GRASS";
-					obj._name = "GRASS";
+					String northType = getTypeByHeight(map[x][y - 1]);
+					String southType = getTypeByHeight(map[x][y + 1]);
+					String westType = getTypeByHeight(map[x - 1][y]);
+					String eastType = getTypeByHeight(map[x + 1][y]);
+					if (northType == southType && southType == westType && westType == eastType)
+					{
+						if (obj._type != northType)
+						{
+							obj._type = northType;
+						}
+					}
 				}
 
 				obj.SetPosition(x * 32, y * 32);
 
 				haspMapObject.put(new Point(x, y), obj);
 			}
-			System.out.println("done:" + (x / 100));
 		}
 
 		Object playerposition = this.getHashMapObject("GRASS");
@@ -111,6 +108,24 @@ public class Game extends GLWindow
 		objects.add(obj);
 
 		// addObject("PLAYER", "", new Dimension(32, 64), null);
+	}
+
+	public String getTypeByHeight(int height)
+	{
+		String type = "GRASS";
+		if (height < 0)
+		{
+			type = "DEEP";
+		} else if (height >= 0 && height < 10)
+		{
+			type = "SHALLOW";
+		}
+
+		else if (height >= 10 && height < 15)
+		{
+			type = "SAND";
+		}
+		return type;
 	}
 
 	int[][] map = new int[100][100];
@@ -260,19 +275,19 @@ public class Game extends GLWindow
 		{
 			int xSpeed = 0;
 			int ySpeed = 0;
-			if (keyboard.keyPressed(Keyboard.KEY_W) )
+			if (keyboard.keyPressed(Keyboard.KEY_W))
 			{
 				ySpeed = -speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_S) )
+			if (keyboard.keyPressed(Keyboard.KEY_S))
 			{
 				ySpeed = speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_A) )
+			if (keyboard.keyPressed(Keyboard.KEY_A))
 			{
 				xSpeed = -speed;
 			}
-			if (keyboard.keyPressed(Keyboard.KEY_D) )
+			if (keyboard.keyPressed(Keyboard.KEY_D))
 			{
 				xSpeed = speed;
 			}
@@ -299,6 +314,7 @@ public class Game extends GLWindow
 				camera.y += speed;
 			}
 		}
+		collision(player, player);
 		int collosions = 0;
 		ArrayList<Object> collisionObjects = new ArrayList<Object>();
 		for (Object obj : diaplayObjects)
@@ -310,7 +326,7 @@ public class Game extends GLWindow
 					if (collision(obj, player) && (obj.getType() == "DEEP" || obj.getType() == "SHALLOW"))
 					{
 						collosions++;
-						obj.color = new Color(1,0,0);
+						obj.color = new Color(1, 0, 0);
 						collisionObjects.add(obj);
 					} else
 					{
@@ -325,33 +341,28 @@ public class Game extends GLWindow
 		{
 			double angle = GetAngleOfLineBetweenTwoPoints(obj.getPosition(), player.getPosition());
 			System.out.println("angle:" + angle);
-			if (angle > 315 || angle <= 45)
+			if (angle > 315 || angle <= 45&&obj.getPosition().getX()<=player.getPosition().getX())
 			{
-				System.out.println("LEFT");
+				//System.out.println("LEFT");
 				player.collisionDirection.add(Direction.WEST);
 			}
-			if (angle > 45 && angle <= 135)
+			if (angle > 45 && angle <= 135&&obj.getPosition().getY()<=player.getPosition().getY())
 			{
 				System.out.println("NORTH");
 				player.collisionDirection.add(Direction.NORTH);
 			}
-			if (angle > 135 && angle <= 225)
+			if (angle > 135 && angle <= 225&&obj.getPosition().getX()>=player.getPosition().getX())
 			{
-				System.out.println("RIGHT");
+				//System.out.println("RIGHT");
 				player.collisionDirection.add(Direction.EAST);
 			}
-			if (angle > 225 && angle <= 315)
+			if (angle > 225 && angle <= 315&&obj.getPosition().getY()>=player.getPosition().getY())
 			{
-				System.out.println("SOUTH");
+				//System.out.println("SOUTH");
 				player.collisionDirection.add(Direction.SOUTH);
 			}
 
 		}
-
-		/*
-		 * if (collosions > 0) { player.collosion = true; } else {
-		 * player.collosion = false; }
-		 */
 		setDisplayObject();
 		super.keyboard.endPoll();
 	}
@@ -461,7 +472,7 @@ public class Game extends GLWindow
 					}
 				}
 			}
-			//diaplayObjects.add(this.getObject("PLAYER"));
+			// diaplayObjects.add(this.getObject("PLAYER"));
 		}
 	}
 
@@ -477,7 +488,7 @@ public class Game extends GLWindow
 			{
 				GL11.glPushMatrix();
 				GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(), 0);
-				Sprite sprite = getSprite(obj);				
+				Sprite sprite = getSprite(obj);
 				sprite.color = obj.color;
 				sprite.Render();
 				GL11.glPopMatrix();
@@ -489,7 +500,7 @@ public class Game extends GLWindow
 			{
 				GL11.glPushMatrix();
 				GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(), 0);
-				Sprite sprite = getSprite(obj);				
+				Sprite sprite = getSprite(obj);
 				if (obj.getType() == "PLAYER")
 				{
 					sprite.texture_Coords = obj.texture_Coords;

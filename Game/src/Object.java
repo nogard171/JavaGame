@@ -33,70 +33,61 @@ public class Object extends ObjectData
 	public void move(int x, int y)
 	{
 		int xSpeed = getPosition().getX();
+		int rSpeed = 0;
+		int lSpeed = 0;
 		int ySpeed = getPosition().getY();
+		int nSpeed = 0;
+		int sSpeed =0;
 
 		if (x < 0)
 		{
 			direction = Direction.WEST;
 			this.texture_Coords = new Point(0, 3);
+			lSpeed = x;
 		}
 		if (x > 0)
 		{
 			direction = Direction.EAST;
 			this.texture_Coords = new Point(0, 2);
+			rSpeed = x;
 		}
 		if (y < 0)
 		{
+			nSpeed = y;
 			direction = Direction.NORTH;
 			this.texture_Coords = new Point(0, 1);
 		}
 		if (y > 0)
 		{
+			sSpeed = y;
 			direction = Direction.SOUTH;
 			this.texture_Coords = new Point(0, 0);
-		}
-		int backStep = 4;
-		if(collisionDirection.contains(Direction.WEST)||collisionDirection.contains(Direction.EAST))
-		{
-			x= -x;
 		}
 		
 		if(collisionDirection.contains(Direction.EAST))
 		{
-			xSpeed-=backStep;
+			rSpeed = 0;
+			//rSpeed=backStep;
 		}
 		if(collisionDirection.contains(Direction.WEST))
 		{
-			xSpeed+=backStep;
+			//xSpeed+=backStep;
+			lSpeed = 0;
 		}
-		
-		
-		if(collisionDirection.contains(Direction.NORTH)||collisionDirection.contains(Direction.SOUTH))
-		{
-			y= -y;
-		}
+	
 		
 		if(collisionDirection.contains(Direction.NORTH))
 		{
-			ySpeed+=backStep;
+			nSpeed = 0;
 		}
 		if(collisionDirection.contains(Direction.SOUTH))
 		{
-			ySpeed-=backStep;
+			sSpeed = 0;
 		}
 		
-		xSpeed += x;
-		ySpeed += y;
-		/*if (!collisionDirection.contains(direction))
-		{
-			ySpeed += y;
-
-		}
-		if (!collisionDirection.contains(direction))
-		{
-			xSpeed += x;
-		}*/
-		
+		xSpeed += rSpeed+lSpeed;
+		ySpeed += nSpeed+sSpeed;
+				
 		if (x != 0 || y != 0)
 		{
 			this.setTextureX(tex_X);
