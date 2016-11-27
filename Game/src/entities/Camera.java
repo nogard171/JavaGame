@@ -17,21 +17,31 @@ public class Camera
 	
 	public void move()
 	{
+		float speed = 0.1f;
 		if(Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
-			position.z-=0.02f;
+			position.z-=speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D))
 		{
-			position.x+=0.02f;
+			position.x+=speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_A))
 		{
-			position.x-=0.02f;
+			position.x-=speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S))
 		{
-			position.z+=0.02f;
+			position.z+=speed;
+		}
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		{
+			position.y+=speed;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+		{
+			position.y-=speed;
 		}
 	}
 
