@@ -31,7 +31,7 @@ public class Renderer
 		for (Entity entity : entities)
 		{
 			Quad quad = quads.get(entity.getQuadName());
-			//shader.sendTexture("myTexture", quad.getTextureID());
+			shader.sendTexture("myTexture", quad.getTextureID());
 			GL11.glPushMatrix();
 			GL11.glTranslatef(entity.getPosition().getX(), entity.getPosition().getY(), 0);
 			GL11.glRotatef(entity.getRotX(), 0f, 0f, 1f);
