@@ -30,78 +30,65 @@ public class Main extends Window{
         Main game = new Main();
         game.Start();
     }
-    public int loadShader(String filename, int type) {
-        StringBuilder shaderSource = new StringBuilder();
-        int shaderID = 0;
-         
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                shaderSource.append(line).append("\n");
-            }
-            reader.close();
-        } catch (IOException e) {
-            System.err.println("Could not read file.");
-            e.printStackTrace();
-            System.exit(-1);
-        }
-         
-        shaderID = GL20.glCreateShader(type);
-        GL20.glShaderSource(shaderID, shaderSource);
-        GL20.glCompileShader(shaderID);
-         
-        return shaderID;
-    }
-    ShaderProgram shader = new ShaderProgram();
     Renderer renderer = new Renderer();
-
+    Camera camera = new Camera(-400,-400);
+    Random rand = new Random();
+    RawQuad test = null;
+    Quad quad = null;
     @Override
     public void Init()
     {
     	super.Init();
-    	
-    	shader.loadFragmentShader("screen");
-    	shader.loadVertexShader("screen");
-    	shader.createProgram();
-    	
-    	renderer.setShader(shader);
-
+    	    	
+		
     	
     	renderer.addQuad("grass", "grass.png");
     	renderer.addQuad("dirt", "dirt.png");
     	renderer.addQuad("sand", "sand.png");
     	renderer.addQuad("water", "water.png");
     	
-    	for(int x = 0;x<30;x++)
+    	for(int x=0;x<10;x++)
     	{
-    		for(int y = 0;y<30;y++)
+    		for(int y=0;y<10;y++)
         	{
-    			Entity entity =  new Entity("grass");
-    			entity.setPosition(x*32,y*32);
-    			renderer.addEntity(x+","+y,entity);
+    			for(int z=0;z<10;z++)
+            	{
+					int ran = rand.nextInt(10 - 1 + 1) + 1;
+					String type ="grass";
+					if(ran%2==0)
+					{
+						type = "dirt";	
+					}
+					if(z==0||ran%2==0)
+					{
+						Entity entity = new Entity(type);
+						entity.setPosition((x*32)-(y*32), -(y*16)-(x*16)+(z*8));
+						renderer.addEntity(x+","+y+","+z,entity);
+					}
+            	}
         	}
     	}
+    	renderer.addEntity("test", new Entity("dirt"));
+    	renderer.getEntity("test").setPosition(new Vector2f(0,0));
     	
-    	
-    	
-    	renderer.addEntity("test2", new Entity("dirt"));
-    	renderer.addEntity("test", new Entity("water"));
-    	renderer.getEntity("test").setPosition(new Vector2f(100,100));
-    	renderer.getEntity("test2").setPosition(new Vector2f(32,32));
-    	renderer.getEntity("test2").setOrigin(0.5f,0.5f);
+    	if(test==null)
+		{
+			quad = renderer.loader.getQuadFromModel("tile.obj");
+			renderer.addQuad(quad, "test5");
+			Entity entity = new Entity("test5");
+			renderer.addEntity("test5",entity);
+		}
     	
     }
     float rot = 0;
     @Override
     public void Render(){
+    	
     	super.Render();		
-		
-		
+		GL11.glPushMatrix();
+		GL11.glTranslatef(-camera.getX(),-camera.getY(),0);		
     	renderer.Render();
-		
-		renderer.getEntity("test2").setRotX(rot);
-		renderer.getEntity("test").setPosition(MouseHandler.getPosition());
-		rot+=0.5f;
+    	GL11.glPopMatrix();
+		renderer.getEntity("test5").setPosition(MouseHandler.getPosition().x+camera.getX(),MouseHandler.getPosition().y+camera.getY());
     }
 }

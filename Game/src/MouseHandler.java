@@ -44,7 +44,7 @@ public class MouseHandler
 			Init();
 		}
 		
-		position = new Vector2f(Mouse.getX(), Mouse.getY());
+		position = new Vector2f(Mouse.getX(), Mouse.getY()-48);
 
 		for (int b = 0; b < buttons.length; b++)
 		{

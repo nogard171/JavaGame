@@ -16,22 +16,16 @@ import org.lwjgl.opengl.GL13;
 
 public class Renderer
 {
-	ShaderProgram shader = new ShaderProgram();
-	public void setShader(ShaderProgram shader)
-	{
-		this.shader = shader;
-	}
-
 	HashMap<String,Quad> quads = new HashMap<String,Quad>();
 	ArrayList<Entity> entities = new ArrayList<Entity>();
 
 	public void Render()
 	{		
-		shader.Start();
 		for (Entity entity : entities)
 		{
 			Quad quad = quads.get(entity.getQuadName());
-			shader.sendTexture("myTexture", quad.getTextureID());
+			//shader.sendTexture("myTexture", quad.getTextureID());
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, quad.getTextureID());
 			GL11.glPushMatrix();
 			GL11.glTranslatef(entity.getPosition().getX(), entity.getPosition().getY(), 0);
 			GL11.glRotatef(entity.getRotX(), 0f, 0f, 1f);
@@ -70,5 +64,10 @@ public class Renderer
 		Quad quad = new Quad();
 		loader.loadQuad(quad,imageName);
 		quads.put(quadName,quad);
+	}
+	public void addQuad(Quad quad, String name)
+	{
+		quad.setSize(32, 32);
+		quads.put(name,quad);
 	}
 }
