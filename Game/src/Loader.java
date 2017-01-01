@@ -63,6 +63,38 @@ public class Loader
 	{
 		RawQuad raw = new RawQuad();
 		String textureName = "";
+		String line;
+		try (InputStream fis = new FileInputStream("resources/models/" + modelName);
+				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+				BufferedReader br = new BufferedReader(isr);)
+		{
+
+			while ((line = br.readLine()) != null)
+			{
+				String[] data = line.split(" ");
+				String type = data[0];
+				if (type.startsWith("texture"))
+				{
+					textureName = data[1];
+					break;
+				}
+			}
+		} catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Quad quad = getQuadFromModel(modelName,textureName);
+		
+		return quad;
+	}
+	public Quad getQuadFromModel(String modelName, String textureName)
+	{
+		RawQuad raw = new RawQuad();
 		ArrayList<Vector3f> vertices = new ArrayList<Vector3f>();
 		ArrayList<Byte> indices = new ArrayList<Byte>();
 		ArrayList<Byte> colorIndices = new ArrayList<Byte>();
@@ -79,10 +111,6 @@ public class Loader
 			{
 				String[] data = line.split(" ");
 				String type = data[0];
-				if (type.startsWith("texture"))
-				{
-					textureName = data[1];
-				}
 				if (type.startsWith("v"))
 				{
 					vertices.add(new Vector3f(Float.parseFloat(data[1]), Float.parseFloat(data[2]),
@@ -94,7 +122,7 @@ public class Loader
 					colorIndices.add(Byte.parseByte(data[2]));
 					colorIndices.add(Byte.parseByte(data[3]));
 				}
-				if (type.startsWith("ft"))
+				if (type.startsWith("ti"))
 				{
 					textureIndices.add(Byte.parseByte(data[1]));
 					textureIndices.add(Byte.parseByte(data[2]));
@@ -104,7 +132,7 @@ public class Loader
 				{
 					textureCoords.add(new Vector2f(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
 				}
-				if (type.startsWith("f"))
+				if (type.startsWith("fi"))
 				{
 					indices.add(Byte.parseByte(data[1]));
 					indices.add(Byte.parseByte(data[2]));
@@ -120,7 +148,8 @@ public class Loader
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		raw.indices = null;
+		System.out.println("Count:"+indices.size());
 		raw.indices = new byte[indices.size()];
 		for (int i = 0; i < raw.indices.length; i++)
 		{
@@ -132,7 +161,6 @@ public class Loader
 		{
 			raw.colorIndices[i] = colorIndices.get(i);
 		}
-		
 		raw.textureIndices = new byte[textureIndices.size()];
 		for (int i = 0; i < raw.textureIndices.length; i++)
 		{
@@ -177,9 +205,9 @@ public class Loader
 	{
 		byte index = 0;
 		glBegin(GL11.GL_TRIANGLES);
+		//System.out.println("Count:"+raw.getIndices().length);
 		for (byte indice : raw.getIndices())
 		{
-
 			Vector3f vec = raw.getVertice(indice);
 			Vector3f color = raw.getColors()[raw.getColorIndices(index)];
 			Vector2f textureVector = raw.getTextureCoords(raw.getTextureIndices(index));

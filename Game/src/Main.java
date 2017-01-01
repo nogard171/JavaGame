@@ -1,4 +1,5 @@
 import org.lwjgl.*;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.vector.Vector2f;
@@ -12,6 +13,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Main extends Window{
@@ -40,55 +43,103 @@ public class Main extends Window{
     {
     	super.Init();
     	    	
-		
+		renderer.addQuad(renderer.loader.getQuadFromModel("tile.obj","sand.png"), "test5");
     	
     	renderer.addQuad("grass", "grass.png");
     	renderer.addQuad("dirt", "dirt.png");
     	renderer.addQuad("sand", "sand.png");
     	renderer.addQuad("water", "water.png");
     	
-    	for(int x=0;x<10;x++)
-    	{
-    		for(int y=0;y<10;y++)
-        	{
-    			for(int z=0;z<10;z++)
-            	{
-					int ran = rand.nextInt(10 - 1 + 1) + 1;
-					String type ="grass";
-					if(ran%2==0)
-					{
-						type = "dirt";	
-					}
-					if(z==0||ran%2==0)
-					{
-						Entity entity = new Entity(type);
-						entity.setPosition((x*32)-(y*32), -(y*16)-(x*16)+(z*8));
-						renderer.addEntity(x+","+y+","+z,entity);
-					}
-            	}
-        	}
-    	}
-    	renderer.addEntity("test", new Entity("dirt"));
-    	renderer.getEntity("test").setPosition(new Vector2f(0,0));
     	
-    	if(test==null)
-		{
-			quad = renderer.loader.getQuadFromModel("tile.obj");
-			renderer.addQuad(quad, "test5");
+    	int cx = 0;
+    	int cy=0;
+    	int cwide = 100;
+    	int cwidth = 5;
+    	for(int c=0;c<cwide*cwide;c++)
+    	{
+    		Chunk chunk = new Chunk();
+    		ArrayList<Entity> entities = new ArrayList<Entity>();
+	    	for(int x=0;x<cwidth;x++)
+	    	{
+	    		for(int y=0;y<cwidth;y++)
+	        	{
+	    			for(int z=0;z<1;z++)
+	            	{
+						int ran = rand.nextInt(10 - 1 + 1) + 1;
+						String type ="grass";
+						if(ran%2==0)
+						{
+							type = "dirt";	
+						}
+						if(z==0||ran%2==0)
+						{
+							Entity entity = new Entity(type);
+							entity.setPosition((x*32)-(y*32), -(y*16)-(x*16)+(z*8));
+							String key = x+","+y;
+							entity.setName(key);
+							entities.add(entity);
+						}
+	            	}
+	        	}
+	    	}
+	    	chunk.entities = entities;
+	    	
+	    	chunk.setBounds((cx*(cwidth*32))-(cy*(cwidth*32)), -(cy*(cwidth*16))-(cx*(cwidth*16)),cwidth,cwidth);
+	    	
+	    	
 			Entity entity = new Entity("test5");
-			renderer.addEntity("test5",entity);
-		}
+			chunk.entities.add(entity);
+			
+	    	
+	    	renderer.addChunk((cx)+","+(cy),chunk);
+    		if(cx>=cwide-1)
+    		{
+    			cy++;
+    			cx=0;
+    		}
+    		else
+    		{
+    			cx++;
+    		}
+	    }
+    	
     	
     }
+    @Override
+    public void Update(double delta)
+    {
+    	super.Update(delta);
+    	
+    	renderer.UpdateDisplayEntities(camera);
+    	//renderer.getEntity("test5").setPosition(MouseHandler.getPosition().x+camera.getX(),MouseHandler.getPosition().y+camera.getY());
+    	float speed = (float) (1*delta);
+    	if(Keyboard.isKeyDown(Keyboard.KEY_A))
+    	{
+    		camera.position.x -=speed;
+    	}
+    	if(Keyboard.isKeyDown(Keyboard.KEY_D))
+    	{
+    		camera.position.x +=speed;
+    	}
+    	if(Keyboard.isKeyDown(Keyboard.KEY_W))
+    	{
+    		camera.position.y +=speed;
+    	}
+    	if(Keyboard.isKeyDown(Keyboard.KEY_S))
+    	{
+    		camera.position.y -=speed;
+    	}
+    }
+    
+    
     float rot = 0;
     @Override
-    public void Render(){
-    	
+    public void Render(){    	
     	super.Render();		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.getX(),-camera.getY(),0);		
     	renderer.Render();
     	GL11.glPopMatrix();
-		renderer.getEntity("test5").setPosition(MouseHandler.getPosition().x+camera.getX(),MouseHandler.getPosition().y+camera.getY());
+		
     }
 }

@@ -24,7 +24,7 @@ public class Window
 {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
-	private int FPS = 120;
+	private int FPS = 300;
 	private String TITLE ="";
 	private DisplayMode displayMode = null;
 
@@ -144,7 +144,7 @@ public class Window
 		GL11.glLoadIdentity();
 	}
 
-	public void Update()
+	public void Update(double delta)
 	{
 		if (Display.wasResized())
 		{
@@ -193,7 +193,8 @@ public class Window
 
 		while (!Display.isCloseRequested())
 		{
-			this.Update();
+			double delta = getDelta();
+			this.Update(delta);
 			this.Render();
 
 			Display.update();
