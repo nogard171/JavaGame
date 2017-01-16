@@ -209,10 +209,12 @@ public class Loader
 		for (byte indice : raw.getIndices())
 		{
 			Vector3f vec = raw.getVertice(indice);
-			Vector3f color = raw.getColors()[raw.getColorIndices(index)];
 			Vector2f textureVector = raw.getTextureCoords(raw.getTextureIndices(index));
 			GL11.glTexCoord2f(textureVector.getX(), textureVector.getY());
-			GL11.glColor3f(color.getX(), color.getY(), color.getZ());
+
+				Vector3f color = raw.getColors()[raw.getColorIndices(index)];
+				GL11.glColor3f(color.getX(), color.getY(), color.getZ());
+			
 			glVertex2f(vec.getX() - vec.getZ(), vec.getY());
 			index++;
 		}

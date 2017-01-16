@@ -1,5 +1,6 @@
 import static org.lwjgl.opengl.GL11.glCallList;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -16,6 +17,8 @@ import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.vector.Vector2f;
 
 public class Renderer
 {
@@ -24,6 +27,7 @@ public class Renderer
 	
 	ArrayList<Chunk> chunks = new ArrayList<Chunk>();
 	ArrayList<Chunk> chunksToDisplay = new ArrayList<Chunk>();
+
 
 	public void Render()
 	{
@@ -48,6 +52,37 @@ public class Renderer
 			}
 			GL11.glPopMatrix();
 		}
+		for (Rectangle rec:recs)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslatef((float)rec.getX(), (float)rec.getY(), 0);
+			
+			GL11.glPopMatrix();
+		}
+		
+		
+	}
+	ArrayList<Rectangle> recs = new ArrayList<Rectangle>();
+	public void hoverChunk(Point mousePoint)
+	{
+		recs.clear();
+		for (Chunk chunk : this.chunksToDisplay)
+		{
+			for (Entity entity : chunk.entities)
+			{
+				Rectangle rec = new Rectangle(((int)entity.getPosition().getX()+(int)chunk.getX())-16,((int)entity.getPosition().getY()+(int)chunk.getY())+32,32,32);
+				if(rec.contains(mousePoint))
+				{
+					entity.setOrigin(0,-1);
+					Display.setTitle("Chunk:"+chunk.name+"/Type:" + entity.getQuadName());
+				}			
+				else
+				{
+					entity.setOrigin(0,0);
+				}
+				recs.add(rec);
+			}
+		}
 	}
 
 	int oldX = 0;
@@ -58,7 +93,7 @@ public class Renderer
 	public void UpdateDisplayEntities(Camera camera)
 	{
 		chunksToDisplay.clear();
-		Rectangle windoView = new Rectangle((int)camera.getX(),(int)camera.getY(),Display.getWidth(),Display.getHeight());
+		Rectangle windoView = new Rectangle((int)camera.getPosition().getX(),(int)camera.getPosition().getY(),Display.getWidth(),Display.getHeight());
 		for (Chunk chunk : this.chunks)
 		{
 			if(windoView.contains(chunk.getBounds()))
@@ -85,5 +120,57 @@ public class Renderer
 	{
 		chunk.name = chunkName;
 		chunks.add(chunk);
+	}
+
+	public Entity getEntity(String name)
+	{
+		Entity entity = null;
+		for (Chunk chunk : this.chunks)
+		{
+			for (Entity oldEntity : chunk.entities)
+			{
+				if(oldEntity.getName() == name)
+				{
+					entity = oldEntity;
+					break;
+				}
+			}
+		}
+		return entity;
+	}
+
+	public Entity getHovered(Point mousePoint)
+	{
+		Entity newEntity = null;
+		for (Chunk chunk : this.chunksToDisplay)
+		{
+			for (Entity entity : chunk.entities)
+			{
+				Rectangle rec = new Rectangle(((int)entity.getPosition().getX()+(int)chunk.getX())-16,((int)entity.getPosition().getY()+(int)chunk.getY())+32,32,32);
+				if(rec.contains(mousePoint))
+				{
+					newEntity = entity;
+					break;
+				}
+			}
+		}
+		return newEntity;
+	}
+	public String getHoveredKey(Point mousePoint)
+	{
+		String key = "";
+		for (Chunk chunk : this.chunksToDisplay)
+		{
+			for (Entity entity : chunk.entities)
+			{
+				Rectangle rec = new Rectangle(((int)entity.getPosition().getX()+(int)chunk.getX())-16,((int)entity.getPosition().getY()+(int)chunk.getY())+32,32,32);
+				if(rec.contains(mousePoint))
+				{
+					key = entity.getName();
+					break;
+				}
+			}
+		}
+		return key;
 	}
 }

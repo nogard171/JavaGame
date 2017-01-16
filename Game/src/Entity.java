@@ -1,3 +1,4 @@
+import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -17,6 +18,15 @@ public class Entity
 	private float rotX,rotY;
 	private Vector2f scale = new Vector2f(1,1);
 	private float originX,originY;
+	private Vector3f color = new Vector3f(1,1,1);
+	public Vector3f getColor()
+	{
+		return color;
+	}
+	public void setColor(float r, float g, float b)
+	{
+		this.color = new Vector3f(r,g,b);
+	}
 	public float getOriginX()
 	{
 		return originX;
