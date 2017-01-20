@@ -1,92 +1,77 @@
-import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 
 public class Entity
 {
 	private String name = "";
-	private String quadName = "";
-	public String getName()
-	{
-		return name;
-	}
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	private Vector2f position;
-	private float rotX,rotY;
-	private Vector2f scale = new Vector2f(1,1);
-	private float originX,originY;
-	private Vector3f color = new Vector3f(1,1,1);
-	public Vector3f getColor()
-	{
-		return color;
-	}
-	public void setColor(float r, float g, float b)
-	{
-		this.color = new Vector3f(r,g,b);
-	}
-	public float getOriginX()
-	{
-		return originX;
-	}
-	public float getOriginY()
-	{
-		return originY;
-	}
-	public void setOrigin(float originX,float originY)
-	{
-		this.originX = originX;
-		this.originY = originY;
-	}
-	public Entity(String quadName)
-	{
-		this.quadName = quadName;
-		position = new Vector2f(0,0);
-	}
+	private String quadName = "GRASS";
+
+	private Vector2f position = new Vector2f(100, 100);
+	private Vector2f origin = new Vector2f(0, 0);
+	float rotation = 0;
+	Vector2f scale = new Vector2f(1, 1);
+
 	public String getQuadName()
 	{
 		return quadName;
 	}
+
 	public void setQuadName(String quadName)
 	{
 		this.quadName = quadName;
 	}
-	public Vector2f getPosition()
-	{
-		return position;
-	}
-	public void setPosition(Vector2f position)
-	{
-		this.position = position;
-	}
-	public void setPosition(float x, float y)
-	{
-		this.position = new Vector2f(x,y);
-	}
-	public float getRotX()
-	{
-		return rotX;
-	}
-	public void setRotX(float rotX)
-	{
-		this.rotX = rotX;
-	}
-	public float getRotY()
-	{
-		return rotY;
-	}
-	public void setRotY(float rotY)
-	{
-		this.rotY = rotY;
-	}
+
 	public Vector2f getScale()
 	{
 		return scale;
 	}
+
 	public void setScale(Vector2f scale)
 	{
 		this.scale = scale;
+	}
+
+	public Vector2f getPosition()
+	{
+		return position;
+	}
+
+	public Vector2f getOrigin()
+	{
+		return origin;
+	}
+
+	public void setPosition(Vector2f position)
+	{
+		this.position = position;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public float getRotation()
+	{
+		return rotation;
+	}
+
+	public void setRotation(float rotation)
+	{
+		this.rotation = rotation;
+	}
+
+	public void setOrigin(Vector2f origin)
+	{
+		this.origin = origin;
+	}
+
+	public void increaseRotation(float r)
+	{
+		this.setRotation(this.getRotation() + r);
 	}
 }

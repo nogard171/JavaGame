@@ -1,176 +1,100 @@
 import static org.lwjgl.opengl.GL11.glCallList;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.util.Color;
-import org.lwjgl.util.vector.Vector2f;
 
 public class Renderer
 {
-	Loader loader = new Loader();
-	HashMap<String, Quad> quads = new HashMap<String, Quad>();
+	private HashMap<String, Quad> quads = new HashMap<String, Quad>();
+	// private ArrayList<Entity> entities = new ArrayList<Entity>();
+	// private ArrayList<Entity> entitiesToDisplay = new ArrayList<Entity>();
+	private HashMap<String, Entity> entities = new HashMap<String, Entity>();
 	
-	ArrayList<Chunk> chunks = new ArrayList<Chunk>();
-	ArrayList<Chunk> chunksToDisplay = new ArrayList<Chunk>();
+	int renderWidth = 0;
+	int renderHeight = 0;
 
-
-	public void Render()
+	public void Init()
 	{
-		for (Chunk chunk : this.chunksToDisplay)
-		{
-			GL11.glPushMatrix();
-			GL11.glTranslatef(chunk.getX(), chunk.getY(), 0);
-			for (Entity entity : chunk.entities)
-			{
-				Quad quad = quads.get(entity.getQuadName());
-				// shader.sendTexture("myTexture", quad.getTextureID());
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, quad.getTextureID());
-				GL11.glPushMatrix();
-				GL11.glTranslatef(entity.getPosition().getX(), entity.getPosition().getY(), 0);
-				GL11.glRotatef(entity.getRotX(), 0f, 0f, 1f);
-				GL11.glRotatef(entity.getRotY(), 0f, 1f, 0f);
-				GL11.glScalef(entity.getScale().getX() + quad.getSize().getWidth(),
-						entity.getScale().getY() + quad.getSize().getHeight(), 1);
-				GL11.glTranslatef(-entity.getOriginX(), -entity.getOriginY(), 0);
-				glCallList(quad.getDlid());
-				GL11.glPopMatrix();
-			}
-			GL11.glPopMatrix();
-		}
-		for (Rectangle rec:recs)
-		{
-			GL11.glPushMatrix();
-			GL11.glTranslatef((float)rec.getX(), (float)rec.getY(), 0);
-			
-			GL11.glPopMatrix();
-		}
+		this.renderWidth = (int)(Display.getWidth()/32);
+		this.renderHeight = (int)(Display.getHeight()/32);
 		
 		
+		new Loader();		
+		quads.put("GRASS", Loader.GenerateQuadWithTexture("grass.png"));
 	}
-	ArrayList<Rectangle> recs = new ArrayList<Rectangle>();
-	public void hoverChunk(Point mousePoint)
+int count=0;
+	public void Render(View view)
 	{
-		recs.clear();
-		for (Chunk chunk : this.chunksToDisplay)
+
+		/*for (Entity entity : entitiesToDisplay)
 		{
-			for (Entity entity : chunk.entities)
-			{
-				Rectangle rec = new Rectangle(((int)entity.getPosition().getX()+(int)chunk.getX())-16,((int)entity.getPosition().getY()+(int)chunk.getY())+32,32,32);
-				if(rec.contains(mousePoint))
-				{
-					entity.setOrigin(0,-1);
-					Display.setTitle("Chunk:"+chunk.name+"/Type:" + entity.getQuadName());
-				}			
-				else
-				{
-					entity.setOrigin(0,0);
-				}
-				recs.add(rec);
-			}
-		}
-	}
-
-	int oldX = 0;
-	int oldY = 0;
-	int tileWidth = 0;
-	int tileHeight = 0;
-
-	public void UpdateDisplayEntities(Camera camera)
-	{
-		chunksToDisplay.clear();
-		Rectangle windoView = new Rectangle((int)camera.getPosition().getX(),(int)camera.getPosition().getY(),Display.getWidth(),Display.getHeight());
-		for (Chunk chunk : this.chunks)
+			Quad quad = quads.get(entity.getQuadName());
+			GL11.glPushMatrix();
+			GL11.glTranslatef(entity.getPosition().getX(), entity.getPosition().getY(), 0);
+			GL11.glRotatef(entity.getRotation(), 0, 0, 1);
+			GL11.glTranslatef(-entity.getOrigin().getX() * entity.getScale().getX(),
+					-entity.getOrigin().getY() * entity.getScale().getY(), 0);
+			GL11.glScalef(entity.getScale().getX(), entity.getScale().getY(), 0);
+			GL11.glColor3f(1, 1, 1);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glBindTexture(0, quad.getTextureID());
+			GL11.glBegin(quad.getRenderType());
+			glCallList(quad.getDisplayID());
+			GL11.glEnd();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glPopMatrix();
+		}*/
+		
+		int viewX = (int)(-view.getPosition().getX()/32);
+		int viewY = (int)(-view.getPosition().getY()/32);
+		count = 0;
+		GL11.glPushMatrix();
+		GL11.glTranslatef(view.getPosition().getX(),view.getPosition().getY(),0);
+		for (int x = viewX; x < (viewX+view.getViewWidth()); x++)
 		{
-			if(windoView.contains(chunk.getBounds()))
+			for (int y = viewY; y < (viewY+view.getViewHeight()); y++)
 			{
-				chunksToDisplay.add(chunk);
-			}
-		}
-	}
-
-	public void addQuad(String quadName, String imageName)
-	{
-		Quad quad = new Quad();
-		loader.loadQuad(quad, imageName);
-		quads.put(quadName, quad);
-	}
-
-	public void addQuad(Quad quad, String name)
-	{
-		quad.setSize(32, 32);
-		quads.put(name, quad);
-	}
-
-	public void addChunk(String chunkName, Chunk chunk)
-	{
-		chunk.name = chunkName;
-		chunks.add(chunk);
-	}
-
-	public Entity getEntity(String name)
-	{
-		Entity entity = null;
-		for (Chunk chunk : this.chunks)
-		{
-			for (Entity oldEntity : chunk.entities)
-			{
-				if(oldEntity.getName() == name)
+				String key = x + "," + y;
+				if (entities.containsKey(key))
 				{
-					entity = oldEntity;
-					break;
+					count++;
+					Entity entity = entities.get(key);
+					Quad quad = quads.get(entity.getQuadName());
+					GL11.glPushMatrix();
+					GL11.glTranslatef(entity.getPosition().getX(), entity.getPosition().getY(), 0);
+					GL11.glRotatef(entity.getRotation(), 0, 0, 1);
+					GL11.glTranslatef(-entity.getOrigin().getX() * entity.getScale().getX(),
+							-entity.getOrigin().getY() * entity.getScale().getY(), 0);
+					GL11.glScalef(entity.getScale().getX(), entity.getScale().getY(), 0);
+					GL11.glColor3f(1, 1, 1);
+					GL11.glBindTexture(0, quad.getTextureID());
+					GL11.glBegin(quad.getRenderType());
+					glCallList(quad.getDisplayID());
+					GL11.glEnd();
+					GL11.glPopMatrix();
 				}
 			}
 		}
-		return entity;
+		GL11.glPopMatrix();
+		System.out.println("Count:"+count);
 	}
 
-	public Entity getHovered(Point mousePoint)
+	public void Update()
 	{
-		Entity newEntity = null;
-		for (Chunk chunk : this.chunksToDisplay)
-		{
-			for (Entity entity : chunk.entities)
-			{
-				Rectangle rec = new Rectangle(((int)entity.getPosition().getX()+(int)chunk.getX())-16,((int)entity.getPosition().getY()+(int)chunk.getY())+32,32,32);
-				if(rec.contains(mousePoint))
-				{
-					newEntity = entity;
-					break;
-				}
-			}
-		}
-		return newEntity;
+
 	}
-	public String getHoveredKey(Point mousePoint)
+
+	public void AssessEntities()
 	{
-		String key = "";
-		for (Chunk chunk : this.chunksToDisplay)
-		{
-			for (Entity entity : chunk.entities)
-			{
-				Rectangle rec = new Rectangle(((int)entity.getPosition().getX()+(int)chunk.getX())-16,((int)entity.getPosition().getY()+(int)chunk.getY())+32,32,32);
-				if(rec.contains(mousePoint))
-				{
-					key = entity.getName();
-					break;
-				}
-			}
-		}
-		return key;
+
+	}
+
+	public void addEntity(Entity entity)
+	{
+		String key = (int)(entity.getPosition().getX()/32)+","+(int)(entity.getPosition().getY()/32);
+		entities.put(key,entity);
 	}
 }

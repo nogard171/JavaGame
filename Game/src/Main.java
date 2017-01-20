@@ -32,124 +32,77 @@ public class Main extends Window
 	public static void main(String args[])
 	{
 		Main game = new Main();
-		game.Start();
+		game.ShowDisplay();
 	}
-
-	Renderer renderer = new Renderer();
-	Camera camera = new Camera("Camera");
-	Random rand = new Random();
-	RawQuad test = null;
-	Quad quad = null;
 
 	@Override
 	public void Init()
 	{
 		super.Init();
-
-		renderer.addQuad(renderer.loader.getQuadFromModel("tile.obj", "sand.png"), "test5");
-
-		renderer.addQuad("grass", "grass.png");
-		renderer.addQuad("dirt", "dirt.png");
-		renderer.addQuad("sand", "sand.png");
-		renderer.addQuad("water", "water.png");
-
-		int cx = 0;
-		int cy = 0;
-		int cwide = 1;
-		int cwidth = 10;
-		for (int c = 0; c < cwide * cwide; c++)
+		view = new View();
+		renderer.Init();
+		int size = 100;
+		for (int x = 0; x < size; x++)
 		{
-			Chunk chunk = new Chunk();
-			ArrayList<Entity> entities = new ArrayList<Entity>();
-			for (int x = 0; x < cwidth; x++)
+			for (int y = 0; y < size; y++)
 			{
-				for (int y = 0; y < cwidth; y++)
-				{
-					for (int z = 0; z < 1; z++)
-					{
-						int ran = rand.nextInt(10 - 1 + 1) + 1;
-						String type = "grass";
-						if (ran % 2 == 0)
-						{
-							type = "dirt";
-						}
-						if (z == 0 || ran % 2 == 0)
-						{
-							Entity entity = new Entity(type);
-							entity.setPosition((x * 32) - (y * 32), -(y * 16) - (x * 16) + (z * 8));
-							String key = x + "," + y;
-							entity.setName(key);
-							entities.add(entity);
-						}
-					}
-				}
-			}
-			chunk.entities = entities;
-
-			chunk.setBounds((cx * (cwidth * 32)) - (cy * (cwidth * 32)), -(cy * (cwidth * 16)) - (cx * (cwidth * 16)),
-					cwidth, cwidth);
-
-			Entity entity = new Entity("test5");
-			entity.setName("test5");
-			chunk.entities.add(entity);
-
-			renderer.addChunk((cx) + "," + (cy), chunk);
-			if (cx >= cwide - 1)
-			{
-				cy++;
-				cx = 0;
-			} else
-			{
-				cx++;
+				Entity entity = new Entity();
+				entity.setPosition(new Vector2f(x*32, y*32));
+				renderer.addEntity(entity);
 			}
 		}
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
+	}
+	View view;
+	
+	@Override
+	public void Resize()
+	{
+		view.setViewWidth(super.getWidth()/32);
+		view.setViewHeight(super.getHeight()/32);
 	}
 
 	@Override
-	public void Update(double delta)
+	public void Update()
 	{
-		super.Update(delta);
-
-		renderer.UpdateDisplayEntities(camera);
-		Entity entity = renderer.getEntity("test5");
-		if (entity != null)
+		super.Update();
+		int x = Mouse.getX(); // will return the X coordinate on the Display.
+		int y = Mouse.getY(); // will return the Y coordinate on the Display.
+		float xSpeed =0;
+		float ySpeed= 0;
+		if(Keyboard.isKeyDown(Keyboard.KEY_A))
 		{
-			// entity.setPosition(MouseHandler.getPosition().x+camera.getX(),MouseHandler.getPosition().y+camera.getY());
+			xSpeed = 1;
 		}
-		float speed = (float) (0.005f * delta);
-		float xSpeed = 0;
-		float ySpeed = 0;
-		if (Keyboard.isKeyDown(Keyboard.KEY_A))
+		if(Keyboard.isKeyDown(Keyboard.KEY_D))
 		{
-			xSpeed = speed;
+			xSpeed = -1;
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D))
+		if(Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
-			xSpeed = -speed;
+			ySpeed = -1;
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_W))
+		if(Keyboard.isKeyDown(Keyboard.KEY_S))
 		{
-			ySpeed = speed;
+			ySpeed = 1;
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S))
-		{
-			ySpeed = -speed;
-		}
-		EntityController.MoveEntity(camera, new Vector3f(xSpeed, ySpeed,0));
-		renderer.hoverChunk(new Point((int) (Mouse.getX() + camera.getPosition().getX()), (int) (Mouse.getY() + camera.getPosition().getY())));
+		view.moveView(new Vector2f(xSpeed,ySpeed));
 	}
 
-	float rot = 0;
+	Renderer renderer = new Renderer();
 
 	@Override
 	public void Render()
 	{
 		super.Render();
-		GL11.glPushMatrix();
-		GL11.glTranslatef(-camera.getPosition().getX(), -camera.getPosition().getY(), 0);
-		renderer.Render();
-		GL11.glPopMatrix();
+		renderer.Render(view);
+		Display.setTitle("FPS:"+super.fpsCounter.getFPS());
+	}
 
+	@Override
+	public void Destroy()
+	{
+		// GL11.glDeleteLists(quad.getDisplayID(), GL_COMPILE);
 	}
 }
