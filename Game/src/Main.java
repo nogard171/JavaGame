@@ -48,19 +48,21 @@ public class Main extends Window
 			{
 				Entity entity = new Entity();
 				entity.setPosition(new Vector2f(x*32, y*32));
+				if(x%3==0)
+				{
+					entity.setQuadName("DIRT");
+				}
 				renderer.addEntity(entity);
 			}
 		}
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
 	}
 	View view;
-	
+	 
 	@Override
 	public void Resize()
 	{
-		view.setViewWidth(super.getWidth()/32);
-		view.setViewHeight(super.getHeight()/32);
+		view.setViewWidth((int)Math.ceil(super.getWidth()/32));
+		view.setViewHeight((int)Math.ceil(super.getHeight()/32));
 	}
 
 	@Override
@@ -71,21 +73,22 @@ public class Main extends Window
 		int y = Mouse.getY(); // will return the Y coordinate on the Display.
 		float xSpeed =0;
 		float ySpeed= 0;
+		float speed= 5;
 		if(Keyboard.isKeyDown(Keyboard.KEY_A))
 		{
-			xSpeed = 1;
+			xSpeed = speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D))
 		{
-			xSpeed = -1;
+			xSpeed = -speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
-			ySpeed = -1;
+			ySpeed = -speed;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S))
 		{
-			ySpeed = 1;
+			ySpeed = speed;
 		}
 		view.moveView(new Vector2f(xSpeed,ySpeed));
 	}
@@ -103,6 +106,7 @@ public class Main extends Window
 	@Override
 	public void Destroy()
 	{
-		// GL11.glDeleteLists(quad.getDisplayID(), GL_COMPILE);
+		super.Destroy();
+		renderer.Destroy();
 	}
 }

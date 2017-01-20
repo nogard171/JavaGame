@@ -9,7 +9,7 @@ public class RawQuad
 			new Vector2f(0,1)//3
 	};
 	byte[] indices = {
-			0,3,2,
+			0,2,3,
 			0,1,2
 	};
 	Vector2f[] textureVectors = {

@@ -60,12 +60,13 @@ public class Window
 			this.CheckResize();
 			fpsCounter.updateFPS();
 			this.Update();
+			GL11.glLoadIdentity();
 			this.Render();
 
 			Display.update();
 			Display.sync(this.FPS);
 		}
-		this.Destroy();
+		//this.Destroy();
 	}
 
 	private void CheckResize()
