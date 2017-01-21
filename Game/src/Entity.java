@@ -1,14 +1,25 @@
+import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 public class Entity
 {
 	private String name = "";
 	private String quadName = "GRASS";
-
 	private Vector2f position = new Vector2f(100, 100);
 	private Vector2f origin = new Vector2f(0, 0);
-	float rotation = 0;
-	Vector2f scale = new Vector2f(1, 1);
+	private float rotation = 0;
+	private Vector2f scale = new Vector2f(1, 1);
+	private Color color = new Color(1,1,1);
+
+	public Color getColor()
+	{
+		return color;
+	}
+
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
 
 	public String getQuadName()
 	{

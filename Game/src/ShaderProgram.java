@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.Color;
 
 public class ShaderProgram
 {
@@ -60,6 +61,14 @@ public class ShaderProgram
 	    //GL20.glUniform1i(loc, 0); //Texture Unit 0 for sampler1.
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+    }
+    
+    public void send4f(String uniformName,float i, float j, float k, float l)
+    {
+    	int loc3 = GL20.glGetUniformLocation(programID, uniformName);
+        //You cannot set the value of a structure in one go. You have to assign each variable one by one (Just like in c)
+        GL20.glUniform4f(loc3, i,j,k,l);
+        
     }
     public void Start()
     {

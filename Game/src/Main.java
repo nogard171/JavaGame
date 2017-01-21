@@ -2,6 +2,7 @@ import org.lwjgl.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
@@ -91,6 +92,23 @@ public class Main extends Window
 			ySpeed = speed;
 		}
 		view.moveView(new Vector2f(xSpeed,ySpeed));
+		
+		for (Entity newEntity : renderer.getEntitiesToDisplay())
+		{
+			newEntity.setColor(new Color(1, 1, 1));
+		}
+		
+		Entity entity = renderer.getHoveredEntity();
+		if(entity!=null)
+		{
+			entity.setColor(new Color(1,0,0));
+			Display.setTitle("Type:"+entity.getQuadName());
+		}
+		else
+		{
+			Display.setTitle("Type:NULL");
+		}
+		
 	}
 
 	Renderer renderer = new Renderer();
@@ -100,7 +118,7 @@ public class Main extends Window
 	{
 		super.Render();
 		renderer.Render(view);
-		Display.setTitle("FPS:"+super.fpsCounter.getFPS());
+		//Display.setTitle("FPS:"+super.fpsCounter.getFPS());
 	}
 
 	@Override
