@@ -9,7 +9,19 @@ public class Entity
 	private Vector2f origin = new Vector2f(0, 0);
 	private float rotation = 0;
 	private Vector2f scale = new Vector2f(1, 1);
-	private Color color = new Color(1,1,1);
+	private Color color = new Color(255,255,255);
+	
+	private boolean isSolid = false;
+
+	public boolean isSolid()
+	{
+		return isSolid;
+	}
+
+	public void setSolid(boolean isSolid)
+	{
+		this.isSolid = isSolid;
+	}
 
 	public Color getColor()
 	{
@@ -23,12 +35,12 @@ public class Entity
 
 	public String getQuadName()
 	{
-		return quadName;
+		return quadName.toUpperCase();
 	}
 
 	public void setQuadName(String quadName)
 	{
-		this.quadName = quadName;
+		this.quadName = quadName.toUpperCase();
 	}
 
 	public Vector2f getScale()
@@ -58,12 +70,12 @@ public class Entity
 
 	public String getName()
 	{
-		return name;
+		return name.toUpperCase();
 	}
 
 	public void setName(String name)
 	{
-		this.name = name;
+		this.name = name.toUpperCase();
 	}
 
 	public float getRotation()

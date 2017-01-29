@@ -15,7 +15,7 @@ public class Renderer
 
 	ShaderProgram shader = new ShaderProgram();
 	private HashMap<String, Quad> quads = new HashMap<String, Quad>();
-	// private ArrayList<Entity> entities = new ArrayList<Entity>();
+	 private ArrayList<Entity> entities = new ArrayList<Entity>();
 	private ArrayList<Entity> entitiesToDisplay = new ArrayList<Entity>();
 
 	public ArrayList<Entity> getEntitiesToDisplay()
@@ -23,7 +23,7 @@ public class Renderer
 		return entitiesToDisplay;
 	}
 
-	private HashMap<String, Entity> entities = new HashMap<String, Entity>();
+	//private HashMap<String, Entity> entities = new HashMap<String, Entity>();
 
 	int renderWidth = 0;
 	int renderHeight = 0;
@@ -42,6 +42,7 @@ public class Renderer
 		new Loader();
 		quads.put("GRASS", Loader.GenerateQuadWithTexture("grass.png"));
 		quads.put("DIRT", Loader.GenerateQuadWithTexture("dirt.png"));
+		quads.put("SAND", Loader.GenerateQuadWithTexture("sand.png"));
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 
@@ -79,8 +80,8 @@ public class Renderer
 			// GL11.glColor3f(entity.getColor().getRed(),
 			// entity.getColor().getGreen(), entity.getColor().getBlue());
 
-			shader.send4f("entityColor", entity.getColor().getRed(), entity.getColor().getGreen(),
-					entity.getColor().getBlue(), entity.getColor().getAlpha());
+			shader.send4f("entityColor", entity.getColor().getRed()/ 255f, entity.getColor().getGreen()/ 255f,
+					entity.getColor().getBlue()/ 255f, entity.getColor().getAlpha()/ 255f);
 
 			GL11.glBegin(quad.getRenderType());
 			glCallList(quad.getDisplayID());
@@ -94,7 +95,19 @@ public class Renderer
 	{
 
 	}
-
+	public Entity getEntity(String name)
+	{
+		Entity entity = null;
+		for (Entity newEntity : entitiesToDisplay)
+		{
+			if (newEntity.getName().toUpperCase().equals(name.toUpperCase()))
+			{
+				entity = newEntity;
+				break;
+			}
+		}
+		return entity;
+	}
 	public Entity getHoveredEntity()
 	{
 		Entity entity = null;
@@ -114,7 +127,7 @@ public class Renderer
 
 	public void AssessEntities()
 	{
-		entitiesToDisplay.clear();
+		/*entitiesToDisplay.clear();
 		int viewX = (int) Math.floor(-view.getPosition().getX() / 32);
 		int viewY = (int) Math.floor(-view.getPosition().getY() / 32);
 		int viewWidth = (int) Math.ceil(-view.getPosition().getX() / 32) + view.getViewWidth();
@@ -132,13 +145,24 @@ public class Renderer
 					count++;
 				}
 			}
+		}*/
+		this.entitiesToDisplay.clear();
+		Rectangle viewBound = new Rectangle((int)-view.getPosition().x,(int)-view.getPosition().y,(int)view.getViewWidth()*32,(int)view.getViewHeight()*32);
+		for (Entity newEntity : this.entities)
+		{
+			if(viewBound.contains(new Rectangle((int)newEntity.getPosition().getX(),(int)newEntity.getPosition().getY(),32,32)))
+			{
+				this.entitiesToDisplay.add(newEntity);
+			}
 		}
-		System.out.println("Count:" + count);
+		
+		//System.out.println("Count:" + count);
 	}
 	public void addEntity(Entity entity)
 	{
 		String key = (int) (entity.getPosition().getX() / 32) + "," + (int) (entity.getPosition().getY() / 32);
-		entities.put(key, entity);
+		//entities.put(key, entity);
+		entities.add(entity);
 	}
 
 	public void Destroy()

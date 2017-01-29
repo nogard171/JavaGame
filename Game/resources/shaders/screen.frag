@@ -7,5 +7,5 @@ out vec4 color;
 
 void main()
 {
-    color = texture(myTexture, gl_TexCoord[0].st)*entityColor;
+    color = texture(myTexture, gl_TexCoord[0].xy)*entityColor;
 }

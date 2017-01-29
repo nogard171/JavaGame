@@ -22,6 +22,11 @@ public class Window
 	public void Init()
 	{
 		fpsCounter = new FPSCounter();
+		
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		// Enable alpha transparency
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	public void Update()
