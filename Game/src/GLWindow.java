@@ -28,7 +28,7 @@ public class GLWindow
 {
 	// width and height of the display
 	static int WIDTH = 800;
-	static int HEIGHT = 600;
+	static int HEIGHT = 480;
 	int MAXFPS = 120;
 	// the farest rendering distance
 	int FARVIEW = 50;
@@ -39,7 +39,7 @@ public class GLWindow
 
 	float MOUSESENSITIVITY = .5f;
 	float MOVEMENTSPEED = 10.0f;
-	Camera camera = new Camera(5, -2, 5);
+	Camera camera = new Camera(0,0,0);
 	boolean MOUSEFOCUS = true;
 	int MOUSEDX = 0;
 	int MOUSEDY = 0;
@@ -87,9 +87,6 @@ public class GLWindow
 
 	private void SetupOpenGL()
 	{
-		// networkClient = new Client();
-
-		// networkClient.start();
 		Mouse.setGrabbed(true);
 		// TODO Auto-generated method stub
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -99,14 +96,16 @@ public class GLWindow
 		GL11.glLoadIdentity();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 
-		glEnable(GL_COLOR_MATERIAL);
-		glEnable(GL_BLEND);
-		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glEnable(GL_COLOR_MATERIAL);
+		//glEnable(GL_BLEND);
+		 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 		glEnable(GL_CULL_FACE);
+		
+		
 
+		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
 	public void Update(double delta)
@@ -124,7 +123,7 @@ public class GLWindow
 			// controll camera pitch from y movement fromt the mouse
 			camera.setPitch(this.MOUSEDY * this.MOUSESENSITIVITY);
 
-			float speed = (float) (delta / 100);
+			float speed = (float) (delta / 200);
 
 			// System.out.println("Angle:" + (angle));
 			float x_Speed = 0f;
@@ -177,33 +176,6 @@ public class GLWindow
 		keyboard.end();
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-	}
-
-	protected static void make2D()
-	{
-		// Remove the Z axis
-		// GL11.glDisable(GL11.GL_LIGHTING);
-		glDisable(GL_CULL_FACE);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
-		// GL11.glOrtho(0, width, 0, height, -1, 1);
-		GLU.gluOrtho2D(0, WIDTH, HEIGHT, 0);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
-	}
-
-	protected static void make3D()
-	{
-		// Restore the Z axis
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPopMatrix();
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		// GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	private void createGLWindow()

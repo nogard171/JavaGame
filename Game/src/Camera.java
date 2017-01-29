@@ -163,7 +163,7 @@ public class Camera implements Serializable
 		double d = Math.sqrt((dx*2)+(dz*2));
 		
 		double rotAng = Math.toDegrees(Math.asin(dx/d));
-		System.out.println(dz+"/"+dx + "/" + rotAng);
+		//System.out.println(dz+"/"+dx + "/" + rotAng);
 		// roatate the pitch around the Y axis
 		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
 		// roatate the yaw around the X axis
