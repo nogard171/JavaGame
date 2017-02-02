@@ -28,11 +28,11 @@ public class GLWindow
 {
 	// width and height of the display
 	static int WIDTH = 800;
-	static int HEIGHT = 480;
+	static int HEIGHT = 600;
 	int MAXFPS = 120;
 	// the farest rendering distance
 	int FARVIEW = 50;
-	int FOV = 60;
+	int FOV = 45;
 
 	private static long lastFrame;
 	private long lastFPS;
@@ -91,15 +91,17 @@ public class GLWindow
 		// TODO Auto-generated method stub
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GLU.gluPerspective(FOV, (WIDTH / HEIGHT), 0.1f, FARVIEW);
+		GLU.gluPerspective((float)FOV, ((float)WIDTH / (float)HEIGHT), 0.1f, FARVIEW);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
+		
+		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		//glEnable(GL_COLOR_MATERIAL);
 		//glEnable(GL_BLEND);
-		 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		 //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 		glEnable(GL_CULL_FACE);
 		

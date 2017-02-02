@@ -24,14 +24,6 @@ public class Loader
 		GL11.glEndList();
 
 		cube.setDlID(dlID);
-		/*try {
-			Texture texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/textures/grass.png"));
-			// load texture from PNG file
-			//cube.setTextureID(texture.getTextureID());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
-		
 
 		return cube;
 	}
@@ -44,11 +36,11 @@ public class Loader
 			int indice = raw.getIndices()[i];
 			int colorIndice = raw.getColorIndices()[i];
 			int textureIndice = raw.getTextureIndices()[i];
-			//Vector2f textureCoord = raw.getTextureVectorsByIndice(textureIndice);
+			Vector2f textureCoord = raw.getTextureVectorsByIndice(textureIndice);
 			Vector3f vec = raw.getVectorsByIndice(indice);
 			Color color = raw.getColorByIndice(colorIndice);
-			GL11.glColor3f(color.getRed(), color.getGreen(), color.getBlue());
-			//GL11.glTexCoord2f(textureCoord.getX(),textureCoord.getY());
+			//GL11.glColor3f(color.getRed(), color.getGreen(), color.getBlue());
+			GL11.glTexCoord2f(textureCoord.getX(),textureCoord.getY());
 			GL11.glVertex3f(vec.getX(), vec.getY(), vec.getZ());
 		}
 	}

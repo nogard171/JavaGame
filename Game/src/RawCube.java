@@ -65,11 +65,11 @@ public class RawCube
 			1,3,2,
 			1,2,0,
 			
-			0,0,0,
-			0,0,0,
+			2,1,3,
+			2,0,1,
 			
-			0,0,0,
-			0,0,0,
+			1,3,2,
+			1,2,3,
 			
 			0,0,0,
 			0,0,0,
@@ -84,9 +84,9 @@ public class RawCube
 	Vector2f[] textureVectors =
 		{ 
 				new Vector2f(0, 0),//0
-				new Vector2f(1, 0),//1
+				new Vector2f(0.5f, 0),//1
 				new Vector2f(0, 1),//2
-				new Vector2f(1, 1)//3
+				new Vector2f(0.5f, 1)//3
 		};
 	
 	public Color[] getColors()
