@@ -38,7 +38,7 @@ public class Loader
 			Vector2f textureCoord = raw.getTextureVectorsByIndice(textureIndice);
 			Vector3f vec = raw.getVectorsByIndice(indice);
 			Color color = raw.getColorByIndice(colorIndice);
-			//GL11.glColor3f(color.getRed(), color.getGreen(), color.getBlue());
+			GL11.glColor3f(color.getRed(), color.getGreen(), color.getBlue());
 			GL11.glTexCoord2f(textureCoord.getX(),textureCoord.getY());
 			GL11.glVertex3f(vec.getX(), vec.getY(), vec.getZ());
 		}

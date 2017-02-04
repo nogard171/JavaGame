@@ -22,67 +22,83 @@ public class RawCube
 	 */
 	
 	Color[] colors = {
-			new Color(255,0,0),//0
-			new Color(0.3f,0.2f,0),//1
-			new Color(0,0.3f,0),//2
-			new Color(0.4f,0.3f,0.1f),//3
-			new Color(0.2f,0.1f,0),//4
+			new Color(1,1,1),//0
+			new Color(0.75f,0.75f,0.75f),//1
+			new Color(0.5f,0.5f,0.5f),//2
 	};
 	int[] indices = {
+			//west
 			1,0,2,
 			2,4,1,
 			
+			//top
 			2,7,4,
 			2,6,7,
-			
+
+			//south
 			0,3,6,
 			6,2,0,
-			
+
+			//east
 			3,5,7,
 			7,6,3,
-			
+
+			//bottom
 			0,1,5,
 			5,3,0,
-			
+
+			//north
 			5,1,4,
 			4,7,5
 			
 	};int[] colorIndices = {
-			1,1,1,
-			1,1,1,
+			//west
+			0,0,0,
+			0,0,0,
 			
+			//top
+			0,0,0,
+			0,0,0,
+
+			//south
+			1,1,1,
+			1,1,1,
+
+			//east
 			2,2,2,
 			2,2,2,
-			
-			3,3,3,
-			3,3,3,
-			
+
+			//bottom
+			2,2,2,
+			2,2,2,
+
+			//north
 			1,1,1,
 			1,1,1,
-			
-			4,4,4,
-			4,4,4,
-			
-			4,4,4,
-			4,4,4,
 			
 	};
 	int[] textureIndices = {
+			//west
 			7,8,4,
 			4,3,7,
 			
+			//top
 			2,1,3,
 			2,0,1,
 			
+			//south
 			7,8,4,
 			4,3,7,
 			
+			//east
 			7,8,4,
 			4,3,7,
 			
+			//bottom
 			3,4,5,
 			5,1,3,
 			
+			//north
 			7,8,4,
 			4,3,7,
 			
