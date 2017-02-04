@@ -36,22 +36,26 @@ public class Application extends GLWindow
 		});
 
 	}
+
 	protected int textureID = -1;
+
 	@Override
 	public void Setup()
 	{
-		try {
-			Texture texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/textures/tileset.PNG"));
+		try
+		{
+			Texture texture = TextureLoader.getTexture("PNG",
+					ResourceLoader.getResourceAsStream("resources/textures/tileset.PNG"));
 			// load texture from PNG file
 			textureID = texture.getTextureID();
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			e.printStackTrace();
 		}
-		
+
 		cube = new Loader().generateCube("test");
 	}
 
-	
 	Cube cube = null;
 
 	@Override
@@ -60,12 +64,21 @@ public class Application extends GLWindow
 		super.Render();
 		if (cube!=null)
 		{
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			GL11.glCallList(cube.getDlID());
-			GL11.glEnd();
+			for(int x=0;x<20;x++)
+			{
+				for(int z=0;z<20;z++)
+				{
+					GL11.glPushMatrix();
+					GL11.glTranslatef(x, 0, z);
+					GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+					GL11.glBegin(GL11.GL_TRIANGLES);
+					GL11.glCallList(cube.getDlID());
+					GL11.glEnd();
+					GL11.glPopMatrix();
+				}
+			}
 		}
 	}
 

@@ -29,8 +29,7 @@ public class Loader
 	}
 
 	public void Render(RawCube raw)
-	{
-		
+	{		
 		for (int i = 0;i<raw.getIndices().length;i++)
 		{
 			int indice = raw.getIndices()[i];

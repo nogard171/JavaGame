@@ -15,6 +15,12 @@ public class RawCube
 			new Vector3f(0, 1, 1),//6
 			new Vector3f(1, 1, 1),//7
 	};
+	
+	/*
+	  	0,1,5,
+		5,3,0,
+	 */
+	
 	Color[] colors = {
 			new Color(255,0,0),//0
 			new Color(0.3f,0.2f,0),//1
@@ -24,22 +30,22 @@ public class RawCube
 	};
 	int[] indices = {
 			1,0,2,
-			1,2,4,
+			2,4,1,
 			
 			2,7,4,
 			2,6,7,
 			
 			0,3,6,
-			0,6,2,
+			6,2,0,
 			
 			3,5,7,
-			3,7,6,
+			7,6,3,
 			
 			0,1,5,
-			0,5,3,
+			5,3,0,
 			
-			1,4,5,
-			5,4,7
+			5,1,4,
+			4,7,5
 			
 	};int[] colorIndices = {
 			1,1,1,
@@ -62,31 +68,36 @@ public class RawCube
 			
 	};
 	int[] textureIndices = {
-			1,3,2,
-			1,2,0,
+			7,8,4,
+			4,3,7,
 			
 			2,1,3,
 			2,0,1,
 			
-			1,3,2,
-			1,2,3,
+			7,8,4,
+			4,3,7,
 			
-			0,0,0,
-			0,0,0,
+			7,8,4,
+			4,3,7,
 			
-			0,0,0,
-			0,0,0,
+			3,4,5,
+			5,1,3,
 			
-			0,0,0,
-			0,0,0,
+			7,8,4,
+			4,3,7,
 			
 	};
 	Vector2f[] textureVectors =
 		{ 
 				new Vector2f(0, 0),//0
 				new Vector2f(0.5f, 0),//1
-				new Vector2f(0, 1),//2
-				new Vector2f(0.5f, 1)//3
+				new Vector2f(0, 0.5f),//2
+				new Vector2f(0.5f, 0.5f),//3
+				new Vector2f(1, 0.5f),//4
+				new Vector2f(1, 0),//5
+				new Vector2f(0, 1),//6
+				new Vector2f(0.5f, 1),//7
+				new Vector2f(1, 1),//8
 		};
 	
 	public Color[] getColors()
