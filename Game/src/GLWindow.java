@@ -103,7 +103,7 @@ public class GLWindow
 		//glEnable(GL_BLEND);
 		 //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_CULL_FACE);
 		
 		
 
@@ -125,7 +125,7 @@ public class GLWindow
 			// controll camera pitch from y movement fromt the mouse
 			camera.setPitch(this.MOUSEDY * this.MOUSESENSITIVITY);
 
-			float speed = (float) (delta / 200);
+			float speed = (float) (delta / 100);
 
 			// System.out.println("Angle:" + (angle));
 			float x_Speed = 0f;

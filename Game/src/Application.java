@@ -34,7 +34,6 @@ public class Application extends GLWindow
 				app.CreateWindow();
 			}
 		});
-
 	}
 
 	protected int textureID = -1;
@@ -42,7 +41,7 @@ public class Application extends GLWindow
 	@Override
 	public void Setup()
 	{
-		try
+	/*	try
 		{
 			Texture texture = TextureLoader.getTexture("PNG",
 					ResourceLoader.getResourceAsStream("resources/textures/tileset.PNG"));
@@ -52,8 +51,11 @@ public class Application extends GLWindow
 		{
 			e.printStackTrace();
 		}
-
+*/
 		cube = new Loader().generateCube("test");
+		
+		terrain = new Loader().generateTerrain();
+		
 	}
 
 	Cube cube = null;
@@ -62,7 +64,7 @@ public class Application extends GLWindow
 	public void Render()
 	{
 		super.Render();
-		if (cube!=null)
+		/*if (cube!=null)
 		{
 			for(int x=0;x<20;x++)
 			{
@@ -79,8 +81,16 @@ public class Application extends GLWindow
 					GL11.glPopMatrix();
 				}
 			}
-		}
+		}*/
+		GL11.glPushMatrix();
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		GL11.glCallList(terrain.getDlID());
+		GL11.glEnd();
+		GL11.glPopMatrix();
+		
 	}
+	
+	Terrain terrain = null;
 
 	@Override
 	public void Update(double delta)
