@@ -8,21 +8,20 @@ public class Entity
 	private float rotationX = 0;
 	private float scaleX = 1;
 	private float scaleY = 1;
-	private Dimension size = new Dimension(32, 32);
-
-	public Dimension getSize()
-	{
-		return size;
-	}
-
-	public void setSize(Dimension size)
-	{
-		this.size = size;
-	}
-
+	private Type type = Type.BLANK;
 	private String name = "";
-
 	public Color color = new Color(1, 0, 0);
+
+	public Type getType()
+	{
+		return type;
+	}
+
+	public void setType(Type type)
+	{
+		this.type = type;
+	}
+
 
 	public String getName()
 	{
@@ -67,8 +66,4 @@ public class Entity
 		this.scaleY = f;
 	}
 
-	public void setSize(int i, int j)
-	{
-		this.size = new Dimension(i, j);
-	}
 }

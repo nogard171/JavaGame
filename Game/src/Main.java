@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Main extends GLWindow
@@ -36,58 +37,33 @@ public class Main extends GLWindow
 		game.ShowDisplay();
 	}
 
-	Person person = new Person();
-
 	@Override
 	public void Init()
 	{
 		super.Init();
-
-		quad = new Loader().loadQuad();
-
-
-		Entity head = new Entity();
-		head.setPosition(0, 120);
-		head.setScale(0.75f, 1);
-		head.setName("head");
-		person.body.add(head);
-
-		Entity chest = new Entity();
-		chest.setPosition(0, 72);
-		chest.setName("chest");
-		chest.setScale(0.75f, 1.5f);
-		chest.color = new Color(0, 1, 0);
-		person.body.add( chest);
-
-		Entity frontLeg = new Entity();
-		frontLeg.setPosition(8, 24);
-		frontLeg.setName("frontLeg");
-		frontLeg.setScale(0.25f, 0.75f);
-		frontLeg.color = new Color(0, 1, 1);
-		person.body.add(frontLeg);
-
-		Entity frontLeg2 = new Entity();
-		frontLeg2.setPosition(8, 48);
-		frontLeg2.setName("frontLeg");
-		frontLeg2.setScale(0.25f, 0.75f);
-		frontLeg2.color = new Color(1, 1, 1);
-		person.body.add(frontLeg2);
 		
-		Entity backLeg = new Entity();
-		backLeg.setPosition(8, 24);
-		backLeg.setName("backLeg");
-		backLeg.setScale(0.25f, 0.75f);
-		backLeg.color = new Color(1, 0, 1);
-		person.body.add(backLeg);
+		shader.loadFragmentShader("screen");
+    	shader.loadVertexShader("screen");
+    	shader.createProgram();
+    	
+		try
+		{
+			texture = TextureLoader.getTexture("PNG",
+					ResourceLoader.getResourceAsStream("resources/tileset.png"));
+			// load texture from PNG file
+			
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
-		Entity backLeg2 = new Entity();
-		backLeg2.setPosition(8, 48);
-		backLeg2.setName("backLeg");
-		backLeg2.setScale(0.25f, 0.75f);
-		backLeg2.color = new Color(1, 1, 0);
-		person.body.add(backLeg2);
+		
+		tiles.put(Type.GRASS, new Loader().loadQuadByType(Type.GRASS));
+		tiles.put(Type.DIRT, new Loader().loadQuadByType(Type.DIRT));
+		tiles.put(Type.SAND, new Loader().loadQuadByType(Type.SAND));
+		
 	}
-
+	Texture texture = null;
 	@Override
 	public void Resize()
 	{
@@ -100,44 +76,24 @@ public class Main extends GLWindow
 		super.Update();
 		int x = Mouse.getX(); // will return the X coordinate on the Display.
 		int y = Mouse.getY(); // will return the Y coordinate on the Display.
-		
-		
-		person.Walk();
+
 	}
-
-	Quad quad = null;
+	ShaderProgram shader = new ShaderProgram();
 	Viewport view = new Viewport();
-
+	HashMap<Type,Quad> tiles = new HashMap<Type, Quad>();
 	@Override
 	public void Render()
 	{
 		super.Render();
+		shader.Start();
 		Display.setTitle("FPS:" + super.fpsCounter.getFPS());
 
-		/*
-		 * GL11.glColor3f(1, 0, 0); GL11.glBegin(view.getMode());
-		 * glCallList(quad.getDisplayList()); GL11.glEnd();
-		 */
+		shader.sendTexture("myTexture", texture.getTextureID());
+		
+		GL11.glBegin(view.getMode());
+		glCallList(tiles.get(Type.GRASS).getDisplayList());
+		GL11.glEnd();
 
-		for (int i = 0; i < person.body.size(); i++)
-		{
-			Entity limb = person.body.get(i);
-			if (limb != null)
-			{
-				GL11.glPushMatrix();
-				Vector2f vec = limb.getPosition();
-				GL11.glTranslatef(vec.getX(), vec.getY(), 0);
-				GL11.glColor3f(limb.color.getRed(), limb.color.getGreen(), limb.color.getBlue());
-				GL11.glScalef(limb.getScale()[0], limb.getScale()[1], 0);
-				GL11.glRotatef(limb.getRotation(), 0, 0,1);
-				// GL11.glColor3f(1, 0, 0);
-				GL11.glBegin(view.getMode());
-				glCallList(quad.getDisplayList());
-				GL11.glEnd();
-
-				GL11.glPopMatrix();
-			}
-		}
 	}
 
 	@Override
