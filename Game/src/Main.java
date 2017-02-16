@@ -27,7 +27,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Main extends Window
+public class Main extends GLWindow
 {
 
 	public static void main(String args[])
@@ -36,45 +36,62 @@ public class Main extends Window
 		game.ShowDisplay();
 	}
 
-	Random ran = new Random();
+	Person person = new Person();
 
 	@Override
 	public void Init()
 	{
 		super.Init();
-		view = new View();
-		renderer.Init();
-		int size = 10;
-		for (int x = 0; x < size; x++)
-		{
-			for (int y = 0; y < size; y++)
-			{
-				Entity entity = new Entity();
-				entity.setName("TILE");
-				entity.setPosition(new Vector2f(x * 32, y * 32));
-				if ((ran.nextInt(100) + 1) % 5 == 0)
-				{
-					entity.setQuadName("DIRT");
-					entity.setSolid(true);
-				}
-				renderer.addEntity(entity);
-			}
-		}
-		Entity entity = new Entity();
-		entity.setName("PLAYER");
-		entity.setQuadName("SAND");
-		entity.setPosition(new Vector2f(-32, -32));
-		entity.setColor(new Color(255,255,255));
-		renderer.addEntity(entity);
-	}
 
-	View view;
+		quad = new Loader().loadQuad();
+
+
+		Entity head = new Entity();
+		head.setPosition(0, 120);
+		head.setScale(0.75f, 1);
+		head.setName("head");
+		person.body.add(head);
+
+		Entity chest = new Entity();
+		chest.setPosition(0, 72);
+		chest.setName("chest");
+		chest.setScale(0.75f, 1.5f);
+		chest.color = new Color(0, 1, 0);
+		person.body.add( chest);
+
+		Entity frontLeg = new Entity();
+		frontLeg.setPosition(8, 24);
+		frontLeg.setName("frontLeg");
+		frontLeg.setScale(0.25f, 0.75f);
+		frontLeg.color = new Color(0, 1, 1);
+		person.body.add(frontLeg);
+
+		Entity frontLeg2 = new Entity();
+		frontLeg2.setPosition(8, 48);
+		frontLeg2.setName("frontLeg");
+		frontLeg2.setScale(0.25f, 0.75f);
+		frontLeg2.color = new Color(1, 1, 1);
+		person.body.add(frontLeg2);
+		
+		Entity backLeg = new Entity();
+		backLeg.setPosition(8, 24);
+		backLeg.setName("backLeg");
+		backLeg.setScale(0.25f, 0.75f);
+		backLeg.color = new Color(1, 0, 1);
+		person.body.add(backLeg);
+
+		Entity backLeg2 = new Entity();
+		backLeg2.setPosition(8, 48);
+		backLeg2.setName("backLeg");
+		backLeg2.setScale(0.25f, 0.75f);
+		backLeg2.color = new Color(1, 1, 0);
+		person.body.add(backLeg2);
+	}
 
 	@Override
 	public void Resize()
 	{
-		view.setViewWidth((int) Math.ceil(super.getWidth() / 32));
-		view.setViewHeight((int) Math.ceil(super.getHeight() / 32));
+
 	}
 
 	@Override
@@ -83,89 +100,49 @@ public class Main extends Window
 		super.Update();
 		int x = Mouse.getX(); // will return the X coordinate on the Display.
 		int y = Mouse.getY(); // will return the Y coordinate on the Display.
-		float xSpeed = 0;
-		float ySpeed = 0;
-		float speed = 5;
-		if (Keyboard.isKeyDown(Keyboard.KEY_A))
-		{
-			xSpeed = speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D))
-		{
-			xSpeed = -speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_W))
-		{
-			ySpeed = -speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S))
-		{
-			ySpeed = speed;
-		}
-		view.moveView(new Vector2f(xSpeed, ySpeed));
-		xSpeed = 0;
-		ySpeed = 0;
-		speed = 2.5f;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-		{
-			xSpeed = -speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-		{
-			xSpeed = speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_UP))
-		{
-			ySpeed = speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-		{
-			ySpeed = -speed;
-		}
-		Entity player = renderer.getEntity("player");
-		new EntityController();
-		if (player != null)
-		{
-			Rectangle playerBounds = new Rectangle((int) player.getPosition().getX(), (int) player.getPosition().getY(),
-					32, 32);
-			for (Entity newEntity : renderer.getEntitiesToDisplay())
-			{
-				newEntity.setColor(new Color(255, 255, 255));
-					if (playerBounds.intersects(new Rectangle((int) newEntity.getPosition().getX(),
-							(int) newEntity.getPosition().getY(), 32, 32))&&newEntity.isSolid())
-					{
-						newEntity.setColor(new Color(255, 0, 0));
-						//break;
-					}
-			}
-		}
-		EntityController.moveEntity(player, new Vector2f(xSpeed, ySpeed));
-
-		Entity entity = renderer.getHoveredEntity();
-		if (entity != null)
-		{
-			// entity.setColor(new Color(128, 128, 128, 128));
-			// Display.setTitle("Type:" + entity.getQuadName());
-		} else
-		{
-			// Display.setTitle("Type:NULL");
-		}
+		
+		
+		person.Walk();
 	}
 
-	Renderer renderer = new Renderer();
+	Quad quad = null;
+	Viewport view = new Viewport();
 
 	@Override
 	public void Render()
 	{
 		super.Render();
-		renderer.Render(view);
 		Display.setTitle("FPS:" + super.fpsCounter.getFPS());
+
+		/*
+		 * GL11.glColor3f(1, 0, 0); GL11.glBegin(view.getMode());
+		 * glCallList(quad.getDisplayList()); GL11.glEnd();
+		 */
+
+		for (int i = 0; i < person.body.size(); i++)
+		{
+			Entity limb = person.body.get(i);
+			if (limb != null)
+			{
+				GL11.glPushMatrix();
+				Vector2f vec = limb.getPosition();
+				GL11.glTranslatef(vec.getX(), vec.getY(), 0);
+				GL11.glColor3f(limb.color.getRed(), limb.color.getGreen(), limb.color.getBlue());
+				GL11.glScalef(limb.getScale()[0], limb.getScale()[1], 0);
+				GL11.glRotatef(limb.getRotation(), 0, 0,1);
+				// GL11.glColor3f(1, 0, 0);
+				GL11.glBegin(view.getMode());
+				glCallList(quad.getDisplayList());
+				GL11.glEnd();
+
+				GL11.glPopMatrix();
+			}
+		}
 	}
 
 	@Override
 	public void Destroy()
 	{
 		super.Destroy();
-		renderer.Destroy();
 	}
 }

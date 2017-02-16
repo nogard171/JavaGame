@@ -1,100 +1,74 @@
 import org.lwjgl.util.Color;
+import org.lwjgl.util.Dimension;
 import org.lwjgl.util.vector.Vector2f;
 
 public class Entity
 {
+	private Vector2f position = new Vector2f();
+	private float rotationX = 0;
+	private float scaleX = 1;
+	private float scaleY = 1;
+	private Dimension size = new Dimension(32, 32);
+
+	public Dimension getSize()
+	{
+		return size;
+	}
+
+	public void setSize(Dimension size)
+	{
+		this.size = size;
+	}
+
 	private String name = "";
-	private String quadName = "GRASS";
-	private Vector2f position = new Vector2f(100, 100);
-	private Vector2f origin = new Vector2f(0, 0);
-	private float rotation = 0;
-	private Vector2f scale = new Vector2f(1, 1);
-	private Color color = new Color(255,255,255);
-	
-	private boolean isSolid = false;
 
-	public boolean isSolid()
-	{
-		return isSolid;
-	}
-
-	public void setSolid(boolean isSolid)
-	{
-		this.isSolid = isSolid;
-	}
-
-	public Color getColor()
-	{
-		return color;
-	}
-
-	public void setColor(Color color)
-	{
-		this.color = color;
-	}
-
-	public String getQuadName()
-	{
-		return quadName.toUpperCase();
-	}
-
-	public void setQuadName(String quadName)
-	{
-		this.quadName = quadName.toUpperCase();
-	}
-
-	public Vector2f getScale()
-	{
-		return scale;
-	}
-
-	public void setScale(Vector2f scale)
-	{
-		this.scale = scale;
-	}
-
-	public Vector2f getPosition()
-	{
-		return position;
-	}
-
-	public Vector2f getOrigin()
-	{
-		return origin;
-	}
-
-	public void setPosition(Vector2f position)
-	{
-		this.position = position;
-	}
+	public Color color = new Color(1, 0, 0);
 
 	public String getName()
 	{
-		return name.toUpperCase();
+		return name;
 	}
 
 	public void setName(String name)
 	{
-		this.name = name.toUpperCase();
+		this.name = name;
+	}
+
+	public float[] getScale()
+	{
+		float[] floatArray =
+		{ scaleX, scaleY };
+		return floatArray;
 	}
 
 	public float getRotation()
 	{
-		return rotation;
+		return rotationX;
 	}
 
-	public void setRotation(float rotation)
+	public Vector2f getPosition()
 	{
-		this.rotation = rotation;
+		return this.position;
 	}
 
-	public void setOrigin(Vector2f origin)
+	public void setPosition(float x, float y)
 	{
-		this.origin = origin;
+		this.position = new Vector2f(x, y);
 	}
 
-	public void increaseRotation(float r)
+	public void setRotation(int x)
 	{
-		this.setRotation(this.getRotation() + r);
+		this.rotationX = x;
+	}
+
+	public void setScale(float x, float f)
+	{
+		this.scaleX = x;
+		this.scaleY = f;
+	}
+
+	public void setSize(int i, int j)
+	{
+		this.size = new Dimension(i, j);
 	}
 }

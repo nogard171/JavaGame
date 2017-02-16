@@ -2,61 +2,26 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class RawQuad
 {
-	Vector2f[] vectors = {
-			new Vector2f(0,0),//0
-			new Vector2f(1,0),//1
-			new Vector2f(1,1),//2
-			new Vector2f(0,1)//3
+	private Vector2f[] vertices = {
+			new Vector2f(0,0),
+			new Vector2f(0,32),
+			new Vector2f(32,0),
+			new Vector2f(32,32)
 	};
-	byte[] indices = {
-			0,2,3,
-			0,1,2
+	private byte[] indices = {
+			0,1,3,
+			0,2,3
 	};
-	Vector2f[] textureVectors = {
-			new Vector2f(0,0),//0
-			new Vector2f(1,0),//1
-			new Vector2f(1,1),//2
-			new Vector2f(0,1)//3
-	};
-	byte[] textureIndices = {
-			0,3,2,
-			0,1,2	
-	};
-	public Vector2f getVector(byte indice)
+	public Vector2f[] getVertices()
 	{
-		return vectors[indice];
+		return vertices;
 	}
-	public void setVectors(Vector2f[] vectors)
+	public Vector2f getVerticeFromIndice(byte indice)
 	{
-		this.vectors = vectors;
+		return vertices[indice];
 	}
 	public byte[] getIndices()
 	{
 		return indices;
-	}
-	public void setIndices(byte[] indices)
-	{
-		this.indices = indices;
-	}
-	public Vector2f getTextureVector(byte indice)
-	{
-		return textureVectors[indice];
-	}
-	public Vector2f[] getTextureVectors()
-	{
-		return textureVectors;
-	}
-	public void setTextureVectors(Vector2f[] textureVectors)
-	{
-		this.textureVectors = textureVectors;
-	}
-	
-	public byte[] getTextureIndices()
-	{
-		return textureIndices;
-	}
-	public void setTextureIndices(byte[] textureIndices)
-	{
-		this.textureIndices = textureIndices;
 	}
 }
