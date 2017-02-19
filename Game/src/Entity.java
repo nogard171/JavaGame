@@ -1,82 +1,69 @@
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Dimension;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 
 public class Entity
 {
+	private Vector2f position = new Vector2f();
+	private float rotationX = 0;
+	private float scaleX = 1;
+	private float scaleY = 1;
+	private Type type = Type.BLANK;
 	private String name = "";
-	private String quadName = "";
+	public Color color = new Color(1, 0, 0);
+
+	public Type getType()
+	{
+		return type;
+	}
+
+	public void setType(Type type)
+	{
+		this.type = type;
+	}
+
+
 	public String getName()
 	{
 		return name;
 	}
+
 	public void setName(String name)
 	{
 		this.name = name;
 	}
-	private Vector2f position;
-	private float rotX,rotY;
-	private Vector2f scale = new Vector2f(1,1);
-	private float originX,originY;
-	public float getOriginX()
+
+	public float[] getScale()
 	{
-		return originX;
+		float[] floatArray =
+		{ scaleX, scaleY };
+		return floatArray;
 	}
-	public float getOriginY()
+
+	public float getRotation()
 	{
-		return originY;
+		return rotationX;
 	}
-	public void setOrigin(float originX,float originY)
-	{
-		this.originX = originX;
-		this.originY = originY;
-	}
-	public Entity(String quadName)
-	{
-		this.quadName = quadName;
-		position = new Vector2f(0,0);
-	}
-	public String getQuadName()
-	{
-		return quadName;
-	}
-	public void setQuadName(String quadName)
-	{
-		this.quadName = quadName;
-	}
+
 	public Vector2f getPosition()
 	{
-		return position;
+		return this.position;
 	}
-	public void setPosition(Vector2f position)
-	{
-		this.position = position;
-	}
+
 	public void setPosition(float x, float y)
 	{
-		this.position = new Vector2f(x,y);
+		this.position = new Vector2f(x, y);
 	}
-	public float getRotX()
+
+	public void setRotation(int x)
 	{
-		return rotX;
+		this.rotationX = x;
 	}
-	public void setRotX(float rotX)
+
+	public void setScale(float x, float f)
 	{
-		this.rotX = rotX;
+		this.scaleX = x;
+		this.scaleY = f;
 	}
-	public float getRotY()
-	{
-		return rotY;
-	}
-	public void setRotY(float rotY)
-	{
-		this.rotY = rotY;
-	}
-	public Vector2f getScale()
-	{
-		return scale;
-	}
-	public void setScale(Vector2f scale)
-	{
-		this.scale = scale;
-	}
+
 }

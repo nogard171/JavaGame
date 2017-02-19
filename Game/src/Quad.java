@@ -1,39 +1,14 @@
-import org.lwjgl.util.Dimension;
-import org.newdawn.slick.opengl.Texture;
 
 public class Quad
 {
-	private int dlid = -1;
-	private int textureid;
-	private Dimension size = null;
-	
-	public Dimension getSize()
+	private int DisplayList = -1;
+	public int getDisplayList()
 	{
-		return size;
+		return DisplayList;
 	}
 
-	public void setSize(int width,int height)
+	public void setDisplayList(int dlid)
 	{
-		this.size = new Dimension(width,height);
-	}
-
-	public int getTextureID()
-	{
-		return textureid;
-	}
-
-	public void setTextureID(int textureid)
-	{
-		this.textureid = textureid;
-	}
-
-	public int getDlid()
-	{
-		return dlid;
-	}
-
-	public void setDlid(int dlid)
-	{
-		this.dlid = dlid;
+		this.DisplayList = dlid;
 	}
 }
