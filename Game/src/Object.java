@@ -1,154 +1,44 @@
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.util.ArrayList;
+import org.lwjgl.util.Dimension;
+import org.lwjgl.util.Rectangle;
+import org.lwjgl.util.vector.Vector2f;
 
-import org.lwjgl.util.Point;
-import org.newdawn.slick.Color;
-
-public class Object extends ObjectData
+public class Object
 {
-	public boolean collosion = false;
+	private Rectangle bounds = new Rectangle(0, 0, 32, 32);
+	private Type type = Type.GRASS;
 
-	public Point getPosition()
+	public Rectangle getBounds()
 	{
-		return new Point(this._bounds.x, this._bounds.y);
+		return bounds;
 	}
 
-	public void SetPosition(Point newPosition)
+	public Type getType()
 	{
-		this._bounds = new Rectangle(newPosition.getX(), newPosition.getY(), this._bounds.width, this._bounds.height);
+		return type;
 	}
 
-	public void SetPosition(int x, int y)
+	public void setType(Type type)
 	{
-		this._bounds = new Rectangle(x, y, this._bounds.width, this._bounds.height);
+		this.type = type;
 	}
 
-	Direction direction = Direction.NORTH;
-	Direction collisionDir = Direction.NONE;
-	public org.lwjgl.util.Point texture_Coords = new Point(0, 0);
-	float tex_X = 0;
-	public Color color = Color.white;
-
-	public void move(int x, int y)
+	public Vector2f getPosition()
 	{
-		int xSpeed = getPosition().getX();
-		int rSpeed = 0;
-		int lSpeed = 0;
-		int ySpeed = getPosition().getY();
-		int nSpeed = 0;
-		int sSpeed =0;
+		return new Vector2f(bounds.getX(), bounds.getY());
+	}
 
-		if (x < 0)
-		{
-			direction = Direction.WEST;
-			this.texture_Coords = new Point(0, 3);
-			lSpeed = x;
-		}
-		if (x > 0)
-		{
-			direction = Direction.EAST;
-			this.texture_Coords = new Point(0, 2);
-			rSpeed = x;
-		}
-		if (y < 0)
-		{
-			nSpeed = y;
-			direction = Direction.NORTH;
-			this.texture_Coords = new Point(0, 1);
-		}
-		if (y > 0)
-		{
-			sSpeed = y;
-			direction = Direction.SOUTH;
-			this.texture_Coords = new Point(0, 0);
-		}
-		
-		if(collisionDirection.contains(Direction.EAST))
-		{
-			rSpeed = 0;
-			//rSpeed=backStep;
-		}
-		if(collisionDirection.contains(Direction.WEST))
-		{
-			//xSpeed+=backStep;
-			lSpeed = 0;
-		}
-	
-		
-		if(collisionDirection.contains(Direction.NORTH))
-		{
-			nSpeed = 0;
-		}
-		if(collisionDirection.contains(Direction.SOUTH))
-		{
-			sSpeed = 0;
-		}
-		
-		xSpeed += rSpeed+lSpeed;
-		ySpeed += nSpeed+sSpeed;
-				
-		if (x != 0 || y != 0)
-		{
-			this.setTextureX(tex_X);
-			if (tex_X > 4)
-			{
-				tex_X = 0;
-			}
-			tex_X += 0.05;
-		}
-		else
-		{
-			this.setTextureX(0);
-		}
-		this.SetPosition(xSpeed, ySpeed);
-		if (collosion)
-		{
-			collisionDirection.add(direction);
-		} else if (!collosion)
-		{
-			collisionDirection.clear();
-		}
-
-	}
-	ArrayList<Direction> collisionDirection = new ArrayList<Direction>();
-	public void setTextureX(float value)
-	{
-		this.texture_Coords = new Point((int) value, this.texture_Coords.getY());
-	}
-	public void setTextureY(float value)
-	{
-		this.texture_Coords = new Point(this.texture_Coords.getX(),(int) value);
-	}
 	public Dimension getSize()
 	{
-		return new Dimension(this._bounds.width, this._bounds.height);
+		return new Dimension(bounds.getWidth(), bounds.getHeight());
 	}
 
-	public void setSize(Dimension size)
+	public void setPosition(int x, int y)
 	{
-		this._bounds = new Rectangle(this._bounds.x, this._bounds.y, size.width, size.height);
+		bounds = new Rectangle(x, y, bounds.getWidth(), bounds.getHeight());
 	}
 
-	public void setSize(int width, int height)
+	public void setSize(int w, int h)
 	{
-		this._bounds = new Rectangle(this._bounds.x, this._bounds.y, width, height);
+		bounds = new Rectangle(bounds.getX(), bounds.getY(), w, h);
 	}
-
-	public String getType()
-	{
-		return this._type;
-	}
-
-	public void setType(String newType)
-	{
-		this._type = newType;
-	}
-
-	public String getName()
-	{
-		// TODO Auto-generated method stub
-		return this._name;
-	}
-
 }
