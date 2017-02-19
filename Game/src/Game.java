@@ -35,8 +35,16 @@ public class Game extends GLWindow
 
 		Sprite sprite = new SpriteLoader().getSprite("res/img/grass.png");
 		sprites.put(Type.GRASS, sprite);
-		
-		objects.add(new Object());
+		for(int x=0;x<10;x++)
+		{
+			for(int y=0;y<10;y++)
+			{
+				Object obj = new Object();
+				obj.setPosition(x*32, y*32);
+				objects.add(obj);
+			}
+		}
+	
 	}
 
 	@Override
@@ -67,8 +75,18 @@ public class Game extends GLWindow
 		for (Object obj : objects)
 		{
 			Sprite sprite = this.sprites.get(obj.getType());
-
+			GL11.glPushMatrix();
+			GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(),0);
+			if(obj.getBounds().contains(super.mouse.getPosition()))
+			{
+				GL11.glColor3f(1, 0, 0);
+			}
+			else
+			{
+				GL11.glColor3f(1, 1,1);
+			}
 			glCallList(sprite.getDLID());
+			GL11.glPopMatrix();
 		}
 
 		GL11.glPopMatrix();

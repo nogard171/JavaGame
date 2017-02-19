@@ -13,12 +13,14 @@ public class SpriteLoader
 		
 		int dlid = GL11.glGenLists(1);		
 		GL11.glNewList(dlid, GL11.GL_COMPILE);
-		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_QUADS);
-		
+		GL11.glTexCoord2f(0, 0);
 		GL11.glVertex2i(0, 0);
+		GL11.glTexCoord2f(1, 0);
 		GL11.glVertex2i(32, 0);
+		GL11.glTexCoord2f(1,1);
 		GL11.glVertex2i(32, 32);
+		GL11.glTexCoord2f(0, 1);
 		GL11.glVertex2i(0, 32);
 		
 		GL11.glEnd();

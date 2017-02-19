@@ -77,7 +77,7 @@ public class GLWindow
 		GL11.glViewport(0, 0, this._width, this._height);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, this._width, this._height, 0, 1, -1);
+		GL11.glOrtho(0, this._width, 0,this._height, 1, -1);
 	}
 
 	public void setDisplayMode(int width, int height, boolean fullscreen)
@@ -184,6 +184,7 @@ public class GLWindow
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 	}
 
