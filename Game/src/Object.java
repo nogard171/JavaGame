@@ -1,3 +1,4 @@
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Dimension;
 import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
@@ -6,6 +7,12 @@ public class Object
 {
 	private Rectangle bounds = new Rectangle(0, 0, 32, 32);
 	private Type type = Type.GRASS;
+	private Color color = new Color(1, 1, 1);
+
+	public Color getColor()
+	{
+		return color;
+	}
 
 	public Rectangle getBounds()
 	{
@@ -40,5 +47,10 @@ public class Object
 	public void setSize(int w, int h)
 	{
 		bounds = new Rectangle(bounds.getX(), bounds.getY(), w, h);
+	}
+
+	public void setColor(int r, int g, int b)
+	{
+		this.color = new Color(r, g, b);
 	}
 }

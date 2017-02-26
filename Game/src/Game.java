@@ -2,6 +2,7 @@ import static org.lwjgl.opengl.GL11.glCallList;
 
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,9 +33,12 @@ public class Game extends GLWindow
 	public void Init()
 	{
 		super.Init();
-
+		
+		
 		Sprite sprite = new SpriteLoader().getSprite("res/img/grass.png");
+		
 		sprites.put(Type.GRASS, sprite);
+		
 		for(int x=0;x<10;x++)
 		{
 			for(int y=0;y<10;y++)
@@ -44,17 +48,67 @@ public class Game extends GLWindow
 				objects.add(obj);
 			}
 		}
+		
+		animatedSprite = new SpriteLoader().getAnimatedSprite("res/img/guy.png");
+		
 	
 	}
 
+	//HashMap<Type, Sprite> sprites = new HashMap<Type, Sprite>();
+	AnimatedSprite animatedSprite = null;
 	@Override
 	public void Update(int delta)
 	{
 		super.Update(delta);
 
+		/*this code will be for clickable objects.
+		 * 
+		 * for (Object obj : objects)
+		{
+			if(obj.getBounds().contains(super.mouse.getPosition())&&super.mouse.mouseButtons[0])
+			{
+				obj.setColor(0,0,1);
+			}
+			else if(obj.getBounds().contains(super.mouse.getPosition()))
+			{
+				obj.setColor(1,0,0);
+			}
+			else
+			{
+				obj.setColor(1,1,1);
+			}
+		}*/
+		
+		if(super.keyboard.keyPressed(Keyboard.KEY_D))
+		{
+			animatedSprite.animation.setY(2);
+		}
+		if(super.keyboard.keyPressed(Keyboard.KEY_W))
+		{
+			animatedSprite.animation.setY(1);
+		}
+		if(super.keyboard.keyPressed(Keyboard.KEY_S))
+		{
+			animatedSprite.animation.setY(0);
+		}
+		if(super.keyboard.keyPressed(Keyboard.KEY_A))
+		{
+			animatedSprite.animation.setY(3);
+		}
+		
+		if(super.keyboard.keyPressed(Keyboard.KEY_A)||super.keyboard.keyPressed(Keyboard.KEY_S)||super.keyboard.keyPressed(Keyboard.KEY_W)||super.keyboard.keyPressed(Keyboard.KEY_D))
+		{
+			step+=0.05f;
+		}
+		
+		if(step>=4)
+		{
+			step=0;
+		}
+		animatedSprite.animation.setX((int)step);
 		super.keyboard.endPoll();
 	}
-
+	float step = 0;
 	@Override
 	public void Resized()
 	{
@@ -75,19 +129,18 @@ public class Game extends GLWindow
 		for (Object obj : objects)
 		{
 			Sprite sprite = this.sprites.get(obj.getType());
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, sprite.getTID());
 			GL11.glPushMatrix();
 			GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(),0);
-			if(obj.getBounds().contains(super.mouse.getPosition()))
-			{
-				GL11.glColor3f(1, 0, 0);
-			}
-			else
-			{
-				GL11.glColor3f(1, 1,1);
-			}
+			GL11.glColor3f(obj.getColor().getRed(),obj.getColor().getGreen(),obj.getColor().getBlue());
 			glCallList(sprite.getDLID());
 			GL11.glPopMatrix();
 		}
+		
+		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, animatedSprite.getTID());
+		glCallList(animatedSprite.getDLID());
+		GL11.glPopMatrix();
 
 		GL11.glPopMatrix();
 	}
