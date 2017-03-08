@@ -34,28 +34,9 @@ public class Game extends GLWindow
 	{
 		super.Init();
 		
-		
-		Sprite sprite = new SpriteLoader().getSprite("res/img/grass.png");
-		
-		sprites.put(Type.GRASS, sprite);
-		
-		for(int x=0;x<10;x++)
-		{
-			for(int y=0;y<10;y++)
-			{
-				Object obj = new Object();
-				obj.setPosition(x*32, y*32);
-				objects.add(obj);
-			}
-		}
-		
-		animatedSprite = new SpriteLoader().getAnimatedSprite("res/img/guy.png");
-		
 	
 	}
 
-	//HashMap<Type, Sprite> sprites = new HashMap<Type, Sprite>();
-	AnimatedSprite animatedSprite = null;
 	@Override
 	public void Update(int delta)
 	{
@@ -79,33 +60,7 @@ public class Game extends GLWindow
 			}
 		}*/
 		
-		if(super.keyboard.keyPressed(Keyboard.KEY_D))
-		{
-			animatedSprite.animation.setY(2);
-		}
-		if(super.keyboard.keyPressed(Keyboard.KEY_W))
-		{
-			animatedSprite.animation.setY(1);
-		}
-		if(super.keyboard.keyPressed(Keyboard.KEY_S))
-		{
-			animatedSprite.animation.setY(0);
-		}
-		if(super.keyboard.keyPressed(Keyboard.KEY_A))
-		{
-			animatedSprite.animation.setY(3);
-		}
 		
-		if(super.keyboard.keyPressed(Keyboard.KEY_A)||super.keyboard.keyPressed(Keyboard.KEY_S)||super.keyboard.keyPressed(Keyboard.KEY_W)||super.keyboard.keyPressed(Keyboard.KEY_D))
-		{
-			step+=0.05f;
-		}
-		
-		if(step>=4)
-		{
-			step=0;
-		}
-		animatedSprite.animation.setX((int)step);
 		super.keyboard.endPoll();
 	}
 	float step = 0;
@@ -116,8 +71,6 @@ public class Game extends GLWindow
 	}
 
 	Vector2f camera = new Vector2f(0, 0);
-	ArrayList<Object> objects = new ArrayList<Object>();
-	HashMap<Type, Sprite> sprites = new HashMap<Type, Sprite>();
 
 	@Override
 	public void Render()
@@ -126,21 +79,7 @@ public class Game extends GLWindow
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
 
-		for (Object obj : objects)
-		{
-			Sprite sprite = this.sprites.get(obj.getType());
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, sprite.getTID());
-			GL11.glPushMatrix();
-			GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(),0);
-			GL11.glColor3f(obj.getColor().getRed(),obj.getColor().getGreen(),obj.getColor().getBlue());
-			glCallList(sprite.getDLID());
-			GL11.glPopMatrix();
-		}
-		
-		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, animatedSprite.getTID());
-		glCallList(animatedSprite.getDLID());
-		GL11.glPopMatrix();
+		//render code
 
 		GL11.glPopMatrix();
 	}
