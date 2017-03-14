@@ -24,6 +24,7 @@ public class Loader
 		ArrayList<Color> newVectorColors = new ArrayList<Color>();
 		ArrayList<Vector2f> newVectorTetxures = new ArrayList<Vector2f>();
 		String texture = "";
+		Vector4f boundIndices = new Vector4f(0,0,0,0);
 
 		Random ran = new Random();
 
@@ -61,13 +62,16 @@ public class Loader
 				{
 					texture = breakDown[1];
 				}
+				else if (descripter.equals("bounds"))
+				{
+					boundIndices = new Vector4f(Float.parseFloat(breakDown[1]),Float.parseFloat(breakDown[2]),Float.parseFloat(breakDown[3]),Float.parseFloat(breakDown[4]));
+				}
 			}
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 		raw.textureLocation = texture;
-
 		raw.vectors = new Vector2f[newVectors.size()];
 		raw.indices = new byte[newIndices.size()];
 		raw.indiceColor = new Color[newVectorColors.size()];
@@ -92,13 +96,68 @@ public class Loader
 		{
 			raw.vectorTextures[it] = newVectorTetxures.get(it);
 		}
+		
+		Polygon newBounds = new Polygon();
+		Vector2f vec = newVectors.get((int)boundIndices.w);
+		System.out.println(vec.x+","+vec.y);
+		newBounds.addPoint((int)vec.x,(int)vec.y);
+		
+		vec = newVectors.get((int)boundIndices.x);
+		newBounds.addPoint((int)vec.x,(int)vec.y);
+		System.out.println(vec.x+","+vec.y);
+		vec = newVectors.get((int)boundIndices.y);
+		newBounds.addPoint((int)vec.x,(int)vec.y);
+		System.out.println(vec.x+","+vec.y);
+		vec = newVectors.get((int)boundIndices.z);
+		newBounds.addPoint((int)vec.x,(int)vec.y);
+		System.out.println(vec.x+","+vec.y);
+		raw.bounds =newBounds;
+		
 		return raw;
 	}
-
+	
 	public static Quad loadQuadFromFile(String file)
 	{
-		RawQuad raw = loadRaw(file);
+		
+		ArrayList<Vector2f> newVectors = new ArrayList<Vector2f>();
+		ArrayList<Byte> newIndices = new ArrayList<Byte>();
+		ArrayList<Color> newVectorColors = new ArrayList<Color>();
+		ArrayList<Vector2f> newVectorTetxures = new ArrayList<Vector2f>();
+		String rawFile = "";
+
+		try (BufferedReader br = new BufferedReader(new FileReader(file)))
+		{
+			for (String line; (line = br.readLine()) != null;)
+			{
+
+				String[] breakDown = line.split(" ");
+				String descripter = breakDown[0];
+				if (descripter.startsWith("//"))
+				{
+
+				}else if (descripter.equals("vt"))
+				{
+					newVectorTetxures.add(new Vector2f(Float.parseFloat(breakDown[1]), Float.parseFloat(breakDown[2])));
+				} else if (descripter.equals("raw"))
+				{
+					rawFile = breakDown[1];
+				}
+			}
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		RawQuad raw = loadRaw(rawFile);
+		
+		raw.vectorTextures = new Vector2f[newVectorTetxures.size()];
+		for (int it = 0; it < raw.vectorTextures.length; it++)
+		{
+			raw.vectorTextures[it] = newVectorTetxures.get(it);
+		}
+		
 		Quad quad = generateQuad(raw);
+		quad.setBounds(raw.bounds);
 		return quad;
 	}
 
@@ -118,7 +177,6 @@ public class Loader
 			}
 		}
 
-		Polygon newBounds = new Polygon();
 
 		quad.setDisplayID(GL11.glGenLists(1));
 
@@ -128,7 +186,6 @@ public class Loader
 		{
 
 			Vector2f vec = raw.vectors[indice];
-			newBounds.addPoint((int) vec.x, (int) vec.y);
 
 			if (raw.indiceColor.length != 0)
 			{
@@ -146,8 +203,6 @@ public class Loader
 		}
 
 		GL11.glEndList();
-
-		quad.setBounds(newBounds);
 
 		return quad;
 	}

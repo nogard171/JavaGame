@@ -1,4 +1,6 @@
 
+import java.awt.Polygon;
+
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 import org.newdawn.slick.Color;
@@ -10,4 +12,5 @@ public class RawQuad
 	public Color[] indiceColor= {};
 	public Vector2f[] vectorTextures = {};
 	public String textureLocation = "";
+	public Polygon bounds = null;
 }

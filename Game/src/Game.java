@@ -36,43 +36,21 @@ public class Game extends GLWindow
 	{
 		super.Init();
 
-		Quad grass = new Loader().loadQuadFromFile("res/quads/grass.raw");
-		Quad bedrock = new Loader().loadQuadFromFile("res/quads/bedrock.raw");
-		Quad water = new Loader().loadQuadFromFile("res/quads/water.raw");
+		Quad grass = new Loader().loadQuadFromFile("res/quads/grass.quad");
 
 		for (int x = 0; x < 10; x++)
 		{
 			for (int z = 0; z < 10; z++)
 			{
-				int newX = x * 64;
-				int newZ = z * 64;
-				int finalX = (newX / 2) - (newZ / 2);
-				int finalZ = -(newZ / 4) - (newX / 4);
-				Cube cube = new Cube();
-				cube.type = "bedrock";
-				cube.setQuad(bedrock);
-				cube.setPosition(new Vector3f(finalX, finalZ, 0));
-				cubes.put(x+",0,"+z, cube);
-			}
-
-		}
-
-		for (int x = 0; x < 10; x++)
-		{
-			for (int z = 0; z < 10; z++)
-			{
-				for (int y = 1; y < 2; y++)
-				{
 					int newX = x * 64;
 					int newZ = z * 64;
 					int finalX = (newX / 2) - (newZ / 2);
-					int finalZ = -(newZ / 4) - (newX / 4) + (y * 32);
+					int finalZ = -(newZ / 4) - (newX / 4);
 					Cube cube = new Cube();
 					cube.setQuad(grass);
 					
 					cube.setPosition(new Vector3f(finalX, finalZ, 0));
-					cubes.put(x+","+ y+","+z, cube);
-				}
+					cubes.put(x+","+z, cube);
 			}
 
 		}
@@ -103,38 +81,8 @@ public class Game extends GLWindow
 	{
 		super.Update(delta);
 
-		for (int x = 0; x < 10; x++)
-		{
-			for (int z = 0; z < 10; z++)
-			{
-				for (int y = 0; y < 2; y++)
-				{
-					Cube object = cubes.get(x+","+ y+","+z);
-					if (object != null)
-					{
-						if (isUnMoveableType(object.type))
-						{
-
-						} else
-						{
-							Point point = new Point((int) (getMousePosition().getX() - object.getPosition().getX()),
-									(int) (getMousePosition().getY() - object.getPosition().getY()));
-							if (object.getQuad().getBounds().contains(point))
-							{
-								object.setOffset(0, 24);
-
-							} else
-							{
-								object.setOffset(0, 0);
-							}
-							
-							
-
-						}
-					}
-				}
-			}
-		}
+		
+		
 		super.keyboard.endPoll();
 	}
 
@@ -185,9 +133,7 @@ public class Game extends GLWindow
 		{
 			for (int z = 0; z < 10; z++)
 			{
-				for (int y = 0; y < 2; y++)
-				{
-					Cube object = cubes.get(x+","+ y+","+z);
+					Cube object = cubes.get(x+","+z);
 					if (object != null)
 					{
 						GL11.glPushMatrix();
@@ -200,7 +146,7 @@ public class Game extends GLWindow
 
 						GL11.glPopMatrix();
 					}
-				}
+				
 			}
 		}
 
