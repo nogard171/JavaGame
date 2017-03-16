@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 
@@ -24,52 +26,107 @@ public class GLWindow
 	int _width = 800;
 	int _height = 600;
 	int _fps = 120;
-	boolean Fullscreen = false;
 	boolean resizable = true;
-	boolean vsync;
-	// fps things
-	long lastFrame;
-	int fps;
-	long lastFPS;
+
 	// inputs
 	MouseInput mouse = null;
 	KeyboardInput keyboard = null;
 
 	public void start()
 	{
-		Init();
+		this.onLoadConfiguration();
+
+		this.setupGLWindow();
+
+		this.onInitilization();
+
 		keyboard = new KeyboardInput();
 		mouse = new MouseInput();
+
 		while (!Display.isCloseRequested())
 		{
 			if (Display.wasResized())
 			{
-				this.Resized();
+				this.onResized();
 			}
-			int delta = getDelta();
-			this.Update(delta);
-			this.Render();
+
+			this.onUpdate();
+			this.onRender();
 			Display.update();
 			Display.sync(this._fps);
 		}
-		this.Destroy();
+		this.onDestroy();
 	}
 
-	public void Destroy()
+	public void onLoadConfiguration()
 	{
-		Display.destroy();
-		System.exit(0);
+		try
+		{
+		      Properties p = new Properties();
+		      p.load(new FileInputStream("system/config.ini"));
+		      this._defaultWidth = Integer.parseInt(p.getProperty("default_width"));
+		      this._defaultHeight=Integer.parseInt(p.getProperty("default_height"));
+		      this._fps = Integer.parseInt(p.getProperty("default_fps"));
+		}
+	    catch (Exception e) 
+		{
+	      System.out.println(e);
+	    }
 	}
 
-	public void Update(int delta)
+	public void onInitilization()
 	{
-		Display.setTitle("FPS:" + this._fps);
-		this.keyboard.startPoll();
-		this.mouse.poll(this._height);
-		this.updateFPS(); // update FPS Counter
+
 	}
 
-	public void Resized()
+	public void setupGLWindow()
+	{
+		// set the initial display, so the game can revert back to original
+		// display.
+		this._initDisplay = Display.getDisplayMode();
+		try
+		{
+			// set the display to the display width and display height
+			this._initDisplay = new DisplayMode(this._defaultWidth, this._defaultHeight);
+
+			Display.setDisplayMode(this._initDisplay);
+			// set the display resizable if the resizable is true
+			Display.setResizable(resizable);
+			// create the display.
+			Display.create();
+		} catch (LWJGLException e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+		// init opengl
+		this.onInitilizeGL();
+
+		this.getDelta();
+		this.lastFPS = this.getTime();
+	}
+
+	public void onInitilizeGL()
+	{
+		GL11.glClearColor(1, 1, 1, 1);
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, this._width, 0, this._height, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
+		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+
+		this.onEnableGL();
+
+	}
+
+	private void onEnableGL()
+	{
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	public void onResized()
 	{
 		this._height = Display.getHeight();
 		this._width = Display.getWidth();
@@ -77,75 +134,47 @@ public class GLWindow
 		GL11.glViewport(0, 0, this._width, this._height);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, this._width, 0,this._height, 1, -1);
+		GL11.glOrtho(0, this._width, 0, this._height, 1, -1);
 	}
 
-	public void setDisplayMode(int width, int height, boolean fullscreen)
+	public void onUpdate()
 	{
-		// return if requested DisplayMode is already set
-		if ((Display.getDisplayMode().getWidth() == width) && (Display.getDisplayMode().getHeight() == height)
-				&& (Display.isFullscreen() == fullscreen))
-		{
-			return;
-		}
+		int delta = getDelta();
 
-		try
-		{
-			DisplayMode targetDisplayMode = null;
-
-			if (fullscreen)
-			{
-				DisplayMode[] modes = Display.getAvailableDisplayModes();
-				int freq = 0;
-
-				for (int i = 0; i < modes.length; i++)
-				{
-					DisplayMode current = modes[i];
-
-					if ((current.getWidth() == width) && (current.getHeight() == height))
-					{
-						if ((targetDisplayMode == null) || (current.getFrequency() >= freq))
-						{
-							if ((targetDisplayMode == null)
-									|| (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel()))
-							{
-								targetDisplayMode = current;
-								freq = targetDisplayMode.getFrequency();
-							}
-						}
-
-						// if we've found a match for bpp and frequence against
-						// the
-						// original display mode then it's probably best to go
-						// for this one
-						// since it's most likely compatible with the monitor
-						if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel())
-								&& (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency()))
-						{
-							targetDisplayMode = current;
-							break;
-						}
-					}
-				}
-			} else
-			{
-				targetDisplayMode = new DisplayMode(width, height);
-			}
-
-			if (targetDisplayMode == null)
-			{
-				System.out.println("Failed to find value mode: " + width + "x" + height + " fs=" + fullscreen);
-				return;
-			}
-
-			Display.setDisplayMode(targetDisplayMode);
-			Display.setFullscreen(fullscreen);
-
-		} catch (LWJGLException e)
-		{
-			System.out.println("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + e);
-		}
+		Display.setTitle("FPS:" + this._fps);
+		this.keyboard.startPoll();
+		this.mouse.poll(this._height);
+		this.updateFPS(); // update FPS Counter
 	}
+
+	public void onRender()
+	{
+		// Clear The Screen And The Depth Buffer
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+	}
+
+	public void onDestroy()
+	{
+		Display.destroy();
+		System.exit(0);
+	}
+
+	// migrate this to a rendering sort of class
+
+	public void renderQuad(GLQuad quad)
+	{
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, quad.getTextureID());
+		GL11.glCallList(quad.getDisplayID());
+		GL11.glEnd();
+	}
+
+	// migrate this to another class
+
+	// fps things
+	long lastFrame;
+	int fps;
+	long lastFPS;
 
 	public int getDelta()
 	{
@@ -171,51 +200,4 @@ public class GLWindow
 		this.fps++;
 	}
 
-	public void initGL()
-	{
-		GL11.glClearColor(1, 1, 1, 1);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, this._width, 0,this._height, 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
-		
-		
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-	}
-
-	public void Render()
-	{
-		// Clear The Screen And The Depth Buffer
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-	}
-
-	public void Init()
-	{
-		// set the initial display, so the game can revert back to original
-		// display.
-		this._initDisplay = Display.getDisplayMode();
-		try
-		{
-			// set the display to the display width and display height
-			this.setDisplayMode(this._width, this._height, this.Fullscreen);
-			// set the display resizable if the resizable is true
-			Display.setResizable(resizable);
-			// create the display.
-			Display.create();
-		} catch (LWJGLException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		// init opengl
-		this.initGL();
-		this.getDelta(); // call once before loop to initialise lastFrame
-		lastFPS = getTime(); // call before loop to initialise fps timer
-	}
 }

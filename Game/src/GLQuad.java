@@ -1,6 +1,6 @@
 import java.awt.Polygon;
 
-public class Quad
+public class GLQuad
 {
 	private int displayID = -1;
 	private int textureID = -1;

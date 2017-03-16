@@ -1,19 +1,19 @@
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-public class Cube
+public class GLObject
 {
 	private Vector3f position = new Vector3f(0,0,0);
 	private Vector2f offset = new Vector2f(0,0);
-	private Quad quad = new Quad();
+	private GLQuad gLQuad = new GLQuad();
 	public String type = "grass";
-	public Quad getQuad()
+	public GLQuad getQuad()
 	{
-		return quad;
+		return gLQuad;
 	}
-	public void setQuad(Quad quad)
+	public void setQuad(GLQuad gLQuad)
 	{
-		this.quad = quad;
+		this.gLQuad = gLQuad;
 	}
 	public Vector3f getPosition()
 	{

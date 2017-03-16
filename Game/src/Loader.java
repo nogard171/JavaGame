@@ -15,9 +15,9 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Loader
 {
-	public static RawQuad loadRaw(String file)
+	public static GLRawQuad loadRaw(String file)
 	{
-		RawQuad raw = new RawQuad();
+		GLRawQuad raw = new GLRawQuad();
 
 		ArrayList<Vector2f> newVectors = new ArrayList<Vector2f>();
 		ArrayList<Byte> newIndices = new ArrayList<Byte>();
@@ -116,7 +116,7 @@ public class Loader
 		return raw;
 	}
 	
-	public static Quad loadQuadFromFile(String file)
+	public static GLQuad loadQuadFromFile(String file)
 	{
 		
 		ArrayList<Vector2f> newVectors = new ArrayList<Vector2f>();
@@ -148,7 +148,7 @@ public class Loader
 			e.printStackTrace();
 		}
 		
-		RawQuad raw = loadRaw(rawFile);
+		GLRawQuad raw = loadRaw(rawFile);
 		
 		raw.vectorTextures = new Vector2f[newVectorTetxures.size()];
 		for (int it = 0; it < raw.vectorTextures.length; it++)
@@ -156,20 +156,20 @@ public class Loader
 			raw.vectorTextures[it] = newVectorTetxures.get(it);
 		}
 		
-		Quad quad = generateQuad(raw);
-		quad.setBounds(raw.bounds);
-		return quad;
+		GLQuad gLQuad = generateQuad(raw);
+		gLQuad.setBounds(raw.bounds);
+		return gLQuad;
 	}
 
-	public static Quad generateQuad(RawQuad raw)
+	public static GLQuad generateQuad(GLRawQuad raw)
 	{
-		Quad quad = new Quad();
+		GLQuad gLQuad = new GLQuad();
 		if (raw.textureLocation != "")
 		{
 			try
 			{
 				// load texture from PNG file
-				quad.setTextureID(TextureLoader
+				gLQuad.setTextureID(TextureLoader
 						.getTexture("PNG", ResourceLoader.getResourceAsStream(raw.textureLocation)).getTextureID());
 			} catch (IOException e)
 			{
@@ -178,9 +178,9 @@ public class Loader
 		}
 
 
-		quad.setDisplayID(GL11.glGenLists(1));
+		gLQuad.setDisplayID(GL11.glGenLists(1));
 
-		GL11.glNewList(quad.getDisplayID(), GL11.GL_COMPILE);
+		GL11.glNewList(gLQuad.getDisplayID(), GL11.GL_COMPILE);
 		int index = 0;
 		for (byte indice : raw.indices)
 		{
@@ -204,6 +204,6 @@ public class Loader
 
 		GL11.glEndList();
 
-		return quad;
+		return gLQuad;
 	}
 }

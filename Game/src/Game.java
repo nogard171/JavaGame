@@ -31,12 +31,18 @@ import org.lwjgl.opengl.GL11;
 
 public class Game extends GLWindow
 {
-
-	public void Init()
+	public static void main(String[] argv)
 	{
-		super.Init();
+		Game displayExample = new Game();
+		displayExample.start();
+	}
+	
+	@Override
+	public void onInitilization()
+	{
+		super.onInitilization();
 
-		Quad grass = new Loader().loadQuadFromFile("res/quads/grass.quad");
+		GLQuad grass = new Loader().loadQuadFromFile("res/quads/grass.quad");
 
 		for (int x = 0; x < 10; x++)
 		{
@@ -46,11 +52,11 @@ public class Game extends GLWindow
 					int newZ = z * 64;
 					int finalX = (newX / 2) - (newZ / 2);
 					int finalZ = -(newZ / 4) - (newX / 4);
-					Cube cube = new Cube();
-					cube.setQuad(grass);
+					GLObject gLObject = new GLObject();
+					gLObject.setQuad(grass);
 					
-					cube.setPosition(new Vector3f(finalX, finalZ, 0));
-					cubes.put(x+","+z, cube);
+					gLObject.setPosition(new Vector3f(finalX, finalZ, 0));
+					gLObjects.put(x+","+z, gLObject);
 			}
 
 		}
@@ -58,29 +64,14 @@ public class Game extends GLWindow
 	}
 
 	Random random = new Random();
-	HashMap<String, Cube> cubes = new HashMap<String, Cube>();
+	HashMap<String, GLObject> gLObjects = new HashMap<String, GLObject>();
 
-	String[] unMoveableTypes =
-	{ "bedrock" };
-
-	public boolean isUnMoveableType(String newType)
-	{
-		boolean result = false;
-		for (String type : unMoveableTypes)
-		{
-			if (type.toLowerCase() == newType.toLowerCase())
-			{
-				result = true;
-			}
-		}
-		return result;
-	}
 
 	@Override
-	public void Update(int delta)
+	public void onUpdate()
 	{
-		super.Update(delta);
-
+		super.onUpdate();
+		
 		
 		
 		super.keyboard.endPoll();
@@ -98,20 +89,20 @@ public class Game extends GLWindow
 	float step = 0;
 
 	@Override
-	public void Resized()
+	public void onResized()
 	{
-		super.Resized();
+		super.onResized();
 	}
 
 	Vector2f camera = new Vector2f(-400, -400);
 
-	Quad quad = null;
-	Quad newGrid = null;
+	GLQuad gLQuad = null;
+	GLQuad newGrid = null;
 
 	@Override
-	public void Render()
+	public void onRender()
 	{
-		super.Render();
+		super.onRender();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
 
@@ -129,20 +120,18 @@ public class Game extends GLWindow
 		 * }
 		 */
 
-		for (int x = 0; x < 10; x++)
+		for (int x = 0; x < 5; x++)
 		{
-			for (int z = 0; z < 10; z++)
+			for (int z = 0; z < 5; z++)
 			{
-					Cube object = cubes.get(x+","+z);
+					GLObject object = gLObjects.get(x+","+z);
 					if (object != null)
 					{
 						GL11.glPushMatrix();
 						GL11.glTranslatef(object.getPosition().getX() + object.getOffset().x,
 								object.getPosition().getY() + object.getOffset().y, object.getPosition().getZ());
 
-						GL11.glBegin(GL11.GL_TRIANGLES);
-						glCallList(object.getQuad().getDisplayID());
-						GL11.glEnd();
+						super.renderQuad(object.getQuad());
 
 						GL11.glPopMatrix();
 					}
@@ -154,15 +143,11 @@ public class Game extends GLWindow
 	}
 
 	@Override
-	public void Destroy()
+	public void onDestroy()
 	{
-		super.Destroy();
+		
+		
 	}
 
-	public static void main(String[] argv)
-	{
-		Game displayExample = new Game();
-		displayExample.start();
-
-	}
+	
 }
