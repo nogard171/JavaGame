@@ -44,6 +44,7 @@ public class Game extends GLWindow
 
 		GLQuad grass = new Loader().loadGLQuadFromFile("res/quads/grass.quad");
 		GLQuad tree_base = new Loader().loadGLQuadFromFile("res/quads/tree_base.quad");
+		GLQuad tree_top = new Loader().loadGLQuadFromFile("res/quads/tree_top.quad");
 
 		for (int x = 0; x < 10; x++)
 		{
@@ -69,6 +70,14 @@ public class Game extends GLWindow
 		
 		gLObject.setPosition(new Vector3f(gLObjects.get("0,0,0").getPosition().getX(),gLObjects.get("0,0,0").getPosition().getY()+24,0));
 		gLObjects.put("0,1,0", gLObject);
+		
+		GLObject gLObject2 = new GLObject();
+		gLObject2.setQuad(tree_top);
+		
+		
+		
+		gLObject2.setPosition(new Vector3f(gLObjects.get("0,0,0").getPosition().getX(),gLObjects.get("0,0,0").getPosition().getY()+24,0));
+		gLObjects.put("0,2,0", gLObject2);
 
 	}
 
