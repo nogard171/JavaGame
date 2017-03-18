@@ -42,7 +42,8 @@ public class Game extends GLWindow
 	{
 		super.onInitilization();
 
-		GLQuad grass = new Loader().loadQuadFromFile("res/quads/grass.quad");
+		GLQuad grass = new Loader().loadGLQuadFromFile("res/quads/grass.quad");
+		GLQuad tree_base = new Loader().loadGLQuadFromFile("res/quads/tree_base.quad");
 
 		for (int x = 0; x < 10; x++)
 		{
@@ -56,10 +57,18 @@ public class Game extends GLWindow
 					gLObject.setQuad(grass);
 					
 					gLObject.setPosition(new Vector3f(finalX, finalZ, 0));
-					gLObjects.put(x+","+z, gLObject);
+					gLObjects.put(x+",0,"+z, gLObject);
 			}
 
 		}
+		
+		GLObject gLObject = new GLObject();
+		gLObject.setQuad(tree_base);
+		
+		
+		
+		gLObject.setPosition(new Vector3f(gLObjects.get("0,0,0").getPosition().getX(),gLObjects.get("0,0,0").getPosition().getY()+24,0));
+		gLObjects.put("0,1,0", gLObject);
 
 	}
 
@@ -106,25 +115,14 @@ public class Game extends GLWindow
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
 
-		/*
-		 * for(int x=0;x<10;x++) { for(int z=0;z<10;z++) { int newX = x*64; int
-		 * newZ = z*64; GL11.glPushMatrix();
-		 * GL11.glTranslatef((newX/2)-(newZ/2), -(newZ/4)-(newX/4), 0);
-		 * 
-		 * GL11.glBegin(GL11.GL_TRIANGLES);
-		 * GL11.glBindTexture(GL11.GL_TEXTURE_2D, quad.getTextureID());
-		 * glCallList(quad.getDisplayID()); GL11.glEnd();
-		 * 
-		 * GL11.glPopMatrix(); }
-		 * 
-		 * }
-		 */
 
 		for (int x = 0; x < 5; x++)
 		{
 			for (int z = 0; z < 5; z++)
 			{
-					GLObject object = gLObjects.get(x+","+z);
+				for (int y = 0; y < 5; y++)
+				{
+					GLObject object = gLObjects.get(x+","+y+","+z);
 					if (object != null)
 					{
 						GL11.glPushMatrix();
@@ -134,8 +132,8 @@ public class Game extends GLWindow
 						super.renderQuad(object.getQuad());
 
 						GL11.glPopMatrix();
-					}
-				
+					}				
+				}
 			}
 		}
 

@@ -24,7 +24,7 @@ public class Loader
 		ArrayList<Color> newVectorColors = new ArrayList<Color>();
 		ArrayList<Vector2f> newVectorTetxures = new ArrayList<Vector2f>();
 		String texture = "";
-		Vector4f boundIndices = new Vector4f(0,0,0,0);
+		ArrayList<Integer> boundIndices = new ArrayList<Integer>();
 
 		Random ran = new Random();
 
@@ -64,7 +64,11 @@ public class Loader
 				}
 				else if (descripter.equals("bounds"))
 				{
-					boundIndices = new Vector4f(Float.parseFloat(breakDown[1]),Float.parseFloat(breakDown[2]),Float.parseFloat(breakDown[3]),Float.parseFloat(breakDown[4]));
+					int boundsCount = breakDown.length;
+					for(int b=1;b<boundsCount;b++)
+					{
+						boundIndices.add(Integer.parseInt(breakDown[b]));
+					}
 				}
 			}
 		} catch (IOException e)
@@ -98,25 +102,19 @@ public class Loader
 		}
 		
 		Polygon newBounds = new Polygon();
-		Vector2f vec = newVectors.get((int)boundIndices.w);
-		System.out.println(vec.x+","+vec.y);
-		newBounds.addPoint((int)vec.x,(int)vec.y);
 		
-		vec = newVectors.get((int)boundIndices.x);
-		newBounds.addPoint((int)vec.x,(int)vec.y);
-		System.out.println(vec.x+","+vec.y);
-		vec = newVectors.get((int)boundIndices.y);
-		newBounds.addPoint((int)vec.x,(int)vec.y);
-		System.out.println(vec.x+","+vec.y);
-		vec = newVectors.get((int)boundIndices.z);
-		newBounds.addPoint((int)vec.x,(int)vec.y);
-		System.out.println(vec.x+","+vec.y);
+		for(int b = 0;b<boundIndices.size();b++)
+		{
+			Vector2f vec = newVectors.get((int)boundIndices.get(b));
+			newBounds.addPoint((int)vec.x,(int)vec.y);
+		}
+		
 		raw.bounds =newBounds;
 		
 		return raw;
 	}
 	
-	public static GLQuad loadQuadFromFile(String file)
+	public static GLQuad loadGLQuadFromFile(String file)
 	{
 		
 		ArrayList<Vector2f> newVectors = new ArrayList<Vector2f>();

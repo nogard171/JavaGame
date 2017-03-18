@@ -1,0 +1,12 @@
+//quad file location
+raw res/raws/tree_top.raw
+
+//vector texture coords
+//0
+vt 0.5 0
+//1
+vt 0.5 0.5
+//2
+vt 1 0.5
+//3
+vt 1 0.5
