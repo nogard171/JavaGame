@@ -1,6 +1,7 @@
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.Point;
+import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
@@ -41,20 +42,18 @@ public class Main extends Window{
     {
     	super.onUpdate();
     }
-  
+    int step = 3;
     @Override
     public void onRender(GLGraphics g)
     {
     	super.onRender(g);
     	g.setColor(255,0,0);
     	g.drawRect(0, 0, 32, 32);
-    	for(int x=0;x<10;x++)
-    	{
-    		for(int z=0;z<10;z++)
-        	{
-    			g.drawImage("resources/grass.png", x*32, z*32, 32, 32);
-        	}
-    	}
+    	
+    	
+    	g.drawSubImage("resources/guy.png",new Vector4f(0,0.25f*step,0.25f,0.25f), 100, 100, 32, 64);
+    	
+    	
     	
     	
     }
