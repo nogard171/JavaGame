@@ -1,3 +1,5 @@
+import java.awt.Polygon;
+
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -34,5 +36,16 @@ public class GLObject
 	public void setOffset(float x, float y)
 	{
 		this.offset = new Vector2f(x,y);
+	}
+	public Polygon getBounds()
+	{
+		Polygon newBounds = new Polygon();
+		
+		for(int b = 0;b<this.gLQuad.getBounds().npoints;b++)
+		{
+			newBounds.addPoint((int)(this.gLQuad.getBounds().xpoints[b]+this.getPosition().getX()),(int)(this.gLQuad.getBounds().ypoints[b]+this.getPosition().getY()));
+		}
+		
+		return newBounds;
 	}
 }
