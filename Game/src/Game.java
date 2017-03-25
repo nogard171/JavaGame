@@ -57,28 +57,19 @@ public class Game extends GLWindow
 					gLObject.setQuad(grass);
 					gLObject.type = "grass";
 					gLObject.setPosition(new Vector3f(finalX, finalZ, 0));
-					gLObjects.put(x+",0,"+z, gLObject);
 					objects.add(gLObject);
 			}
-
 		}
 		
 		GLObject gLObject2 = new GLObject();
 		gLObject2.type = "tree";
 		gLObject2.setQuad(tree);
-		gLObject2.setPosition(new Vector3f(gLObjects.get("0,0,0").getPosition().getX(),gLObjects.get("0,0,0").getPosition().getY()+24,0));
-		gLObjects.put("tree", gLObject2);
+		gLObject2.setPosition(new Vector3f(getObjectByType("grass").get(0).getPosition().getX(),getObjectByType("grass").get(0).getPosition().getY()+24,0));
 		objects.add(gLObject2);
-		
-		GLObject gLObject3 = new GLObject();
-		gLObject3.setQuad(grass);
-		gLObject3.setPosition(new Vector3f(gLObjects.get("1,0,1").getPosition().getX(),gLObjects.get("1,0,1").getPosition().getY()+24,0));
-		//gLObjects.put("1,1,1", gLObject3);
 
 	}
 
 	Random random = new Random();
-	HashMap<String, GLObject> gLObjects = new HashMap<String, GLObject>();
 
 	ArrayList<GLObject> objects = new ArrayList<GLObject>();
 
@@ -89,10 +80,9 @@ public class Game extends GLWindow
 		
 		for(GLObject object:this.objects)
 		{
-			System.out.println(this.getMousePosition());
 			if(object.getBounds().contains(this.getMousePosition()))
 			{
-				getObjectByType("tree").get(0).setPosition(new Vector3f(object.getPosition().getX(),object.getPosition().getY()+24,0));
+				//getObjectByType("tree").get(0).setPosition(new Vector3f(object.getPosition().getX(),object.getPosition().getY()+24,0));
 			}
 		}
 		
@@ -143,28 +133,6 @@ public class Game extends GLWindow
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
 
-
-		/*for (int x = 0; x < 10; x++)
-		{
-			for (int z = 0; z < 10; z++)
-			{
-				for (int y = 0; y < 5; y++)
-				{
-					GLObject object = gLObjects.get(x+","+y+","+z);
-					if (object != null)
-					{
-						GL11.glPushMatrix();
-						GL11.glTranslatef(object.getPosition().getX() + object.getOffset().x,
-								object.getPosition().getY() + object.getOffset().y, object.getPosition().getZ());
-
-						super.renderQuad(object.getQuad());
-
-						GL11.glPopMatrix();
-					}				
-				}
-			}
-		}*/
-		
 		for(GLObject object:this.objects)
 		{
 			GL11.glPushMatrix();
