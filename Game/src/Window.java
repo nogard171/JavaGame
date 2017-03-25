@@ -40,7 +40,7 @@ public class Window
 	{
 		try
 		{
-			displayMode = this.getDisplayMode(WIDTH, HEIGHT);
+			displayMode = new DisplayMode(WIDTH, HEIGHT);
 			Display.setDisplayMode(displayMode);
 			Display.setResizable(true);
 			Display.setTitle(TITLE);
@@ -88,48 +88,8 @@ public class Window
 		}
 		fps++;
 	}
-	public DisplayMode getDisplayMode(int width, int height)
-	{
-		return getDisplayMode(width,  height,Display.getDisplayMode().getFrequency(),false);
-	}
-	public DisplayMode getDisplayMode(int width, int height, boolean fullscreen)
-	{
-		return getDisplayMode(width,  height,Display.getDisplayMode().getFrequency(),fullscreen);
-	}
-	public DisplayMode getDisplayMode(int width, int height, int refreshRate)
-	{
-		return getDisplayMode(width,  height,refreshRate,false);
-	}
-	public DisplayMode getDisplayMode(int width, int height,int refreshRate, boolean fullscreen)
-	{
-		DisplayMode displayMode = null;
-		DisplayMode[] modes;
-		try
-		{
-			modes = Display.getAvailableDisplayModes();
-			for (int i = 0; i < modes.length; i++)
-			{
-				if (modes[i].getWidth() == width && modes[i].getHeight() == height && modes[i].isFullscreenCapable()&&modes[i].getFrequency() == refreshRate)
-				{
-					displayMode = modes[i];
-				}
-			}
-			Display.setFullscreen(fullscreen);
-		} catch (LWJGLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(displayMode==null)
-		{
-			System.out.println("Error trying to load display mode, using defaults");
-			displayMode = getDisplayMode(width,height);
-		}
-		return displayMode;
-	}
 
-	public void Init()
+	public void onInit()
 	{
 
 	}
@@ -144,7 +104,7 @@ public class Window
 		GL11.glLoadIdentity();
 	}
 
-	public void Update()
+	public void onUpdate()
 	{
 		if (Display.wasResized())
 		{
@@ -154,13 +114,12 @@ public class Window
 		MouseHandler.poll();
 	}
 
-	public void Render()
+	public void onRender(GLGraphics g)
 	{
-		// Clear the screen and depth buffer
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		
 	}
 
-	public void Destroy()
+	public void onDestroy()
 	{
 		Display.destroy();
 	}
@@ -177,28 +136,30 @@ public class Window
 
 	public void EnableGL()
 	{
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
-
+	GLGraphics g = new GLGraphics();
 	public void Start()
 	{
 		this.CreateDisplay();
 		this.SetupOpenGL();
-		this.Init();
+		this.onInit();
 
 		getDelta(); // call once before loop to initialise lastFrame
 		lastFPS = getTime(); // call before loop to initialise fps timer
 
 		while (!Display.isCloseRequested())
 		{
-			this.Update();
-			this.Render();
+			this.onUpdate();
+			// Clear the screen and depth buffer
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			this.onRender(g);
 
 			Display.update();
 			Display.sync(FPS);
 		}
-		this.Destroy();
+		this.onDestroy();
 	}
 }

@@ -30,48 +30,32 @@ public class Main extends Window{
         Main game = new Main();
         game.Start();
     }
-    ShaderProgram shader = new ShaderProgram();
-    Renderer renderer = new Renderer();
 
     @Override
-    public void Init()
+    public void onInit()
+    {    	
+    	super.onInit();
+    }
+    @Override
+    public void onUpdate()
     {
-    	super.Init();
-    	
-    	shader.loadFragmentShader("screen");
-    	shader.loadVertexShader("screen");
-    	shader.createProgram();
-    	
-    	renderer.setShader(shader);
-
-    	
-    	renderer.addQuad("grass", "grass.png");
-    	renderer.addQuad("dirt", "dirt.png");
-    	renderer.addQuad("sand", "sand.png");
-    	renderer.addQuad("water", "water.png");
-    	
-    	for(int x = 0;x<30;x++)
+    	super.onUpdate();
+    }
+  
+    @Override
+    public void onRender(GLGraphics g)
+    {
+    	super.onRender(g);
+    	g.setColor(255,0,0);
+    	g.drawRect(0, 0, 32, 32);
+    	for(int x=0;x<10;x++)
     	{
-    		for(int y = 0;y<30;y++)
+    		for(int z=0;z<10;z++)
         	{
-    			Entity entity =  new Entity("grass");
-    			entity.setPosition(x*32,y*32);
-    			renderer.addEntity(x+","+y,entity);
+    			g.drawImage("resources/grass.png", x*32, z*32, 32, 32);
         	}
     	}
     	
-    }
-    Quad quad = new Quad();
-    
-    int r_mod;
-    int color = -1;
-    float rot = 0;
-    Random rand = new Random();
-    @Override
-    public void Render(){
-    	super.Render();		
-		
-    	renderer.Render();
-		//shader.Destroy();
+    	
     }
 }
