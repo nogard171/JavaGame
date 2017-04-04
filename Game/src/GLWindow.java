@@ -20,7 +20,9 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
 
-public class Window
+import utils.MouseHandler;
+
+public class GLWindow
 {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
@@ -114,7 +116,7 @@ public class Window
 		MouseHandler.poll();
 	}
 
-	public void onRender(GLGraphics g)
+	public void onRender()
 	{
 		
 	}
@@ -140,7 +142,6 @@ public class Window
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
-	GLGraphics g = new GLGraphics();
 	public void Start()
 	{
 		this.CreateDisplay();
@@ -155,7 +156,7 @@ public class Window
 			this.onUpdate();
 			// Clear the screen and depth buffer
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			this.onRender(g);
+			this.onRender();
 
 			Display.update();
 			Display.sync(FPS);
