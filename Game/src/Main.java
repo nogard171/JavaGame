@@ -1,6 +1,7 @@
 import org.lwjgl.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.*;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -10,6 +11,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import entities.Bound;
+import entities.Direction;
 import entities.GLBound;
 import entities.GLMap;
 import entities.GLObject;
@@ -81,27 +83,31 @@ public class Main extends GLWindow{
     		stepSpeed = 1;
     	}
     	
-    	if(Keyboard.isKeyDown(Keyboard.KEY_A))
+    	if(Keyboard.isKeyDown(Keyboard.KEY_A)&&!person.getCollisionByDirection(Direction.WEST))
     	{
+    		person.setFacing(Direction.WEST);
     		step = 3;
     		x-=stepSpeed;
     	}
-    	if(Keyboard.isKeyDown(Keyboard.KEY_D))
+    	else if(Keyboard.isKeyDown(Keyboard.KEY_D)&&!person.getCollisionByDirection(Direction.EAST))
     	{
+    		person.setFacing(Direction.EAST);
     		step = 2;
     		x+=stepSpeed;
     	}
-    	if(Keyboard.isKeyDown(Keyboard.KEY_W))
+    	else if(Keyboard.isKeyDown(Keyboard.KEY_W)&&!person.getCollisionByDirection(Direction.NORTH))
     	{
+    		person.setFacing(Direction.NORTH);
     		step = 1;
     		y+=stepSpeed;
     	}
-    	if(Keyboard.isKeyDown(Keyboard.KEY_S))
+    	else if(Keyboard.isKeyDown(Keyboard.KEY_S)&&!person.getCollisionByDirection(Direction.SOUTH))
     	{
+    		person.setFacing(Direction.SOUTH);
     		step = 0;
     		y-=stepSpeed;
     	}
-    	if(Keyboard.isKeyDown(Keyboard.KEY_A)||Keyboard.isKeyDown(Keyboard.KEY_D)||Keyboard.isKeyDown(Keyboard.KEY_W)||Keyboard.isKeyDown(Keyboard.KEY_S))
+    	if((Keyboard.isKeyDown(Keyboard.KEY_A)||Keyboard.isKeyDown(Keyboard.KEY_D)||Keyboard.isKeyDown(Keyboard.KEY_W)||Keyboard.isKeyDown(Keyboard.KEY_S))&&!person.getColliding())
     	{
     		walk+=0.05f*stepSpeed;
     	}
@@ -119,11 +125,14 @@ public class Main extends GLWindow{
     	
     	if(person.getBounds().intersects(new Bound(100,100,32,32)))
     	{
-    		person.setHasBound(false);
+    		person.setCollisionByDirection(person.getFacing(),true);
+    		color = new Color(1,0,0);
     	}
     	else
     	{
-    		person.setHasBound(true);
+    		
+    		person.clearCollision();
+    		color = new Color(0,0,0);
     	}
     	
     }
@@ -133,6 +142,7 @@ public class Main extends GLWindow{
     int y=0;
     GLObject person = new GLObject();
     GLMap map = new GLMap();
+    Color color = new Color(0,0,0);
     @Override
     public void onRender()
     { 	
@@ -160,6 +170,7 @@ public class Main extends GLWindow{
     	GL11.glTranslatef(person.getBounds().getX(), person.getBounds().getY(), 0);
     	if(person.getHasBound())
     	{
+    		GL11.glColor3f(color.getRed(),color.getGreen(),color.getBlue());
     		GL11.glCallList(bound.getDisplayID());
     	}
     	GL11.glCallList(sprites.get("guy").getDisplayID((int)person.getDisplayListCoords().getX(),(int)person.getDisplayListCoords().getY()));

@@ -22,7 +22,7 @@ public class GLLoader
 		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-		GL11.glColor3f(0, 0, 0);
+		
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2f(0, 0);
