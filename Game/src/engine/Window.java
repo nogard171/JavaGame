@@ -1,3 +1,4 @@
+package engine;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -20,9 +21,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
 
-import utils.MouseHandler;
 
-public class GLWindow
+public class Window
 {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
@@ -30,13 +30,6 @@ public class GLWindow
 	private String TITLE ="";
 	private DisplayMode displayMode = null;
 
-	/** time at last frame */
-	long lastFrame;
-
-	/** frames per second */
-	int fps;
-	/** last fps time */
-	long lastFPS;
 
 	public void CreateDisplay()
 	{
@@ -52,45 +45,7 @@ public class GLWindow
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * Calculate how many milliseconds have passed since last frame.
-	 * 
-	 * @return milliseconds passed since last frame
-	 */
-	public int getDelta()
-	{
-		long time = getTime();
-		int delta = (int) (time - lastFrame);
-		lastFrame = time;
-
-		return delta;
-	}
-
-	/**
-	 * Get the accurate system time
-	 * 
-	 * @return The system time in milliseconds
-	 */
-	public long getTime()
-	{
-		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
-	}
-
-	/**
-	 * Calculate the FPS and set it in the title bar
-	 */
-	public void updateFPS()
-	{
-		if (getTime() - lastFPS > 1000)
-		{
-			Display.setTitle("FPS: " + fps);
-			fps = 0;
-			lastFPS += 1000;
-		}
-		fps++;
-	}
-
+	
 	public void onInit()
 	{
 
@@ -112,8 +67,6 @@ public class GLWindow
 		{
 			this.AdjusterView();
 		}
-		updateFPS(); // update FPS Counter
-		MouseHandler.poll();
 	}
 
 	public void onRender()
@@ -147,9 +100,6 @@ public class GLWindow
 		this.CreateDisplay();
 		this.SetupOpenGL();
 		this.onInit();
-
-		getDelta(); // call once before loop to initialise lastFrame
-		lastFPS = getTime(); // call before loop to initialise fps timer
 
 		while (!Display.isCloseRequested())
 		{
