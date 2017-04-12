@@ -1,64 +1,55 @@
 package engine;
+import java.awt.Dimension;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 
 public class Sprite
 {
-	private int Width = 32;
-	private int Height = 32;
-	private int Texture = -1;
-	private Color[] colors =
-	{ new Color(255, 255, 255), new Color(255, 255, 255), new Color(255, 255, 255), new Color(255, 255, 255) };
-
-	public void Render()
+	private int[][] displayIDs;
+	private int textureID = -1;
+	private Dimension size= new Dimension(32,32);
+	public Sprite()
 	{
-		if (Texture != -1)
+	}
+	public Sprite(int width, int height)
+	{
+		this.setSize(new Dimension(width,height));
+	}
+	public Dimension getSize()
+	{
+		return size;
+	}
+	public void setSize(Dimension size)
+	{
+		this.size = size;
+	}
+	public void setDisplayIDs(int[][] displayIDs)
+	{
+		this.displayIDs = displayIDs;
+	}
+	public int getDisplayID(int x,int y)
+	{
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureID());
+		int newDisplayID = -1;
+		
+		if(x<displayIDs.length&& y<displayIDs[0].length)
 		{
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, Texture);
+			newDisplayID = displayIDs[x][y];
 		}
-
-		GL11.glBegin(GL11.GL_QUADS);
-
-		GL11.glColor3f(colors[0].getRed() / 255, colors[0].getGreen() / 255, colors[0].getBlue() / 255);
-		GL11.glVertex2i(0, 0);
-
-		GL11.glVertex2i(this.getWidth(), 0);
-
-		GL11.glVertex2i(this.getWidth(), this.getHeight());
-
-		GL11.glVertex2i(0, this.getHeight());
-
-		GL11.glEnd();
+		return newDisplayID;
 	}
-
-	public int getHeight()
+	public int getDisplayID()
 	{
-		return Height;
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureID());
+		int newDisplayID = displayIDs[0][0];
+		return newDisplayID;
 	}
-
-	public void setHeight(int height)
+	public int getTextureID()
 	{
-		Height = height;
+		return textureID;
 	}
-
-	public int getTexture()
+	public void setTextureID(int textureID)
 	{
-		return Texture;
-	}
-
-	public void setTexture(int texture)
-	{
-		Texture = texture;
-	}
-
-	public int getWidth()
-	{
-		return Width;
-	}
-
-	public void setWidth(int width)
-	{
-		Width = width;
+		this.textureID = textureID;
 	}
 }
