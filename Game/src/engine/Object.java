@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Object
 {
+	
 	private Vector2f displayListCoords = new Vector2f(0, 0);
 	private Bound bounds = new Bound(0, 0, 32, 32);
 	private Vector2f spriteOffset = new Vector2f(0, 0);
@@ -12,6 +13,29 @@ public class Object
 	private Boolean[] collision =
 	{ false, false, false, false };
 	private Boolean colliding = false;
+	private String name = "";
+	private String spriteName = "";
+	private Boolean isSolid = false;
+
+	public Boolean getIsSolid()
+	{
+		return isSolid;
+	}
+
+	public void setIsSolid(Boolean isSolid)
+	{
+		this.isSolid = isSolid;
+	}
+
+	public String getSpriteName()
+	{
+		return spriteName;
+	}
+
+	public void setSpriteName(String spriteName)
+	{
+		this.spriteName = spriteName;
+	}
 
 	public Boolean getCollisionByDirection(Direction dir)
 	{
@@ -103,5 +127,15 @@ public class Object
 	public void setColliding(Boolean colliding)
 	{
 		this.colliding = colliding;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 }
