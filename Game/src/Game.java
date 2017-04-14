@@ -63,7 +63,7 @@ public class Game extends GLWindow
 		haspMapObject = new HashMap<Point, Object>();
 
 		map = new int[100][100];
-
+		
 		domidpoint();
 
 		for (int x = 0; x < map.length; x++)
@@ -97,13 +97,23 @@ public class Game extends GLWindow
 				haspMapObject.put(new Point(x, y), obj);
 			}
 		}
-
-		Object playerposition = this.getHashMapObject("GRASS");
-
+		Random ran = new Random();
+		ArrayList<Object> grass = this.getHashMapObjects("GRASS");
+		Object playerposition =grass.get(ran.nextInt(grass.size()));
+		
 		Object obj = new Object();
 		obj._name = "PLAYER";
 		obj._type = "PLAYER";
-		obj.SetPosition(playerposition.getPosition().getX(), playerposition.getPosition().getY());
+		if(playerposition!=null)
+		{
+			obj.SetPosition(playerposition.getPosition().getX(), playerposition.getPosition().getY());
+		}
+		else
+		{
+			obj.SetPosition(-32,-32);
+		}
+		
+	
 		obj.setSize(32, 64);
 		objects.add(obj);
 
@@ -242,6 +252,23 @@ public class Game extends GLWindow
 		}
 		return newObjects;
 	}
+	
+	public ArrayList<Object> getHashMapObjects(String name)
+	{
+		ArrayList<Object> newObjects = new ArrayList<Object>();
+		for (int x = 0; x < map.length; x++)
+		{
+			for (int y = 0; y < map[0].length; y++)
+			{
+				Object obj = haspMapObject.get(new Point(x, y));
+				if (obj._name == name)
+				{
+					newObjects.add(obj);
+				}
+			}
+		}
+		return newObjects;
+	}
 
 	public Texture getTexture(String string)
 	{
@@ -341,22 +368,22 @@ public class Game extends GLWindow
 		{
 			double angle = GetAngleOfLineBetweenTwoPoints(obj.getPosition(), player.getPosition());
 			System.out.println("angle:" + angle);
-			if (angle > 315 || angle <= 45&&obj.getPosition().getX()<=player.getPosition().getX())
+			if (angle > 316 || angle <= 44&&obj.getPosition().getX()<=player.getPosition().getX()+8)
 			{
 				//System.out.println("LEFT");
 				player.collisionDirection.add(Direction.WEST);
 			}
-			if (angle > 45 && angle <= 135&&obj.getPosition().getY()<=player.getPosition().getY())
+			if (angle > 46 && angle <= 134&&obj.getPosition().getY()<=player.getPosition().getY()+8)
 			{
 				System.out.println("NORTH");
 				player.collisionDirection.add(Direction.NORTH);
 			}
-			if (angle > 135 && angle <= 225&&obj.getPosition().getX()>=player.getPosition().getX())
+			if (angle > 136 && angle <= 224&&obj.getPosition().getX()>=player.getPosition().getX()-8)
 			{
 				//System.out.println("RIGHT");
 				player.collisionDirection.add(Direction.EAST);
 			}
-			if (angle > 225 && angle <= 315&&obj.getPosition().getY()>=player.getPosition().getY())
+			if (angle > 226 && angle <= 314&&obj.getPosition().getY()>=player.getPosition().getY()-8)
 			{
 				//System.out.println("SOUTH");
 				player.collisionDirection.add(Direction.SOUTH);
