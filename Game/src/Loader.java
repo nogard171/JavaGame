@@ -18,7 +18,7 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Loader
 {
 
-	public Voxel loadVoxel(String file)
+	public Voxel loadVoxel(String file, Vector3f position)
 	{
 		Voxel voxel = new Voxel();
 
@@ -112,7 +112,7 @@ public class Loader
 			Byte indiceColor = newIndiceColors[i];
 			Color color = newColors[indiceColor];
 			GL11.glColor3f(color.getRed(), color.getGreen(), color.getBlue());
-			GL11.glVertex3f(vec.getX(), vec.getY(), vec.getZ());
+			GL11.glVertex3f(vec.getX()+position.getX(), vec.getY()+position.getY(), vec.getZ()+position.getZ());
 		}
 		// End the recording of the current display list.
 		GL11.glEndList();

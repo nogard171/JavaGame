@@ -12,6 +12,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.Color;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
@@ -47,12 +48,21 @@ public class Application extends GLWindow
 		 * ; // load texture from PNG file textureID = texture.getTextureID(); }
 		 * catch (IOException e) { e.printStackTrace(); }
 		 */
-		cube = new Loader().loadVoxel("resources/voxel/voxel.obj");
-
+		//cube = new Loader().loadVoxel("resources/voxel/voxel.obj");
+		for (int x = 0; x < 50; x++)
+		{
+			for (int z = 0; z < 50; z++)
+			{
+				for (int y = 0; y < 1; y++)
+				{
+					voxels.add(new Loader().loadVoxel("resources/voxel/voxel.obj", new Vector3f(x,y,z)));
+				}
+			}
+		}
 	}
 
 	Voxel cube = null;
-
+	ArrayList<Voxel> voxels = new ArrayList<Voxel>();
 	@Override
 	public void Render()
 	{
@@ -66,17 +76,24 @@ public class Application extends GLWindow
 		 * GL11.glBegin(GL11.GL_TRIANGLES); GL11.glCallList(cube.getDlID());
 		 * GL11.glEnd(); GL11.glPopMatrix(); } } }
 		 */
-		for (int x = 0; x < 20; x++)
+		/*for (int x = 0; x < 100; x++)
 		{
-			for (int z = 0; z < 20; z++)
+			for (int z = 0; z < 100; z++)
 			{
-				GL11.glPushMatrix();
-				GL11.glTranslated(x, 0, z);
+				//GL11.glPushMatrix();
+				//GL11.glTranslated(x, 0, z);
 				GL11.glBegin(GL11.GL_TRIANGLES);
 				GL11.glCallList(cube.getDlID());
 				GL11.glEnd();
-				GL11.glPopMatrix();
+				//GL11.glPopMatrix();
 			}
+		}*/
+		for(Voxel voxel:voxels)
+		{
+			
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			GL11.glCallList(voxel.getDlID());
+			GL11.glEnd();
 		}
 	}
 

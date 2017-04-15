@@ -31,7 +31,7 @@ public class GLWindow
 	static int HEIGHT = 600;
 	int MAXFPS = 120;
 	// the farest rendering distance
-	int FARVIEW = 50;
+	int FARVIEW = 30;
 	int FOV = 45;
 
 	private static long lastFrame;
@@ -103,7 +103,7 @@ public class GLWindow
 		//glEnable(GL_BLEND);
 		 //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
-		//glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 		
 		
 
