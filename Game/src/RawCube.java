@@ -51,7 +51,8 @@ public class RawCube
 			5,1,4,
 			4,7,5
 			
-	};int[] colorIndices = {
+	};
+	int[] colorIndices = {
 			//west
 			0,0,0,
 			0,0,0,
