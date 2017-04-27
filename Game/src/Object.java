@@ -16,28 +16,61 @@ public class Object extends ObjectData
 
 	public void SetPosition(Point newPosition)
 	{
-		this._bounds = new Rectangle(newPosition.getX(), newPosition.getY(), this._bounds.width, this._bounds.height);
+		this._bounds = new Rectangle(newPosition.getX(), newPosition.getY() - 32, this._bounds.width,
+				this._bounds.height);
 	}
 
-	public void SetPosition(int x, int y)
+	public void SetPosition(float x, float y)
 	{
-		this._bounds = new Rectangle(x, y, this._bounds.width, this._bounds.height);
+		this._bounds = new Rectangle((int) x, (int) y, this._bounds.width, this._bounds.height);
 	}
 
 	Direction direction = Direction.NORTH;
 	Direction collisionDir = Direction.NONE;
 	public org.lwjgl.util.Point texture_Coords = new Point(0, 0);
 	float tex_X = 0;
-	public Color color = Color.white;
+	public Color color = new Color(255, 255,255);
+	private boolean hovered = false;
+	public boolean isSolid = false;
 
-	public void move(int x, int y)
+	public boolean isSolid()
 	{
-		int xSpeed = getPosition().getX();
-		int rSpeed = 0;
-		int lSpeed = 0;
-		int ySpeed = getPosition().getY();
-		int nSpeed = 0;
-		int sSpeed =0;
+		return isSolid;
+	}
+
+	public void setSolid(boolean isSolid)
+	{
+		this.isSolid = isSolid;
+	}
+
+	public boolean isHovered()
+	{
+		return hovered;
+	}
+
+	public void setHovered(boolean hovered)
+	{
+		this.hovered = hovered;
+	}
+
+	public Color getColor()
+	{
+		return color;
+	}
+
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
+
+	public void move(float x, float y)
+	{
+		float xSpeed = getPosition().getX();
+		float rSpeed = 0;
+		float lSpeed = 0;
+		float ySpeed = getPosition().getY();
+		float nSpeed = 0;
+		float sSpeed = 0;
 
 		if (x < 0)
 		{
@@ -63,31 +96,30 @@ public class Object extends ObjectData
 			direction = Direction.SOUTH;
 			this.texture_Coords = new Point(0, 0);
 		}
-		
-		if(collisionDirection.contains(Direction.EAST))
+
+		if (collisionDirection.contains(Direction.EAST))
 		{
 			rSpeed = 0;
-			//rSpeed=backStep;
+			// rSpeed=backStep;
 		}
-		if(collisionDirection.contains(Direction.WEST))
+		if (collisionDirection.contains(Direction.WEST))
 		{
-			//xSpeed+=backStep;
+			// xSpeed+=backStep;
 			lSpeed = 0;
 		}
-	
-		
-		if(collisionDirection.contains(Direction.NORTH))
+
+		if (collisionDirection.contains(Direction.NORTH))
 		{
 			nSpeed = 0;
 		}
-		if(collisionDirection.contains(Direction.SOUTH))
+		if (collisionDirection.contains(Direction.SOUTH))
 		{
 			sSpeed = 0;
 		}
-		
-		xSpeed += rSpeed+lSpeed;
-		ySpeed += nSpeed+sSpeed;
-				
+
+		xSpeed += rSpeed + lSpeed;
+		ySpeed += nSpeed + sSpeed;
+
 		if (x != 0 || y != 0)
 		{
 			this.setTextureX(tex_X);
@@ -96,8 +128,7 @@ public class Object extends ObjectData
 				tex_X = 0;
 			}
 			tex_X += 0.05;
-		}
-		else
+		} else
 		{
 			this.setTextureX(0);
 		}
@@ -111,15 +142,19 @@ public class Object extends ObjectData
 		}
 
 	}
+
 	ArrayList<Direction> collisionDirection = new ArrayList<Direction>();
+
 	public void setTextureX(float value)
 	{
 		this.texture_Coords = new Point((int) value, this.texture_Coords.getY());
 	}
+
 	public void setTextureY(float value)
 	{
-		this.texture_Coords = new Point(this.texture_Coords.getX(),(int) value);
+		this.texture_Coords = new Point(this.texture_Coords.getX(), (int) value);
 	}
+
 	public Dimension getSize()
 	{
 		return new Dimension(this._bounds.width, this._bounds.height);
