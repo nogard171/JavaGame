@@ -32,6 +32,7 @@ public class Object extends ObjectData
 	public Color color = new Color(255, 255,255);
 	private boolean hovered = false;
 	public boolean isSolid = false;
+	int level = 0;
 
 	public boolean isSolid()
 	{

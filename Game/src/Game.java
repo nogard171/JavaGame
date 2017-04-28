@@ -62,6 +62,16 @@ public class Game extends GLWindow
 		sprite30.sprite_size = new Point(32, 64);
 		sprites.put("PLAYER", sprite30);
 
+		Sprite sprite31 = new Sprite();
+		sprite31.texture = this.getTexture("res/img/tree.png");
+		sprite31.sprite_size = new Point(32, 32);
+		sprites.put("TREE", sprite31);
+
+		Sprite sprite32 = new Sprite();
+		sprite32.texture = this.getTexture("res/img/tree_top.png");
+		sprite32.sprite_size = new Point(32, 32);
+		sprites.put("TREETOP", sprite32);
+
 		haspMapObject = new HashMap<Point, Object>();
 
 		map = new int[200][200];
@@ -76,11 +86,10 @@ public class Game extends GLWindow
 
 				int height = map[x][y];
 				System.out.println("done:" + height);
-				//obj._type = getTypeByHeight(height);
-				//obj._name = getTypeByHeight(height);
+				// obj._type = getTypeByHeight(height);
+				// obj._name = getTypeByHeight(height);
 				this.setPropertiesByHeight(obj, height);
-				
-				
+
 				if (y - 1 >= 0 && y + 1 < map[x].length && x - 1 >= 0 && x + 1 < map.length)
 				{
 					String northType = getTypeByHeight(map[x][y - 1]);
@@ -117,7 +126,16 @@ public class Game extends GLWindow
 
 		}
 		Object obj = new Object();
-		obj._name = "PLAYER";
+		obj._name = "OTHER";
+		obj._type = "TREE";
+		obj.SetPosition(-32, -32);
+		obj.setSolid(true);
+		obj.setSize(32, 32);
+		objects.add(obj);
+		
+		
+		obj = new Object();
+		obj._name = "OTHER";
 		obj._type = "PLAYER";
 		if (playerposition != null)
 		{
@@ -128,6 +146,14 @@ public class Game extends GLWindow
 		}
 
 		obj.setSize(32, 64);
+		objects.add(obj);
+		
+		
+		obj = new Object();
+		obj._name = "OTHER";
+		obj._type = "TREETOP";
+		obj.SetPosition(-32, -64);
+		obj.setSize(32, 32);
 		objects.add(obj);
 
 		// addObject("PLAYER", "", new Dimension(32, 64), null);
@@ -150,6 +176,7 @@ public class Game extends GLWindow
 		}
 		return type;
 	}
+
 	public void setPropertiesByHeight(Object obj, int height)
 	{
 		String type = "GRASS";
@@ -169,6 +196,7 @@ public class Game extends GLWindow
 		}
 		obj.setType(type);
 	}
+
 	int[][] map = new int[200][200];
 	Random r = new Random();
 
@@ -267,7 +295,18 @@ public class Game extends GLWindow
 		}
 		return newObjects;
 	}
-
+	public Object getObjectByType(String type)
+	{
+		Object newObjects = null;
+		for (Object obj : objects)
+		{
+			if (obj._type == type)
+			{
+				newObjects = obj;
+			}
+		}
+		return newObjects;
+	}
 	public Object getHashMapObject(String name)
 	{
 		Object newObjects = null;
@@ -333,7 +372,7 @@ public class Game extends GLWindow
 		}
 		// (this.Width / 2) - (player.width / 2), (this.Height / 2) -
 		// (player.height / 2)
-		Object player = getObject("PLAYER");
+		Object player = getObjectByType("PLAYER");
 		if (player != null)
 		{
 			float xSpeed = 0;
@@ -400,14 +439,14 @@ public class Game extends GLWindow
 				if (obj._bounds.contains(new java.awt.Point((int) this.camera.getX() + Mouse.getX(),
 						(int) this.camera.getY() + (-Mouse.getY() + Display.getHeight()))))
 				{
-					obj.setColor(new Color(255, 0, 0));
+					// obj.setColor(new Color(255, 0, 0));
 					obj.setHovered(true);
 				} else
 				{
-					obj.setColor(new Color(255, 255, 255));
+					// obj.setColor(new Color(255, 255, 255));
 					obj.setHovered(false);
 				}
-				if (obj.isHovered() && Mouse.isButtonDown(0)&&!obj.isSolid())
+				if (obj.isHovered() && Mouse.isButtonDown(0) && !obj.isSolid())
 				{
 					objClicked = obj;
 				}
@@ -418,7 +457,6 @@ public class Game extends GLWindow
 		for (Object obj : collisionObjects)
 		{
 			double angle = GetAngleOfLineBetweenTwoPoints(obj.getPosition(), player.getPosition());
-			System.out.println("angle:" + angle);
 			if (angle > 316 || angle <= 44 && obj.getPosition().getX() <= player.getPosition().getX() + 8)
 			{
 				// System.out.println("LEFT");
@@ -426,7 +464,6 @@ public class Game extends GLWindow
 			}
 			if (angle > 46 && angle <= 134 && obj.getPosition().getY() <= player.getPosition().getY() + 8)
 			{
-				System.out.println("NORTH");
 				player.collisionDirection.add(Direction.NORTH);
 			}
 			if (angle > 136 && angle <= 224 && obj.getPosition().getX() >= player.getPosition().getX() - 8)
@@ -443,9 +480,9 @@ public class Game extends GLWindow
 		}
 		setDisplayObject();
 
-		
 		super.keyboard.endPoll();
 	}
+
 	Object objClicked = null;
 
 	public static double GetAngleOfLineBetweenTwoPoints(Point p1, Point p2)
@@ -480,20 +517,25 @@ public class Game extends GLWindow
 	public boolean collision(Object obj, Object obj2)
 	{
 		boolean collides = false;
-		if (((obj2.getPosition().getX() >= obj.getPosition().getX()
-				&& obj2.getPosition().getX() <= obj.getPosition().getX() + obj.getSize().getWidth())
-				|| (obj2.getPosition().getX() + obj2.getSize().getWidth() >= obj.getPosition().getX()
-						&& obj2.getPosition().getX() + obj2.getSize().getWidth() <= obj.getPosition().getX()
-								+ obj.getSize().getWidth()))
-				&& ((obj2.getPosition().getY() >= obj.getPosition().getY() && obj2.getPosition().getY()
-						+ (obj2.getSize().getHeight() / 2) <= obj.getPosition().getY() + obj.getSize().getHeight())
-						|| (obj2.getPosition().getY() + obj2.getSize().getHeight() >= obj.getPosition().getY()
-								&& obj2.getPosition().getY() + obj2.getSize().getHeight() <= obj.getPosition().getY()
-										+ obj.getSize().getHeight())
-						|| (obj2.getPosition().getY() <= obj.getPosition().getY() && obj2.getPosition().getY()
-								+ obj2.getSize().getHeight() >= obj.getPosition().getY() + obj.getSize().getHeight())))
+		if (obj2 != null && obj != null)
 		{
-			collides = true;
+			if (((obj2.getPosition().getX() >= obj.getPosition().getX()
+					&& obj2.getPosition().getX() <= obj.getPosition().getX() + obj.getSize().getWidth())
+					|| (obj2.getPosition().getX() + obj2.getSize().getWidth() >= obj.getPosition().getX()
+							&& obj2.getPosition().getX() + obj2.getSize().getWidth() <= obj.getPosition().getX()
+									+ obj.getSize().getWidth()))
+					&& ((obj2.getPosition().getY() >= obj.getPosition().getY() && obj2.getPosition().getY()
+							+ (obj2.getSize().getHeight() / 2) <= obj.getPosition().getY() + obj.getSize().getHeight())
+							|| (obj2.getPosition().getY() + obj2.getSize().getHeight() >= obj.getPosition().getY()
+									&& obj2.getPosition().getY()
+											+ obj2.getSize().getHeight() <= obj.getPosition().getY()
+													+ obj.getSize().getHeight())
+							|| (obj2.getPosition().getY() <= obj.getPosition().getY() && obj2.getPosition().getY()
+									+ obj2.getSize().getHeight() >= obj.getPosition().getY()
+											+ obj.getSize().getHeight())))
+			{
+				collides = true;
+			}
 		}
 		return collides;
 	}
@@ -553,6 +595,14 @@ public class Game extends GLWindow
 					}
 				}
 			}
+			ArrayList<Object> newObjects = getObjects("OTHER");
+			if (newObjects != null)
+			{
+				for (Object obj : newObjects)
+				{
+					diaplayObjects.add(obj);
+				}
+			}
 			// diaplayObjects.add(this.getObject("PLAYER"));
 		}
 	}
@@ -564,18 +614,6 @@ public class Game extends GLWindow
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
 		for (Object obj : diaplayObjects)
-		{
-			if (obj != null)
-			{
-				GL11.glPushMatrix();
-				GL11.glTranslatef(obj.getPosition().getX(), obj.getPosition().getY(), 0);
-				Sprite sprite = getSprite(obj);
-				sprite.color = obj.color;
-				sprite.Render();
-				GL11.glPopMatrix();
-			}
-		}
-		for (Object obj : objects)
 		{
 			if (obj != null)
 			{
