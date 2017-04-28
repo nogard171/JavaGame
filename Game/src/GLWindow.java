@@ -164,7 +164,10 @@ public class GLWindow
 	public void renderQuad(GLQuad quad)
 	{
 		GL11.glBegin(GL11.GL_TRIANGLES);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, quad.getTextureID());
+		if(quad.getTextureID()!=-1)
+		{
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, quad.getTextureID());
+		}
 		GL11.glCallList(quad.getDisplayID());
 		GL11.glEnd();
 	}

@@ -3,6 +3,7 @@ import java.awt.Polygon;
 public class GLQuad
 {
 	private int displayID = -1;
+	private int[] displayIDs = {};
 	private int textureID = -1;
 	private Polygon bounds = null;
 

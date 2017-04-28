@@ -11,6 +11,7 @@ public class GLRawQuad
 	public byte[] indices = {};
 	public Color[] indiceColor= {};
 	public Vector2f[] vectorTextures = {};
+	public byte[] bones = {};
 	public String textureLocation = "";
 	public Polygon bounds = null;
 }

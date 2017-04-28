@@ -25,6 +25,7 @@ public class Loader
 		ArrayList<Vector2f> newVectorTetxures = new ArrayList<Vector2f>();
 		String texture = "";
 		ArrayList<Integer> boundIndices = new ArrayList<Integer>();
+		ArrayList<Byte> newBones = new ArrayList<Byte>();
 
 		Random ran = new Random();
 
@@ -61,6 +62,9 @@ public class Loader
 				} else if (descripter.equals("materal"))
 				{
 					texture = breakDown[1];
+				}else if (descripter.equals("b"))
+				{
+					newBones.add(Byte.parseByte(breakDown[1]));
 				}
 				else if (descripter.equals("bounds"))
 				{
@@ -80,6 +84,7 @@ public class Loader
 		raw.indices = new byte[newIndices.size()];
 		raw.indiceColor = new Color[newVectorColors.size()];
 		raw.vectorTextures = new Vector2f[newVectorTetxures.size()];
+		raw.bones = new byte[newBones.size()];
 
 		for (int v = 0; v < raw.vectors.length; v++)
 		{
@@ -89,6 +94,11 @@ public class Loader
 		for (int i = 0; i < raw.indices.length; i++)
 		{
 			raw.indices[i] = newIndices.get(i);
+		}
+
+		for (int i = 0; i < raw.bones.length; i++)
+		{
+			raw.bones[i] = newBones.get(i);
 		}
 
 		for (int ic = 0; ic < raw.indiceColor.length; ic++)
@@ -185,23 +195,22 @@ public class Loader
 
 			Vector2f vec = raw.vectors[indice];
 
-			if (raw.indiceColor.length != 0)
-			{
-				Color vectorColor = raw.indiceColor[(int) (index / 3)];
-				GL11.glColor3f(vectorColor.r, vectorColor.g, vectorColor.b);
-			}
+			
 			if (raw.vectorTextures.length != 0)
 			{
 				Vector2f vectorTexture = raw.vectorTextures[indice];
 				GL11.glTexCoord2f(vectorTexture.x, vectorTexture.y);
 			}
-
+			if (raw.indiceColor.length != 0)
+			{
+				Color vectorColor = raw.indiceColor[(int) (index / 3)];
+				GL11.glColor3f(vectorColor.r, vectorColor.g, vectorColor.b);
+			}
 			GL11.glVertex2i((int) vec.x, (int) vec.y);
 			index++;
 		}
 
 		GL11.glEndList();
-
 		return gLQuad;
 	}
 }

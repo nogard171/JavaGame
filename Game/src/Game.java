@@ -44,6 +44,7 @@ public class Game extends GLWindow
 
 		GLQuad grass = new Loader().loadGLQuadFromFile("res/quads/grass.quad");
 		GLQuad tree = new Loader().loadGLQuadFromFile("res/quads/tree.quad");
+		GLQuad grid = new Loader().loadGLQuadFromFile("res/quads/grid.quad");
 
 		for (int x = 0; x < 10; x++)
 		{
@@ -66,6 +67,13 @@ public class Game extends GLWindow
 		gLObject2.setQuad(tree);
 		gLObject2.setPosition(new Vector3f(getObjectByType("grass").get(0).getPosition().getX(),getObjectByType("grass").get(0).getPosition().getY()+24,0));
 		objects.add(gLObject2);
+		
+		
+		GLObject gLObject3 = new GLObject();
+		gLObject3.type = "hover";
+		gLObject3.setQuad(grid);
+		gLObject3.setPosition(new Vector3f(0,0,0));
+		objects.add(gLObject3);
 
 	}
 
@@ -82,7 +90,7 @@ public class Game extends GLWindow
 		{
 			if(object.getBounds().contains(this.getMousePosition()))
 			{
-				//getObjectByType("tree").get(0).setPosition(new Vector3f(object.getPosition().getX(),object.getPosition().getY()+24,0));
+				getObjectByType("hover").get(0).setPosition(new Vector3f(object.getPosition().getX(),object.getPosition().getY(),0));
 			}
 		}
 		
