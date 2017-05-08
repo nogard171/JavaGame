@@ -22,7 +22,7 @@ public class GLWindow {
 	int _defaultHeight = 600;
 	int _width = 800;
 	int _height = 600;
-	int _fps = 120;
+	int _fps = 300;
 	boolean Fullscreen = false;
 	boolean resizable = true;
 	boolean vsync;

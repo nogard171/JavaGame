@@ -72,6 +72,16 @@ public class Game extends GLWindow
 		sprite32.texture = this.getTexture("res/img/tree_top.png");
 		sprite32.sprite_size = new Point(32, 32);
 		sprites.put("TREETOP", sprite32);
+		
+		Sprite sprite33 = new Sprite();
+		sprite33.texture = this.getTexture("res/img/grass_blades.png");
+		sprite33.sprite_size = new Point(32, 32);
+		sprites.put("GRASSBLADES", sprite33);
+		
+		Sprite sprite34 = new Sprite();
+		sprite34.texture = this.getTexture("res/img/rock.png");
+		sprite34.sprite_size = new Point(32, 32);
+		sprites.put("ROCK", sprite34);
 
 		haspMapObject = new HashMap<Point, Object>();
 
@@ -92,9 +102,9 @@ public class Game extends GLWindow
 			for (int y = 0; y < map[0].length; y++)
 			{
 				Object obj = new Object();
-
+				obj.setSolid(false);
 				int height = map[x][y];
-				System.out.println("done:" + height);
+				//System.out.println("done:" + height);
 				// obj._type = getTypeByHeight(height);
 				// obj._name = getTypeByHeight(height);
 				this.setPropertiesByHeight(obj, height);
@@ -136,12 +146,34 @@ public class Game extends GLWindow
 					obj.setSize(32, 32);
 					objects.add(obj);
 				}
-
+				Result = r.nextInt(100 - 1) + 1;
+				if (Result <= 50&&obj.getType()=="GRASS")
+				{
+					obj = new Object();
+					obj._name = "OTHER";
+					obj._type = "GRASSBLADES";
+					obj.SetPosition(x * 32, y * 32);
+					obj.setSize(32, 32);
+					objects.add(obj);
+				}
+				
+				Result = r.nextInt(100 - 1) + 1;
+				if (Result <= 10&&obj.getType()=="SAND")
+				{
+					obj = new Object();
+					obj._name = "OTHER";
+					obj._type = "ROCK";
+					obj.SetPosition(x * 32, y * 32);
+					obj.setSolid(true);
+					obj.setSize(32, 32);
+					objects.add(obj);
+				}
 			}
 		}
 		Random ran = new Random();
 		ArrayList<Object> grass = this.getHashMapObjects("GRASS");
 		int amount = 1;
+		System.out.println("GRASS Count:" + grass.size());
 		if (grass.size() <= 0)
 		{
 			amount = grass.size();
@@ -194,6 +226,7 @@ public class Game extends GLWindow
 	public void setPropertiesByHeight(Object obj, int height)
 	{
 		String type = "GRASS";
+		obj.setSolid(false);
 		if (height < 0)
 		{
 			type = "DEEP";
@@ -203,7 +236,6 @@ public class Game extends GLWindow
 			type = "SHALLOW";
 			obj.setSolid(true);
 		}
-
 		else if (height >= 10 && height < 15)
 		{
 			type = "SAND";
@@ -340,7 +372,7 @@ public class Game extends GLWindow
 		return newObjects;
 	}
 
-	public ArrayList<Object> getHashMapObjects(String name)
+	public ArrayList<Object> getHashMapObjects(String type)
 	{
 		ArrayList<Object> newObjects = new ArrayList<Object>();
 		for (int x = 0; x < map.length; x++)
@@ -348,7 +380,7 @@ public class Game extends GLWindow
 			for (int y = 0; y < map[0].length; y++)
 			{
 				Object obj = haspMapObject.get(new Point(x, y));
-				if (obj._name == name)
+				if (obj._type == type)
 				{
 					newObjects.add(obj);
 				}
@@ -380,7 +412,7 @@ public class Game extends GLWindow
 	public void Update(int delta)
 	{
 		super.Update(delta);
-		float speed = delta / 6;
+		float speed = delta/6;
 
 		if (keyboard.keyPressed(Keyboard.KEY_LSHIFT))
 		{
@@ -411,23 +443,23 @@ public class Game extends GLWindow
 			}
 
 			player.move(xSpeed, ySpeed);
-			if (player.getPosition().getX() < camera.x + 100)
+			if (player.getPosition().getX() < camera.x + 200)
 			{
 
 				camera.x -= speed;
 			}
-			if (player.getPosition().getX() > (camera.x + super._width) - 132)
+			if (player.getPosition().getX() > (camera.x + super._width) - 232)
 			{
 
 				camera.x += speed;
 			}
 
-			if (player.getPosition().getY() + (player.getSize().getHeight() / 2) < camera.y + 100)
+			if (player.getPosition().getY() + (player.getSize().getHeight() / 2) < camera.y + 200)
 			{
 
 				camera.y -= speed;
 			}
-			if (player.getPosition().getY() > (camera.y + super._height) - 132)
+			if (player.getPosition().getY() > (camera.y + super._height) - 232)
 			{
 
 				camera.y += speed;
