@@ -1,5 +1,6 @@
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.Window.Type;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
@@ -78,6 +79,14 @@ public class Game extends GLWindow
 
 		domidpoint();
 
+		/*for (int x = 0; x < map.length; x++)
+		{
+			for (int y = 0; y < map[0].length; y++)
+			{
+				map[x][y] = 20;
+			}
+		}*/
+
 		for (int x = 0; x < map.length; x++)
 		{
 			for (int y = 0; y < map[0].length; y++)
@@ -108,6 +117,26 @@ public class Game extends GLWindow
 				obj.SetPosition(x * 32, y * 32);
 
 				haspMapObject.put(new Point(x, y), obj);
+
+				int Result = r.nextInt(100 - 1) + 1;
+				if (Result <= 10&&obj.getType()=="GRASS")
+				{
+					obj = new Object();
+					obj._name = "OTHER";
+					obj._type = "TREE";
+					obj.SetPosition(x * 32, y * 32);
+					obj.setSolid(true);
+					obj.setSize(32, 32);
+					objects.add(obj);
+
+					obj = new Object();
+					obj._name = "OTHERTOP";
+					obj._type = "TREETOP";
+					obj.SetPosition(x * 32, (y * 32) - 32);
+					obj.setSize(32, 32);
+					objects.add(obj);
+				}
+
 			}
 		}
 		Random ran = new Random();
@@ -126,14 +155,7 @@ public class Game extends GLWindow
 
 		}
 		Object obj = new Object();
-		obj._name = "OTHER";
-		obj._type = "TREE";
-		obj.SetPosition(-32, -32);
-		obj.setSolid(true);
-		obj.setSize(32, 32);
-		objects.add(obj);
-		
-		
+
 		obj = new Object();
 		obj._name = "OTHER";
 		obj._type = "PLAYER";
@@ -146,14 +168,6 @@ public class Game extends GLWindow
 		}
 
 		obj.setSize(32, 64);
-		objects.add(obj);
-		
-		
-		obj = new Object();
-		obj._name = "OTHER";
-		obj._type = "TREETOP";
-		obj.SetPosition(-32, -64);
-		obj.setSize(32, 32);
 		objects.add(obj);
 
 		// addObject("PLAYER", "", new Dimension(32, 64), null);
@@ -295,6 +309,7 @@ public class Game extends GLWindow
 		}
 		return newObjects;
 	}
+
 	public Object getObjectByType(String type)
 	{
 		Object newObjects = null;
@@ -307,6 +322,7 @@ public class Game extends GLWindow
 		}
 		return newObjects;
 	}
+
 	public Object getHashMapObject(String name)
 	{
 		Object newObjects = null;
@@ -596,6 +612,14 @@ public class Game extends GLWindow
 				}
 			}
 			ArrayList<Object> newObjects = getObjects("OTHER");
+			if (newObjects != null)
+			{
+				for (Object obj : newObjects)
+				{
+					diaplayObjects.add(obj);
+				}
+			}
+			newObjects = getObjects("OTHERTOP");
 			if (newObjects != null)
 			{
 				for (Object obj : newObjects)
