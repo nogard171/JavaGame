@@ -36,7 +36,7 @@ public class Game extends GLWindow
 		Game displayExample = new Game();
 		displayExample.start();
 	}
-	
+
 	@Override
 	public void onInitilization()
 	{
@@ -50,29 +50,42 @@ public class Game extends GLWindow
 		{
 			for (int z = 0; z < 10; z++)
 			{
-					int newX = x * 64;
-					int newZ = z * 64;
-					int finalX = (newX / 2) - (newZ / 2);
-					int finalZ = -(newZ / 4) - (newX / 4);
-					GLObject gLObject = new GLObject();
-					gLObject.setQuad(grass);
-					gLObject.type = "grass";
-					gLObject.setPosition(new Vector3f(finalX, finalZ, 0));
-					objects.add(gLObject);
+				int newX = x * 64;
+				int newZ = z * 64;
+				int finalX = (newX / 2) - (newZ / 2);
+				int finalZ = -(newZ / 4) - (newX / 4);
+				GLObject gLObject = new GLObject();
+				gLObject.setQuad(grass);
+				gLObject.type = "grass";
+
+				int Result = random.nextInt(100 - 0) + 0;
+
+				if (Result < 10)
+				{
+					gLObject.setQuad(null);
+					gLObject.type = "blank";
+				}
+
+				gLObject.setPosition(new Vector3f(finalX, finalZ, 0));
+				objects.add(gLObject);
+
+				Result = random.nextInt(100 - 0) + 0;
+
+				if (Result < 10)
+				{
+					GLObject gLObject2 = new GLObject();
+					gLObject2.type = "tree";
+					gLObject2.setQuad(tree);
+					gLObject2.setPosition(new Vector3f(finalX, finalZ + 24, 0));
+					objects.add(gLObject2);
+				}
 			}
 		}
-		
-		GLObject gLObject2 = new GLObject();
-		gLObject2.type = "tree";
-		gLObject2.setQuad(tree);
-		gLObject2.setPosition(new Vector3f(getObjectByType("grass").get(0).getPosition().getX(),getObjectByType("grass").get(0).getPosition().getY()+24,0));
-		objects.add(gLObject2);
-		
-		
+
 		GLObject gLObject3 = new GLObject();
 		gLObject3.type = "hover";
 		gLObject3.setQuad(grid);
-		gLObject3.setPosition(new Vector3f(0,0,0));
+		gLObject3.setPosition(new Vector3f(0, 0, 0));
 		objects.add(gLObject3);
 
 	}
@@ -85,30 +98,31 @@ public class Game extends GLWindow
 	public void onUpdate()
 	{
 		super.onUpdate();
-		
-		for(GLObject object:this.objects)
+
+		for (GLObject object : this.objects)
 		{
-			if(object.getBounds().contains(this.getMousePosition()))
+			if (object.getBounds().contains(this.getMousePosition()))
 			{
-				getObjectByType("hover").get(0).setPosition(new Vector3f(object.getPosition().getX(),object.getPosition().getY(),0));
+				getObjectByType("hover").get(0)
+						.setPosition(new Vector3f(object.getPosition().getX(), object.getPosition().getY(), 0));
 			}
 		}
-		
+
 		super.keyboard.endPoll();
 	}
-	
+
 	public ArrayList<GLObject> getObjectByType(String type)
 	{
 		ArrayList<GLObject> newObjects = new ArrayList<GLObject>();
-		
-		for(GLObject object:this.objects)
+
+		for (GLObject object : this.objects)
 		{
-			if(object.type.toLowerCase()==type.toLowerCase())
+			if (object.type.toLowerCase() == type.toLowerCase())
 			{
 				newObjects.add(object);
 			}
 		}
-		
+
 		return newObjects;
 	}
 
@@ -141,15 +155,18 @@ public class Game extends GLWindow
 		GL11.glPushMatrix();
 		GL11.glTranslatef(-camera.x, -camera.y, 0);
 
-		for(GLObject object:this.objects)
+		for (GLObject object : this.objects)
 		{
-			GL11.glPushMatrix();
-			GL11.glTranslatef(object.getPosition().getX() + object.getOffset().x,
-					object.getPosition().getY() + object.getOffset().y, object.getPosition().getZ());
+			if (object.getQuad() != null)
+			{
+				GL11.glPushMatrix();
+				GL11.glTranslatef(object.getPosition().getX() + object.getOffset().x,
+						object.getPosition().getY() + object.getOffset().y, object.getPosition().getZ());
 
-			super.renderQuad(object.getQuad());
+				super.renderQuad(object.getQuad());
 
-			GL11.glPopMatrix();
+				GL11.glPopMatrix();
+			}
 		}
 
 		GL11.glPopMatrix();
@@ -158,9 +175,7 @@ public class Game extends GLWindow
 	@Override
 	public void onDestroy()
 	{
-		
-		
+
 	}
 
-	
 }
