@@ -1,5 +1,5 @@
 
 public enum Type
 {
-GRASS,DIRT;
+AIR,GRASS,DIRT;
 }

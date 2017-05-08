@@ -31,14 +31,14 @@ public class GLWindow
 	static int HEIGHT = 600;
 	int MAXFPS = 120;
 	// the farest rendering distance
-	int FARVIEW = 30;
+	int FARVIEW = -30;
 	int FOV = 45;
 
 	private static long lastFrame;
 	private long lastFPS;
 
 	float MOUSESENSITIVITY = .5f;
-	float MOVEMENTSPEED = 10.0f;
+	float MOVEMENTSPEED = 100.0f;
 	Camera camera = new Camera(0,0,0);
 	boolean MOUSEFOCUS = true;
 	int MOUSEDX = 0;
@@ -125,7 +125,7 @@ public class GLWindow
 			// controll camera pitch from y movement fromt the mouse
 			camera.setPitch(this.MOUSEDY * this.MOUSESENSITIVITY);
 
-			float speed = (float) (delta / 100);
+			float speed = (float) (delta / 25);
 
 			// System.out.println("Angle:" + (angle));
 			float x_Speed = 0f;
@@ -134,12 +134,12 @@ public class GLWindow
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_W))
 			{
-				x_Speed = speed;
+				x_Speed = -speed;
 			}
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_S)) // move
 			{
-				x_Speed = -speed;
+				x_Speed = speed;
 			}
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_A))
@@ -163,8 +163,8 @@ public class GLWindow
 			this.camera.walk(x_Speed);
 			this.camera.fly(y_Speed);
 
-			camera.lookAtVector3f(new Vector3f(1,0,1));
-			//camera.lookThrough();
+			//camera.lookAtVector3f(new Vector3f(1,0,1));
+			camera.lookThrough();
 		}
 	}
 

@@ -21,7 +21,7 @@ public class Loader
 	public Voxel loadVoxel(String file, Vector3f position)
 	{
 		Voxel voxel = new Voxel();
-
+		voxel.setPosition(position);
 		ArrayList<Vector3f> vecs = new ArrayList<Vector3f>();
 		ArrayList<Byte> indices = new ArrayList<Byte>();
 		ArrayList<Vector3f> norms = new ArrayList<Vector3f>();
@@ -46,7 +46,6 @@ public class Loader
 							Float.parseFloat(data[3])));
 				} else if (operator.equals("i"))
 				{
-					System.out.println("Vector");
 					indices.add(Byte.parseByte(data[1]));
 					indices.add(Byte.parseByte(data[2]));
 					indices.add(Byte.parseByte(data[3]));
@@ -104,7 +103,6 @@ public class Loader
 
 		// Start recording the new display list.
 		GL11.glNewList(dlID, GL11.GL_COMPILE);
-		System.out.println(newColors.length);
 		for (int i = 0; i < newIndices.length; i++)
 		{
 			Byte indice = newIndices[i];

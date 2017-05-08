@@ -11,7 +11,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
@@ -38,64 +37,50 @@ public class Application extends GLWindow
 	}
 
 	protected int textureID = -1;
-
+	float size = 1;
+	float degress = 95;
+	float startDegress = 85;
+	int chunk_size = 32;
 	@Override
 	public void Setup()
 	{
-		/*
-		 * try { Texture texture = TextureLoader.getTexture("PNG",
-		 * ResourceLoader.getResourceAsStream("resources/textures/tileset.PNG"))
-		 * ; // load texture from PNG file textureID = texture.getTextureID(); }
-		 * catch (IOException e) { e.printStackTrace(); }
-		 */
-		//cube = new Loader().loadVoxel("resources/voxel/voxel.obj");
-		for (int x = 0; x < 50; x++)
+		
+		for (int x = 0; x < chunk_size; x++)
 		{
-			for (int z = 0; z < 50; z++)
+			for (int z = 0; z < chunk_size; z++)
 			{
-				for (int y = 0; y < 1; y++)
+				for (int y = 0; y < chunk_size; y++)
 				{
-					voxels.add(new Loader().loadVoxel("resources/voxel/voxel.obj", new Vector3f(x,y,z)));
+					Voxel voxel = new Loader().loadVoxel("resources/voxel/voxel.obj",
+							new Vector3f(x * 1.01F, y * 1.01F, z * 1.01F));
+					voxels.add(voxel);
+					//voxels.put(x+","+y+","+z, voxel);
 				}
 			}
 		}
+
 	}
 
 	Voxel cube = null;
 	ArrayList<Voxel> voxels = new ArrayList<Voxel>();
+	//HashMap<String,Voxel> voxels = new HashMap<String,Voxel>();
+	ArrayList<Voxel> displayedVoxels = new ArrayList<Voxel>();
+	
+
 	@Override
 	public void Render()
 	{
 		super.Render();
-		/*
-		 * if (cube!=null) { for(int x=0;x<20;x++) { for(int z=0;z<20;z++) {
-		 * GL11.glPushMatrix(); GL11.glTranslatef(x, 0, z);
-		 * GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-		 * glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		 * glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		 * GL11.glBegin(GL11.GL_TRIANGLES); GL11.glCallList(cube.getDlID());
-		 * GL11.glEnd(); GL11.glPopMatrix(); } } }
-		 */
-		/*for (int x = 0; x < 100; x++)
+		for (Voxel voxel : voxels)
 		{
-			for (int z = 0; z < 100; z++)
-			{
-				//GL11.glPushMatrix();
-				//GL11.glTranslated(x, 0, z);
-				GL11.glBegin(GL11.GL_TRIANGLES);
-				GL11.glCallList(cube.getDlID());
-				GL11.glEnd();
-				//GL11.glPopMatrix();
-			}
-		}*/
-		for(Voxel voxel:voxels)
-		{
-			
 			GL11.glBegin(GL11.GL_TRIANGLES);
 			GL11.glCallList(voxel.getDlID());
 			GL11.glEnd();
 		}
+
 	}
+
+	float viewDistance = 500;
 
 	@Override
 	public void Update(double delta)
@@ -106,6 +91,18 @@ public class Application extends GLWindow
 		{
 			System.exit(0);
 		}
+		
+	}
 
+	public double distanceToDouble(Vector3f point, Vector3f secoundPoint)
+	{
+		return Math.sqrt(Math.pow(point.getX() - secoundPoint.getX(), 2)
+				+ Math.pow(point.getY() - secoundPoint.getY(), 2) + Math.pow(point.getZ() - secoundPoint.getZ(), 2));
+	}
+
+	public double distanceTo(Vector3f point, Vector3f secoundPoint)
+	{
+		return Math.sqrt(Math.pow(secoundPoint.getX() - point.getY(), 2)
+				+ Math.pow(secoundPoint.getY() - point.getY(), 2) + Math.pow(secoundPoint.getZ() - point.getZ(), 2));
 	}
 }
