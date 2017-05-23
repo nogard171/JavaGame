@@ -9,5 +9,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="resources/libraries/slick-util.jar"/>
+	<classpathentry kind="lib" path="resources/libraries/luaj-jse-3.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
