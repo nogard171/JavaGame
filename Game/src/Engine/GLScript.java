@@ -18,6 +18,27 @@ public class GLScript extends GLComponent {
 		this.setFilename(filename);
 		this.setName("script");
 	}
+	boolean loaded = false;
+	LuaValue chunk;
+	GLFramesPerSecond fps;
+
+	private void loadScript() {
+		GLObject obj = this.getObject();
+		if (obj != null) {
+			
+			fps = new GLFramesPerSecond();
+			
+			Globals globals = JsePlatform.standardGlobals();
+
+			globals.set("this", CoerceJavaToLua.coerce(obj));
+
+			globals.set("keyboard", CoerceJavaToLua.coerce(new GLKeyboard()));
+
+			globals.set("fps", CoerceJavaToLua.coerce(fps));
+
+			chunk = globals.loadfile(filename);
+		}
+	}
 
 	public String getFilename() {
 		return filename;
@@ -28,22 +49,20 @@ public class GLScript extends GLComponent {
 	}
 
 	public void Run() {
-		GLObject obj = this.getObject();		
-		if (obj != null) {
-			
-			Globals globals = JsePlatform.standardGlobals();
-			
-			globals.set("this", CoerceJavaToLua.coerce(obj));
-			
-			//globals.set("keyboard", CoerceJavaToLua.coerce());
-			
-			LuaValue chunk = globals.loadfile(filename);
+		if(!this.loaded)
+		{
+			this.loadScript();
+		}
+		if (chunk != null) {
 			chunk.call();
 		}
+
 	}
+
 	public GLWindow getWindow() {
 		return window;
 	}
+
 	public void setWindow(GLWindow window) {
 		this.window = window;
 	}
