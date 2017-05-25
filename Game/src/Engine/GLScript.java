@@ -18,7 +18,6 @@ public class GLScript extends GLComponent {
 		this.setFilename(filename);
 		this.setName("script");
 	}
-	boolean loaded = false;
 	LuaValue chunk;
 	GLFramesPerSecond fps;
 
@@ -49,7 +48,7 @@ public class GLScript extends GLComponent {
 	}
 
 	public void Run() {
-		if(!this.loaded)
+		if(chunk==null)
 		{
 			this.loadScript();
 		}
