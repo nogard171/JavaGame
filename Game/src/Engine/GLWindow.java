@@ -1,13 +1,17 @@
 package Engine;
 
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 
+import javax.swing.JOptionPane;
+
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+
+import Utils.ErrorHandler;
 
 public class GLWindow {
 
@@ -30,17 +34,25 @@ public class GLWindow {
 			this.Setup();
 
 			while (!Display.isCloseRequested()) {
+
+				if (Keyboard.next()) {
+					if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+						break;
+					}
+				}
+
 				this.Update();
 				this.Render();
 
 				Display.update();
 				Display.sync(FPS);
 			}
-			this.Destroy();
 
-		} catch (LWJGLException e) {
-			this.Destroy();
+		} catch (Exception e) {
+			new ErrorHandler();
+			ErrorHandler.LogError(e.getMessage());
 		}
+		this.Destroy();
 	}
 
 	GLFramesPerSecond fps;
@@ -71,7 +83,7 @@ public class GLWindow {
 
 	private void SetupViewPort() {
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		GL11.glMatrixMode(GL_PROJECTION);
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);

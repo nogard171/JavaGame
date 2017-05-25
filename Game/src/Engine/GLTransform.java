@@ -5,6 +5,15 @@ import org.lwjgl.util.vector.Vector2f;
 public class GLTransform extends GLComponent{
 	private Vector2f Position = new Vector2f(0, 0);
 	private float Rotation = 0;
+	private Vector2f Center = new Vector2f(16,16);
+
+	public Vector2f getCenter() {
+		return Center;
+	}
+
+	public void setCenter(Vector2f center) {
+		Center = center;
+	}
 
 	public GLTransform()
 	{
@@ -24,15 +33,19 @@ public class GLTransform extends GLComponent{
 	}
 	
 	public float getRotation() {
-		return Rotation;
+		return this.Rotation;
 	}
 
 	public void setRotation(float rotation) {
-		Rotation = rotation;
+		this.Rotation = rotation;
+	}
+	
+	public void Rotate(float amount) {
+		this.Rotation = this.getRotation()+amount;
 	}
 
 	public Vector2f getPosition() {
-		return Position;
+		return this.Position;
 	}
 
 	public void setPosition(float x, float y) {

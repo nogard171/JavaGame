@@ -1,6 +1,6 @@
-dofile "resources/keys.lua"
+dofile "system/scripts/keyboard_keys.lua"
 
-speed = fps:getDelta()*0.3f
+speed = fps:getDelta()*0.2f
 
 xSpeed = 0
 ySpeed = 0
@@ -23,3 +23,5 @@ end
 
 
 this:getComponent("transform"):Move(xSpeed,ySpeed)
+
+#this:getComponent("transform"):Rotate(1)

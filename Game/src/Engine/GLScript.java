@@ -34,7 +34,7 @@ public class GLScript extends GLComponent {
 			globals.set("keyboard", CoerceJavaToLua.coerce(new GLKeyboard()));
 
 			globals.set("fps", CoerceJavaToLua.coerce(fps));
-
+			
 			chunk = globals.loadfile(filename);
 		}
 	}
