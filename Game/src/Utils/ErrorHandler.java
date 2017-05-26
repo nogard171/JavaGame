@@ -12,7 +12,7 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 public class ErrorHandler {
-	private static String logfile = "sys/logs/errors.log";
+	private static String logfile = "system/logs/errors.log";
 
 	public static void LogError(String error) {
 		try {

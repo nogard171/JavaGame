@@ -1,0 +1,2 @@
+
+2017/05/26 16:26:52 Error: load resources/scripts/main.lua: org.luaj.vm2.LuaError: resources/scripts/main.lua:27: unexpected symbol 35 (#)

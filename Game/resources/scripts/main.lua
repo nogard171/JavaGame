@@ -24,4 +24,4 @@ end
 
 this:getComponent("transform"):Move(xSpeed,ySpeed)
 
-#this:getComponent("transform"):Rotate(1)
+--this:getComponent("transform"):Rotate(1)

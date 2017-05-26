@@ -8,6 +8,6 @@ out vec4 color;
 
 void main()
 {
-    //color = texture(myTexture, gl_TexCoord[0].st);
-    color = vertColor;
+    color = texture(myTexture, gl_TexCoord[0].st);
+    //color = vertColor;
 }

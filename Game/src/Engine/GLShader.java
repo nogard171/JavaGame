@@ -9,12 +9,20 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 public class GLShader extends GLComponent {
-	private int programID=-1;
-	private int vertexShader =-1;
-	private int fragmentShader =-1;
-	
-	public GLShader()
-	{
+	private int programID = -1;
+	private int vertexShader = -1;
+	private int fragmentShader = -1;
+
+	private String vertexShaderFile = "";
+	private String fragmentShaderFile = "";
+
+	public GLShader(String vertFile, String fragFile) {
+		this.setVertexShaderFile(vertFile);
+		this.setFragmentShaderFile(fragFile);
+		this.setName("shader");
+	}
+
+	public GLShader() {
 		this.setName("shader");
 	}
 
@@ -33,41 +41,59 @@ public class GLShader extends GLComponent {
 		GL20.glCompileShader(newShaderId);
 		return newShaderId;
 	}
-
-    public void sendUniform4f(String name, float[] data)    
+	public void sendTexture(String name, int textureID)    
     {
     	int loc = GL20.glGetUniformLocation(programID, name);
-	    GL20.glUniform4f(loc, data[0],data[1],data[2],data[3]);
+	    GL20.glUniform1i(loc, 0); 
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
     }
-    
+	public void sendUniform4f(String name, float[] data) {
+		int loc = GL20.glGetUniformLocation(programID, name);
+		GL20.glUniform4f(loc, data[0], data[1], data[2], data[3]);
+	}
+
 	public void Run() {
-		if(vertexShader==-1l)
-		{
-			vertexShader = this.getShader("screen.vert",  GL20.GL_VERTEX_SHADER);
+		if (vertexShader == -1l&&vertexShaderFile!="") {
+			vertexShader = this.getShader(vertexShaderFile, GL20.GL_VERTEX_SHADER);
 		}
-		if(fragmentShader==-1l)
-		{
-			fragmentShader = this.getShader("screen.frag",  GL20.GL_FRAGMENT_SHADER);
+		if (fragmentShader == -1l&&fragmentShaderFile!="") {
+			fragmentShader = this.getShader(fragmentShaderFile, GL20.GL_FRAGMENT_SHADER);
 		}
-		
-		if(programID==-1)
-		{
+
+		if (programID == -1) {
 			programID = GL20.glCreateProgram();
-	    	GL20.glAttachShader(programID, fragmentShader);
-	    	GL20.glAttachShader(programID, vertexShader);
-	    	GL20.glLinkProgram(programID);
+			GL20.glAttachShader(programID, fragmentShader);
+			GL20.glAttachShader(programID, vertexShader);
+			GL20.glLinkProgram(programID);
 		}
-		
+
 		GL20.glUseProgram(programID);
 	}
 
 	public void Destroy() {
 		GL20.glDetachShader(programID, fragmentShader);
 		GL20.glDetachShader(programID, vertexShader);
-		
+
 		GL20.glDeleteShader(fragmentShader);
 		GL20.glDeleteShader(vertexShader);
-		
+
 		GL20.glDeleteProgram(programID);
+	}
+
+	public String getVertexShaderFile() {
+		return vertexShaderFile;
+	}
+
+	public void setVertexShaderFile(String vertexShaderFile) {
+		this.vertexShaderFile = vertexShaderFile;
+	}
+
+	public String getFragmentShaderFile() {
+		return fragmentShaderFile;
+	}
+
+	public void setFragmentShaderFile(String fragmentShaderFile) {
+		this.fragmentShaderFile = fragmentShaderFile;
 	}
 }
