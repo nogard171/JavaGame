@@ -69,7 +69,7 @@ public class GLWindow {
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
