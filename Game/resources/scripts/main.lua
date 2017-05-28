@@ -21,7 +21,6 @@ if keyboard:isKeyDown(S) then
 	ySpeed = -speed
 end
 
-
 this:getComponent("transform"):Move(xSpeed,ySpeed)
 
 --this:getComponent("transform"):Rotate(1)

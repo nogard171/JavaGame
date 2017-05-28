@@ -45,12 +45,23 @@ public class GLShader extends GLComponent {
     {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-    	int loc = GL20.glGetUniformLocation(programID, name);
-	    GL20.glUniform1i(loc, 0); 
+		this.sendUniform1f(name,0);
     }
 	public void sendUniform4f(String name, float[] data) {
 		int loc = GL20.glGetUniformLocation(programID, name);
 		GL20.glUniform4f(loc, data[0], data[1], data[2], data[3]);
+	}
+	public void sendUniform3f(String name, float[] data) {
+		int loc = GL20.glGetUniformLocation(programID, name);
+		GL20.glUniform3f(loc, data[0], data[1], data[2]);
+	}
+	public void sendUniform2f(String name, float[] data) {
+		int loc = GL20.glGetUniformLocation(programID, name);
+		GL20.glUniform2f(loc, data[0], data[1]);
+	}
+	public void sendUniform1f(String name, float data) {
+		int loc = GL20.glGetUniformLocation(programID, name);
+		GL20.glUniform1f(loc, data);
 	}
 
 	public void Run() {

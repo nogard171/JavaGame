@@ -18,6 +18,7 @@ public class GLWindow {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
 	private int FPS = 120;
+	private boolean FPS_LIMITER = false;
 	private String TITLE = "";
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
@@ -45,7 +46,10 @@ public class GLWindow {
 				this.Render();
 
 				Display.update();
-				Display.sync(FPS);
+				if(FPS_LIMITER)
+				{
+					Display.sync(FPS);
+				}
 			}
 
 		} catch (Exception e) {

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GLObject {
-	private HashMap<String,GLComponent> components = new HashMap<String,GLComponent>();
+	private HashMap<String, GLComponent> components = new HashMap<String, GLComponent>();
+	private HashMap<String, GLProperty> properties = new HashMap<String, GLProperty>();
 	private String Name = "";
 	private int displayHandleID = -1;
 
@@ -17,16 +18,27 @@ public class GLObject {
 	}
 
 	public String getName() {
-		return Name;
+		return this.Name;
 	}
 
 	public void setName(String name) {
-		Name = name;
+		this.Name = name;
 	}
 
+	public void AddProperty(GLProperty prop) {
+		this.properties.put(prop.getName(), prop);
+	}
+
+	public void RemoveProperty(GLProperty prop) {
+		this.properties.remove(prop);
+	}
+
+	public GLProperty getProperty(String name) {
+		return this.properties.get(name);
+	}
 	public void AddComponent(GLComponent com) {
 		com.setObject(this);
-		this.components.put(com.getName(),com);
+		this.components.put(com.getName(), com);
 	}
 
 	public void RemoveComponent(GLComponent com) {
@@ -34,6 +46,6 @@ public class GLObject {
 	}
 
 	public GLComponent getComponent(String name) {
-		return components.get(name);
+		return this.components.get(name);
 	}
 }

@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL20;
 import Engine.GLColor;
 import Engine.GLMaterial;
 import Engine.GLObject;
+import Engine.GLProperty;
 import Engine.GLScript;
 import Engine.GLShader;
 import Engine.GLSpriteRenderer;
@@ -31,7 +32,6 @@ public class Game extends GLWindow {
 				GLMaterial mat = new GLMaterial();
 
 				mat.setTextureID(new GLTextureLoader().getTextureId("resources/textures/dirt.png"));
-				mat.setColor(new GLColor(255, 255, 255));
 				GLShader shader = new GLShader("screen.vert", "screen.frag");
 				GLTransform transform = new GLTransform(x * 32, y * 32);
 				GLObject obj2 = new GLObject();
@@ -44,19 +44,25 @@ public class Game extends GLWindow {
 		}
 
 		GLMaterial mat = new GLMaterial();
-		mat.setColor(new GLColor(255, 0, 0));
+		//mat.setColor(new GLColor(255, 0, 0));
 		mat.setTextureID(new GLTextureLoader().getTextureId("resources/textures/grass.png"));
 		GLTransform transform = new GLTransform(0, 0);
 		GLScript script = new GLScript("resources/scripts/main.lua");
 
 		GLShader shader = new GLShader("screen.vert", "screen.frag");
 
+		GLProperty health = new GLProperty();
+		health.setName("health");
+		health.setIntValue(100);
+		
 		GLObject obj = new GLObject();
 		obj.setName("Grass");
 		obj.AddComponent(transform);
 		obj.AddComponent(script);
 		obj.AddComponent(mat);
 		obj.AddComponent(shader);
+		
+		obj.AddProperty(health);
 		objects.add(obj);
 	}
 
@@ -85,16 +91,16 @@ public class Game extends GLWindow {
 				if (mat != null) {
 					GLColor color = mat.getColorAsFloats();
 					float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
-					shader.sendTexture("myTexture", mat.getTextureID());
 					shader.sendUniform4f("vertColor", colorData);
+					
+					shader.sendTexture("myTexture", mat.getTextureID());
 				}
 
 			}
 
 			if (transform != null) {
 				GL11.glPushMatrix();
-				GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),
-						transform.getPosition().getY() + transform.getCenter().getY(), 0);
+				GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),transform.getPosition().getY() + transform.getCenter().getY(), 0);
 				GL11.glRotatef(transform.getRotation(), 0, 0, 1);
 				GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
 			}
