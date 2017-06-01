@@ -19,90 +19,96 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Application extends GLWindow
-{
+public class Application extends GLWindow {
 	// the grid boolean, used for render things as lines.
 
-	public static void main(final String[] argv)
-	{
+	public static void main(final String[] argv) {
 		final Application app = new Application();
-		SwingUtilities.invokeLater(new Runnable()
-		{
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				app.CreateWindow();
 			}
 		});
 	}
 
-	protected int textureID = -1;
-	float size = 1;
-	float degress = 95;
-	float startDegress = 85;
-	int chunk_size = 32;
 	@Override
-	public void Setup()
-	{
-		
-		for (int x = 0; x < chunk_size; x++)
-		{
-			for (int z = 0; z < chunk_size; z++)
-			{
-				for (int y = 0; y < chunk_size; y++)
-				{
-					Voxel voxel = new Loader().loadVoxel("resources/voxel/voxel.obj",
-							new Vector3f(x * 1.01F, y * 1.01F, z * 1.01F));
-					voxels.add(voxel);
-					//voxels.put(x+","+y+","+z, voxel);
-				}
-			}
-		}
+	public void Setup() {
+		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+		drawSphere(1000, 1000, 1000, 1000, 1000);
 
 	}
-
-	Voxel cube = null;
-	ArrayList<Voxel> voxels = new ArrayList<Voxel>();
-	//HashMap<String,Voxel> voxels = new HashMap<String,Voxel>();
-	ArrayList<Voxel> displayedVoxels = new ArrayList<Voxel>();
-	
 
 	@Override
 	public void Render()
 	{
 		super.Render();
-		for (Voxel voxel : voxels)
-		{
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			GL11.glCallList(voxel.getDlID());
-			GL11.glEnd();
+		 int i, j;
+		 int lats = 1000;
+		 int longs = 1000;
+
+		GL11.glBegin(GL11.GL_QUAD_STRIP);
+		for(i = 0; i <= lats; i++) {
+			 for(j = 0; j <= longs; j++) {
+				 Vector3f vec3 = points[i][j].vec2;
+				 GL11.glVertex3f(vec3.x,vec3.y,vec3.z);
+				 Vector3f vec4 = points[i][j].vec1;
+				 GL11.glVertex3f(vec4.x,vec4.y,vec4.z);
+			 }
 		}
-
+		GL11.glEnd();
 	}
-
-	float viewDistance = 500;
 
 	@Override
-	public void Update(double delta)
-	{
+	public void Update(double delta) {
 		super.Update(delta);
 
-		if (keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
-		{
+		if (keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			System.exit(0);
 		}
-		
+
 	}
 
-	public double distanceToDouble(Vector3f point, Vector3f secoundPoint)
-	{
-		return Math.sqrt(Math.pow(point.getX() - secoundPoint.getX(), 2)
-				+ Math.pow(point.getY() - secoundPoint.getY(), 2) + Math.pow(point.getZ() - secoundPoint.getZ(), 2));
-	}
+	GLPlane[][] points = new GLPlane[10000][10000];
 
-	public double distanceTo(Vector3f point, Vector3f secoundPoint)
-	{
-		return Math.sqrt(Math.pow(secoundPoint.getX() - point.getY(), 2)
-				+ Math.pow(secoundPoint.getY() - point.getY(), 2) + Math.pow(secoundPoint.getZ() - point.getZ(), 2));
+	public void drawSphere(float basex, float basey, float r, int lats, int longs) {
+		int i, j;
+		float lat0, lat1, z0, z1, zr0, zr1, lng, x, y, prevlat;
+		float xc = 1f / lats;
+		float yc = 1f / longs;
+
+		for (i = 0; i <= lats; i++) {
+			prevlat = i - 1;
+			lat0 = (float) (Math.PI * (-0.5f + prevlat / lats));
+			z0 = (float) Math.sin(lat0);
+			zr0 = (float) Math.cos(lat0);
+
+			lat1 = (float) (Math.PI * (-0.5f + (float) i / lats));
+			z1 = (float) Math.sin(lat1);
+			zr1 = (float) Math.cos(lat1);
+
+			// GL11.glBegin(GL11.GL_QUAD_STRIP);
+			for (j = 0; j <= longs; j++) {
+				lng = (float) Math.PI * 2 * (float) (j - 1) / longs;
+				x = (float) (Math.cos(lng) * r);
+				y = (float) (Math.sin(lng) * r);
+				// points[i][j] =
+
+				GLPlane plane = new GLPlane();
+				plane.vec1 = new Vector3f((float) (basex + x * zr0), (float) (basey + y * zr0), (float) (r * z0));
+				plane.vec2 = new Vector3f((float) (basex + x * zr1), (float) (basey + y * zr1), (float) (r * z1));
+
+				points[i][j] = plane;
+
+				// GL11.glTexCoord2f(xc*j, yc*i);
+				// GL11.glNormal3f(basex + x * zr1, basey + y * zr1, r * z1);
+				// GL11.glVertex3f(basex + x * zr1, basey + y * zr1, r * z1);
+
+				// GL11.glTexCoord2f(xc*j, yc*prevlat);
+				// GL11.glNormal3f(basex + x * zr0, basey + y * zr0, r * z0);
+				// GL11.glVertex3f(basex + x * zr0, basey + y * zr0, r * z0);
+			}
+			// GL11.glEnd();
+		}
 	}
 }
