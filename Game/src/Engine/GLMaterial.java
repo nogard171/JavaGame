@@ -2,7 +2,6 @@ package Engine;
 
 public class GLMaterial extends GLComponent {
 	private int textureID = -1;
-
 	private GLColor color = new GLColor(255, 255, 255);
 
 	public GLMaterial() {

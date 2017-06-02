@@ -2,3 +2,6 @@
 2017/05/26 16:26:52 Error: load resources/scripts/main.lua: org.luaj.vm2.LuaError: resources/scripts/main.lua:27: unexpected symbol 35 (#)
 2017/05/28 14:24:10 Error: @resources/scripts/main.lua:28 vm error: java.lang.NumberFormatException: For input string: "true"
 2017/05/28 14:25:20 Error: @resources/scripts/main.lua:28 vm error: java.lang.NumberFormatException: For input string: "true"
+2017/06/01 19:38:40 Error: load resources/scripts/main.lua: org.luaj.vm2.LuaError: resources/scripts/main.lua:27: syntax error
+2017/06/01 19:38:44 Error: load resources/scripts/main.lua: org.luaj.vm2.LuaError: resources/scripts/main.lua:27: syntax error
+2017/06/01 19:38:50 Error: load resources/scripts/main.lua: org.luaj.vm2.LuaError: resources/scripts/main.lua:27: syntax error
