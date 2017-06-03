@@ -1,12 +1,9 @@
 
-import static org.lwjgl.opengl.GL11.glCallList;
-
 import java.util.ArrayList;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 
+import Engine.GLAnimator;
 import Engine.GLColor;
 import Engine.GLMaterial;
 import Engine.GLObject;
@@ -57,6 +54,8 @@ public class Game extends GLWindow {
 		health.setName("health");
 		health.setIntValue(100);
 		
+		GLAnimator animator = new GLAnimator();
+		
 		GLObject obj = new GLObject();
 		obj.setName("Grass");
 		obj.AddComponent(transform);
@@ -65,6 +64,7 @@ public class Game extends GLWindow {
 		obj.AddComponent(shader);
 		obj.AddComponent(spriteRenderer);
 		obj.AddProperty(health);
+		obj.AddComponent(animator);
 		objects.add(obj);
 	}
 
@@ -84,7 +84,8 @@ public class Game extends GLWindow {
 			GLTransform transform = (GLTransform) obj.getComponent("transform");
 			GLScript script = (GLScript) obj.getComponent("script");
 			GLShader shader = (GLShader) obj.getComponent("shader");			
-			GLRenderer spriteRenderer = (GLRenderer) obj.getComponent("spriterenderer");
+			GLRenderer spriteRenderer = (GLRenderer) obj.getComponent("renderer");
+			GLAnimator animator = (GLAnimator)obj.getComponent("animator");
 			if (script != null) {
 				script.Run();
 			}if (shader != null) {
@@ -108,7 +109,10 @@ public class Game extends GLWindow {
 				
 				shader.sendTexture("myTexture", mat.getTextureID());
 			}
-			
+			if(animator!=null)
+			{
+				animator.Run();
+			}
 			spriteRenderer.Run();
 			
 			if (transform != null) {

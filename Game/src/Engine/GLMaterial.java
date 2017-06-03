@@ -2,6 +2,15 @@ package Engine;
 
 public class GLMaterial extends GLComponent {
 	private int textureID = -1;
+	private GLSize textureSize = new GLSize(32, 32);
+	public GLSize getTextureSize() {
+		return textureSize;
+	}
+
+	public void setTextureSize(GLSize textureSize) {
+		this.textureSize = textureSize;
+	}
+
 	private GLColor color = new GLColor(255, 255, 255);
 
 	public GLMaterial() {

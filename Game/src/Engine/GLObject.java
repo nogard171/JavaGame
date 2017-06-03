@@ -3,6 +3,8 @@ package Engine;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Utils.ErrorHandler;
+
 public class GLObject {
 	private HashMap<String, GLComponent> components = new HashMap<String, GLComponent>();
 	private HashMap<String, GLProperty> properties = new HashMap<String, GLProperty>();
@@ -46,6 +48,11 @@ public class GLObject {
 	}
 
 	public GLComponent getComponent(String name) {
-		return this.components.get(name);
+		GLComponent com = this.components.get(name);
+		/*if(com==null)
+		{
+			new ErrorHandler().LogError("Component: "+ name+", not avaiable under the GLObject: " + this.getName());
+		}*/
+		return com;
 	}
 }
