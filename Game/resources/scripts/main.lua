@@ -9,7 +9,11 @@ walking=false
 if texX == nil then
    texX=0
 end
-
+texSpeed=0.01
+if keyboard:isKeyDown(SHIFT) then
+	speed=speed*2;
+	texSpeed=0.02
+end
 
 if keyboard:isKeyDown(D) then
 	xSpeed = speed
@@ -35,19 +39,18 @@ if keyboard:isKeyDown(S) then
 	walking=true
 end
 
-texX= texX + 0.01
+texX= texX + texSpeed
 
 if texX>4 then
 	texX=0
 end
 
-this:getComponent("animator"):setFrameY(texY)
-if walking then
-	this:getComponent("animator"):setFrameX(texX)
-else
-	this:getComponent("animator"):setFrameX(0)
+if not walking then
+	texX=0
 end
 
+this:getComponent("animator"):setFrameY(texY)
+this:getComponent("animator"):setFrameX(texX)
 this:getComponent("transform"):Move(xSpeed,ySpeed)
 this:getComponent("transform"):Rotate(rot)
 
