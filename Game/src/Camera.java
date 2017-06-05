@@ -160,11 +160,17 @@ public class Camera implements Serializable
 	{
 		//direction = (int) (yaw % 360);
 		// roatate the pitch around the Y axis
-		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
-		// roatate the yaw around the X axis
 		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
+		
+
+		// roatate the yaw around the X axis
+		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
+		
+
+		//roatate the pitch around the Z axis
+		GL11.glRotatef(yaw, 0.0f, 0f, 1.0f);
 		// translate to the position vector's location
-		GL11.glTranslatef(-position.x, -position.y - 2, -position.z);
+		GL11.glTranslatef(-position.x, -position.y, -position.z);
 	}
 
 	public void lookAtVector3f(Vector3f vec)

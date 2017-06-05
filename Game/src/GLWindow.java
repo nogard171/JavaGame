@@ -160,7 +160,7 @@ public class GLWindow
 			}
 
 			this.camera.strafe(z_Speed);
-			this.camera.walk(x_Speed);
+			this.camera.walkToward(x_Speed);
 			this.camera.fly(y_Speed);
 
 			//camera.lookAtVector3f(new Vector3f(1,0,1));
