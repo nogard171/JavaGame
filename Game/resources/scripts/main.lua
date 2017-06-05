@@ -49,9 +49,7 @@ if not walking then
 	texX=0
 end
 
-this:getComponent("animator"):setFrameY(texY)
-this:getComponent("animator"):setFrameX(texX)
+--this:getComponent("animator"):setFrameY(texY)
+--this:getComponent("animator"):setFrameX(texX)
 this:getComponent("transform"):Move(xSpeed,ySpeed)
 this:getComponent("transform"):Rotate(rot)
-
---this:getComponent("transform"):Rotate(1)

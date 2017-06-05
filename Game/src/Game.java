@@ -27,9 +27,8 @@ public class Game extends GLWindow {
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
 				GLMaterial mat = new GLMaterial();
-
 				mat.setTextureID(new GLTextureLoader().getTextureId("resources/textures/dirt.png"));
-				GLShader shader = new GLShader("screen.vert", "screen.frag");
+				GLShader shader = new GLShader("basic.vert", "basic.frag");
 				GLTransform transform = new GLTransform(x * 32, y * 32);
 				GLRenderer spriteRenderer = new GLRenderer();
 				GLObject obj2 = new GLObject();
@@ -43,18 +42,16 @@ public class Game extends GLWindow {
 		}
 
 		GLMaterial mat = new GLMaterial();
-		//mat.setColor(new GLColor(255, 0, 0));
-		mat.setTextureID(new GLTextureLoader().getTextureId("resources/textures/grass.png"));
 		GLTransform transform = new GLTransform(0, 0);
 		GLScript script = new GLScript("resources/scripts/main.lua");
-
-		GLShader shader = new GLShader("screen.vert", "screen.frag");
+		GLShader shader = new GLShader("basic.vert", "basic.frag");
 		GLRenderer spriteRenderer = new GLRenderer();
+		GLAnimator animator = new GLAnimator("resources/textures/grass.png");
+		
 		GLProperty health = new GLProperty();
 		health.setName("health");
 		health.setIntValue(100);
 		
-		GLAnimator animator = new GLAnimator();
 		
 		GLObject obj = new GLObject();
 		obj.setName("Grass");

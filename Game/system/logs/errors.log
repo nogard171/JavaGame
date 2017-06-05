@@ -1207,3 +1207,10 @@
 2017/06/02 21:37:27 Error: Component: animator, not avaiable under the GLObject: Dirt
 2017/06/02 21:37:27 Error: Component: script, not avaiable under the GLObject: Dirt
 2017/06/05 18:52:12 Error: load resources/scripts/main.lua: org.luaj.vm2.LuaError: resources/scripts/main.lua:48: unexpected symbol 33 (!)
+2017/06/05 19:04:49 Error: java.lang.NullPointerException cannot be cast to java.io.IOException
+2017/06/05 19:06:20 Error: java.lang.NullPointerException cannot be cast to java.io.IOException
+2017/06/05 19:07:02 Error: 0
+2017/06/05 19:11:31 Error: 0
+2017/06/05 19:12:08 Error: 0
+2017/06/05 19:12:57 Error: 2
+2017/06/05 19:13:06 Error: 2

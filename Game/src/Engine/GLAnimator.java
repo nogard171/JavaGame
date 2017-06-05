@@ -8,66 +8,101 @@ import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 public class GLAnimator extends GLComponent {
-	GLFrame[][] frames = new GLFrame[1][1];
-	Texture texture;
-	GLSize size = new GLSize(32, 64);
-	float frameX = 0;
-	float frameY = 0;
-	boolean loaded = false;
+	private GLFrame[][] frames = new GLFrame[1][1];
+	private Texture texture;
+	private GLSize size = new GLSize(32, 64);
+	private float frameX = 0;
+	private float frameY = 0;
+	private boolean loaded = false;
+	private String textureFile = "";
 
 	public GLAnimator() {
 		this.setName("animator");
 	}
 
-	public void loadFrames(String filename) {
-		try {
-			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/" + filename));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public GLAnimator(String filename) {
+		this.textureFile = filename;
+		this.setName("animator");
+	}
 
-		GLMaterial mat = (GLMaterial) super.getObject().getComponent("material");
-		mat.setTextureID(texture.getTextureID());
-		mat.setTextureSize(size);
-
-		int numXSprites = texture.getImageWidth() / this.size.getWidth();
-		int numYSprites = texture.getImageHeight() / this.size.getHeight();
-
-		float xStep = 1 / (float) numXSprites;
-		float yStep = 1 / (float) numYSprites;
-		frames = new GLFrame[numXSprites][numYSprites];
-
-		GLRenderer renderer = (GLRenderer) super.getObject().getComponent("renderer");
-		if (renderer != null) {
-			for (int x = 0; x < numXSprites; x++) {
-				for (int y = 0; y < numYSprites; y++) {
-					int dlid = GL11.glGenLists(1);
-					GL11.glNewList(dlid, GL11.GL_COMPILE);
-					renderer.RenderQuad(mat.getTextureSize().getWidth(), mat.getTextureSize().getHeight(),
-							(float) (x * xStep), (float) (y * yStep), (float) ((x + 1) * xStep),
-							(float) ((y + 1) * yStep));
-					GL11.glEndList();
-					GLFrame frame = new GLFrame();
-					frame.setDisplayID(dlid);
-					frames[x][y] = frame;
-				}
+	public void loadFrames() {
+		if (this.textureFile != "") {
+			try {
+				texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(this.textureFile));
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
+			GLMaterial mat = (GLMaterial) super.getObject().getComponent("material");
+			mat.setTextureID(texture.getTextureID());
+			mat.setTextureSize(size);
+
+			int numXSprites = texture.getImageWidth() / this.size.getWidth();
+			int numYSprites = texture.getImageHeight() / this.size.getHeight();
+			if(numXSprites==0)
+			{
+				numXSprites = 1;
+			}
+			if(numYSprites==0)
+			{
+				numYSprites = 1;
+			}
+			frames = new GLFrame[numXSprites][numYSprites];
+
+			GLRenderer renderer = (GLRenderer) super.getObject().getComponent("renderer");
+			if (numXSprites > 1 || numYSprites > 1) {
+				
+				
+				float xStep = 1 / (float) numXSprites;
+				float yStep = 1 / (float) numYSprites;
+			
+				if (renderer != null) {
+					for (int x = 0; x < numXSprites; x++) {
+						for (int y = 0; y < numYSprites; y++) {
+							int dlid = GL11.glGenLists(1);
+							GL11.glNewList(dlid, GL11.GL_COMPILE);
+							renderer.RenderQuad(mat.getTextureSize().getWidth(), mat.getTextureSize().getHeight(),
+									(float) (x * xStep), (float) (y * yStep), (float) ((x + 1) * xStep),
+									(float) ((y + 1) * yStep));
+							GL11.glEndList();
+							GLFrame frame = new GLFrame();
+							frame.setDisplayID(dlid);
+							frames[x][y] = frame;
+						}
+					}
+
+				}
+			} else {				
+				int dlid = GL11.glGenLists(1);
+				GL11.glNewList(dlid, GL11.GL_COMPILE);
+				renderer.RenderQuad(texture.getImageWidth(), texture.getImageHeight() , 0, 0, 1, 1);
+				GL11.glEndList();
+				GLFrame frame = new GLFrame();
+				frame.setDisplayID(dlid);
+				frames[0][0] = frame;
+				
+				
+			}
+			loaded = true;
 		}
-		loaded = true;
+		else
+		{
+			System.out.println("Failed to load");
+		}
 	}
 
 	public void Run() {
 
 		if (!this.loaded) {
-			this.loadFrames("textures/guy.png");
+			this.loadFrames();
 		}
+		if (this.loaded) {
+			GLRenderer renderer = (GLRenderer) super.getObject().getComponent("renderer");
 
-		GLRenderer renderer = (GLRenderer) super.getObject().getComponent("renderer");
+			if (renderer != null) {
 
-		if (renderer != null) {
-
-			renderer.setDisplayID(this.getFrames((int) this.frameX, (int) this.frameY).getDisplayID());
+				renderer.setDisplayID(this.getFrames((int) this.frameX, (int) this.frameY).getDisplayID());
+			}
 		}
 	}
 
