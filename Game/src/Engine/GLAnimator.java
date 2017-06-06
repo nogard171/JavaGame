@@ -39,6 +39,7 @@ public class GLAnimator extends GLComponent {
 
 			int numXSprites = texture.getImageWidth() / this.size.getWidth();
 			int numYSprites = texture.getImageHeight() / this.size.getHeight();
+			System.out.println("coords:"+ numXSprites+","+numYSprites);
 			if(numXSprites==0)
 			{
 				numXSprites = 1;
@@ -72,7 +73,7 @@ public class GLAnimator extends GLComponent {
 					}
 
 				}
-			} else {				
+			} else {		
 				int dlid = GL11.glGenLists(1);
 				GL11.glNewList(dlid, GL11.GL_COMPILE);
 				renderer.RenderQuad(texture.getImageWidth(), texture.getImageHeight() , 0, 0, 1, 1);

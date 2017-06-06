@@ -39,6 +39,7 @@ if keyboard:isKeyDown(S) then
 	walking=true
 end
 
+
 texX= texX + texSpeed
 
 if texX>4 then
@@ -46,10 +47,13 @@ if texX>4 then
 end
 
 if not walking then
+	this:getComponent("audio"):stop()
 	texX=0
+else	
+	this:getComponent("audio"):play()
 end
 
---this:getComponent("animator"):setFrameY(texY)
---this:getComponent("animator"):setFrameX(texX)
+this:getComponent("animator"):setFrameY(texY)
+this:getComponent("animator"):setFrameX(texX)
 this:getComponent("transform"):Move(xSpeed,ySpeed)
 this:getComponent("transform"):Rotate(rot)

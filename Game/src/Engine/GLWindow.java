@@ -104,7 +104,7 @@ public class GLWindow {
 
 	}
 
-	private void Destroy() {
+	public void Destroy() {
 		Display.destroy();
 	}
 
