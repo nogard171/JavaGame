@@ -89,8 +89,6 @@ public class Game extends GLWindow {
 		for (GLObject obj : objects) {
 			GLShader shader = (GLShader) obj.getComponent("shader");
 			GLAudio audio = (GLAudio) obj.getComponent("audio");
-		
-			
 			if(audio!=null)
 			{
 				audio.Destroy();

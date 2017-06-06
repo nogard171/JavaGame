@@ -12,31 +12,31 @@ public class GLProperty {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public void setValue(String newValue)
-	{
-		this.type =  GLPropertyType.STRING;
+
+	public void setValue(String newValue) {
+		this.type = GLPropertyType.STRING;
 		this.value = newValue;
 	}
-	public void setIntValue(int newValue)
-	{
-		this.type =  GLPropertyType.INT;
+
+	public void setIntValue(int newValue) {
+		this.type = GLPropertyType.INT;
 		this.setValue(String.valueOf(newValue));
 	}
-	public void setBoolValue(boolean newValue)
-	{
-		this.type =  GLPropertyType.BOOL;
-		this.setValue(String.valueOf(newValue));		
+
+	public void setBoolValue(boolean newValue) {
+		this.type = GLPropertyType.BOOL;
+		this.setValue(String.valueOf(newValue));
 	}
 
 	public String getStringValue() {
 		return this.value;
 	}
-	public int getIntValue()
-	{
+
+	public int getIntValue() {
 		return Integer.parseInt(this.value);
 	}
-	public boolean getBoolValue()
-	{
+
+	public boolean getBoolValue() {
 		return Boolean.parseBoolean(this.value);
 	}
 }

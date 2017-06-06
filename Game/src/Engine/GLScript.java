@@ -9,6 +9,8 @@ import org.lwjgl.input.Keyboard;
 public class GLScript extends GLComponent {
 	private String filename = "";
 	private GLWindow window;
+	LuaValue chunk;
+	GLFramesPerSecond fps;
 
 	public GLScript() {
 		this.setName("script");
@@ -18,23 +20,15 @@ public class GLScript extends GLComponent {
 		this.setFilename(filename);
 		this.setName("script");
 	}
-	LuaValue chunk;
-	GLFramesPerSecond fps;
 
 	private void loadScript() {
 		GLObject obj = this.getObject();
 		if (obj != null) {
-			
 			fps = new GLFramesPerSecond();
-			
 			Globals globals = JsePlatform.standardGlobals();
-
 			globals.set("this", CoerceJavaToLua.coerce(obj));
-
 			globals.set("keyboard", CoerceJavaToLua.coerce(new GLKeyboard()));
-
 			globals.set("fps", CoerceJavaToLua.coerce(fps));
-			
 			chunk = globals.loadfile(filename);
 		}
 	}
@@ -48,14 +42,12 @@ public class GLScript extends GLComponent {
 	}
 
 	public void Run() {
-		if(chunk==null)
-		{
+		if (chunk == null) {
 			this.loadScript();
 		}
 		if (chunk != null) {
 			chunk.call();
 		}
-
 	}
 
 	public GLWindow getWindow() {

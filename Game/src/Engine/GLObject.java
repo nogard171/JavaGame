@@ -38,6 +38,7 @@ public class GLObject {
 	public GLProperty getProperty(String name) {
 		return this.properties.get(name);
 	}
+
 	public void AddComponent(GLComponent com) {
 		com.setObject(this);
 		this.components.put(com.getName(), com);
@@ -49,10 +50,10 @@ public class GLObject {
 
 	public GLComponent getComponent(String name) {
 		GLComponent com = this.components.get(name);
-		/*if(com==null)
-		{
-			new ErrorHandler().LogError("Component: "+ name+", not avaiable under the GLObject: " + this.getName());
-		}*/
+		/*
+		 * if(com==null) { new ErrorHandler().LogError("Component: "+
+		 * name+", not avaiable under the GLObject: " + this.getName()); }
+		 */
 		return com;
 	}
 }

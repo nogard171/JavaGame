@@ -12,7 +12,6 @@ public class GLShader extends GLComponent {
 	private int programID = -1;
 	private int vertexShader = -1;
 	private int fragmentShader = -1;
-
 	private String vertexShaderFile = "";
 	private String fragmentShaderFile = "";
 
@@ -31,9 +30,7 @@ public class GLShader extends GLComponent {
 		String shaderFile = "";
 		try {
 			shaderFile = new String(Files.readAllBytes(Paths.get("resources/shaders/" + filename)));
-
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		newShaderId = GL20.glCreateShader(shader);// GL20.GL_VERTEX_SHADER);
@@ -41,54 +38,54 @@ public class GLShader extends GLComponent {
 		GL20.glCompileShader(newShaderId);
 		return newShaderId;
 	}
-	public void sendTexture(String name, int textureID)    
-    {
+
+	public void sendTexture(String name, int textureID) {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-		this.sendUniform1f(name,0);
-    }
+		this.sendUniform1f(name, 0);
+	}
+
 	public void sendUniform4f(String name, float[] data) {
 		int loc = GL20.glGetUniformLocation(programID, name);
 		GL20.glUniform4f(loc, data[0], data[1], data[2], data[3]);
 	}
+
 	public void sendUniform3f(String name, float[] data) {
 		int loc = GL20.glGetUniformLocation(programID, name);
 		GL20.glUniform3f(loc, data[0], data[1], data[2]);
 	}
+
 	public void sendUniform2f(String name, float[] data) {
 		int loc = GL20.glGetUniformLocation(programID, name);
 		GL20.glUniform2f(loc, data[0], data[1]);
 	}
+
 	public void sendUniform1f(String name, float data) {
 		int loc = GL20.glGetUniformLocation(programID, name);
 		GL20.glUniform1f(loc, data);
 	}
 
 	public void Run() {
-		if (vertexShader == -1l&&vertexShaderFile!="") {
+		if (vertexShader == -1l && vertexShaderFile != "") {
 			vertexShader = this.getShader(vertexShaderFile, GL20.GL_VERTEX_SHADER);
 		}
-		if (fragmentShader == -1l&&fragmentShaderFile!="") {
+		if (fragmentShader == -1l && fragmentShaderFile != "") {
 			fragmentShader = this.getShader(fragmentShaderFile, GL20.GL_FRAGMENT_SHADER);
 		}
-
 		if (programID == -1) {
 			programID = GL20.glCreateProgram();
 			GL20.glAttachShader(programID, fragmentShader);
 			GL20.glAttachShader(programID, vertexShader);
 			GL20.glLinkProgram(programID);
 		}
-
 		GL20.glUseProgram(programID);
 	}
 
 	public void Destroy() {
 		GL20.glDetachShader(programID, fragmentShader);
 		GL20.glDetachShader(programID, vertexShader);
-
 		GL20.glDeleteShader(fragmentShader);
 		GL20.glDeleteShader(vertexShader);
-
 		GL20.glDeleteProgram(programID);
 	}
 

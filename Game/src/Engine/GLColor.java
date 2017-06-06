@@ -20,21 +20,21 @@ public class GLColor {
 		this.blue = b;
 		this.alpha = a;
 	}
-	public float getRed()
-	{
+
+	public float getRed() {
 		return this.red;
 	}
-	public float getGreen()
-	{
+
+	public float getGreen() {
 		return this.green;
 	}
-	public float getBlue()
-	{
+
+	public float getBlue() {
 		return this.blue;
 	}
-	public float getAlpha()
-	{
+
+	public float getAlpha() {
 		return this.alpha;
 	}
-	
+
 }

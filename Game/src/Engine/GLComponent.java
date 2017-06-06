@@ -3,6 +3,7 @@ package Engine;
 public class GLComponent {
 	private String Name = "";
 	private GLObject object;
+
 	public String getName() {
 		return Name;
 	}

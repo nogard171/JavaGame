@@ -2,10 +2,10 @@ package Engine;
 
 import org.lwjgl.util.vector.Vector2f;
 
-public class GLTransform extends GLComponent{
+public class GLTransform extends GLComponent {
 	private Vector2f Position = new Vector2f(0, 0);
 	private float Rotation = 0;
-	private Vector2f Center = new Vector2f(16,16);
+	private Vector2f Center = new Vector2f(16, 16);
 
 	public Vector2f getCenter() {
 		return Center;
@@ -15,23 +15,20 @@ public class GLTransform extends GLComponent{
 		Center = center;
 	}
 
-	public GLTransform()
-	{
+	public GLTransform() {
 		this.setName("transform");
 	}
-	
-	public GLTransform(float x, float y)
-	{
+
+	public GLTransform(float x, float y) {
 		this.setPosition(x, y);
 		this.setName("transform");
 	}
-	
-	public GLTransform(Vector2f newPosition)
-	{
+
+	public GLTransform(Vector2f newPosition) {
 		this.setPosition(newPosition);
 		this.setName("transform");
 	}
-	
+
 	public float getRotation() {
 		return this.Rotation;
 	}
@@ -39,9 +36,9 @@ public class GLTransform extends GLComponent{
 	public void setRotation(float rotation) {
 		this.Rotation = rotation;
 	}
-	
+
 	public void Rotate(float amount) {
-		this.Rotation = this.getRotation()+amount;
+		this.Rotation = this.getRotation() + amount;
 	}
 
 	public Vector2f getPosition() {
@@ -49,7 +46,7 @@ public class GLTransform extends GLComponent{
 	}
 
 	public void setPosition(float x, float y) {
-		this.setPosition(new Vector2f(x,y));
+		this.setPosition(new Vector2f(x, y));
 	}
 
 	public void setPosition(Vector2f newPosition) {
@@ -60,7 +57,8 @@ public class GLTransform extends GLComponent{
 		this.Position = new Vector2f(this.getPosition().getX() + directions.getX(),
 				this.getPosition().getY() + directions.getY());
 	}
-	public void Move(float x,float y) {
-		this.Move(new Vector2f(x,y));
+
+	public void Move(float x, float y) {
+		this.Move(new Vector2f(x, y));
 	}
 }

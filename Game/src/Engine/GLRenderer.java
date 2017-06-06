@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL11;
 
 public class GLRenderer extends GLComponent {
 	private int displayID = -1;
+	private GLSize initSpriteSize = new GLSize(32, 32);
+
 	public int getDisplayID() {
 		return displayID;
 	}
@@ -14,16 +16,13 @@ public class GLRenderer extends GLComponent {
 		this.displayID = displayID;
 	}
 
-	private GLSize initSpriteSize = new GLSize(32, 32);
 	public GLRenderer() {
 		this.setName("renderer");
 	}
 
 	public void Run() {
 		GLMaterial mat = (GLMaterial) super.getObject().getComponent("material");
-		
 		GLSize spriteSize = mat.getTextureSize();
-		
 		if (this.initSpriteSize != spriteSize) {
 			this.displayID = -1;
 			this.initSpriteSize = spriteSize;
@@ -31,7 +30,7 @@ public class GLRenderer extends GLComponent {
 		if (this.displayID == -1) {
 			int dlid = GL11.glGenLists(1);
 			GL11.glNewList(dlid, GL11.GL_COMPILE);
-			this.RenderQuad(spriteSize.getWidth(), spriteSize.getHeight(),0,0,1,1);
+			this.RenderQuad(spriteSize.getWidth(), spriteSize.getHeight(), 0, 0, 1, 1);
 			GL11.glEndList();
 			this.displayID = dlid;
 		} else {
@@ -39,7 +38,8 @@ public class GLRenderer extends GLComponent {
 		}
 	}
 
-	public void RenderQuad(int width, int height, float textureX, float textureY, float textureWidth, float textureHeight) {
+	public void RenderQuad(int width, int height, float textureX, float textureY, float textureWidth,
+			float textureHeight) {
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glTexCoord2f(textureX, textureHeight);
 		GL11.glVertex2f(0, 0);

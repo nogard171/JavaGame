@@ -1,4 +1,5 @@
 package Engine;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,7 +19,6 @@ public class GLAudio extends GLComponent {
 
 	private String filename = "";
 	private float volume = 1;
-
 	private IntBuffer buffer = BufferUtils.createIntBuffer(1);
 	private IntBuffer source = BufferUtils.createIntBuffer(1);
 	private FloatBuffer sourcePos = (FloatBuffer) BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f })
@@ -46,7 +46,6 @@ public class GLAudio extends GLComponent {
 	private void setupAL() {
 		try {
 			AL.create();
-			
 		} catch (LWJGLException le) {
 			le.printStackTrace();
 			return;
@@ -61,7 +60,6 @@ public class GLAudio extends GLComponent {
 
 	public int loadFile(String newFilename) {
 		AL10.alGenBuffers(buffer);
-		
 		WaveData waveFile = null;
 		try {
 			waveFile = WaveData.create(new BufferedInputStream(new FileInputStream(newFilename)));
@@ -71,7 +69,6 @@ public class GLAudio extends GLComponent {
 		if (waveFile != null) {
 			AL10.alBufferData(buffer.get(0), waveFile.format, waveFile.data, waveFile.samplerate);
 			waveFile.dispose();
-			
 			AL10.alGenSources(source);
 			AL10.alSourcei(source.get(0), AL10.AL_BUFFER, buffer.get(0));
 			AL10.alSourcef(source.get(0), AL10.AL_PITCH, 1.0f);
@@ -79,7 +76,6 @@ public class GLAudio extends GLComponent {
 			AL10.alSource(source.get(0), AL10.AL_POSITION, sourcePos);
 			AL10.alSource(source.get(0), AL10.AL_VELOCITY, sourceVel);
 		}
-
 		if (AL10.alGetError() != AL10.AL_NO_ERROR) {
 			return AL10.AL_FALSE;
 		} else {

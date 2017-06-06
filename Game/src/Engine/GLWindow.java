@@ -22,6 +22,8 @@ public class GLWindow {
 	private String TITLE = "";
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
+	GLFramesPerSecond fps;
+	private boolean close = false;
 
 	public void Create() {
 		try {
@@ -30,28 +32,19 @@ public class GLWindow {
 			Display.setResizable(RESIZABLE);
 			Display.setTitle(TITLE);
 			Display.create();
-
 			this.setupGL();
 			this.Setup();
-
 			while (!Display.isCloseRequested()) {
-
-				if (Keyboard.next()) {
-					if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-						break;
-					}
+				if (close) {
+					break;
 				}
-
 				this.Update();
 				this.Render();
-
 				Display.update();
-				if(FPS_LIMITER)
-				{
+				if (FPS_LIMITER) {
 					Display.sync(FPS);
 				}
 			}
-
 		} catch (Exception e) {
 			new ErrorHandler();
 			ErrorHandler.LogError(e.getMessage());
@@ -59,22 +52,18 @@ public class GLWindow {
 		this.Destroy();
 	}
 
-	GLFramesPerSecond fps;
-
 	private void setupGL() {
 		fps = new GLFramesPerSecond();
 		fps.startFPS();
 		// this sets up the viewport for rendering.
 		this.SetupViewPort();
-
+		
 		// put lua scripting here for dynamic enable.
 		// this enables blending
+		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
-
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
@@ -82,10 +71,13 @@ public class GLWindow {
 	public void Update() {
 		GLFramesPerSecond.updateFPS();
 		Display.setTitle("FPS:" + fps.fps);
-		// this detects resizing to allow for the viewport to be
-		// re-setup.
 		if (Display.wasResized()) {
 			this.SetupViewPort();
+		}
+		if (Keyboard.next()) {
+			if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+				this.close = true;
+			}
 		}
 	}
 
@@ -99,9 +91,7 @@ public class GLWindow {
 	}
 
 	public void Render() {
-		// Clear the screen and depth buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
 	}
 
 	public void Destroy() {

@@ -32,31 +32,22 @@ public class GLAnimator extends GLComponent {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 			GLMaterial mat = (GLMaterial) super.getObject().getComponent("material");
 			mat.setTextureID(texture.getTextureID());
 			mat.setTextureSize(size);
-
 			int numXSprites = texture.getImageWidth() / this.size.getWidth();
 			int numYSprites = texture.getImageHeight() / this.size.getHeight();
-			System.out.println("coords:"+ numXSprites+","+numYSprites);
-			if(numXSprites==0)
-			{
+			if (numXSprites == 0) {
 				numXSprites = 1;
 			}
-			if(numYSprites==0)
-			{
+			if (numYSprites == 0) {
 				numYSprites = 1;
 			}
 			frames = new GLFrame[numXSprites][numYSprites];
-
 			GLRenderer renderer = (GLRenderer) super.getObject().getComponent("renderer");
 			if (numXSprites > 1 || numYSprites > 1) {
-				
-				
 				float xStep = 1 / (float) numXSprites;
 				float yStep = 1 / (float) numYSprites;
-			
 				if (renderer != null) {
 					for (int x = 0; x < numXSprites; x++) {
 						for (int y = 0; y < numYSprites; y++) {
@@ -71,37 +62,29 @@ public class GLAnimator extends GLComponent {
 							frames[x][y] = frame;
 						}
 					}
-
 				}
-			} else {		
+			} else {
 				int dlid = GL11.glGenLists(1);
 				GL11.glNewList(dlid, GL11.GL_COMPILE);
-				renderer.RenderQuad(texture.getImageWidth(), texture.getImageHeight() , 0, 0, 1, 1);
+				renderer.RenderQuad(texture.getImageWidth(), texture.getImageHeight(), 0, 0, 1, 1);
 				GL11.glEndList();
 				GLFrame frame = new GLFrame();
 				frame.setDisplayID(dlid);
 				frames[0][0] = frame;
-				
-				
 			}
 			loaded = true;
-		}
-		else
-		{
-			System.out.println("Failed to load");
+		} else {
+			System.out.println("No Texture file for GLAnimator");
 		}
 	}
 
 	public void Run() {
-
 		if (!this.loaded) {
 			this.loadFrames();
 		}
 		if (this.loaded) {
 			GLRenderer renderer = (GLRenderer) super.getObject().getComponent("renderer");
-
 			if (renderer != null) {
-
 				renderer.setDisplayID(this.getFrames((int) this.frameX, (int) this.frameY).getDisplayID());
 			}
 		}
@@ -116,7 +99,6 @@ public class GLAnimator extends GLComponent {
 	}
 
 	private GLFrame getFrames(int frameX, int frameY) {
-		// TODO Auto-generated method stub
 		return this.frames[frameX][frameY];
 	}
 }
