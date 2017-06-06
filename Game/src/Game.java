@@ -10,6 +10,7 @@ import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.util.ResourceLoader;
 
 import Engine.GLAnimator;
+import Engine.GLAudio;
 import Engine.GLColor;
 import Engine.GLMaterial;
 import Engine.GLObject;
@@ -85,6 +86,21 @@ public class Game extends GLWindow {
 	}
 	@Override
 	public void Destroy() {
+		for (GLObject obj : objects) {
+			GLShader shader = (GLShader) obj.getComponent("shader");
+			GLAudio audio = (GLAudio) obj.getComponent("audio");
+		
+			
+			if(audio!=null)
+			{
+				audio.Destroy();
+			}
+			if(shader!=null)
+			{
+				shader.Destroy();
+			}
+		}
+		
 		super.Destroy();
 	}
 	@Override

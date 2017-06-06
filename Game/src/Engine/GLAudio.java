@@ -1,3 +1,4 @@
+package Engine;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,8 +13,6 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
-
-import Engine.GLComponent;
 
 public class GLAudio extends GLComponent {
 
@@ -47,6 +46,7 @@ public class GLAudio extends GLComponent {
 	private void setupAL() {
 		try {
 			AL.create();
+			
 		} catch (LWJGLException le) {
 			le.printStackTrace();
 			return;
@@ -94,8 +94,9 @@ public class GLAudio extends GLComponent {
 	}
 
 	public void Destroy() {
-		AL10.alDeleteSources(source);
 		AL10.alDeleteBuffers(buffer);
+		AL10.alDeleteSources(source);
+		AL.destroy();
 	}
 
 	public boolean isPlayingSound() {
