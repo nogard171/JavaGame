@@ -49,7 +49,7 @@ end
 if not walking then
 	this:getComponent("audio"):stop()
 	texX=0
-else	
+else
 	this:getComponent("audio"):play()
 end
 
