@@ -52,19 +52,19 @@ public class GLAudio extends GLComponent {
 			return;
 		}
 		AL10.alGetError();
-		if (loadFile() == AL10.AL_FALSE) {
+		if (loadFile(this.filename) == AL10.AL_FALSE) {
 			System.out.println("Error loading data.");
 			return;
 		}
 		setListenerValues();
 	}
 
-	private int loadFile() {
+	public int loadFile(String newFilename) {
 		AL10.alGenBuffers(buffer);
 		
 		WaveData waveFile = null;
 		try {
-			waveFile = WaveData.create(new BufferedInputStream(new FileInputStream(this.filename)));
+			waveFile = WaveData.create(new BufferedInputStream(new FileInputStream(newFilename)));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
