@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL11.glMatrixMode;
 
 import javax.swing.JOptionPane;
 
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -51,16 +52,11 @@ public class GLWindow {
 		}
 		this.Destroy();
 	}
-
 	private void setupGL() {
 		fps = new GLFramesPerSecond();
 		fps.startFPS();
 		// this sets up the viewport for rendering.
 		this.SetupViewPort();
-		
-		// put lua scripting here for dynamic enable.
-		// this enables blending
-		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
