@@ -48,8 +48,8 @@ public class Application extends GLWindow {
 		 int longs = 1000;
 
 		GL11.glBegin(GL11.GL_QUAD_STRIP);
-		for(i = 400; i <= 600; i++) {
-			 for(j = 600; j <= 800; j++) {
+		for(i = 0; i <= lats; i++) {
+			 for(j = 0; j <= longs; j++) {
 				 Vector3f vec3 = points[i][j].vec2;
 				 GL11.glVertex3f(vec3.x,vec3.y,vec3.z);
 				 Vector3f vec4 = points[i][j].vec1;
@@ -65,6 +65,13 @@ public class Application extends GLWindow {
 
 		if (keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			System.exit(0);
+		}
+		
+		if (keyboard.isKeyDown(Keyboard.KEY_E)) {
+			super.camera.setpitchZ(super.MOUSESENSITIVITY*10);
+		}
+		if (keyboard.isKeyDown(Keyboard.KEY_Q)) {
+			super.camera.setpitchZ(-super.MOUSESENSITIVITY*10);
 		}
 		
 	}

@@ -39,7 +39,7 @@ public class GLWindow
 
 	float MOUSESENSITIVITY = .5f;
 	float MOVEMENTSPEED = 100.0f;
-	Camera camera = new Camera(0,0,0);
+	Camera camera = new Camera(0,1000,0);
 	boolean MOUSEFOCUS = true;
 	int MOUSEDX = 0;
 	int MOUSEDY = 0;
@@ -123,7 +123,7 @@ public class GLWindow
 			// controll camera yaw from x movement fromt the mouse
 			camera.setYaw(this.MOUSEDX * this.MOUSESENSITIVITY);
 			// controll camera pitch from y movement fromt the mouse
-			camera.setPitch(this.MOUSEDY * this.MOUSESENSITIVITY);
+			camera.setpitchX(this.MOUSEDY * this.MOUSESENSITIVITY);
 
 			float speed = (float) (delta / 25);
 
