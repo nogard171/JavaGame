@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 public class GLMaterial extends GLComponent {
 	private int textureID = -1;

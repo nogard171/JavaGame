@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 import static org.lwjgl.opengl.GL11.glCallList;
 

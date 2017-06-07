@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 public class GLColor {
 	public float red = 0;

@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 public class GLFrame {
 	int displayID = -1;

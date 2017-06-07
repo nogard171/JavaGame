@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;

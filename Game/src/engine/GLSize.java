@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 public class GLSize {
 	private int width = 0;

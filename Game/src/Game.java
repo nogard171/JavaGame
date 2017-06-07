@@ -9,17 +9,17 @@ import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.util.ResourceLoader;
 
-import Engine.GLAnimator;
-import Engine.GLAudio;
-import Engine.GLColor;
-import Engine.GLMaterial;
-import Engine.GLObject;
-import Engine.GLProperty;
-import Engine.GLRenderer;
-import Engine.GLScript;
-import Engine.GLShader;
-import Engine.GLTransform;
-import Engine.GLWindow;
+import engine.GLAnimator;
+import engine.GLAudio;
+import engine.GLColor;
+import engine.GLMaterial;
+import engine.GLObject;
+import engine.GLProperty;
+import engine.GLRenderer;
+import engine.GLScript;
+import engine.GLShader;
+import engine.GLTransform;
+import engine.GLWindow;
 import Utils.GLTextureLoader;
 
 public class Game extends GLWindow {
