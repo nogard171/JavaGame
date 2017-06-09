@@ -5,6 +5,7 @@ import network.GLData;
 import network.GLMessage;
 import network.GLProtocol;
 import network.GLServer;
+import network.SocketHandler;
 
 public class Main {
 	
@@ -18,8 +19,10 @@ public class Main {
 		 Scanner keyboard = new Scanner(System.in);
 	        boolean exit = false;
 	        while (!exit) {
+	        	System.out.print("#");
 	            String input = keyboard.nextLine();
 	            if(input != null) {
+	            	System.out.println();
 	                if ("quit".equals(input)) {
 	                    System.out.println("Exit programm");
 	                    exit = true;
@@ -28,7 +31,6 @@ public class Main {
 	                	
 	                	server.start();
 	                }else if ("client".equals(input)) {
-	                	
 	                	client.start();
 	                	System.out.println("Starting client");
 	                }else if (input.startsWith("broadcast:")) {
@@ -38,6 +40,24 @@ public class Main {
 	                	message.from = "server";
 	                	message.message = input.split(":")[1];
 	                	server.broadcastGLData((GLData)message);
+	                }else if (input.startsWith("close#")) {	                	
+	                	GLMessage message= new GLMessage();
+	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
+	                	message.ClientID = Integer.parseInt(input.split("#")[1].replace(" ", ""));
+	                	message.from = "server";
+	                	message.message = "You have been disconnected from the server.";
+	                	server.broadcastGLData((GLData)message);
+	                }else if (input.startsWith("close all")) {	                	
+	                	GLMessage message= new GLMessage();
+	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
+	                	message.from = "server";
+	                	message.message = "You have been disconnected from the server.";
+	                	server.broadcastGLData((GLData)message);
+	                }else if (input.startsWith("list")) {	    
+	                	for(SocketHandler socket: server.sockets)
+	                	{
+	                		System.out.println("Client# " + socket.ID+" @ " + socket.getIP());
+	                	}
 	                }
 	                else if (input.startsWith("message:")) {
 	                	GLMessage message= new GLMessage();

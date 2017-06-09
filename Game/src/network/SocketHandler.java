@@ -13,21 +13,26 @@ import java.util.Date;
 public class SocketHandler extends Thread {
 
 	boolean close = false;
-	Socket clientSocket;
+	private Socket clientSocket;
 	ArrayList<SocketHandler> sockets = new ArrayList<SocketHandler>();
 	ObjectInputStream ois;
 	ObjectOutputStream oos;
-	private int ID = -1;
+	public int ID = -1;
 
 	public SocketHandler(Socket newClient) {
 		this.clientSocket = newClient;
 	}
 
+	public String getIP() {
+		return this.clientSocket.getRemoteSocketAddress().toString();
+	}
+
 	public void run() {
 		System.out.println("Client connected");
 		for (int index = 0; index < this.sockets.size(); index++) {
-			if (this != this.sockets.get(index)) {
+			if (this == this.sockets.get(index)) {
 				this.ID = index;
+				break;
 			}
 		}
 		try {
@@ -38,7 +43,6 @@ public class SocketHandler extends Thread {
 				try {
 					data = readGLData();
 				} catch (IOException | ClassNotFoundException e) {
-					e.printStackTrace();
 					this.close = true;
 				}
 
@@ -46,12 +50,16 @@ public class SocketHandler extends Thread {
 					this.broadcastGLData(data);
 				}
 			}
-			System.out.println("Client closed");
-
+			System.out.println("Client# " +this.ID+" closed");
 			clientSocket.close();
+			sockets.remove(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isClosed() {
+		return this.close;
 	}
 
 	public void broadcastGLData(GLData data) {
@@ -70,7 +78,6 @@ public class SocketHandler extends Thread {
 
 	public void sendGLData(GLData data) {
 		try {
-			data.ClientID = this.ID;
 			oos.writeObject(data);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

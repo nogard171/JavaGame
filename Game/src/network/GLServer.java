@@ -6,22 +6,30 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 
 public class GLServer extends Thread {
+
 	private int PORT = 9090;
+	private int MAX_CLIENTS = 10;
+
 	private ServerSocket listener;
-	ArrayList<SocketHandler> sockets = new ArrayList<SocketHandler>();
+	public ArrayList<SocketHandler> sockets = new ArrayList<SocketHandler>();
 
 	public void run() {
 		try {
 			this.listener = new ServerSocket(PORT);
 			try {
 				while (true) {
-					System.out.println("Waiting for Client...");
-					SocketHandler socket = new SocketHandler(this.listener.accept());
-					this.sockets.add(socket);
-					this.sockets.get(this.sockets.size() - 1).start();
+					if (this.MAX_CLIENTS > this.sockets.size()) {
 
+						System.out.println("Waiting for Client...");
+						SocketHandler socket = new SocketHandler(this.listener.accept());
+						this.sockets.add(socket);
+						this.sockets.get(this.sockets.size() - 1).start();
+					}
 					for (int i = 0; i < sockets.size(); i++) {
 						this.sockets.get(i).sockets = this.sockets;
+						if (sockets.get(i).isClosed()) {
+							this.sockets.remove(i);
+						}
 					}
 				}
 			} catch (IOException e) {
@@ -32,9 +40,18 @@ public class GLServer extends Thread {
 			e.printStackTrace();
 		}
 	}
+
 	public void broadcastGLData(GLData data) {
 		for (SocketHandler handler : this.sockets) {
-			handler.sendGLData(data);
+			if (data.ClientID != -1) {
+				System.out.println("Client specific data found.");
+				System.out.println("Client#" + handler.ID + "/" + data.ClientID);
+				if (data.ClientID == handler.ID) {
+					handler.sendGLData(data);
+				}
+			} else {
+				handler.sendGLData(data);
+			}
 		}
 	}
 }

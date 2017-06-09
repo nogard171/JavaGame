@@ -3,5 +3,5 @@ package network;
 import java.io.Serializable;
 
 public enum GLProtocol  implements Serializable{
-	NONE,MESSAGE;
+	NONE,CLOSE_CONNECTION,MESSAGE;
 }

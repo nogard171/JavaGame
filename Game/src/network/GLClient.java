@@ -32,11 +32,18 @@ public class GLClient extends Thread {
 					if (data.protocol == GLProtocol.MESSAGE) {
 						GLMessage message = (GLMessage) data;
 						System.out.println(message.from + " said: " + message.message);
-					} else {
+					} else if (data.protocol == GLProtocol.CLOSE_CONNECTION) {
+						GLMessage message = (GLMessage) data;						
+						System.out.println(message.from + " : " + message.message);
+						this.close = true;
+					}else {
 						System.out.println("Data received Protocol:" + data.protocol);
 					}
 				}
 			}
+			this.ois.close();
+			this.oos.close();
+			this.clientSocket.close();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
