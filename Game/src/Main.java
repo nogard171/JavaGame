@@ -27,20 +27,18 @@ public class Main {
 	                    System.out.println("Exit programm");
 	                    exit = true;
 	                } else if ("server".equals(input)) {
-	                	System.out.println("Starting server");
-	                	
+	                	System.out.println("Starting server");	                	
 	                	server.start();
 	                }else if ("client".equals(input)) {
 	                	client.start();
 	                	System.out.println("Starting client");
-	                }else if (input.startsWith("broadcast:")) {
-	                	
+	                }else if (input.startsWith("broadcast:")) {	                	
 	                	GLMessage message= new GLMessage();
 	                	message.protocol = GLProtocol.MESSAGE;
 	                	message.from = "server";
 	                	message.message = input.split(":")[1];
 	                	server.broadcastGLData((GLData)message);
-	                }else if (input.startsWith("close#")) {	                	
+	                }else if (input.startsWith("close#")) {
 	                	GLMessage message= new GLMessage();
 	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
 	                	message.ClientID = Integer.parseInt(input.split("#")[1].replace(" ", ""));

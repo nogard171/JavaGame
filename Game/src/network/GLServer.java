@@ -9,7 +9,6 @@ public class GLServer extends Thread {
 
 	private int PORT = 9090;
 	private int MAX_CLIENTS = 10;
-
 	private ServerSocket listener;
 	public ArrayList<SocketHandler> sockets = new ArrayList<SocketHandler>();
 
@@ -19,7 +18,6 @@ public class GLServer extends Thread {
 			try {
 				while (true) {
 					if (this.MAX_CLIENTS > this.sockets.size()) {
-
 						System.out.println("Waiting for Client...");
 						SocketHandler socket = new SocketHandler(this.listener.accept());
 						this.sockets.add(socket);
@@ -37,20 +35,22 @@ public class GLServer extends Thread {
 			}
 			this.listener.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Server port is unavailable for use.");
 		}
 	}
 
 	public void broadcastGLData(GLData data) {
 		for (SocketHandler handler : this.sockets) {
-			if (data.ClientID != -1) {
-				System.out.println("Client specific data found.");
-				System.out.println("Client#" + handler.ID + "/" + data.ClientID);
-				if (data.ClientID == handler.ID) {
+			if (handler != null) {
+				if (data.ClientID != -1) {
+					System.out.println("Client specific data found.");
+					System.out.println("Client#" + handler.ID + "/" + data.ClientID);
+					if (data.ClientID == handler.ID) {
+						handler.sendGLData(data);
+					}
+				} else {
 					handler.sendGLData(data);
 				}
-			} else {
-				handler.sendGLData(data);
 			}
 		}
 	}
