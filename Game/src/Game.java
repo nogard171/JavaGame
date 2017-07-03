@@ -146,7 +146,7 @@ public class Game extends GLWindow
 					obj.setSize(32, 32);
 					objects.add(obj);
 				}
-				Result = r.nextInt(100 - 1) + 1;
+				/*Result = r.nextInt(100 - 1) + 1;
 				if (Result <= 50&&obj.getType()=="GRASS")
 				{
 					obj = new Object();
@@ -155,9 +155,9 @@ public class Game extends GLWindow
 					obj.SetPosition(x * 32, y * 32);
 					obj.setSize(32, 32);
 					objects.add(obj);
-				}
+				}*/
 				
-				Result = r.nextInt(100 - 1) + 1;
+				/*Result = r.nextInt(100 - 1) + 1;
 				if (Result <= 10&&obj.getType()=="SAND")
 				{
 					obj = new Object();
@@ -167,7 +167,7 @@ public class Game extends GLWindow
 					obj.setSolid(true);
 					obj.setSize(32, 32);
 					objects.add(obj);
-				}
+				}*/
 			}
 		}
 		Random ran = new Random();
