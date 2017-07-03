@@ -23,8 +23,12 @@ public class Main {
 	            String input = keyboard.nextLine();
 	            if(input != null) {
 	            	System.out.println();
-	                if ("quit".equals(input)) {
-	                    System.out.println("Exit programm");
+	                if ("exit".equals(input)) {
+	                    GLMessage message= new GLMessage();
+	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
+	                	message.from = "server";
+	                	message.message = "You have been disconnected from the server.";
+	                    System.out.println("Exit program");	                    
 	                    exit = true;
 	                } else if ("server".equals(input)) {
 	                	System.out.println("Starting server");	                	
