@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GLScript extends GLComponent {
 	private String filename = "";
-	private GLWindow window;
+	private GLDisplay window;
 	LuaValue chunk;
 	GLFramesPerSecond fps;
 
@@ -51,11 +51,11 @@ public class GLScript extends GLComponent {
 		}
 	}
 
-	public GLWindow getWindow() {
+	public GLDisplay getWindow() {
 		return window;
 	}
 
-	public void setWindow(GLWindow window) {
+	public void setWindow(GLDisplay window) {
 		this.window = window;
 	}
 }

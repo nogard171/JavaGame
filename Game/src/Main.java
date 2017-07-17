@@ -11,9 +11,9 @@ public class Main {
 	
 	public static void main(String[] args)
 	{		
-		//new Game().Start();	
+		new Game().Start();	
 		
-		GLServer server = new GLServer();
+		/*GLServer server = new GLServer();
 		GLClient client = new GLClient();
 		
 		 Scanner keyboard = new Scanner(System.in);
@@ -70,6 +70,6 @@ public class Main {
 	                }
 	            }
 	        }
-	        keyboard.close();
+	        keyboard.close();*/
 	}
 }

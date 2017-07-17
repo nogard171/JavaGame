@@ -40,18 +40,22 @@ public class GLServer extends Thread {
 	}
 
 	public void broadcastGLData(GLData data) {
-		for (SocketHandler handler : this.sockets) {
-			if (handler != null) {
-				if (data.ClientID != -1) {
-					System.out.println("Client specific data found.");
-					System.out.println("Client#" + handler.ID + "/" + data.ClientID);
-					if (data.ClientID == handler.ID) {
+		if (this.sockets.size() > 0) {
+			for (SocketHandler handler : this.sockets) {
+				if (handler != null) {
+					if (data.ClientID != -1) {
+						System.out.println("Client specific data found.");
+						System.out.println("Client#" + handler.ID + "/" + data.ClientID);
+						if (data.ClientID == handler.ID) {
+							handler.sendGLData(data);
+						}
+					} else {
 						handler.sendGLData(data);
 					}
-				} else {
-					handler.sendGLData(data);
 				}
 			}
+		} else {
+			System.out.println("No clients to broadcast too.");
 		}
 	}
 }

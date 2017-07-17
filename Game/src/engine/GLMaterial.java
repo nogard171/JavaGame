@@ -1,9 +1,38 @@
 package engine;
 
+import java.io.IOException;
+
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
 public class GLMaterial extends GLComponent {
 	private int textureID = -1;
+	private GLSize frameSize = new GLSize(32, 32);
+
 	private GLSize textureSize = new GLSize(32, 32);
 	private GLColor color = new GLColor(255, 255, 255);
+
+	public GLMaterial(String textureFile) {
+		this.setName("material");
+		Texture texture = null;
+		try {
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(textureFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		this.setTextureID(texture.getTextureID());
+		this.setTextureSize(new GLSize((int) texture.getImageWidth(), (int) texture.getImageHeight()));
+	}
+
+	public GLSize getFrameSize() {
+		return frameSize;
+	}
+
+	public void setFrameSize(GLSize frameSize) {
+		this.frameSize = frameSize;
+	}
 
 	public GLSize getTextureSize() {
 		return textureSize;

@@ -9,15 +9,6 @@ public class GLObject {
 	private HashMap<String, GLComponent> components = new HashMap<String, GLComponent>();
 	private HashMap<String, GLProperty> properties = new HashMap<String, GLProperty>();
 	private String Name = "";
-	private int displayHandleID = -1;
-
-	public int getDisplayHandleID() {
-		return displayHandleID;
-	}
-
-	public void setDisplayHandleID(int displayHandleID) {
-		this.displayHandleID = displayHandleID;
-	}
 
 	public String getName() {
 		return this.Name;

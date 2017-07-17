@@ -1,122 +1,86 @@
 package engine;
 
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glCallList;
 
-import java.io.File;
-
-import javax.swing.JOptionPane;
-
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.JsePlatform;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 
-import Utils.ErrorHandler;
+public class GLWindow extends GLComponent {
+	int dlWindow = -1;
+	GLSize frameDimensions = new GLSize(5,5);
+	int[][] frameInts;
+	int[] frames = {};
 
-public class GLWindow {
+	public GLWindow() {
+		this.setName("window");
+	}
 
-	private int WIDTH = 800;
-	private int HEIGHT = 600;
-	private int FPS = 120;
-	private boolean FPS_LIMITER = false;
-	private String TITLE = "";
-	private DisplayMode DISPLAYMODE = null;
-	private boolean RESIZABLE = true;
-	GLFramesPerSecond fps;
-	private boolean close = false;
-	private String systemEnableFile ="system/scripts/system_enables.lua";
-
-	public void Create() {
-		try {
-			this.DISPLAYMODE = new DisplayMode(WIDTH, HEIGHT);
-			Display.setDisplayMode(this.DISPLAYMODE);
-			Display.setResizable(RESIZABLE);
-			Display.setTitle(TITLE);
-			Display.create();
-			this.setupGL();
-			this.Setup();
-			while (!Display.isCloseRequested()) {
-				if (close) {
-					break;
-				}
-				this.Update();
-				this.Render();
-				Display.update();
-				if (FPS_LIMITER) {
-					Display.sync(FPS);
+	public void makeWindowInts() {
+		frameInts = new int[this.frameDimensions.getHeight()][this.frameDimensions.getWidth()];
+		int index = 0;
+		for (int y = 0; y < this.frameDimensions.getHeight(); y++) {
+			for (int x = 0; x < this.frameDimensions.getWidth(); x++) {
+				frameInts[y][x] = index;
+				System.out.println("X:" + x + "," + (this.frameDimensions.getWidth() - 2) + "(" + index + ")");
+				if ((x == 0 || x == this.frameDimensions.getWidth() - 2 || x == this.frameDimensions.getWidth() - 1)
+						&& (y == 0 || y >= this.frameDimensions.getHeight() - 2)) {
+					index++;
+				} else if ((x == 0 || x == this.frameDimensions.getWidth() - 2)) {
+					index++;
+				} else if (x == this.frameDimensions.getWidth() - 1) {
+					index -= 2;
 				}
 			}
-		} catch (Exception e) {
-			new ErrorHandler();
-			ErrorHandler.LogError(e.getMessage());
 		}
-		this.Destroy();
 	}
 
-	private void setupGL() {
-		fps = new GLFramesPerSecond();
-		fps.startFPS();
-		// this sets up the viewport for rendering.
-		this.SetupViewPort();
-		// System.out.println("Enagle:" + GL11.GL_BLEND);
-
-		File f = new File(systemEnableFile);
-		if (f.exists() && !f.isDirectory()) {
-			System.out.println("System enables beign used from script");
-			LuaValue chunk;
-			Globals globals = JsePlatform.standardGlobals();
-			globals.set("window", CoerceJavaToLua.coerce(this));
-			chunk = globals.loadfile(this.systemEnableFile);
-		}
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		// Setup an XNA like background color
-		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
-	}
-
-	public void glEnable(int enableID) {
-		GL11.glEnable(enableID);
-	}
-
-	public void Update() {
-		GLFramesPerSecond.updateFPS();
-		Display.setTitle("FPS:" + fps.fps);
-		if (Display.wasResized()) {
-			this.SetupViewPort();
-		}
-		if (Keyboard.next()) {
-			if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-				this.close = true;
+	public void loadWindow() {
+		GLMaterial mat = (GLMaterial) this.getObject().getComponent("material");
+		mat.setFrameSize(new GLSize(32, 32));
+		if (mat != null) {
+			float textureWidthStep = 1 / (float) 3;
+			float textureHeightStep = 1 / (float) 3;
+			GLRenderer renderer = (GLRenderer) this.getObject().getComponent("renderer");
+			frames = new int[((int) frameDimensions.getWidth() * (int) frameDimensions.getHeight())];
+			if (renderer != null) {
+				int index = 0;
+				for (int y = 0; y < 3; y++) {
+					for (int x = 0; x < 3; x++) {
+						int dlid = GL11.glGenLists(1);
+						GL11.glNewList(dlid, GL11.GL_COMPILE);
+						renderer.RenderQuad(mat.getFrameSize().getWidth(), mat.getFrameSize().getHeight(),
+								x * textureWidthStep, (y + 1) * textureHeightStep, (x + 1) * textureWidthStep,
+								y * textureHeightStep);
+						GL11.glEndList();
+						frames[index] = dlid;
+						index++;
+					}
+				}
+				this.makeWindowInts();
+				int dlid = GL11.glGenLists(1);
+				GL11.glNewList(dlid, GL11.GL_COMPILE);
+				for (int y = 0; y < frameInts.length; y++) {
+					for (int x = 0; x < frameInts[0].length; x++) {
+						GL11.glPushMatrix();
+						GL11.glTranslatef(x * 32, y * 32, 0);
+						int newIndex = frameInts[y][x];
+						glCallList(this.frames[newIndex]);
+						GL11.glPopMatrix();
+					}
+				}
+				GL11.glEndList();
+				this.dlWindow = dlid;
 			}
 		}
 	}
 
-	private void SetupViewPort() {
-		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
+	public void Run() {
+		GLRenderer renderer = (GLRenderer) this.getObject().getComponent("renderer");
+		if (renderer != null) {
+			if (this.dlWindow == -1) {
+				this.loadWindow();
+			}
+			renderer.setDisplayID(this.dlWindow);
+		}
 	}
-
-	public void Render() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-	}
-
-	public void Destroy() {
-		Display.destroy();
-	}
-
-	public void Setup() {
-
-	}
-
 }
