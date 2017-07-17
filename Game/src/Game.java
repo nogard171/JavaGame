@@ -81,7 +81,7 @@ public class Game extends GLDisplay {
 		GLMaterial winmat = new GLMaterial("resources/textures/gui.png");
 		GLTransform wintransform = new GLTransform(200, 200);
 		GLRenderer winspriteRenderer = new GLRenderer();
-		GLShader winshader = new GLShader("basic.vert", "basic.frag");
+		GLShader winshader = new GLShader("window.vert", "window.frag");
 
 		GLWindow win = new GLWindow();
 		
