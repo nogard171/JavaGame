@@ -34,6 +34,8 @@ public class Game extends GLDisplay {
 
 	@Override
 	public void Setup() {
+		
+		//the generated grass globjects
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
 				GLMaterial mat = new GLMaterial("resources/textures/dirt.png");
@@ -50,6 +52,8 @@ public class Game extends GLDisplay {
 			}
 		}
 
+		//the player globject
+		
 		GLMaterial mat = new GLMaterial("resources/textures/guy.png");
 		GLTransform transform = new GLTransform(0, 0);
 		GLScript script = new GLScript("resources/scripts/main.lua");
@@ -78,6 +82,8 @@ public class Game extends GLDisplay {
 		obj.AddProperty(health);
 		objects.add(obj);
 
+		//the window globject
+		
 		GLMaterial winmat = new GLMaterial("resources/textures/gui.png");
 		GLTransform wintransform = new GLTransform(200, 200);
 		GLRenderer winspriteRenderer = new GLRenderer();
