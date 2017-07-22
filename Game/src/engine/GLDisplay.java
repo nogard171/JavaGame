@@ -23,8 +23,8 @@ public class GLDisplay {
 
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
-	private int FPS = 120;
-	private boolean FPS_LIMITER = false;
+	private int FPS = 60;
+	private boolean FPS_LIMITER = true;
 	private String TITLE = "";
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
@@ -61,7 +61,7 @@ public class GLDisplay {
 
 	private void setupGL() {
 		fps = new GLFramesPerSecond();
-		fps.startFPS();
+		fps.start();
 		// this sets up the viewport for rendering.
 		this.SetupViewPort();
 		// System.out.println("Enagle:" + GL11.GL_BLEND);

@@ -1,6 +1,6 @@
 dofile "system/scripts/keyboard_keys.lua"
 
-speed = fps:getDelta()*0.2f
+speed = 2f
 
 xSpeed = 0
 ySpeed = 0
@@ -9,10 +9,10 @@ walking=false
 if texX == nil then
    texX=0
 end
-texSpeed=0.01
+texSpeed=0.05f
 if keyboard:isKeyDown(SHIFT) then
 	speed=speed*2;
-	texSpeed=0.02
+	texSpeed=0.1f
 end
 
 if keyboard:isKeyDown(D) then
@@ -42,7 +42,7 @@ end
 
 texX= texX + texSpeed
 
-if texX>4 then
+if texX>=4 then
 	texX=0
 end
 
@@ -56,4 +56,3 @@ end
 this:getComponent("animator"):setFrameY(texY)
 this:getComponent("animator"):setFrameX(texX)
 this:getComponent("transform"):Move(xSpeed,ySpeed)
-this:getComponent("transform"):Rotate(rot)

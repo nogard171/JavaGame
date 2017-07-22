@@ -29,6 +29,7 @@ public class GLScript extends GLComponent {
 			Globals globals = JsePlatform.standardGlobals();
 			globals.set("this", CoerceJavaToLua.coerce(obj));
 			globals.set("keyboard", CoerceJavaToLua.coerce(new GLKeyboard()));
+			globals.set("mouse", CoerceJavaToLua.coerce(new GLMouse()));
 			globals.set("fps", CoerceJavaToLua.coerce(fps));
 			chunk = globals.loadfile(filename);
 		}

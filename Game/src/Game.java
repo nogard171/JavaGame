@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
@@ -12,9 +13,12 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import engine.GLAnimator;
 import engine.GLAudio;
+import engine.GLClickable;
 import engine.GLColor;
 import engine.GLDisplay;
+import engine.GLFramesPerSecond;
 import engine.GLMaterial;
+import engine.GLMouse;
 import engine.GLObject;
 import engine.GLProperty;
 import engine.GLRenderer;
@@ -34,10 +38,10 @@ public class Game extends GLDisplay {
 
 	@Override
 	public void Setup() {
-		
-		//the generated grass globjects
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
+
+		// the generated grass globjects
+		for (int x = 0; x < 100; x++) {
+			for (int y = 0; y < 100; y++) {
 				GLMaterial mat = new GLMaterial("resources/textures/dirt.png");
 				GLShader shader = new GLShader("basic.vert", "basic.frag");
 				GLTransform transform = new GLTransform(x * 32, y * 32);
@@ -52,8 +56,8 @@ public class Game extends GLDisplay {
 			}
 		}
 
-		//the player globject
-		
+		// the player globject
+
 		GLMaterial mat = new GLMaterial("resources/textures/guy.png");
 		GLTransform transform = new GLTransform(0, 0);
 		GLScript script = new GLScript("resources/scripts/main.lua");
@@ -82,34 +86,37 @@ public class Game extends GLDisplay {
 		obj.AddProperty(health);
 		objects.add(obj);
 
-		//the window globject
-		
+		// the window globject
+
 		GLMaterial winmat = new GLMaterial("resources/textures/gui.png");
 		GLTransform wintransform = new GLTransform(200, 200);
 		GLRenderer winspriteRenderer = new GLRenderer();
 		GLShader winshader = new GLShader("window.vert", "window.frag");
 
 		GLWindow win = new GLWindow();
-		
+		GLClickable clickable = new GLClickable();
 
 		GLObject window = new GLObject();
+
 		window.AddComponent(winmat);
 		window.AddComponent(wintransform);
 		window.AddComponent(winspriteRenderer);
 		window.AddComponent(win);
 		window.AddComponent(winshader);
-		
+		window.AddComponent(clickable);
+
 		objects.add(window);
 
 	}
 
 	;
+
 	ArrayList<GLObject> objects = new ArrayList<GLObject>();
 
 	@Override
 	public void Update() {
 		super.Update();
-
+		view = new GLView(0, 0, Display.getWidth(), Display.getHeight());
 	}
 
 	@Override
@@ -139,10 +146,11 @@ public class Game extends GLDisplay {
 		return glViewObjects;
 	}
 
+	GLMouse mouse = new GLMouse();
+
 	@Override
 	public void Render() {
 		super.Render();
-
 		for (GLObject obj : objects) {
 			GLScript script = (GLScript) obj.getComponent("script");
 			if (script != null) {
@@ -157,17 +165,29 @@ public class Game extends GLDisplay {
 			GLRenderer spriteRenderer = (GLRenderer) obj.getComponent("renderer");
 			GLAnimator animator = (GLAnimator) obj.getComponent("animator");
 			GLWindow win = (GLWindow) obj.getComponent("window");
-			if(win!=null)
-			{
+			GLClickable clickable = (GLClickable) obj.getComponent("clickable");
+			if (win != null) {
 				win.Run();
 			}
-			
+			if (clickable != null) {
+				clickable.Run();
+				if (clickable.clicked && mat != null) {
+					mat.setColor(new GLColor(255, 0, 0));
+				} else {
+					mat.setColor(new GLColor(255, 255, 255));
+				}
+			}
 			if (script != null) {
 				script.Run();
 			}
 			if (shader != null) {
 				shader.Run();
-
+				if (mat != null) {
+					GLColor color = mat.getColorAsFloats();
+					float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
+					shader.sendUniform4f("vertColor", colorData);
+					shader.sendTexture("myTexture", mat.getTextureID());
+				}
 			}
 
 			if (transform != null) {
@@ -178,13 +198,6 @@ public class Game extends GLDisplay {
 				GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
 			}
 
-			if (mat != null) {
-				GLColor color = mat.getColorAsFloats();
-				float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
-				shader.sendUniform4f("vertColor", colorData);
-
-				shader.sendTexture("myTexture", mat.getTextureID());
-			}
 			if (animator != null) {
 				animator.Run();
 			}

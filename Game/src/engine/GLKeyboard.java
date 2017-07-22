@@ -8,4 +8,8 @@ public class GLKeyboard
 	{
 		return Keyboard.isKeyDown(key);
 	}
+	public boolean isKeyUp(int key)
+	{
+		return !Keyboard.isKeyDown(key);
+	}
 }

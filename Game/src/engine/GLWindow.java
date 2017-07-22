@@ -36,7 +36,7 @@ public class GLWindow extends GLComponent {
 
 	public void loadWindow() {
 		GLMaterial mat = (GLMaterial) this.getObject().getComponent("material");
-		mat.setFrameSize(new GLSize(32, 32));
+		mat.setFrameSize(new GLSize(32*frameDimensions.getWidth(), 32*frameDimensions.getHeight()));
 		if (mat != null) {
 			float textureWidthStep = 1 / (float) 3;
 			float textureHeightStep = 1 / (float) 3;
@@ -48,7 +48,7 @@ public class GLWindow extends GLComponent {
 					for (int x = 0; x < 3; x++) {
 						int dlid = GL11.glGenLists(1);
 						GL11.glNewList(dlid, GL11.GL_COMPILE);
-						renderer.RenderQuad(mat.getFrameSize().getWidth(), mat.getFrameSize().getHeight(),
+						renderer.RenderQuad(mat.getFrameSize().getWidth()/frameDimensions.getWidth(), mat.getFrameSize().getHeight()/frameDimensions.getHeight(),
 								x * textureWidthStep, (y + 1) * textureHeightStep, (x + 1) * textureWidthStep,
 								y * textureHeightStep);
 						GL11.glEndList();
