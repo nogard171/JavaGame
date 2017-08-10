@@ -1,5 +1,7 @@
 import static org.lwjgl.opengl.GL11.glCallList;
 
+import java.io.IOException;
+
 import org.lwjgl.opengl.GL11;
 
 public class Game extends GLWindow {

@@ -8,27 +8,22 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-public class GLWindow implements Runnable {
+public class GLWindow{
 	private int width = 800;
 	private int height = 600;
 	private int targetFPS = 120;
 	private String title = "";
-	private GLDisplayMode glDisplayMode = null;
+	private DisplayMode displayMode = null;
 	private boolean isResizable = true;
-
-	private Thread thread;
-	public boolean threadRunning = true;
-
 	FPSHandler fps = new FPSHandler();
 
 	private void createDisplay() throws LWJGLException {
 
-		this.glDisplayMode = new GLDisplayMode();
-		Display.setDisplayMode(glDisplayMode.getDisplayMode(this.width, this.height));
+		this.displayMode = new DisplayMode(this.width, this.height);
+		Display.setDisplayMode(displayMode);
 		Display.setResizable(this.isResizable);
 		Display.setTitle(this.title);
 		Display.create();
-
 	}
 
 	public void init() {
@@ -74,19 +69,12 @@ public class GLWindow implements Runnable {
 	}
 
 	public void start() {
-		this.threadRunning = true;
-		this.thread = new Thread(this, this.title);
-		this.thread.start();
-	}
-
-	@Override
-	public void run() {
 		try {
 			this.createDisplay();
 			this.setupOpenGL();
 			this.init();
 
-			while (!Display.isCloseRequested() && this.threadRunning) {
+			while (!Display.isCloseRequested()) {
 				this.update();
 				this.render();
 
