@@ -42,6 +42,7 @@ public class GLLoader {
 		}
 		raw.indices = newIndices;
 		raw.vectors = newVectors;
+		//
 		return raw;
 	}
 
@@ -54,8 +55,12 @@ public class GLLoader {
 	}
 
 	public void renderRawQuad(GLRawQuad raw) {
+		float x,y;
 		for (byte indice : raw.indices) {
 			Vector2f vec = raw.vectors[indice];
+			Vector2f textureVec = raw.textureVectors[indice];
+			System.out.println(textureVec.getX()+","+ textureVec.getY());
+			GL11.glTexCoord2f(textureVec.getX(), textureVec.getY());
 			GL11.glVertex2f(vec.getX(), vec.getY());
 		}
 	}
@@ -66,6 +71,8 @@ public class GLLoader {
 
 		String rawFilename = "";
 
+		ArrayList<Vector2f> textureVectors = new ArrayList<Vector2f>();
+		
 		ArrayList<String> lines = getFileLines(filename);
 		for (int i = 0; i < lines.size(); i++) {
 			String[] data = lines.get(i).split(" ");
@@ -75,10 +82,18 @@ public class GLLoader {
 			if (type.startsWith("raw")) {
 				rawFilename = data[1];
 			}
+
+			if (type.startsWith("tv") && data.length >= 2) {
+				textureVectors.add(new Vector2f(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
+			}
+		}
+		Vector2f[] newTextureVectors = new Vector2f[textureVectors.size()];
+		for (int v = 0; v < newTextureVectors.length; v++) {
+			newTextureVectors[v] = textureVectors.get(v);
 		}
 		if (rawFilename != "") {
 			GLRawQuad raw = getRaw(rawFilename);
-
+			raw.textureVectors = newTextureVectors;
 			quad.displayList = getDisplayList(raw);
 		}
 		return quad;

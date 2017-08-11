@@ -24,6 +24,7 @@ public class GLWindow{
 		Display.setResizable(this.isResizable);
 		Display.setTitle(this.title);
 		Display.create();
+
 	}
 
 	public void init() {
