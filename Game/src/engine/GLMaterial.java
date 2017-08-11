@@ -15,9 +15,13 @@ public class GLMaterial extends GLComponent {
 
 	public GLMaterial(String textureFile) {
 		this.setName("material");
+		this.setTexture(textureFile);
+	}
+
+	public void setTexture(String filename) {
 		Texture texture = null;
 		try {
-			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(textureFile));
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(filename));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

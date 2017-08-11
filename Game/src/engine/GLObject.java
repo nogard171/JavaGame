@@ -2,6 +2,8 @@ package engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import Utils.ErrorHandler;
 
@@ -46,5 +48,15 @@ public class GLObject {
 		 * name+", not avaiable under the GLObject: " + this.getName()); }
 		 */
 		return com;
+	}
+	public void Destroy()
+	{
+		Iterator it = this.components.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	 Map.Entry pair = (Map.Entry)it.next();
+	    	 GLComponent com = (GLComponent) pair.getValue();
+	         com.Destroy();
+	         it.remove(); // avoids a ConcurrentModificationException
+	    }
 	}
 }

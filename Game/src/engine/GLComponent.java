@@ -19,4 +19,8 @@ public class GLComponent {
 	public void setObject(GLObject object) {
 		this.object = object;
 	}
+	public void Destroy()
+	{
+		
+	}
 }

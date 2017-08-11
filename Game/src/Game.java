@@ -1,6 +1,9 @@
 
+import static org.lwjgl.opengl.GL11.glCallList;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -42,17 +45,17 @@ public class Game extends GLDisplay {
 		// the generated grass globjects
 		for (int x = 0; x < 100; x++) {
 			for (int y = 0; y < 100; y++) {
-				GLMaterial mat = new GLMaterial("resources/textures/dirt.png");
-				GLShader shader = new GLShader("basic.vert", "basic.frag");
+				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
 				GLTransform transform = new GLTransform(x * 32, y * 32);
+				GLShader shader = new GLShader("basic.vert", "basic.frag");
 				GLRenderer spriteRenderer = new GLRenderer();
-				GLObject obj2 = new GLObject();
-				obj2.setName("Dirt");
-				obj2.AddComponent(transform);
-				obj2.AddComponent(mat);
-				obj2.AddComponent(shader);
-				obj2.AddComponent(spriteRenderer);
-				objects.add(obj2);
+				GLObject obj = new GLObject();
+				obj.setName("Dirt");
+				obj.AddComponent(transform);
+				obj.AddComponent(mat);
+				obj.AddComponent(shader);
+				obj.AddComponent(spriteRenderer);
+				mappedObjects.put(x + "," + y, obj);
 			}
 		}
 
@@ -62,7 +65,7 @@ public class Game extends GLDisplay {
 		GLTransform transform = new GLTransform(0, 0);
 		GLScript script = new GLScript("resources/scripts/main.lua");
 		GLShader shader = new GLShader("basic.vert", "basic.frag");
-		GLRenderer spriteRenderer = new GLRenderer();
+		GLRenderer spriteRenderer2 = new GLRenderer();
 		GLAnimator animator = new GLAnimator();
 		animator.setSize(new GLSize(32, 64));
 
@@ -79,7 +82,7 @@ public class Game extends GLDisplay {
 		obj.AddComponent(script);
 		obj.AddComponent(mat);
 		obj.AddComponent(shader);
-		obj.AddComponent(spriteRenderer);
+		obj.AddComponent(spriteRenderer2);
 		obj.AddComponent(animator);
 		obj.AddComponent(audio);
 
@@ -112,24 +115,21 @@ public class Game extends GLDisplay {
 	;
 
 	ArrayList<GLObject> objects = new ArrayList<GLObject>();
+	HashMap<String, GLObject> mappedObjects = new HashMap<String, GLObject>();
 
 	@Override
 	public void Update() {
 		super.Update();
-		view = new GLView(0, 0, Display.getWidth(), Display.getHeight());
+		if (Display.getWidth() != view.Width || Display.getHeight() != view.Height || view.update) {
+			view = new GLView(0, 0, Display.getWidth(), Display.getHeight());
+			this.objectInView = getViewObjects();
+		}
 	}
 
 	@Override
 	public void Destroy() {
 		for (GLObject obj : objects) {
-			GLShader shader = (GLShader) obj.getComponent("shader");
-			GLAudio audio = (GLAudio) obj.getComponent("audio");
-			if (audio != null) {
-				audio.Destroy();
-			}
-			if (shader != null) {
-				shader.Destroy();
-			}
+			obj.Destroy();
 		}
 		super.Destroy();
 	}
@@ -137,7 +137,14 @@ public class Game extends GLDisplay {
 	GLView view = new GLView(0, 0, 400, 400);
 
 	public ArrayList<GLObject> getViewObjects() {
-		ArrayList<GLObject> glViewObjects = new ArrayList<GLObject>();
+		ArrayList<GLObject> glViewObjects = new ArrayList<GLObject>();		
+		for (int x = (int) Math.floor(view.X / 32); x < Math.ceil(view.Width / 32)+1; x++) {
+			for (int y = (int) Math.floor(view.Y / 32); y < Math.ceil(view.Height / 32)+1; y++) {
+				String key = (x) + "," + y;
+				GLObject obj = mappedObjects.get(key);
+				glViewObjects.add(obj);
+			}
+		}
 		for (GLObject obj : objects) {
 			if (view.isObjectInView(obj)) {
 				glViewObjects.add(obj);
@@ -147,6 +154,7 @@ public class Game extends GLDisplay {
 	}
 
 	GLMouse mouse = new GLMouse();
+	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
 
 	@Override
 	public void Render() {
@@ -157,57 +165,60 @@ public class Game extends GLDisplay {
 				script.Run();
 			}
 		}
-		for (GLObject obj : getViewObjects()) {
-			GLMaterial mat = (GLMaterial) obj.getComponent("material");
-			GLTransform transform = (GLTransform) obj.getComponent("transform");
-			GLScript script = (GLScript) obj.getComponent("script");
-			GLShader shader = (GLShader) obj.getComponent("shader");
-			GLRenderer spriteRenderer = (GLRenderer) obj.getComponent("renderer");
-			GLAnimator animator = (GLAnimator) obj.getComponent("animator");
-			GLWindow win = (GLWindow) obj.getComponent("window");
-			GLClickable clickable = (GLClickable) obj.getComponent("clickable");
-			if (win != null) {
-				win.Run();
-			}
-			if (clickable != null) {
-				clickable.Run();
-				if (clickable.clicked && mat != null) {
-					mat.setColor(new GLColor(255, 0, 0));
-				} else {
-					mat.setColor(new GLColor(255, 255, 255));
+		for (GLObject obj : objectInView) {
+			if (obj != null) {
+				GLMaterial mat = (GLMaterial) obj.getComponent("material");
+				GLTransform transform = (GLTransform) obj.getComponent("transform");
+				GLScript script = (GLScript) obj.getComponent("script");
+				GLShader shader = (GLShader) obj.getComponent("shader");
+				GLRenderer spriteRenderer = (GLRenderer) obj.getComponent("renderer");
+				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
+				GLWindow win = (GLWindow) obj.getComponent("window");
+				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
+				if (win != null) {
+					win.Run();
 				}
-			}
-			if (script != null) {
-				script.Run();
-			}
-			if (shader != null) {
-				shader.Run();
-				if (mat != null) {
-					GLColor color = mat.getColorAsFloats();
-					float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
-					shader.sendUniform4f("vertColor", colorData);
-					shader.sendTexture("myTexture", mat.getTextureID());
+				if (clickable != null) {
+					clickable.Run();
+					if (clickable.clicked && mat != null) {
+						mat.setColor(new GLColor(255, 0, 0));
+					} else {
+						mat.setColor(new GLColor(255, 255, 255));
+					}
 				}
-			}
+				if (script != null) {
+					script.Run();
+				}
+				if (shader != null) {
+					shader.Run();
+					if (mat != null) {
+						GLColor color = mat.getColorAsFloats();
+						float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
+						shader.sendUniform4f("vertColor", colorData);
+						shader.sendTexture("myTexture", mat.getTextureID());
+					}
+				}
 
-			if (transform != null) {
-				GL11.glPushMatrix();
-				GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),
-						transform.getPosition().getY() + transform.getCenter().getY(), 0);
-				GL11.glRotatef(transform.getRotation(), 0, 0, 1);
-				GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
-			}
+				if (transform != null) {
+					GL11.glPushMatrix();
+					GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),
+							transform.getPosition().getY() + transform.getCenter().getY(), 0);
+					GL11.glRotatef(transform.getRotation(), 0, 0, 1);
+					GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
+				}
 
-			if (animator != null) {
-				animator.Run();
-			}
-			spriteRenderer.Run();
+				if (animator != null) {
+					animator.Run();
+				}
 
-			if (transform != null) {
-				GL11.glPopMatrix();
-			}
+				spriteRenderer.Run();
 
-			GL11.glColor3f(1, 1, 1);
+				if (transform != null) {
+					GL11.glPopMatrix();
+				}
+
+				GL11.glColor3f(1, 1, 1);
+			}
 		}
 	}
 }

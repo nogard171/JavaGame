@@ -2,11 +2,25 @@ package engine;
 
 import static org.lwjgl.opengl.GL11.glCallList;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 
 public class GLRenderer extends GLComponent {
-	private int displayID = -1;
-	private GLSize initSpriteSize = new GLSize(32, 32);
+	public int displayID = -1;
+
+	private GLSize initSpriteSize;
+
+	public GLRenderer() {
+		this.setName("renderer");
+		initSpriteSize = new GLSize(32, 32);
+		generateDisplayList(new GLSize(32, 32));
+	};
 
 	public int getDisplayID() {
 		return displayID;
@@ -16,8 +30,14 @@ public class GLRenderer extends GLComponent {
 		this.displayID = displayID;
 	}
 
-	public GLRenderer() {
-		this.setName("renderer");
+	private void generateDisplayList(GLSize spriteSize) {
+		if (this.displayID == -1) {
+			int dlid = GL11.glGenLists(1);
+			GL11.glNewList(dlid, GL11.GL_COMPILE);
+			this.RenderQuad(spriteSize.getWidth(), spriteSize.getHeight(), 0, 0, 1, 1);
+			GL11.glEndList();
+			this.displayID = dlid;
+		}
 	}
 
 	public void Run() {
@@ -26,14 +46,9 @@ public class GLRenderer extends GLComponent {
 		if (this.initSpriteSize != spriteSize) {
 			this.displayID = -1;
 			this.initSpriteSize = spriteSize;
+			this.generateDisplayList(initSpriteSize);
 		}
-		if (this.displayID == -1) {
-			int dlid = GL11.glGenLists(1);
-			GL11.glNewList(dlid, GL11.GL_COMPILE);
-			this.RenderQuad(spriteSize.getWidth(), spriteSize.getHeight(), 0, 0, 1, 1);
-			GL11.glEndList();
-			this.displayID = dlid;
-		} else {
+		if (this.displayID != -1) {
 			glCallList(this.displayID);
 		}
 	}

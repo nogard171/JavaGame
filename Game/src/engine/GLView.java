@@ -3,10 +3,11 @@ package engine;
 import java.awt.Rectangle;
 
 public class GLView {
-	int X = 0;
-	int Y = 0;
-	int Width = 0;
-	int Height = 0;
+	public int X = 0;
+	public int Y = 0;
+	public int Width = 0;
+	public int Height = 0;
+	public Boolean update = false;
 
 	public GLView(int i, int j, int k, int l) {
 		this.X = i;
