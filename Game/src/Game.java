@@ -125,6 +125,33 @@ public class Game extends GLDisplay {
 			view = new GLView(0, 0, Display.getWidth(), Display.getHeight());
 			this.objectInView = getViewObjects();
 		}
+		for (GLObject obj : objectToUpdate) {
+			if (obj != null) {
+				GLScript script = (GLScript) obj.getComponent("script");
+				GLMaterial mat = (GLMaterial) obj.getComponent("material");
+				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
+				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
+				GLWindow win = (GLWindow) obj.getComponent("window");
+				if (win != null) {
+					win.Run();
+				}
+				if (clickable != null) {
+					clickable.Run();
+					if (clickable.clicked && mat != null) {
+						mat.setColor(new GLColor(255, 0, 0));
+					} else {
+						mat.setColor(new GLColor(255, 255, 255));
+					}
+				}
+				if (script != null) {
+					script.Run();
+				}
+				if (animator != null) {
+					animator.Run();
+				}
+			}
+		}
+		objectToUpdate.clear();
 	}
 
 	@Override
@@ -138,9 +165,9 @@ public class Game extends GLDisplay {
 	GLView view = new GLView(0, 0, 400, 400);
 
 	public ArrayList<GLObject> getViewObjects() {
-		ArrayList<GLObject> glViewObjects = new ArrayList<GLObject>();		
-		for (int x = (int) Math.floor(view.X / 32); x < Math.ceil(view.Width / 32)+1; x++) {
-			for (int y = (int) Math.floor(view.Y / 32); y < Math.ceil(view.Height / 32)+1; y++) {
+		ArrayList<GLObject> glViewObjects = new ArrayList<GLObject>();
+		for (int x = (int) Math.floor(view.X / 32); x < Math.ceil(view.Width / 32) + 1; x++) {
+			for (int y = (int) Math.floor(view.Y / 32); y < Math.ceil(view.Height / 32) + 1; y++) {
 				String key = (x) + "," + y;
 				GLObject obj = mappedObjects.get(key);
 				glViewObjects.add(obj);
@@ -157,17 +184,21 @@ public class Game extends GLDisplay {
 	GLMouse mouse = new GLMouse();
 	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
 
+	ArrayList<GLObject> objectToUpdate = new ArrayList<GLObject>();
+
 	@Override
 	public void Render() {
 		super.Render();
 		for (GLObject obj : objects) {
 			GLScript script = (GLScript) obj.getComponent("script");
 			if (script != null) {
-				script.Run();
+				// script.Run();
+				objectToUpdate.add(obj);
 			}
 		}
 		for (GLObject obj : objectInView) {
 			if (obj != null) {
+				Boolean updateObject = false;
 				GLMaterial mat = (GLMaterial) obj.getComponent("material");
 				GLTransform transform = (GLTransform) obj.getComponent("transform");
 				GLScript script = (GLScript) obj.getComponent("script");
@@ -177,18 +208,23 @@ public class Game extends GLDisplay {
 				GLWindow win = (GLWindow) obj.getComponent("window");
 				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
 				if (win != null) {
-					win.Run();
+					//win.Run();
+					updateObject = true;
 				}
 				if (clickable != null) {
-					clickable.Run();
-					if (clickable.clicked && mat != null) {
-						mat.setColor(new GLColor(255, 0, 0));
-					} else {
-						mat.setColor(new GLColor(255, 255, 255));
-					}
+					//clickable.Run();
+					updateObject = true;
 				}
 				if (script != null) {
-					script.Run();
+					//script.Run();
+					updateObject = true;
+				}
+				if (animator != null) {
+					//animator.Run();
+					updateObject = true;
+				}
+				if (updateObject) {
+					objectToUpdate.add(obj);
 				}
 				if (shader != null) {
 					shader.Run();
@@ -199,7 +235,6 @@ public class Game extends GLDisplay {
 						shader.sendTexture("myTexture", mat.getTextureID());
 					}
 				}
-
 				if (transform != null) {
 					GL11.glPushMatrix();
 					GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),
@@ -208,9 +243,6 @@ public class Game extends GLDisplay {
 					GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
 				}
 
-				if (animator != null) {
-					animator.Run();
-				}
 
 				spriteRenderer.Run();
 

@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class GLWindow extends GLComponent {
 	int dlWindow = -1;
-	GLSize frameDimensions = new GLSize(3,3);
+	GLSize frameDimensions = new GLSize(10,10);
 	int[][] frameInts;
 	int[] frames = {};
 
