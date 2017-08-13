@@ -10,8 +10,8 @@ import org.lwjgl.opengl.GL11;
 public class GLScript extends GLComponent {
 	private String filename = "";
 	private GLDisplay window;
-	LuaValue chunk;
 	GLFramesPerSecond fps;
+	GLScriptEngine scripter;
 
 	public GLScript() {
 		this.setName("script");
@@ -25,13 +25,13 @@ public class GLScript extends GLComponent {
 	private void loadScript() {
 		GLObject obj = this.getObject();
 		if (obj != null) {
+			scripter = new GLScriptEngine();
 			fps = new GLFramesPerSecond();
-			Globals globals = JsePlatform.standardGlobals();
-			globals.set("this", CoerceJavaToLua.coerce(obj));
-			globals.set("keyboard", CoerceJavaToLua.coerce(new GLKeyboard()));
-			globals.set("mouse", CoerceJavaToLua.coerce(new GLMouse()));
-			globals.set("fps", CoerceJavaToLua.coerce(fps));
-			chunk = globals.loadfile(filename);
+			scripter.sendGlobals("this", CoerceJavaToLua.coerce(obj));
+			scripter.sendGlobals("keyboard", CoerceJavaToLua.coerce(new GLKeyboard()));
+			scripter.sendGlobals("mouse", CoerceJavaToLua.coerce(new GLMouse()));
+			scripter.sendGlobals("fps", CoerceJavaToLua.coerce(fps));
+			scripter.loadScript(this.filename);
 		}
 	}
 
@@ -44,11 +44,13 @@ public class GLScript extends GLComponent {
 	}
 
 	public void Run() {
-		if (chunk == null) {
-			this.loadScript();
+		if(scripter==null)
+		{
+			 this.loadScript();
 		}
-		if (chunk != null) {
-			chunk.call();
+		if(scripter!=null)
+		{
+			scripter.run();
 		}
 	}
 

@@ -104,15 +104,22 @@ public class GLAnimator extends GLComponent {
 		}
 	}
 
-	public void setFrameY(int y) {
+	public void setFrameY(float y) {
 		this.frameY = y;
 	}
 
-	public void setFrameX(int x) {
+	public void setFrameX(float x) {
+		System.out.println(x);
 		this.frameX = x;
 	}
 
 	private GLFrame getFrames(int frameX, int frameY) {
+		
+		if(frameX>this.frames.length-1)
+		{
+			frameX = this.frames.length-1;
+		}
+		
 		return this.frames[frameX][frameY];
 	}
 }

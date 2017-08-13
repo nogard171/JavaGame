@@ -16,6 +16,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.PixelFormat;
 
 import Utils.ErrorHandler;
 
@@ -24,13 +25,17 @@ public class GLDisplay {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
 	private int FPS = 60;
-	private boolean FPS_LIMITER = true;
+	private boolean FPS_LIMITER = false;
 	private String TITLE = "";
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
+	private boolean useAnitAliasing = true;
+	private int[] anitAliasing = {8,8,0,8};
+	
 	GLFramesPerSecond fps;
 	private boolean close = false;
 	private String systemEnableFile ="system/scripts/system_enables.lua";
+	GLScriptEngine scripter;
 
 	public void Create() {
 		try {
@@ -38,7 +43,15 @@ public class GLDisplay {
 			Display.setDisplayMode(this.DISPLAYMODE);
 			Display.setResizable(RESIZABLE);
 			Display.setTitle(TITLE);
-			Display.create();
+			//Display.create();
+			if(useAnitAliasing)
+			{
+				Display.create(new PixelFormat(anitAliasing[0], anitAliasing[1],anitAliasing[2],anitAliasing[3]));
+			}
+			else
+			{
+				Display.create();
+			}
 			this.setupGL();
 			this.Setup();
 			while (!Display.isCloseRequested()) {
@@ -62,29 +75,29 @@ public class GLDisplay {
 	private void setupGL() {
 		fps = new GLFramesPerSecond();
 		fps.start();
+		
+		scripter = new GLScriptEngine();
+		scripter.sendGlobals("this", CoerceJavaToLua.coerce(this));
+		
 		// this sets up the viewport for rendering.
 		this.SetupViewPort();
 		// System.out.println("Enagle:" + GL11.GL_BLEND);
-
-		File f = new File(systemEnableFile);
-		if (f.exists() && !f.isDirectory()) {
-			System.out.println("System enables beign used from script");
-			LuaValue chunk;
-			Globals globals = JsePlatform.standardGlobals();
-			globals.set("window", CoerceJavaToLua.coerce(this));
-			chunk = globals.loadfile(this.systemEnableFile);
-		}
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		fps.getDelta();
+		scripter.loadScript(systemEnableFile);
+		scripter.run();
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
+	public void glBlendFunc(int val1, int val2) {
+		GL11.glBlendFunc(val1, val2);
+	}
 
+	public void glShadeModel(int enableID) {
+		GL11.glShadeModel(enableID);
+	}
 	public void glEnable(int enableID) {
 		GL11.glEnable(enableID);
 	}
-
 	public void Update() {
 		GLFramesPerSecond.updateFPS();
 		Display.setTitle("FPS:" + fps.fps);

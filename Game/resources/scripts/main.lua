@@ -1,6 +1,6 @@
 dofile "system/scripts/keyboard_keys.lua"
 
-speed = 2f
+speed = 0.08f * fps:getCurrentDelta()
 
 xSpeed = 0
 ySpeed = 0
@@ -9,10 +9,10 @@ walking=false
 if texX == nil then
    texX=0
 end
-texSpeed=0.05f
+texSpeed= 0.002f * fps:getCurrentDelta()
 if keyboard:isKeyDown(SHIFT) then
 	speed=speed*2;
-	texSpeed=0.1f
+	texSpeed=texSpeed*2
 end
 
 if keyboard:isKeyDown(D) then
@@ -42,15 +42,17 @@ end
 
 texX= texX + texSpeed
 
-if texX>=4 then
-	texX=0
-end
+
 
 if not walking then
 	this:getComponent("audio"):stop()
 	texX=0
 else
 	this:getComponent("audio"):play()
+end
+
+if texX>4 then
+	texX=0
 end
 
 this:getComponent("animator"):setFrameY(texY)

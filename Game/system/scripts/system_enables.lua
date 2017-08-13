@@ -1,3 +1,5 @@
-dofile "enables.lua"
+dofile "system/scripts/enables.lua"
 
-window:glEnable(GL_BLEND)
+this:glEnable(GL_BLEND)
+this:glShadeModel(GL_SMOOTH)
+this:glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

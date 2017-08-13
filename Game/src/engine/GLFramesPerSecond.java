@@ -8,7 +8,11 @@ public class GLFramesPerSecond {
 	static long lastFrame;
 	static int oldFPS;
 	public static int fps =0;
+	public static float currentDelta =0;
 
+	public static float getCurrentDelta() {
+		return currentDelta;
+	}
 	public static long getTime() {
 	    return System.nanoTime() / 1000000;
 	}
@@ -16,7 +20,6 @@ public class GLFramesPerSecond {
 	    long time = getTime();
 	    float delta = (float) (time - lastFrame);
 	    lastFrame = time;
-	 
 	    return delta;
 	}
 	public static int getFPS()
@@ -37,5 +40,6 @@ public class GLFramesPerSecond {
 	    	lastFPS += 1000;
 	    }
 	    oldFPS++;
+	    currentDelta = getDelta();
 	}
 }
