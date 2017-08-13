@@ -43,8 +43,8 @@ public class Game extends GLDisplay {
 	public void Setup() {
 
 		// the generated grass globjects
-		for (int x = 0; x < 100; x++) {
-			for (int y = 0; y < 100; y++) {
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
 				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
 				GLTransform transform = new GLTransform(x * 32, y * 32);
 				GLShader shader = new GLShader("basic.vert", "basic.frag");
@@ -71,7 +71,7 @@ public class Game extends GLDisplay {
 
 		GLAudio audio = new GLAudio("resources/audio/walking.wav");
 		audio.setVolume(0.1f);
-
+		GLClickable clickable2 = new GLClickable();
 		GLProperty health = new GLProperty();
 		health.setName("health");
 		health.setIntValue(100);
@@ -85,6 +85,7 @@ public class Game extends GLDisplay {
 		obj.AddComponent(spriteRenderer2);
 		obj.AddComponent(animator);
 		obj.AddComponent(audio);
+		obj.AddComponent(clickable2);
 
 		obj.AddProperty(health);
 		objects.add(obj);

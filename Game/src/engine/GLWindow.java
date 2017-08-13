@@ -21,7 +21,6 @@ public class GLWindow extends GLComponent {
 		for (int y = 0; y < this.frameDimensions.getHeight(); y++) {
 			for (int x = 0; x < this.frameDimensions.getWidth(); x++) {
 				frameInts[y][x] = index;
-				System.out.println("X:" + x + "," + (this.frameDimensions.getWidth() - 2) + "(" + index + ")");
 				if ((x == 0 || x == this.frameDimensions.getWidth() - 2 || x == this.frameDimensions.getWidth() - 1)
 						&& (y == 0 || y >= this.frameDimensions.getHeight() - 2)) {
 					index++;
@@ -38,8 +37,8 @@ public class GLWindow extends GLComponent {
 		GLMaterial mat = (GLMaterial) this.getObject().getComponent("material");
 		mat.setFrameSize(new GLSize(32*frameDimensions.getWidth(), 32*frameDimensions.getHeight()));
 		if (mat != null) {
-			float textureWidthStep = 1 / (float) 3;
-			float textureHeightStep = 1 / (float) 3;
+			float textureWidthStep = 1 / (float) 4;
+			float textureHeightStep = 1 / (float) 4;
 			GLRenderer renderer = (GLRenderer) this.getObject().getComponent("renderer");
 			frames = new int[((int) frameDimensions.getWidth() * (int) frameDimensions.getHeight())];
 			if (renderer != null) {
