@@ -25,7 +25,7 @@ public class GLDisplay {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
 	private int FPS = 60;
-	private boolean FPS_LIMITER = false;
+	private boolean FPS_LIMITER = true;
 	private String TITLE = "";
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
@@ -43,7 +43,6 @@ public class GLDisplay {
 			Display.setDisplayMode(this.DISPLAYMODE);
 			Display.setResizable(RESIZABLE);
 			Display.setTitle(TITLE);
-			//Display.create();
 			if(useAnitAliasing)
 			{
 				Display.create(new PixelFormat(anitAliasing[0], anitAliasing[1],anitAliasing[2],anitAliasing[3]));

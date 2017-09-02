@@ -109,7 +109,6 @@ public class GLAnimator extends GLComponent {
 	}
 
 	public void setFrameX(float x) {
-		System.out.println(x);
 		this.frameX = x;
 	}
 
