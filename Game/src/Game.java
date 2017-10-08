@@ -41,7 +41,6 @@ public class Game extends GLDisplay {
 
 	@Override
 	public void Setup() {
-
 		// the generated grass globjects
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
@@ -60,7 +59,6 @@ public class Game extends GLDisplay {
 		}
 
 		// the player globject
-
 		GLMaterial mat = new GLMaterial("resources/textures/guy.png");
 		GLTransform transform = new GLTransform(0, 0);
 		GLScript script = new GLScript("resources/scripts/main.lua");
@@ -69,8 +67,8 @@ public class Game extends GLDisplay {
 		GLAnimator animator = new GLAnimator();
 		animator.setSize(new GLSize(32, 64));
 
-		GLAudio audio = new GLAudio("resources/audio/walking.wav");
-		audio.setVolume(0.1f);
+		//GLAudio audio = new GLAudio("resources/audio/walking.wav");
+		//audio.setVolume(0.1f);
 		GLClickable clickable2 = new GLClickable();
 		GLProperty health = new GLProperty();
 		health.setName("health");
@@ -84,7 +82,7 @@ public class Game extends GLDisplay {
 		obj.AddComponent(shader);
 		obj.AddComponent(spriteRenderer2);
 		obj.AddComponent(animator);
-		obj.AddComponent(audio);
+		//obj.AddComponent(audio);
 		obj.AddComponent(clickable2);
 
 		obj.AddProperty(health);
@@ -112,9 +110,7 @@ public class Game extends GLDisplay {
 		objects.add(window);
 
 	}
-
-	;
-
+	
 	ArrayList<GLObject> objects = new ArrayList<GLObject>();
 	HashMap<String, GLObject> mappedObjects = new HashMap<String, GLObject>();
 
@@ -183,7 +179,6 @@ public class Game extends GLDisplay {
 
 	GLMouse mouse = new GLMouse();
 	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
-
 	ArrayList<GLObject> objectToUpdate = new ArrayList<GLObject>();
 
 	@Override

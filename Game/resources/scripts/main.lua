@@ -2,6 +2,8 @@ dofile "system/scripts/keyboard_keys.lua"
 
 speed = 0.08f * fps:getCurrentDelta()
 
+this:write("health:"..health:getStringValue())
+
 xSpeed = 0
 ySpeed = 0
 rot=0
@@ -45,16 +47,18 @@ texX= texX + texSpeed
 
 
 if not walking then
-	this:getComponent("audio"):stop()
+	--audio:stop()
 	texX=0
 else
-	this:getComponent("audio"):play()
+	--audio:play()
 end
 
 if texX>4 then
 	texX=0
 end
 
-this:getComponent("animator"):setFrameY(texY)
-this:getComponent("animator"):setFrameX(texX)
-this:getComponent("transform"):Move(xSpeed,ySpeed)
+animator:setFrameY(texY)
+animator:setFrameX(texX)
+transform:Move(xSpeed,ySpeed)
+
+

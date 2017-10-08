@@ -11,6 +11,7 @@ public class GLObject {
 	private HashMap<String, GLComponent> components = new HashMap<String, GLComponent>();
 	private HashMap<String, GLProperty> properties = new HashMap<String, GLProperty>();
 	private String Name = "";
+	private GLObjectType type = GLObjectType.BLANK;
 
 	public String getName() {
 		return this.Name;
@@ -41,6 +42,17 @@ public class GLObject {
 		this.components.remove(com.getName());
 	}
 
+	public ArrayList<GLComponent> getComponents() {
+		return new ArrayList<GLComponent>(this.components.values());
+	}
+	
+	public void write(String value)
+	{
+		System.out.println(value);
+	}
+	public ArrayList<GLProperty> getProperties() {
+		return new ArrayList<GLProperty>(this.properties.values());
+	}
 	public GLComponent getComponent(String name) {
 		GLComponent com = this.components.get(name);
 		/*
@@ -58,5 +70,13 @@ public class GLObject {
 	         com.Destroy();
 	         it.remove(); // avoids a ConcurrentModificationException
 	    }
+	}
+
+	public GLObjectType getType() {
+		return type;
+	}
+
+	public void setType(GLObjectType type) {
+		this.type = type;
 	}
 }

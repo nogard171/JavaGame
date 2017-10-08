@@ -28,7 +28,7 @@ public class Main {
 	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
 	                	message.from = "server";
 	                	message.message = "You have been disconnected from the server.";
-	                    System.out.println("Exit program");	                    
+	                    System.out.println("Exit program");
 	                    exit = true;
 	                } else if ("server".equals(input)) {
 	                	System.out.println("Starting server");	                	
