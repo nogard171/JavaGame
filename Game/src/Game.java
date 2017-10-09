@@ -28,6 +28,7 @@ import engine.GLRenderer;
 import engine.GLScript;
 import engine.GLShader;
 import engine.GLSize;
+import engine.GLText;
 import engine.GLTransform;
 import engine.GLView;
 import engine.GLWindow;
@@ -180,11 +181,12 @@ public class Game extends GLDisplay {
 	GLMouse mouse = new GLMouse();
 	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
 	ArrayList<GLObject> objectToUpdate = new ArrayList<GLObject>();
+GLText text = new GLText();
 
 	@Override
 	public void Render() {
 		super.Render();
-		for (GLObject obj : objects) {
+		/*for (GLObject obj : objects) {
 			GLScript script = (GLScript) obj.getComponent("script");
 			if (script != null) {
 				// script.Run();
@@ -247,6 +249,7 @@ public class Game extends GLDisplay {
 
 				GL11.glColor3f(1, 1, 1);
 			}
-		}
+		}*/
+		text.renderChar('A');
 	}
 }

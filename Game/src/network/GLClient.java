@@ -51,6 +51,7 @@ public class GLClient extends Thread {
 					this.ois.close();
 					this.oos.close();
 					this.clientSocket.close();
+					
 				} catch (IOException e) {
 					System.out.println("Server not available for connection.");
 				}
@@ -61,6 +62,7 @@ public class GLClient extends Thread {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		System.exit(0);
 	}
 
 	private GLData readGLData() throws ClassNotFoundException, IOException {

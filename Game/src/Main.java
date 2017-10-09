@@ -60,6 +60,14 @@ public class Main {
 	                	{
 	                		System.out.println("Client# " + socket.ID+" @ " + socket.getIP());
 	                	}
+	                }else if (input.startsWith("shutdown")) {	                	
+	                	GLMessage message= new GLMessage();
+	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
+	                	message.from = "server";
+	                	message.message = "You have been disconnected from the server.";
+	                	server.broadcastGLData((GLData)message);
+	                	
+	                	exit = true;
 	                }
 	                else if (input.startsWith("message:")) {
 	                	GLMessage message= new GLMessage();
@@ -70,6 +78,7 @@ public class Main {
 	                }
 	            }
 	        }
-	        keyboard.close();*/
+	        keyboard.close();
+	        System.exit(0);*/
 	}
 }
