@@ -186,7 +186,7 @@ GLText text = new GLText();
 	@Override
 	public void Render() {
 		super.Render();
-		/*for (GLObject obj : objects) {
+		for (GLObject obj : objects) {
 			GLScript script = (GLScript) obj.getComponent("script");
 			if (script != null) {
 				// script.Run();
@@ -249,7 +249,7 @@ GLText text = new GLText();
 
 				GL11.glColor3f(1, 1, 1);
 			}
-		}*/
-		text.renderChar('A');
+		}
+		//text.renderChar('A');
 	}
 }
