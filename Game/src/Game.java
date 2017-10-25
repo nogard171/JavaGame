@@ -97,7 +97,7 @@ public class Game extends GLDisplay {
 		GLShader winshader = new GLShader("window.vert", "window.frag");
 
 		GLWindow win = new GLWindow();
-		GLClickable clickable = new GLClickable();
+		//GLClickable clickable = new GLClickable("resources/scripts/click.lua", "resources/scripts/unclick.lua");
 
 		GLObject window = new GLObject();
 
@@ -106,7 +106,7 @@ public class Game extends GLDisplay {
 		window.AddComponent(winspriteRenderer);
 		window.AddComponent(win);
 		window.AddComponent(winshader);
-		window.AddComponent(clickable);
+		//window.AddComponent(clickable);
 
 		objects.add(window);
 
@@ -134,11 +134,9 @@ public class Game extends GLDisplay {
 				}
 				if (clickable != null) {
 					clickable.Run();
-					if (clickable.clicked && mat != null) {
-						mat.setColor(new GLColor(255, 0, 0));
-					} else {
-						mat.setColor(new GLColor(255, 255, 255));
-					}
+					/*if (clickable.clicked) {
+						clickable.Run();
+					}*/
 				}
 				if (script != null) {
 					script.Run();

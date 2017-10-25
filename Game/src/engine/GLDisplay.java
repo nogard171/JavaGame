@@ -87,6 +87,10 @@ public class GLDisplay {
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
+	public void write(String value)
+	{
+		System.out.println(value);
+	}
 	public void glBlendFunc(int val1, int val2) {
 		GL11.glBlendFunc(val1, val2);
 	}

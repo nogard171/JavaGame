@@ -2,9 +2,7 @@ dofile "system/scripts/keyboard_keys.lua"
 function setup()
 	this:write("health:")
 end
-
 function update()
-	--this:write("health:"..health:getStringValue())
 	
 	speed = 0.08f * fps:getCurrentDelta()
 	

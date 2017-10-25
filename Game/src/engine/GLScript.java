@@ -74,11 +74,12 @@ public class GLScript extends GLComponent {
 	public void Run() {
 		if(scripter==null)
 		{
-			 this.loadScript();
+			this.loadScript();
+			scripter.run("setup");
 		}
 		if(scripter!=null)
 		{
-			scripter.run();
+			scripter.run("update");
 		}
 	}
 

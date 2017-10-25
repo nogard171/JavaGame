@@ -14,6 +14,8 @@ public class GLScriptEngine {
 	LuaValue chunk;
 	Globals globals;
 
+	
+	
 	public GLScriptEngine() {
 		globals = JsePlatform.standardGlobals();
 	}
@@ -26,16 +28,17 @@ public class GLScriptEngine {
 	public void loadScript(String filename) {
 		
 		//chunk = globals.loadfile(filename);
-		String content;
+		String content="";
 		try {
-			content = new Scanner(new File(filename)).useDelimiter("\\Z").next();
+			content='\n'+"argument = ...";
+					
+			content += new Scanner(new File(filename)).useDelimiter("\\Z").next();
 			
-			if(content.contains("function update("))
+			
+			/*if(content.contains("function update("))
 			{
 				content += '\n'
 						+ "update()";
-						
-				
 			}
 			if(content.contains("function setup("))
 			{
@@ -47,7 +50,16 @@ public class GLScriptEngine {
 						"hasSetup = true"+
 						'\n'+
            			"end";
-			}
+			}*/
+			
+			//System.out.println(content);
+			content +='\n'+
+					"if (argument ~= '') then"+
+					'\n'+
+					"_G[argument]()"+
+					'\n'+
+					"end"+
+					'\n';
 			chunk = globals.load(content);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -55,9 +67,16 @@ public class GLScriptEngine {
 		}
 		
 	}
+	public void run(String func) {
+		if (chunk != null) {
+			//chunk.call( LuaValue.valueOf("some-arg-value"));
+			chunk.call(LuaValue.valueOf(func));
+		}
+	}
 	public void run() {
 		if (chunk != null) {
-			chunk.call();
+			//chunk.call( LuaValue.valueOf("some-arg-value"));
+			chunk.call("");
 		}
 	}
 }

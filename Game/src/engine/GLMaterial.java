@@ -58,6 +58,9 @@ public class GLMaterial extends GLComponent {
 		this.color = glColor;
 	}
 
+	public void setColor(int r, int g, int b) {
+		this.color = new GLColor(r,g,b);
+	}
 	public int getTextureID() {
 		return textureID;
 	}
