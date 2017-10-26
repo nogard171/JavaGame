@@ -26,33 +26,12 @@ public class GLScriptEngine {
 	}
 
 	public void loadScript(String filename) {
-		
-		//chunk = globals.loadfile(filename);
 		String content="";
 		try {
 			content='\n'+"argument = ...";
 					
 			content += new Scanner(new File(filename)).useDelimiter("\\Z").next();
 			
-			
-			/*if(content.contains("function update("))
-			{
-				content += '\n'
-						+ "update()";
-			}
-			if(content.contains("function setup("))
-			{
-				content+='\n'+
-						"if not hasSetup then"+
-						'\n'+
-						"setup()"+
-						'\n'+
-						"hasSetup = true"+
-						'\n'+
-           			"end";
-			}*/
-			
-			//System.out.println(content);
 			content +='\n'+
 					"if (argument ~= '') then"+
 					'\n'+
@@ -69,13 +48,11 @@ public class GLScriptEngine {
 	}
 	public void run(String func) {
 		if (chunk != null) {
-			//chunk.call( LuaValue.valueOf("some-arg-value"));
 			chunk.call(LuaValue.valueOf(func));
 		}
 	}
 	public void run() {
 		if (chunk != null) {
-			//chunk.call( LuaValue.valueOf("some-arg-value"));
 			chunk.call("");
 		}
 	}

@@ -5,13 +5,10 @@ public class GLClickable extends GLComponent {
 	GLRectangle bounds = new GLRectangle();
 	public boolean hovered = false;
 	public boolean clicked = false;
-	private String clickScriptFile = "";
-	GLScript clickScript = null;
-	private String unclickScriptFile = "";
-	GLScript unclickScript = null;
-	public GLClickable(String newClickScript, String newUnclickScript) {
-		this.clickScriptFile=newClickScript;
-		this.unclickScriptFile=newUnclickScript;
+	private String scriptFile = "";
+	GLScript script = null;
+	public GLClickable(String newScript) {
+		this.scriptFile=newScript;
 		this.setName("clickable");
 	}
 	public GLClickable() {
@@ -19,27 +16,16 @@ public class GLClickable extends GLComponent {
 	}
 	public void setScript()
 	{
-		clickScript = new GLScript(clickScriptFile);
-		clickScript.setObject(this.getObject());
-		unclickScript = new GLScript(unclickScriptFile);
-		unclickScript.setObject(this.getObject());
+		script = new GLScript(scriptFile);
+		script.setObject(this.getObject());
 	}
-	public void Click() {
-		if(clickScript==null&&clickScriptFile!="")
+	private void Action(String func) {
+		if(script==null&&scriptFile!="")
 		{
 			this.setScript();
 		}
-		if (clickScript != null) {
-			clickScript.Run();
-		}	
-	}
-	public void Unclick() {
-		if(unclickScript==null&&unclickScriptFile!="")
-		{
-			this.setScript();
-		}
-		if (unclickScript != null) {
-			unclickScript.Run();
+		if (script != null) {
+			script.Run(func);
 		}	
 	}
 	int clickCount = 0;
@@ -56,16 +42,17 @@ public class GLClickable extends GLComponent {
 					} else {
 						hovered = false;
 					}
-
-					if (this.hovered && mouse.isMouseDown(0)&&clickCount==0) {
+					if (!this.hovered && mouse.isMouseDown(0)&&clickCount==0) {
+						clicked = false;
+					} 
+					else if (this.hovered && mouse.isMouseDown(0)&&clickCount==0) {
 						clicked = true;
 						clickCount++;
-						this.Click();
+						this.Action("click");
 					} 
-					else if (this.hovered && mouse.isMouseUp(0)) {
+					else if (mouse.isMouseUp(0)&&clickCount>0) {
 						clickCount=0;
-						clicked = false;
-						this.Unclick();
+						this.Action("unclick");
 					}
 					else {
 						clicked = false;

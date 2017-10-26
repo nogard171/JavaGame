@@ -83,6 +83,17 @@ public class GLScript extends GLComponent {
 		}
 	}
 
+	public void Run(String func) {
+		if(scripter==null)
+		{
+			this.loadScript();
+		}
+		if(scripter!=null)
+		{
+			scripter.run(func);
+		}
+	}
+
 	public GLDisplay getWindow() {
 		return window;
 	}
