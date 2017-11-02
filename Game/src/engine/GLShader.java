@@ -80,6 +80,11 @@ public class GLShader extends GLComponent {
 		}
 		GL20.glUseProgram(programID);
 	}
+	
+	public void Stop()
+	{
+		GL20.glUseProgram(0);
+	}
 
 	public void Destroy() {
 		GL20.glDetachShader(programID, fragmentShader);

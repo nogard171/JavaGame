@@ -8,3 +8,6 @@ function unclick()
 	
 	material:setColor(255,255,255)
 end
+function hovered()
+
+end

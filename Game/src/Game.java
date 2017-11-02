@@ -9,6 +9,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
@@ -176,7 +177,7 @@ public class Game extends GLDisplay {
 	GLMouse mouse = new GLMouse();
 	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
 	ArrayList<GLObject> objectToUpdate = new ArrayList<GLObject>();
-GLText text = new GLText();
+	
 
 	@Override
 	public void Render() {
@@ -199,20 +200,7 @@ GLText text = new GLText();
 				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
 				GLWindow win = (GLWindow) obj.getComponent("window");
 				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
-				if (win != null) {
-					//win.Run();
-					updateObject = true;
-				}
-				if (clickable != null) {
-					//clickable.Run();
-					updateObject = true;
-				}
-				if (script != null) {
-					//script.Run();
-					updateObject = true;
-				}
-				if (animator != null) {
-					//animator.Run();
+				if (win != null||clickable != null||script != null||animator != null) {
 					updateObject = true;
 				}
 				if (updateObject) {
@@ -238,13 +226,18 @@ GLText text = new GLText();
 
 				spriteRenderer.Run();
 
+				if (shader != null) {
+					shader.Stop();
+				}
+				
 				if (transform != null) {
 					GL11.glPopMatrix();
 				}
-
-				GL11.glColor3f(1, 1, 1);
 			}
 		}
-		//text.renderChar('A');
+		
+		GL11.glColor3f(0,0,0);
+		
+		new GLText().renderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ",200,200);
 	}
 }

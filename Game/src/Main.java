@@ -36,7 +36,7 @@ public class Main {
 	                }else if ("client".equals(input)) {
 	                	client.start();
 	                	System.out.println("Starting client");
-	                }else if (input.startsWith("broadcast:")) {	                	
+	                }else if (input.startsWith("broadcast:")) {
 	                	GLMessage message= new GLMessage();
 	                	message.protocol = GLProtocol.MESSAGE;
 	                	message.from = "server";
@@ -49,18 +49,18 @@ public class Main {
 	                	message.from = "server";
 	                	message.message = "You have been disconnected from the server.";
 	                	server.broadcastGLData((GLData)message);
-	                }else if (input.startsWith("close all")) {	                	
+	                }else if (input.startsWith("close all")) {
 	                	GLMessage message= new GLMessage();
 	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
 	                	message.from = "server";
 	                	message.message = "You have been disconnected from the server.";
 	                	server.broadcastGLData((GLData)message);
-	                }else if (input.startsWith("list")) {	    
+	                }else if (input.startsWith("list")) {
 	                	for(SocketHandler socket: server.sockets)
 	                	{
 	                		System.out.println("Client# " + socket.ID+" @ " + socket.getIP());
 	                	}
-	                }else if (input.startsWith("shutdown")) {	                	
+	                }else if (input.startsWith("shutdown")) {
 	                	GLMessage message= new GLMessage();
 	                	message.protocol = GLProtocol.CLOSE_CONNECTION;
 	                	message.from = "server";

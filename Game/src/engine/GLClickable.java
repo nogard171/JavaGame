@@ -39,13 +39,15 @@ public class GLClickable extends GLComponent {
 							mat.getFrameSize().getWidth(), mat.getFrameSize().getHeight());
 					if (this.bounds.inside(new GLRectangle(mouse.getMouseX(), mouse.getMouseY(), 1, 1))) {
 						hovered = true;
+						this.Action("hovered");
 					} else {
 						hovered = false;
+						//this.Action("unhovered");
 					}
-					if (!this.hovered && mouse.isMouseDown(0)&&clickCount==0) {
-						clicked = false;
-					} 
-					else if (this.hovered && mouse.isMouseDown(0)&&clickCount==0) {
+					
+					
+					
+					if (this.hovered && mouse.isMouseDown(0)&&clickCount==0) {
 						clicked = true;
 						clickCount++;
 						this.Action("click");
@@ -53,9 +55,6 @@ public class GLClickable extends GLComponent {
 					else if (mouse.isMouseUp(0)&&clickCount>0) {
 						clickCount=0;
 						this.Action("unclick");
-					}
-					else {
-						clicked = false;
 					}
 				}
 			}
