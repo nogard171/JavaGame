@@ -57,4 +57,13 @@ public class GLRectangle {
 		}
 		return inside;
 	}
+
+	public boolean intersects(GLRectangle rect) {
+		boolean inside = false;
+		if (((this.getX() <= rect.getX() && this.getX() + this.getWidth() > rect.getX())||(rect.getX() <= this.getX() && rect.getX() + rect.getWidth() > this.getX()))&&
+				((this.getY() <= rect.getY() && this.getY() + this.getHeight() > rect.getY())||(rect.getY() <= this.getY() && rect.getY() + rect.getHeight() > this.getY()))) {
+			inside = true;
+		}
+		return inside;
+	}
 }

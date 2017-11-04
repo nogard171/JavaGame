@@ -18,12 +18,14 @@ import org.newdawn.slick.util.ResourceLoader;
 import engine.GLAnimator;
 import engine.GLAudio;
 import engine.GLClickable;
+import engine.GLCollider;
 import engine.GLColor;
 import engine.GLDisplay;
 import engine.GLFramesPerSecond;
 import engine.GLMaterial;
 import engine.GLMouse;
 import engine.GLObject;
+import engine.GLPhysics;
 import engine.GLProperty;
 import engine.GLRenderer;
 import engine.GLScript;
@@ -46,6 +48,7 @@ public class Game extends GLDisplay {
 		// the generated grass globjects
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
+				GLPhysics physics3 = new GLPhysics();
 				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
 				GLTransform transform = new GLTransform(x * 32, y * 32);
 				GLShader shader = new GLShader("basic.vert", "basic.frag");
@@ -56,10 +59,12 @@ public class Game extends GLDisplay {
 				obj.AddComponent(mat);
 				obj.AddComponent(shader);
 				obj.AddComponent(spriteRenderer);
+				obj.AddComponent(physics3);
 				mappedObjects.put(x + "," + y, obj);
 			}
 		}
 
+		
 		// the player globject
 		GLMaterial mat = new GLMaterial("resources/textures/guy.png");
 		GLTransform transform = new GLTransform(0, 0);
@@ -68,6 +73,10 @@ public class Game extends GLDisplay {
 		GLRenderer spriteRenderer2 = new GLRenderer();
 		GLAnimator animator = new GLAnimator();
 		animator.setSize(new GLSize(32, 64));
+		
+		GLPhysics physics = new GLPhysics();
+		GLCollider collider = new GLCollider(0,0,32,32);
+		
 
 		//GLAudio audio = new GLAudio("resources/audio/walking.wav");
 		//audio.setVolume(0.1f);
@@ -86,6 +95,10 @@ public class Game extends GLDisplay {
 		obj.AddComponent(animator);
 		//obj.AddComponent(audio);
 		obj.AddComponent(clickable2);
+		
+
+		obj.AddComponent(physics);
+		obj.AddComponent(collider);
 
 		obj.AddProperty(health);
 		objects.add(obj);
@@ -101,6 +114,9 @@ public class Game extends GLDisplay {
 		GLClickable clickable = new GLClickable("resources/scripts/clickableScript.lua");
 
 		GLObject window = new GLObject();
+		
+		
+		
 
 		window.AddComponent(winmat);
 		window.AddComponent(wintransform);
@@ -130,6 +146,16 @@ public class Game extends GLDisplay {
 				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
 				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
 				GLWindow win = (GLWindow) obj.getComponent("window");
+				GLPhysics physics = (GLPhysics) obj.getComponent("physics");
+				GLCollider collider = (GLCollider) obj.getComponent("collider");
+				if(physics!=null)
+				{
+					physics.Run();
+				}
+				if(collider!=null)
+				{
+					//collider.Run(objectToUpdate);
+				}
 				if (win != null) {
 					win.Run();
 				}
@@ -200,7 +226,15 @@ public class Game extends GLDisplay {
 				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
 				GLWindow win = (GLWindow) obj.getComponent("window");
 				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
-				if (win != null||clickable != null||script != null||animator != null) {
+				GLPhysics physics = (GLPhysics) obj.getComponent("physics");
+				GLCollider collider = (GLCollider) obj.getComponent("collider");
+				
+				if(collider!=null)
+				{
+					collider.Run(objectToUpdate);
+				}
+				
+				if (win != null||clickable != null||script != null||animator != null||physics!=null||collider!=null) {
 					updateObject = true;
 				}
 				if (updateObject) {
