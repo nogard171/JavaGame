@@ -2,14 +2,16 @@ package engine;
 
 import java.io.IOException;
 
+import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
+import Utils.ErrorHandler;
+
 public class GLAnimator extends GLComponent {
 	private GLFrame[][] frames = new GLFrame[1][1];
-	private Texture texture;
 	private GLSize size = new GLSize(32, 32);
 
 	private float frameX = 0;
@@ -40,13 +42,13 @@ public class GLAnimator extends GLComponent {
 		if (super.getObject() != null) {
 			GLMaterial mat = (GLMaterial) super.getObject().getComponent("material");
 			if (mat != null) {
-				// mat.setTextureSize(size);
 				mat.setFrameSize(size);
 				GLSize textureSize = mat.getTextureSize();
 				GLSize frameSize = mat.getFrameSize();
 
 				int numXSprites = textureSize.getWidth() / frameSize.getWidth();
 				int numYSprites = textureSize.getHeight() / frameSize.getHeight();
+				
 				if (numXSprites == 0) {
 					numXSprites = 1;
 				}
@@ -72,17 +74,21 @@ public class GLAnimator extends GLComponent {
 								frames[x][y] = frame;
 							}
 						}
-					}
+					} 
 				} else {
 					int dlid = GL11.glGenLists(1);
 					GL11.glNewList(dlid, GL11.GL_COMPILE);
-					renderer.RenderQuad(texture.getImageWidth(), texture.getImageHeight(), 0, 0, 1, 1);
+					GLSize size = mat.getTextureSize();					
+					if(size!=null)
+					{
+						renderer.RenderQuad(size.getWidth(), size.getHeight(), 0, 0, 1, 1);
+					}
 					GL11.glEndList();
 					GLFrame frame = new GLFrame();
 					frame.setDisplayID(dlid);
 					frames[0][0] = frame;
 				}
-				loaded = true;
+				this.loaded = true;
 			} else {
 				System.out.println("No Material for GLAnimator");
 			}
@@ -99,7 +105,11 @@ public class GLAnimator extends GLComponent {
 				this.loadFrames();
 			}
 			if (this.loaded) {
-				renderer.setDisplayID(this.getFrames((int) this.frameX, (int) this.frameY).getDisplayID());
+				GLFrame frame = this.getFrames((int) this.frameX, (int) this.frameY);
+				if(frame!=null)
+				{
+					renderer.setDisplayID(frame.getDisplayID());
+				}	
 			}
 		}
 	}

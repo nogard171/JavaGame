@@ -60,7 +60,7 @@ public class GLCollider extends GLComponent {
 
 										renderGrid(otherBounds.X, otherBounds.Y, otherBounds.Width, otherBounds.Height);
 										if (objBounds.intersects(otherBounds)) {
-											System.out.println("colliding:");
+											//System.out.println("colliding:");
 											otherMat.setColor(255, 0, 0);
 										} else {
 											otherMat.setColor(255,255,255);

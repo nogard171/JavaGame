@@ -21,7 +21,6 @@ import engine.GLClickable;
 import engine.GLCollider;
 import engine.GLColor;
 import engine.GLDisplay;
-import engine.GLFramesPerSecond;
 import engine.GLMaterial;
 import engine.GLMouse;
 import engine.GLObject;
@@ -31,11 +30,9 @@ import engine.GLRenderer;
 import engine.GLScript;
 import engine.GLShader;
 import engine.GLSize;
-import engine.GLText;
 import engine.GLTransform;
 import engine.GLView;
 import engine.GLWindow;
-import Utils.GLTextureLoader;
 
 public class Game extends GLDisplay {
 	public void Start() {
@@ -271,7 +268,5 @@ public class Game extends GLDisplay {
 		}
 		
 		GL11.glColor3f(0,0,0);
-		
-		new GLText().renderString("A",300,400);
 	}
 }
