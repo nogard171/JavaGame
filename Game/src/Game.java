@@ -272,6 +272,6 @@ public class Game extends GLDisplay {
 		
 		GL11.glColor3f(0,0,0);
 		
-		new GLText().renderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ",200,200);
+		new GLText().renderString("A",300,400);
 	}
 }
