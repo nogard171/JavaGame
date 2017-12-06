@@ -37,7 +37,6 @@ public class Application extends GLWindow
 		});
 	}
 
-	
 	@Override
 	public void Setup()
 	{
