@@ -36,20 +36,31 @@ public class Application extends GLWindow
 			}
 		});
 	}
-
+	Texture texture;
+	ShaderProgram shader = new ShaderProgram();
+	float step = 0;
 	@Override
 	public void Setup()
 	{
+		try {
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/textures/tileset.jpg"));
+			step = (float)32/(float)texture.getImageWidth();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
+		System.out.println(step);
+		shader.createProgram();
 	}
 	Chunk chunk = new Chunk();
 	@Override
 	public void Render()
 	{
 		super.Render();
+		shader.Start();
+		shader.sendUniform1f("myTexture", texture.getTextureID());
 		
-		
-		chunk.renderChunk();
+		chunk.renderChunk(step);
 		
 		
 		
