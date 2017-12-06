@@ -40,23 +40,10 @@ public class Camera implements Serializable
 	private static final long serialVersionUID = 5950169519310163575L;
 	// 3d vector to store the camera's position in
 	public Vector3f position = null;
-	public Vector3f getPosition()
-	{
-		return new Vector3f(position.getX(),position.getY(),position.getZ());
-	}
-
-	public void setPosition(Vector3f position)
-	{
-		this.position = position;
-	}
-
 	// the rotation around the Y axis of the camera
 	private float yaw = 140f;
 	// the rotation around the X axis of the camera
-	float pitchX = 0f;
-	float pitchZ = 0f;
-	
-	float roll = 0f;
+	float pitch = 0f;
 
 	float height = 0f;
 
@@ -76,7 +63,7 @@ public class Camera implements Serializable
 	{
 		// TODO Auto-generated constructor stub
 		position = new Vector3f(x, y, z);
-		pitchX = p;
+		pitch = p;
 		yaw = newYaw;
 	}
 
@@ -93,14 +80,24 @@ public class Camera implements Serializable
 		this.yaw += amount;
 	}
 
-	public void setpitchX(float amount)
+	public void setPitch(float amount)
 	{
-		this.pitchX += amount;
-	}
-	
-	public void setpitchZ(float amount)
-	{
-		this.pitchZ += amount;
+		if (pitch > 360)
+		{
+			this.pitch -= 360;
+		}
+		if (pitch < 0)
+		{
+			this.pitch += 360;
+		}
+		this.pitch += amount;
+		if (pitch <= 275 && pitch >= 180)
+		{
+			this.pitch = 275;
+		} else if (pitch <= 180 && pitch >= 90)
+		{
+			this.pitch = 90;
+		}
 	}
 
 	// increment the camera's current yaw rotation
@@ -118,21 +115,21 @@ public class Camera implements Serializable
 
 	public void walkToward(float distance)
 	{
-		position.y -= distance * (float) Math.tan(Math.toRadians(-pitchX));
-		position.x += distance * (float) Math.sin(Math.toRadians((yaw)));
-		position.z -= distance * (float) Math.cos(Math.toRadians((yaw)));
+		position.y += distance * (float) Math.tan(Math.toRadians(-pitch));
+		position.x -= distance * (float) Math.sin(Math.toRadians((yaw)));
+		position.z += distance * (float) Math.cos(Math.toRadians((yaw)));
 	}
 
 	public void walkAway(float distance)
 	{
-		position.x -= distance * (float) Math.sin(Math.toRadians(yaw));
-		position.z += distance * (float) Math.cos(Math.toRadians(yaw));
-		position.y += distance * (float) Math.tan(Math.toRadians(-pitchX));
+		position.x += distance * (float) Math.sin(Math.toRadians(yaw));
+		position.z -= distance * (float) Math.cos(Math.toRadians(yaw));
+		position.y -= distance * (float) Math.tan(Math.toRadians(-pitch));
 	}
 
 	public void fly(float distance)
 	{
-		position.y -= distance;
+		position.y += distance;
 
 	}
 
@@ -140,8 +137,8 @@ public class Camera implements Serializable
 	public void strafe(float distance)
 	{
 		distance = distance / speed_Factor;
-		position.x += distance * (float) Math.sin(Math.toRadians(yaw - 90));
-		position.z -= distance * (float) Math.cos(Math.toRadians(yaw - 90));
+		position.x -= distance * (float) Math.sin(Math.toRadians(yaw - 90));
+		position.z += distance * (float) Math.cos(Math.toRadians(yaw - 90));
 
 	}
 
@@ -149,18 +146,37 @@ public class Camera implements Serializable
 	// this dose basic what gluLookAt() does
 	public void lookThrough()
 	{
-		direction = (int) (yaw % 90);
+		direction = (int) (yaw % 360);
+		// roatate the pitch around the Y axis
+		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
+		// roatate the yaw around the X axis
+		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
+		// translate to the position vector's location
+		GL11.glTranslatef(position.x, position.y - 2, position.z);
+	}
 
+	public void lookAtVector3f(Vector3f vec)
+	{
+		double dx = this.position.x-vec.x;
+		double dz = this.position.z-vec.z;
+		
+		double d = Math.sqrt((dx*2)+(dz*2));
+		
+		double rotAng = Math.toDegrees(Math.asin(dx/d));
+		//System.out.println(dz+"/"+dx + "/" + rotAng);
+		// roatate the pitch around the Y axis
+		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
+		// roatate the yaw around the X axis
 		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 
-		GL11.glRotatef(pitchX, 0, 0.0f, 1);
 		// translate to the position vector's location
-		GL11.glTranslatef(-position.x, -position.y, -position.z);
+		GL11.glTranslatef(position.x, position.y, position.z);
 	}
+
 
 	public void rotateY(float degrees)
 	{
-		pitchX += degrees;
+		pitch += degrees;
 	}
 
 	public void rotateX(float degrees)
@@ -173,9 +189,9 @@ public class Camera implements Serializable
 		return this.yaw;
 	}
 
-	public float getpitchX()
+	public float getPitch()
 	{
-		return this.pitchX;
+		return this.pitch;
 	}
 
 }
