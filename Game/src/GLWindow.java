@@ -45,7 +45,7 @@ public class GLWindow
 
 	float MOUSESENSITIVITY = .5f;
 	float MOVEMENTSPEED = 10.0f;
-	Camera camera = new Camera(0,0,0);
+	Camera camera = new Camera(1,20,1);
 	boolean MOUSEFOCUS = true;
 	int MOUSEDX = 0;
 	int MOUSEDY = 0;
@@ -103,7 +103,7 @@ public class GLWindow
 		
 		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
 
 		//glEnable(GL_COLOR_MATERIAL);
@@ -170,8 +170,8 @@ public class GLWindow
 			this.camera.walk(x_Speed);
 			this.camera.fly(y_Speed);
 
-			camera.lookAtVector3f(new Vector3f(1,0,1));
-			//camera.lookThrough();
+			//camera.lookAtVector3f(new Vector3f(1,0,1));
+			camera.lookThrough();
 		}
 	}
 

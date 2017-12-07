@@ -41,7 +41,7 @@ public class Camera implements Serializable
 	// 3d vector to store the camera's position in
 	public Vector3f position = null;
 	// the rotation around the Y axis of the camera
-	private float yaw = 140f;
+	private float yaw =135f;
 	// the rotation around the X axis of the camera
 	float pitch = 0f;
 
@@ -152,7 +152,7 @@ public class Camera implements Serializable
 		// roatate the yaw around the X axis
 		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 		// translate to the position vector's location
-		GL11.glTranslatef(position.x, position.y - 2, position.z);
+		GL11.glTranslatef(-position.x, -position.y, -position.z);
 	}
 
 	public void lookAtVector3f(Vector3f vec)
@@ -170,7 +170,7 @@ public class Camera implements Serializable
 		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 
 		// translate to the position vector's location
-		GL11.glTranslatef(position.x, position.y, position.z);
+		GL11.glTranslatef(-position.x, -position.y, -position.z);
 	}
 
 

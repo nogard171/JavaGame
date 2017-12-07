@@ -44,25 +44,32 @@ public class Application extends GLWindow
 	{
 		try {
 			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/textures/tileset.jpg"));
-			step = (float)32/(float)texture.getImageWidth();
+			step = ((float)32/(float)texture.getImageWidth());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		System.out.println(step);
 		shader.createProgram();
+		
+		for(int x=0;x<4;x++)
+		{
+			for(int y=0;y<4;y++)
+			{
+				chunks.add(new Chunk(x*16,0,y*16));
+			}
+		}
 	}
-	Chunk chunk = new Chunk();
+	ArrayList<Chunk> chunks = new ArrayList<Chunk>();
 	@Override
 	public void Render()
 	{
 		super.Render();
 		shader.Start();
 		shader.sendUniform1f("myTexture", texture.getTextureID());
-		
-		chunk.renderChunk(step);
-		
-		
+		for(int i=0;i<chunks.size();i++){
+			chunks.get(i).renderChunk(step);
+		}
 		
 	}
 
@@ -74,6 +81,11 @@ public class Application extends GLWindow
 		if (keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
 		{
 			System.exit(0);
+		}
+		
+		if(Mouse.isButtonDown(0))
+		{
+			System.out.println("test");
 		}
 
 	}
