@@ -109,27 +109,27 @@ public class Camera implements Serializable
 	public void walk(float distance)
 	{
 		distance = distance / speed_Factor;
-		position.x -= distance * (float) Math.sin(Math.toRadians((yaw)));
-		position.z += distance * (float) Math.cos(Math.toRadians((yaw)));
+		position.x += distance * (float) Math.sin(Math.toRadians((yaw)));
+		position.z -= distance * (float) Math.cos(Math.toRadians((yaw)));
 	}
 
 	public void walkToward(float distance)
 	{
-		position.y += distance * (float) Math.tan(Math.toRadians(-pitch));
-		position.x -= distance * (float) Math.sin(Math.toRadians((yaw)));
-		position.z += distance * (float) Math.cos(Math.toRadians((yaw)));
+		position.y -= distance * (float) Math.tan(Math.toRadians(-pitch));
+		position.x += distance * (float) Math.sin(Math.toRadians((yaw)));
+		position.z -= distance * (float) Math.cos(Math.toRadians((yaw)));
 	}
 
 	public void walkAway(float distance)
 	{
-		position.x += distance * (float) Math.sin(Math.toRadians(yaw));
-		position.z -= distance * (float) Math.cos(Math.toRadians(yaw));
-		position.y -= distance * (float) Math.tan(Math.toRadians(-pitch));
+		position.x -= distance * (float) Math.sin(Math.toRadians(yaw));
+		position.z += distance * (float) Math.cos(Math.toRadians(yaw));
+		position.y += distance * (float) Math.tan(Math.toRadians(-pitch));
 	}
 
 	public void fly(float distance)
 	{
-		position.y += distance;
+		position.y -= distance;
 
 	}
 
@@ -137,8 +137,8 @@ public class Camera implements Serializable
 	public void strafe(float distance)
 	{
 		distance = distance / speed_Factor;
-		position.x -= distance * (float) Math.sin(Math.toRadians(yaw - 90));
-		position.z += distance * (float) Math.cos(Math.toRadians(yaw - 90));
+		position.x += distance * (float) Math.sin(Math.toRadians(yaw - 90));
+		position.z -= distance * (float) Math.cos(Math.toRadians(yaw - 90));
 
 	}
 
