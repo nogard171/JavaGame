@@ -45,7 +45,7 @@ public class GLWindow
 
 	float MOUSESENSITIVITY = .5f;
 	float MOVEMENTSPEED = 10.0f;
-	Camera camera = new Camera(1,20,1);
+	Camera camera = new Camera();
 	boolean MOUSEFOCUS = true;
 	int MOUSEDX = 0;
 	int MOUSEDY = 0;
@@ -77,20 +77,19 @@ public class GLWindow
 		this.SetupControllers();
 		this.loop();
 	}
-
-	private static long getTime()
-	{
+	// Under the class definition
+	private static long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
-
-	public double getDelta()
-	{
+	private static double getDelta() {
 		long currentTime = getTime();
 		double delta = (double) currentTime - (double) lastFrame;
 		lastFrame = getTime();
 		return delta;
 	}
 
+	
+	
 	private void SetupOpenGL()
 	{
 		Mouse.setGrabbed(true);
@@ -115,64 +114,15 @@ public class GLWindow
 		
 
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+		
+		camera.create();
 	}
 
 	public void Update(double delta)
 	{
 		keyboard.poll();
-		// distance in mouse movement from the last getDX() call.
-		this.MOUSEDX = Mouse.getDX();
-		// distance in mouse movement from the last getDY() call.
-		this.MOUSEDY = Mouse.getDY();
-		if (!DevControlledCamera)
-		{
-			// hide the mouse
-			// controll camera yaw from x movement fromt the mouse
-			camera.setYaw(this.MOUSEDX * this.MOUSESENSITIVITY);
-			// controll camera pitch from y movement fromt the mouse
-			camera.setPitch(this.MOUSEDY * this.MOUSESENSITIVITY);
-
-			float speed = (float) (delta / 300);
-
-			// System.out.println("Angle:" + (angle));
-			float x_Speed = 0f;
-			float z_Speed = 0;
-			float y_Speed = 0f;
-
-			if (Keyboard.isKeyDown(Keyboard.KEY_W))
-			{
-				x_Speed = speed;
-			}
-
-			if (Keyboard.isKeyDown(Keyboard.KEY_S)) // move
-			{
-				x_Speed = -speed;
-			}
-
-			if (Keyboard.isKeyDown(Keyboard.KEY_A))
-			{
-				z_Speed = speed;
-			}
-			if (Keyboard.isKeyDown(Keyboard.KEY_D))
-			{
-				z_Speed = -speed;
-			}
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			{
-				y_Speed = speed;
-			}
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-			{
-				y_Speed = -speed;
-			}
-
-			this.camera.strafe(z_Speed);
-			this.camera.walk(x_Speed);
-			this.camera.fly(y_Speed);
-
-			//camera.lookAtVector3f(new Vector3f(1,0,1));
-			camera.lookThrough();
-		}
+		camera.acceptInput((float) delta);
+		camera.apply();
 	}
 
 	public void SetupControllers()

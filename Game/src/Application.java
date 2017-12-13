@@ -52,9 +52,9 @@ public class Application extends GLWindow
 		System.out.println(step);
 		shader.createProgram();
 		
-		for(int x=0;x<4;x++)
+		for(int x=0;x<5;x++)
 		{
-			for(int y=0;y<4;y++)
+			for(int y=0;y<5;y++)
 			{
 				chunks.add(new Chunk(x*16,0,y*16));
 			}

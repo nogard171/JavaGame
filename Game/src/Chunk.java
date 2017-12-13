@@ -8,7 +8,7 @@ import org.newdawn.slick.opengl.Texture;
 public class Chunk {
 	Vector3f position = new Vector3f(0,0,0);
 	Material[][][] data;
-	int size = 16;
+	Vector3f size =  new Vector3f(16,16,16);
 	ArrayList<Material> cubes = new ArrayList<Material>();
 
 	public Chunk() {
@@ -23,11 +23,12 @@ public class Chunk {
 	
 	public void loadChunk()
 	{
-		data = new Material[size][size][size];
+		data = new Material[(int) size.y][(int) size.x][(int) size.z];
 
-		for (int y = 0; y < data.length; y++) {
-			for (int x = 0; x < data[y].length; x++) {
-				for (int z = 0; z < data[y][x].length; z++) {
+		for (int y = 0; y < size.y; y++) {
+			for (int x = 0; x < size.x; x++) {
+				for (int z = 0; z < size.z; z++) {
+					
 					data[y][x][z] = new Material();
 				}
 			}
@@ -37,9 +38,9 @@ public class Chunk {
 	public void renderChunk(float step) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.position.x, this.position.y, this.position.z);
-		for (int y = 0; y < data.length; y++) {
-			for (int x = 0; x < data[y].length; x++) {
-				for (int z = 0; z < data[y][x].length; z++) {
+		for (int y = 0; y < size.y; y++) {
+			for (int x = 0; x < size.x; x++) {
+				for (int z = 0; z < size.z; z++) {
 					Material mat = data[y][x][z];
 					if (mat != null) {
 						renderCube(new Vector3f(x, y, z), step, mat);
@@ -57,7 +58,7 @@ public class Chunk {
 		float z = vec.z;
 		GL11.glBegin(GL11.GL_QUADS);
 		Material check = null;
-		if (y + 1 < size) {
+		if (y + 1 < size.y) {
 			check = data[(int) y + 1][(int) x][(int) z];
 		}
 		Vector2f tex = null;
@@ -109,7 +110,7 @@ public class Chunk {
 		}
 
 		check = null;
-		if (z + 1 < size) {
+		if (z + 1 < size.z) {
 			check = data[(int) y][(int) x][(int) z + 1];
 		}
 		if (check == null) {
@@ -126,7 +127,7 @@ public class Chunk {
 		}
 
 		check = null;
-		if (x + 1 < size) {
+		if (x + 1 < size.x) {
 			check = data[(int) y][(int) x + 1][(int) z];
 		}
 		if (check == null) {

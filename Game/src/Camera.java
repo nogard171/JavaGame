@@ -23,6 +23,7 @@ import static org.lwjgl.opengl.GL11.glPushMatrix;
 import java.io.Serializable;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
@@ -33,165 +34,216 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
+
+
 // First Person Camera Controller
-public class Camera implements Serializable
-{
+public class Camera implements Serializable {
 
-	private static final long serialVersionUID = 5950169519310163575L;
-	// 3d vector to store the camera's position in
-	public Vector3f position = null;
-	// the rotation around the Y axis of the camera
-	private float yaw =135f;
-	// the rotation around the X axis of the camera
-	float pitch = 0f;
+	public static float moveSpeed = 0.005f;
 
-	float height = 0f;
+	private static float maxLook = 85;
 
-	private int mode = 0;
+	private static float mouseSensitivity = 0.05f;
 
-	public int direction = 0;
-	float speed_Factor = 1;
+	private static Vector3f pos;
+	private static Vector3f rotation;
 
-	// Constructor that takes the starting x, y, z location of the camera
-	public Camera(float x, float y, float z)
-	{
-		// instantiate position Vector3f to the x y z params.
-		position = new Vector3f(x, y, z);
+	public static void create() {
+		pos = new Vector3f(0, 0, 0);
+		rotation = new Vector3f(0, 0, 0);
 	}
 
-	public Camera(int x, int y, int z, int p, int newYaw)
-	{
-		// TODO Auto-generated constructor stub
-		position = new Vector3f(x, y, z);
-		pitch = p;
-		yaw = newYaw;
+	public static void apply() {
+		if (rotation.y / 360 > 1) {
+			rotation.y -= 360;
+		} else if (rotation.y / 360 < -1) {
+			rotation.y += 360;
+		}
+		GL11.glLoadIdentity();
+		GL11.glRotatef(rotation.x, 1, 0, 0);
+		GL11.glRotatef(rotation.y, 0, 1, 0);
+		GL11.glRotatef(rotation.z, 0, 0, 1);
+		GL11.glTranslatef(-pos.x, -pos.y, -pos.z);
 	}
 
-	public void setYaw(float amount)
-	{
-		if (this.yaw > 360)
-		{
-			this.yaw -= 360;
-		}
-		if (this.yaw < 0)
-		{
-			this.yaw += 360;
-		}
-		this.yaw += amount;
+	public static void acceptInput(float delta) {
+		acceptInputRotate(delta);
+		acceptInputGrab();
+		acceptInputMove(delta);
 	}
 
-	public void setPitch(float amount)
-	{
-		if (pitch > 360)
-		{
-			this.pitch -= 360;
-		}
-		if (pitch < 0)
-		{
-			this.pitch += 360;
-		}
-		this.pitch += amount;
-		if (pitch <= 275 && pitch >= 180)
-		{
-			this.pitch = 275;
-		} else if (pitch <= 180 && pitch >= 90)
-		{
-			this.pitch = 90;
+	public static void acceptInputRotate(float delta) {
+		if (Mouse.isGrabbed()) {
+			float mouseDX = Mouse.getDX();
+			float mouseDY = -Mouse.getDY();
+			rotation.y += mouseDX * mouseSensitivity * delta;
+			rotation.x += mouseDY * mouseSensitivity * delta;
+			rotation.x = Math.max(-maxLook, Math.min(maxLook, rotation.x));
 		}
 	}
 
-	// increment the camera's current yaw rotation
-	public float getY()
-	{
-		return this.position.y;
+	public static void acceptInputGrab() {
+		if (Mouse.isInsideWindow() && Mouse.isButtonDown(0)) {
+			Mouse.setGrabbed(true);
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+			Mouse.setGrabbed(false);
+		}
 	}
 
-	public void walk(float distance)
-	{
-		distance = distance / speed_Factor;
-		position.x += distance * (float) Math.sin(Math.toRadians((yaw)));
-		position.z -= distance * (float) Math.cos(Math.toRadians((yaw)));
+	public static void acceptInputMove(float delta) {
+		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_W);
+		boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_S);
+		boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_D);
+		boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_A);
+		boolean keyFast = Keyboard.isKeyDown(Keyboard.KEY_Q);
+		boolean keySlow = Keyboard.isKeyDown(Keyboard.KEY_E);
+		boolean keyFlyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
+		boolean keyFlyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+
+		float speed;
+
+		if (keyFast) {
+			speed = moveSpeed * 5;
+		} else if (keySlow) {
+			speed = moveSpeed / 2;
+		} else {
+			speed = moveSpeed;
+		}
+
+		speed *= delta;
+
+		if (keyFlyUp) {
+			pos.y += speed;
+		}
+		if (keyFlyDown) {
+			pos.y -= speed;
+		}
+
+		if (keyDown) {
+			pos.x -= Math.sin(Math.toRadians(rotation.y)) * speed;
+			pos.z += Math.cos(Math.toRadians(rotation.y)) * speed;
+		}
+		if (keyUp) {
+			pos.x += Math.sin(Math.toRadians(rotation.y)) * speed;
+			pos.z -= Math.cos(Math.toRadians(rotation.y)) * speed;
+		}
+		if (keyLeft) {
+			pos.x += Math.sin(Math.toRadians(rotation.y - 90)) * speed;
+			pos.z -= Math.cos(Math.toRadians(rotation.y - 90)) * speed;
+		}
+		if (keyRight) {
+			pos.x += Math.sin(Math.toRadians(rotation.y + 90)) * speed;
+			pos.z -= Math.cos(Math.toRadians(rotation.y + 90)) * speed;
+		}
 	}
 
-	public void walkToward(float distance)
-	{
-		position.y -= distance * (float) Math.tan(Math.toRadians(-pitch));
-		position.x += distance * (float) Math.sin(Math.toRadians((yaw)));
-		position.z -= distance * (float) Math.cos(Math.toRadians((yaw)));
+	public static void setSpeed(float speed) {
+		moveSpeed = speed;
 	}
 
-	public void walkAway(float distance)
-	{
-		position.x -= distance * (float) Math.sin(Math.toRadians(yaw));
-		position.z += distance * (float) Math.cos(Math.toRadians(yaw));
-		position.y += distance * (float) Math.tan(Math.toRadians(-pitch));
+	public static void setPos(Vector3f pos) {
+		Camera.pos = pos;
 	}
 
-	public void fly(float distance)
-	{
-		position.y -= distance;
-
+	public static Vector3f getPos() {
+		return pos;
 	}
 
-	// strafes the camera left relitive to its current rotation (yaw)
-	public void strafe(float distance)
-	{
-		distance = distance / speed_Factor;
-		position.x += distance * (float) Math.sin(Math.toRadians(yaw - 90));
-		position.z -= distance * (float) Math.cos(Math.toRadians(yaw - 90));
-
+	public static void setX(float x) {
+		pos.x = x;
 	}
 
-	// translates and rotate the matrix so that it looks through the camera
-	// this dose basic what gluLookAt() does
-	public void lookThrough()
-	{
-		direction = (int) (yaw % 360);
-		// roatate the pitch around the Y axis
-		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
-		// roatate the yaw around the X axis
-		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
-		// translate to the position vector's location
-		GL11.glTranslatef(-position.x, -position.y, -position.z);
+	public static float getX() {
+		return pos.x;
 	}
 
-	public void lookAtVector3f(Vector3f vec)
-	{
-		double dx = this.position.x-vec.x;
-		double dz = this.position.z-vec.z;
-		
-		double d = Math.sqrt((dx*2)+(dz*2));
-		
-		double rotAng = Math.toDegrees(Math.asin(dx/d));
-		//System.out.println(dz+"/"+dx + "/" + rotAng);
-		// roatate the pitch around the Y axis
-		GL11.glRotatef(-pitch, 1f, 0.0f, 0);
-		// roatate the yaw around the X axis
-		GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
-
-		// translate to the position vector's location
-		GL11.glTranslatef(-position.x, -position.y, -position.z);
+	public static void addToX(float x) {
+		pos.x += x;
 	}
 
-
-	public void rotateY(float degrees)
-	{
-		pitch += degrees;
+	public static void setY(float y) {
+		pos.y = y;
 	}
 
-	public void rotateX(float degrees)
-	{
-		yaw += degrees;
+	public static float getY() {
+		return pos.y;
 	}
 
-	public float getYaw()
-	{
-		return this.yaw;
+	public static void addToY(float y) {
+		pos.y += y;
 	}
 
-	public float getPitch()
-	{
-		return this.pitch;
+	public static void setZ(float z) {
+		pos.z = z;
+	}
+
+	public static float getZ() {
+		return pos.z;
+	}
+
+	public static void addToZ(float z) {
+		pos.z += z;
+	}
+
+	public static void setRotation(Vector3f rotation) {
+		Camera.rotation = rotation;
+	}
+
+	public static Vector3f getRotation() {
+		return rotation;
+	}
+
+	public static void setRotationX(float x) {
+		rotation.x = x;
+	}
+
+	public static float getRotationX() {
+		return rotation.x;
+	}
+
+	public static void addToRotationX(float x) {
+		rotation.x += x;
+	}
+
+	public static void setRotationY(float y) {
+		rotation.y = y;
+	}
+
+	public static float getRotationY() {
+		return rotation.y;
+	}
+
+	public static void addToRotationY(float y) {
+		rotation.y += y;
+	}
+
+	public static void setRotationZ(float z) {
+		rotation.z = z;
+	}
+
+	public static float getRotationZ() {
+		return rotation.z;
+	}
+
+	public static void addToRotationZ(float z) {
+		rotation.z += z;
+	}
+
+	public static void setMaxLook(float maxLook) {
+		Camera.maxLook = maxLook;
+	}
+
+	public static float getMaxLook() {
+		return maxLook;
+	}
+
+	public static void setMouseSensitivity(float mouseSensitivity) {
+		Camera.mouseSensitivity = mouseSensitivity;
+	}
+
+	public static float getMouseSensitivity() {
+		return mouseSensitivity;
 	}
 
 }
