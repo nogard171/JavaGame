@@ -50,7 +50,7 @@ public class SocketHandler extends Thread {
 					this.broadcastGLData(data);
 				}
 			}
-			System.out.println("Client# " +this.ID+" closed");
+			System.out.println("Client# " + this.ID + " closed");
 			clientSocket.close();
 			sockets.remove(this);
 		} catch (Exception e) {
@@ -64,24 +64,28 @@ public class SocketHandler extends Thread {
 
 	public void broadcastGLData(GLData data) {
 		for (SocketHandler handler : this.sockets) {
-			if (this != handler) {
-				handler.sendGLData(data);
-			}
+			// if (this != handler) {
+			data.ClientID = this.ID;
+			handler.sendGLData(data);
+			// }
 		}
 	}
 
 	public GLData readGLData() throws ClassNotFoundException, IOException {
 		GLData data = null;
-		data = (GLData) ois.readObject();
+		data = (GLData) this.ois.readObject();
 		return data;
 	}
 
 	public void sendGLData(GLData data) {
-		try {
-			oos.writeObject(data);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (oos != null && data != null) {
+			try {
+				this.oos.reset();
+				this.oos.writeObject(data);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

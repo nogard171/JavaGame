@@ -11,6 +11,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
@@ -31,9 +32,16 @@ import engine.GLRenderer;
 import engine.GLScript;
 import engine.GLShader;
 import engine.GLSize;
+import engine.GLSync;
 import engine.GLTransform;
 import engine.GLView;
 import engine.GLWindow;
+import network.GLClient;
+import network.GLData;
+import network.GLMessage;
+import network.GLProtocol;
+import network.GLServer;
+import network.GLSyncTransform;
 
 public class Game extends GLDisplay {
 	public void Start() {
@@ -44,44 +52,34 @@ public class Game extends GLDisplay {
 	@Override
 	public void Setup() {
 
-		Random r = new Random();
-		int Low = 1;
-		int High = 10;
-
-		// the generated grass globjects
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
-				GLPhysics physics3 = new GLPhysics();
-				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
-				GLTransform transform = new GLTransform(x * 32, y * 32);
-				GLShader shader = new GLShader("basic.vert", "basic.frag");
-				GLRenderer spriteRenderer = new GLRenderer();
-				GLObject obj = new GLObject();
-				obj.setName("Dirt");
-				obj.AddComponent(transform);
-				obj.AddComponent(mat);
-				obj.AddComponent(shader);
-				obj.AddComponent(spriteRenderer);
-				obj.AddComponent(physics3);
-				//mappedObjects.put(x + "," + y + ",0", obj);
-
-				int Result = r.nextInt(High - Low) + Low;
-
-				if (Result == 1) {
-					mat = new GLMaterial("resources/textures/tree.png");
-
-					GLObject tree = new GLObject();
-					tree.setName("tree");
-					tree.AddComponent(transform);
-					tree.AddComponent(mat);
-					tree.AddComponent(shader);
-					tree.AddComponent(spriteRenderer);
-					tree.AddComponent(physics3);
-					mappedObjects.put(x + "," + y + ",1", tree);
-				}
-
-			}
-		}
+		/*
+		 * Random r = new Random(); int Low = 1; int High = 10;
+		 * 
+		 * // the generated grass globjects for (int x = 0; x < 10; x++) { for
+		 * (int y = 0; y < 10; y++) { GLPhysics physics3 = new GLPhysics();
+		 * GLMaterial mat = new GLMaterial("resources/textures/grass.png");
+		 * GLTransform transform = new GLTransform(x * 32, y * 32); GLShader
+		 * shader = new GLShader("basic.vert", "basic.frag"); GLRenderer
+		 * spriteRenderer = new GLRenderer(); GLObject obj = new GLObject();
+		 * obj.setName("Dirt"); obj.AddComponent(transform);
+		 * obj.AddComponent(mat); obj.AddComponent(shader);
+		 * obj.AddComponent(spriteRenderer); obj.AddComponent(physics3);
+		 * //mappedObjects.put(x + "," + y + ",0", obj);
+		 * 
+		 * int Result = r.nextInt(High - Low) + Low;
+		 * 
+		 * if (Result == 1) { mat = new
+		 * GLMaterial("resources/textures/tree.png");
+		 * 
+		 * GLObject tree = new GLObject(); tree.setName("tree");
+		 * tree.AddComponent(transform); tree.AddComponent(mat);
+		 * tree.AddComponent(shader); tree.AddComponent(spriteRenderer);
+		 * tree.AddComponent(physics3); mappedObjects.put(x + "," + y + ",1",
+		 * tree); }
+		 * 
+		 * } }
+		 */
+		GLObject obj = new GLObject();
 
 		// the player globject
 		GLMaterial mat = new GLMaterial("resources/textures/guy.png");
@@ -95,14 +93,26 @@ public class Game extends GLDisplay {
 		GLPhysics physics = new GLPhysics();
 		GLCollider collider = new GLCollider(0, 0, 32, 32);
 
+		GLSync syncTransform = new GLSync(new GLSyncTransform());
+
 		// GLAudio audio = new GLAudio("resources/audio/walking.wav");
 		// audio.setVolume(0.1f);
-		GLClickable clickable2 = new GLClickable();
-		GLProperty health = new GLProperty();
-		health.setName("health");
-		health.setIntValue(100);
+		/*
+		 * GLClickable clickable2 = new GLClickable(); GLProperty health = new
+		 * GLProperty(); health.setName("health"); health.setIntValue(100);
+		 * 
+		 * 
+		 * // obj.AddComponent(audio); obj.AddComponent(clickable2);
+		 * 
+		 * 
+		 * obj.AddProperty(health);
+		 */
 
-		GLObject obj = new GLObject();
+		obj.AddComponent(syncTransform);
+
+		obj.AddComponent(physics);
+		obj.AddComponent(collider);
+
 		obj.setName("player");
 		obj.AddComponent(transform);
 		obj.AddComponent(script);
@@ -110,40 +120,34 @@ public class Game extends GLDisplay {
 		obj.AddComponent(shader);
 		obj.AddComponent(spriteRenderer2);
 		obj.AddComponent(animator);
-		// obj.AddComponent(audio);
-		obj.AddComponent(clickable2);
 
-		obj.AddComponent(physics);
-		obj.AddComponent(collider);
-
-		obj.AddProperty(health);
 		objects.add(obj);
-		//mappedObjects.put("0,0,1", obj);
+		// mappedObjects.put("0,0,1", obj);
 
 		// the window globject
 
-		GLMaterial winmat = new GLMaterial("resources/textures/gui.png");
-		GLTransform wintransform = new GLTransform(200, 200);
-		GLRenderer winspriteRenderer = new GLRenderer();
-		GLShader winshader = new GLShader("window.vert", "window.frag");
-
-		GLWindow win = new GLWindow();
-		GLClickable clickable = new GLClickable("resources/scripts/clickableScript.lua");
-
-		GLObject window = new GLObject();
-
-		window.AddComponent(winmat);
-		window.AddComponent(wintransform);
-		window.AddComponent(winspriteRenderer);
-		window.AddComponent(win);
-		window.AddComponent(winshader);
-		window.AddComponent(clickable);
-
-		objects.add(window);
+		/*
+		 * GLMaterial winmat = new GLMaterial("resources/textures/gui.png");
+		 * GLTransform wintransform = new GLTransform(200, 200); GLRenderer
+		 * winspriteRenderer = new GLRenderer(); GLShader winshader = new
+		 * GLShader("window.vert", "window.frag");
+		 * 
+		 * GLWindow win = new GLWindow(); GLClickable clickable = new
+		 * GLClickable("resources/scripts/clickableScript.lua");
+		 * 
+		 * GLObject window = new GLObject();
+		 * 
+		 * window.AddComponent(winmat); window.AddComponent(wintransform);
+		 * window.AddComponent(winspriteRenderer); window.AddComponent(win);
+		 * window.AddComponent(winshader); window.AddComponent(clickable);
+		 * 
+		 * objects.add(window);
+		 */
 
 	}
 
 	ArrayList<GLObject> objects = new ArrayList<GLObject>();
+	ArrayList<GLObject> objectsToSync = new ArrayList<GLObject>();
 	HashMap<String, GLObject> mappedObjects = new HashMap<String, GLObject>();
 
 	@Override
@@ -162,6 +166,8 @@ public class Game extends GLDisplay {
 				GLWindow win = (GLWindow) obj.getComponent("window");
 				GLPhysics physics = (GLPhysics) obj.getComponent("physics");
 				GLCollider collider = (GLCollider) obj.getComponent("collider");
+				GLSync sync = (GLSync) obj.getComponent("sync");
+
 				if (physics != null) {
 					physics.Run();
 				}
@@ -180,15 +186,51 @@ public class Game extends GLDisplay {
 				if (animator != null) {
 					animator.Run();
 				}
+
+				if (sync != null) {
+					sync.Run();
+					if (sync.syncNow()) {
+						objectsToSync.add(obj);
+					}
+				}
 			}
 		}
 		objectToUpdate.clear();
+		if (client != null && client.started) {
+			for (GLObject obj : objectsToSync) {
+				GLSync sync = (GLSync) obj.getComponent("sync");
+				if (sync != null) {
+					GLSyncTransform data = (GLSyncTransform) sync.data;
+					if (data != null) {
+						// System.out.println(data.position.toString());
+						client.sendGLData(data);
+					}
+				}
+			}
+		}
+		objectsToSync.clear();
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_F1) && server == null) {
+			server = new GLServer();
+			server.start();
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_F2) && client == null) {
+			client = new GLClient();
+			client.start();
+		}
 	}
+
+	GLServer server = null;
+	GLClient client = null;
 
 	@Override
 	public void Destroy() {
 		for (GLObject obj : objects) {
 			obj.Destroy();
+		}
+		if (server != null) {
+			server.destroy();
+
 		}
 		super.Destroy();
 	}

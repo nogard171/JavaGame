@@ -13,6 +13,7 @@ public class GLClient extends Thread {
 	private Socket clientSocket;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
+	public boolean started = false;
 
 	public void run() {
 		try {
@@ -26,7 +27,7 @@ public class GLClient extends Thread {
 
 					this.oos = new ObjectOutputStream(this.clientSocket.getOutputStream());
 					this.ois = new ObjectInputStream(this.clientSocket.getInputStream());
-
+					this.started = true;
 					while (!this.close) {
 						GLData data = null;
 						try {
@@ -39,6 +40,9 @@ public class GLClient extends Thread {
 							if (data.protocol == GLProtocol.MESSAGE) {
 								GLMessage message = (GLMessage) data;
 								System.out.println(message.from + " said: " + message.message);
+							} else if (data.protocol == GLProtocol.TRANSFORM) {
+								GLSyncTransform syncTransform = (GLSyncTransform) data;
+								System.out.println("Transform (" + data.ClientID + "): " + syncTransform.position.toString());
 							} else if (data.protocol == GLProtocol.CLOSE_CONNECTION) {
 								GLMessage message = (GLMessage) data;
 								System.out.println(message.from + " : " + message.message);
@@ -51,7 +55,7 @@ public class GLClient extends Thread {
 					this.ois.close();
 					this.oos.close();
 					this.clientSocket.close();
-					
+
 				} catch (IOException e) {
 					System.out.println("Server not available for connection.");
 				}
@@ -67,15 +71,23 @@ public class GLClient extends Thread {
 
 	private GLData readGLData() throws ClassNotFoundException, IOException {
 		GLData data = null;
-		data = (GLData) this.ois.readObject();
+		if (this.ois != null) {
+
+			data = (GLData) this.ois.readObject();
+		}
 		return data;
 	}
 
 	public void sendGLData(GLData data) {
-		try {
-			this.oos.writeObject(data);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (data != null) {
+			try {
+				this.oos.reset();
+				this.oos.writeObject(data);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("empty");
 		}
 	}
 }

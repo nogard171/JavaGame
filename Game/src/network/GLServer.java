@@ -39,6 +39,14 @@ public class GLServer extends Thread {
 		}
 	}
 
+	public void destroy() {
+		GLMessage message = new GLMessage();
+		message.protocol = GLProtocol.CLOSE_CONNECTION;
+		message.from = "server";
+		message.message = "You have been disconnected from the server.";
+		this.broadcastGLData((GLData) message);
+	}
+
 	public void broadcastGLData(GLData data) {
 		if (this.sockets.size() > 0) {
 			for (SocketHandler handler : this.sockets) {
@@ -55,7 +63,7 @@ public class GLServer extends Thread {
 				}
 			}
 		} else {
-			System.out.println("No clients to broadcast too.");
+			// System.out.println("No clients to broadcast too.");
 		}
 	}
 }
