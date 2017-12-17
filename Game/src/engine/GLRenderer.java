@@ -32,11 +32,11 @@ public class GLRenderer extends GLComponent {
 
 	private void generateDisplayList(GLSize spriteSize) {
 		if (this.displayID == -1) {
-			int dlid = GL11.glGenLists(1);
-			GL11.glNewList(dlid, GL11.GL_COMPILE);
+			//int dlid = GL11.glGenLists(1);
+			//GL11.glNewList(dlid, GL11.GL_COMPILE);
 			this.RenderQuad(spriteSize.getWidth(), spriteSize.getHeight(), 0, 0, 1, 1);
-			GL11.glEndList();
-			this.displayID = dlid;
+			//GL11.glEndList();
+			//this.displayID = dlid;
 		}
 	}
 

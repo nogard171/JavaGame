@@ -10,10 +10,10 @@ import network.GLSyncTransform;
 public class GLSync extends GLComponent {
 	public GLData data = null;
 	public long previous = 1;
-	public int syncTime = 1000;
+	public int syncTime = 10000;
 	public boolean sync = false;
 	public boolean syncNow = false;
-	public boolean smartSync = true;
+	public boolean smartSync = false;
 
 	public GLSync(network.GLData glData) {
 		this.data = glData;

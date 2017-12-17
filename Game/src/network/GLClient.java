@@ -6,6 +6,12 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import engine.GLMaterial;
+import engine.GLObject;
+import engine.GLRenderer;
+import engine.GLShader;
 
 public class GLClient extends Thread {
 	private boolean close = false;
@@ -14,6 +20,9 @@ public class GLClient extends Thread {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 	public boolean started = false;
+
+	public ArrayList<GLObject> objectsToSync = new ArrayList<GLObject>();
+	public boolean sync = false;
 
 	public void run() {
 		try {
@@ -28,6 +37,7 @@ public class GLClient extends Thread {
 					this.oos = new ObjectOutputStream(this.clientSocket.getOutputStream());
 					this.ois = new ObjectInputStream(this.clientSocket.getInputStream());
 					this.started = true;
+					
 					while (!this.close) {
 						GLData data = null;
 						try {
@@ -41,8 +51,21 @@ public class GLClient extends Thread {
 								GLMessage message = (GLMessage) data;
 								System.out.println(message.from + " said: " + message.message);
 							} else if (data.protocol == GLProtocol.TRANSFORM) {
+								sync = true;
 								GLSyncTransform syncTransform = (GLSyncTransform) data;
-								System.out.println("Transform (" + data.ClientID + "): " + syncTransform.position.toString());
+								// System.out.println("Transform (" +
+								// data.ClientID + "): " +
+								// syncTransform.position.toString());
+								engine.GLTransform transform = new engine.GLTransform(syncTransform.position.x,
+										syncTransform.position.y);
+
+								GLObject newObj = new GLObject();
+								newObj.setName(data.ClientID + "");
+								newObj.AddComponent(transform);
+								
+								if (!objectsToSync.contains(newObj)) {
+									this.objectsToSync.add(newObj);
+								}
 							} else if (data.protocol == GLProtocol.CLOSE_CONNECTION) {
 								GLMessage message = (GLMessage) data;
 								System.out.println(message.from + " : " + message.message);

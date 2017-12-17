@@ -155,6 +155,7 @@ public class Game extends GLDisplay {
 		super.Update();
 		if (Display.getWidth() != view.Width || Display.getHeight() != view.Height || view.update) {
 			view = new GLView(0, 0, Display.getWidth(), Display.getHeight());
+			objectInView.clear();
 			this.objectInView = getViewObjects();
 		}
 		for (GLObject obj : objectToUpdate) {
@@ -218,6 +219,9 @@ public class Game extends GLDisplay {
 			client = new GLClient();
 			client.start();
 		}
+
+
+		// System.out.println("Size:" + objectInView.size());
 	}
 
 	GLServer server = null;
@@ -242,10 +246,11 @@ public class Game extends GLDisplay {
 		for (int z = 0; z < 10; z++) {
 			for (int x = (int) Math.floor(view.X / 32); x < Math.ceil(view.Width / 32) + 1; x++) {
 				for (int y = (int) Math.floor(view.Y / 32); y < Math.ceil(view.Height / 32) + 1; y++) {
-
 					String key = (x) + "," + y + "," + z;
 					GLObject obj = mappedObjects.get(key);
-					glViewObjects.add(obj);
+					if (glViewObjects.contains(obj)) {
+						glViewObjects.add(obj);
+					}
 				}
 			}
 		}
