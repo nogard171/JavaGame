@@ -7,6 +7,7 @@ import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 
+import java.awt.Rectangle;
 import java.io.File;
 
 import javax.swing.JOptionPane;
@@ -23,13 +24,15 @@ public class GLDisplay {
 	private int WIDTH = 800;
 	private int HEIGHT = 600;
 	private int FPS = 60;
-	private boolean FPS_LIMITER = false;
+	private boolean FPS_LIMITER = true;
 	private String TITLE = "";
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
 
 	GLFramesPerSecond fps;
-	private boolean close = false;
+	protected boolean close = false;
+
+	Rectangle view = new Rectangle(0, 0, 400, 400);
 
 	public void Create() {
 		try {
@@ -44,7 +47,8 @@ public class GLDisplay {
 				if (close) {
 					break;
 				}
-				this.Update();
+				
+				this.Update(fps.getDelta());
 				this.Render();
 				Display.update();
 				if (FPS_LIMITER) {
@@ -65,7 +69,7 @@ public class GLDisplay {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
@@ -86,16 +90,11 @@ public class GLDisplay {
 		GL11.glEnable(enableID);
 	}
 
-	public void Update() {
+	public void Update(float delta) {
 		GLFramesPerSecond.updateFPS();
 		Display.setTitle("FPS:" + fps.fps);
 		if (Display.wasResized()) {
 			this.SetupViewPort();
-		}
-		if (Keyboard.next()) {
-			if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-				this.close = true;
-			}
 		}
 	}
 
@@ -106,6 +105,8 @@ public class GLDisplay {
 		GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
+
+		view.setSize(Display.getWidth()+64, Display.getHeight()+64);
 	}
 
 	public void Render() {
