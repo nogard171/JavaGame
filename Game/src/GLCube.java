@@ -10,10 +10,13 @@ public class GLCube {
 	public String type = "GRASS";
 
 	public GLCube(int x, int y, int z) {
-		int newX = (x * 32) - (z * 32);
-		int newY = (y * 32);
-		int newZ = (z * 16) + (x * 16);
-		position2D = new Point(newX, -newZ + newY);
+		int newX = x;
+		int newY = y;
+		int newZ = z;
 		this.position = new Vector3f(newX, newY, newZ);
+		 newX = (x * 32) - (z * 32);
+		 newY = (y * 32);
+		 newZ = (z * 16) + (x * 16);
+		position2D = new Point(newX, -newZ + newY);
 	}
 }

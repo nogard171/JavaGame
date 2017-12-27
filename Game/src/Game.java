@@ -128,7 +128,11 @@ public class Game extends GLDisplay {
 		cubesToRender.clear();
 		for (int x = 0; x < size.x; x++) {
 			for (int z = 0; z < size.z; z++) {
-				for (int y = 0; y < level; y++) {
+				int lowest =  level - 5;
+				if (lowest < 0) {
+					lowest = 0;
+				}
+				for (int y = lowest; y < level; y++) {
 					GLCube cube = cubes[x][y][z];
 					if (cube != null) {
 						Vector3f count = getSurrounding(x, y, z);
@@ -188,10 +192,14 @@ public class Game extends GLDisplay {
 			}
 			shaderRan = true;
 		}
+		float[] viewPosition = { (float) (-view.getX()-64), (float) (-view.getY()-64) };
+
+		shader.sendUniform2f("view", viewPosition);
+
 		for (GLCube cube : cubesToRender) {
 
-			float[] position = { (float) (cube.position.getX() - 64 - view.getX()),
-					(float) ((-cube.position.getZ() + cube.position.getY()) - view.getY() - 64), 0 };
+			float[] position = { (float) (cube.position.getX()), (float) (cube.position.getY()),
+					(float) cube.position.getZ() };
 
 			shader.sendUniform3f("position", position);
 
