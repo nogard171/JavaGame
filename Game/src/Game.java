@@ -18,7 +18,7 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Game extends GLDisplay {
 
 	// int[][][] cubes;
-	Vector3f size = new Vector3f(100, 10, 100);
+	Vector3f size = new Vector3f(10, 5, 10);
 
 	GLCube[][][] cubes;
 
@@ -66,20 +66,24 @@ public class Game extends GLDisplay {
 		texturesTemp.add(new GLTexture("STONE", new Vector2f(1, 1)));
 
 		for (int t = 0; t < texturesTemp.size(); t++) {
-			GLTexture texture = texturesTemp.get(t);
+			GLTexture LocalTexture = texturesTemp.get(t);
 
-			texture.dl = GL11.glGenLists(1);
+			LocalTexture.dl = GL11.glGenLists(1);
 
 			// Start recording the new display list.
-			GL11.glNewList(texture.dl, GL11.GL_COMPILE);
+			GL11.glNewList(LocalTexture.dl, GL11.GL_COMPILE);
 
 			// RenderCube(texture.top, texture.other);
-			RenderCube(texture.textureCoords, texture.size);
+			RenderCube(LocalTexture.textureCoords, LocalTexture.size);
 
 			// End the recording of the current display list.
 			GL11.glEndList();
 
-			textures.put(texture.name, texture);
+			textures.put(LocalTexture.name, LocalTexture);
+		}
+
+		if (texture != null) {
+			shader.sendTexture("myTexture", texture.getTextureID());
 		}
 
 		checkSurroundings();
@@ -97,41 +101,44 @@ public class Game extends GLDisplay {
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			view.x -= speed;
+			viewChanged = true;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
 			view.x += speed;
+			viewChanged = true;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			view.y += speed;
+			viewChanged = true;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			view.y -= speed;
+			viewChanged = true;
 		}
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_UP) {
-					level++;
-				}
-				if (Keyboard.getEventKey() == Keyboard.KEY_DOWN) {
-					level--;
-				}
 				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 					super.close = true;
 				}
 			}
 		}
-		checkSurroundings();
+		if (viewChanged) {
+			checkSurroundings();
+		}
 	}
+
+	boolean viewChanged = false;
 
 	public void checkSurroundings() {
 
 		cubesToRender.clear();
 		for (int x = 0; x < size.x; x++) {
 			for (int z = 0; z < size.z; z++) {
-				int lowest =  level - 5;
+				int lowest = level - 5;
 				if (lowest < 0) {
 					lowest = 0;
 				}
+				lowest = 0;
 				for (int y = lowest; y < level; y++) {
 					GLCube cube = cubes[x][y][z];
 					if (cube != null) {
@@ -184,34 +191,41 @@ public class Game extends GLDisplay {
 		super.Render();
 
 		shader.Run();
-		if (!shaderRan) {
+		if (cubesToRender.size() > 0) {
+			// if (!shaderRan) {
 			float[] colorData = { 1, 1, 1, 1 };
 			shader.sendUniform4f("vertColor", colorData);
-			if (texture != null) {
-				shader.sendTexture("myTexture", texture.getTextureID());
-			}
-			shaderRan = true;
-		}
-		float[] viewPosition = { (float) (-view.getX()-64), (float) (-view.getY()-64) };
 
-		shader.sendUniform2f("view", viewPosition);
+			// shaderRan = true;
+			// }
+			float[] viewPosition = { (float) (-view.getX() - 64), (float) (-view.getY() - 64) };
 
-		for (GLCube cube : cubesToRender) {
+			shader.sendUniform2f("view", viewPosition);
 
-			float[] position = { (float) (cube.position.getX()), (float) (cube.position.getY()),
-					(float) cube.position.getZ() };
+			for (GLCube cube : cubesToRender) {
 
-			shader.sendUniform3f("position", position);
+				float[] position = { (float) (cube.position.getX()), (float) (cube.position.getY()),
+						(float) cube.position.getZ() };
 
-			if (cube.type != "BLANK") {
-				int dl = this.textures.get(cube.type).dl;
+				shader.sendUniform3f("position", position);
 
-				if (!cube.visible) {
-					dl = textures.get("UNKNOWN").dl;
+				if (cube.type != "BLANK") {
+					GLTexture tempTexture = textures.get(cube.type);
+
+					if (!cube.visible) {
+						tempTexture = textures.get("UNKNOWN");
+					}
+
+					GL11.glCallList(tempTexture.dl);
+					/*
+					if (!cube.visible) {
+						 tempTexture =  textures.get("UNKNOWN");
+					}
+					
+					RenderCube(tempTexture.textureCoords,tempTexture.size);*/
 				}
-
-				GL11.glCallList(dl);
 			}
+
 		}
 	}
 
@@ -233,44 +247,6 @@ public class Game extends GLDisplay {
 		GL11.glEnd();
 	}
 
-	/*
-	 * public void RenderCube(Vector2f texture1, Vector2f texture2) {
-	 * GL11.glBegin(GL11.GL_QUADS); // top GL11.glTexCoord2f(0.5f *
-	 * (texture1.x), 0.5f * (texture1.y)); GL11.glVertex2f(32, 32);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture1.x + 1), 0.5f * (texture1.y));
-	 * GL11.glVertex2f(64, 48);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture1.x + 1), 0.5f * (texture1.y + 1));
-	 * GL11.glVertex2f(32, 64);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture1.x), 0.5f * (texture1.y + 1));
-	 * GL11.glVertex2f(0, 48);
-	 * 
-	 * // left GL11.glTexCoord2f(0.5f * (texture2.x), 0.5f * (texture2.y));
-	 * GL11.glVertex2f(32, 0);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture2.x + 1), 0.5f * (texture2.y));
-	 * GL11.glVertex2f(0, 16);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture2.x + 1), 0.5f * (texture2.y + 1));
-	 * GL11.glVertex2f(0, 48);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture2.x), 0.5f * (texture2.y + 1));
-	 * GL11.glVertex2f(32, 32);
-	 * 
-	 * // right GL11.glTexCoord2f(0.5f * (texture2.x), 0.5f * (texture2.y));
-	 * GL11.glVertex2f(32, 0);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture2.x + 1), 0.5f * (texture2.y));
-	 * GL11.glVertex2f(64, 16);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture2.x + 1), 0.5f * (texture2.y + 1));
-	 * GL11.glVertex2f(64, 48);
-	 * 
-	 * GL11.glTexCoord2f(0.5f * (texture2.x), 0.5f * (texture2.y + 1));
-	 * GL11.glVertex2f(32, 32); GL11.glEnd(); }
-	 */
 	@Override
 	public void Destroy() {
 

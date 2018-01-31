@@ -1,5 +1,4 @@
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
-public class GLShader{
+public class GLShader {
 	private int programID = -1;
 	private int vertexShader = -1;
 	private int fragmentShader = -1;
@@ -18,11 +17,23 @@ public class GLShader{
 	public GLShader(String vertFile, String fragFile) {
 		this.setVertexShaderFile(vertFile);
 		this.setFragmentShaderFile(fragFile);
-		
+
+		if (vertexShader == -1 && vertexShaderFile != "") {
+			vertexShader = this.getShader(vertexShaderFile, GL20.GL_VERTEX_SHADER);
+		}
+		if (fragmentShader == -1 && fragmentShaderFile != "") {
+			fragmentShader = this.getShader(fragmentShaderFile, GL20.GL_FRAGMENT_SHADER);
+		}
+		if (programID == -1) {
+			programID = GL20.glCreateProgram();
+			GL20.glAttachShader(programID, fragmentShader);
+			GL20.glAttachShader(programID, vertexShader);
+			GL20.glLinkProgram(programID);
+		}
 	}
 
 	public GLShader() {
-		
+
 	}
 
 	private int getShader(String filename, int shader) {
@@ -66,10 +77,10 @@ public class GLShader{
 	}
 
 	public void Run() {
-		if (vertexShader == -1l && vertexShaderFile != "") {
+		if (vertexShader == -1 && vertexShaderFile != "") {
 			vertexShader = this.getShader(vertexShaderFile, GL20.GL_VERTEX_SHADER);
 		}
-		if (fragmentShader == -1l && fragmentShaderFile != "") {
+		if (fragmentShader == -1 && fragmentShaderFile != "") {
 			fragmentShader = this.getShader(fragmentShaderFile, GL20.GL_FRAGMENT_SHADER);
 		}
 		if (programID == -1) {
@@ -78,11 +89,13 @@ public class GLShader{
 			GL20.glAttachShader(programID, vertexShader);
 			GL20.glLinkProgram(programID);
 		}
-		GL20.glUseProgram(programID);
+
+		if (programID != -1) {
+			GL20.glUseProgram(programID);
+		}
 	}
-	
-	public void Stop()
-	{
+
+	public void Stop() {
 		GL20.glUseProgram(0);
 	}
 
