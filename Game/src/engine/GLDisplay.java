@@ -30,11 +30,11 @@ public class GLDisplay {
 	private DisplayMode DISPLAYMODE = null;
 	private boolean RESIZABLE = true;
 	private boolean useAnitAliasing = true;
-	private int[] anitAliasing = {8,8,0,8};
-	
+	private int[] anitAliasing = { 8, 8, 0, 8 };
+
 	GLFramesPerSecond fps;
 	private boolean close = false;
-	private String systemEnableFile ="system/scripts/system_enables.lua";
+	private String systemEnableFile = "system/scripts/system_enables.lua";
 	GLScriptEngine scripter;
 
 	public void Create() {
@@ -43,12 +43,9 @@ public class GLDisplay {
 			Display.setDisplayMode(this.DISPLAYMODE);
 			Display.setResizable(RESIZABLE);
 			Display.setTitle(TITLE);
-			if(useAnitAliasing)
-			{
-				Display.create(new PixelFormat(anitAliasing[0], anitAliasing[1],anitAliasing[2],anitAliasing[3]));
-			}
-			else
-			{
+			if (useAnitAliasing) {
+				Display.create(new PixelFormat(anitAliasing[0], anitAliasing[1], anitAliasing[2], anitAliasing[3]));
+			} else {
 				Display.create();
 			}
 			this.setupGL();
@@ -74,10 +71,10 @@ public class GLDisplay {
 	private void setupGL() {
 		fps = new GLFramesPerSecond();
 		fps.start();
-		
+
 		scripter = new GLScriptEngine();
 		scripter.sendGlobals("this", CoerceJavaToLua.coerce(this));
-		
+
 		// this sets up the viewport for rendering.
 		this.SetupViewPort();
 		// System.out.println("Enagle:" + GL11.GL_BLEND);
@@ -87,10 +84,11 @@ public class GLDisplay {
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
-	public void write(String value)
-	{
+
+	public void write(String value) {
 		System.out.println(value);
 	}
+
 	public void glBlendFunc(int val1, int val2) {
 		GL11.glBlendFunc(val1, val2);
 	}
@@ -98,9 +96,11 @@ public class GLDisplay {
 	public void glShadeModel(int enableID) {
 		GL11.glShadeModel(enableID);
 	}
+
 	public void glEnable(int enableID) {
 		GL11.glEnable(enableID);
 	}
+
 	public void Update() {
 		GLFramesPerSecond.updateFPS();
 		Display.setTitle("FPS:" + fps.fps);

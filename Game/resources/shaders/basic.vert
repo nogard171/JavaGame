@@ -5,8 +5,8 @@ uniform vec3 position;
 void main(void)
 {
 	mat4x4 pos=mat4x4(1.0);
-    pos[3].x=position.x;
-    pos[3].y=position.y;
+    pos[3].x=position.x-16;
+    pos[3].y=position.y-16;
     pos[3].z=position.z;
 
 

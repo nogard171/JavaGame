@@ -52,33 +52,45 @@ public class Game extends GLDisplay {
 	@Override
 	public void Setup() {
 
-		/*
-		 * Random r = new Random(); int Low = 1; int High = 10;
-		 * 
-		 * // the generated grass globjects for (int x = 0; x < 10; x++) { for
-		 * (int y = 0; y < 10; y++) { GLPhysics physics3 = new GLPhysics();
-		 * GLMaterial mat = new GLMaterial("resources/textures/grass.png");
-		 * GLTransform transform = new GLTransform(x * 32, y * 32); GLShader
-		 * shader = new GLShader("basic.vert", "basic.frag"); GLRenderer
-		 * spriteRenderer = new GLRenderer(); GLObject obj = new GLObject();
-		 * obj.setName("Dirt"); obj.AddComponent(transform);
-		 * obj.AddComponent(mat); obj.AddComponent(shader);
-		 * obj.AddComponent(spriteRenderer); obj.AddComponent(physics3);
-		 * //mappedObjects.put(x + "," + y + ",0", obj);
-		 * 
-		 * int Result = r.nextInt(High - Low) + Low;
-		 * 
-		 * if (Result == 1) { mat = new
-		 * GLMaterial("resources/textures/tree.png");
-		 * 
-		 * GLObject tree = new GLObject(); tree.setName("tree");
-		 * tree.AddComponent(transform); tree.AddComponent(mat);
-		 * tree.AddComponent(shader); tree.AddComponent(spriteRenderer);
-		 * tree.AddComponent(physics3); mappedObjects.put(x + "," + y + ",1",
-		 * tree); }
-		 * 
-		 * } }
-		 */
+		Random r = new Random();
+		int Low = 1;
+		int High = 10;
+
+		// the generated grass globjects
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				GLPhysics physics3 = new GLPhysics();
+				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
+				GLTransform transform = new GLTransform(x * 32, y * 32);
+				GLShader shader = new GLShader("basic.vert", "basic.frag");
+				GLRenderer spriteRenderer = new GLRenderer();
+				GLObject obj = new GLObject();
+				obj.setName("Grass");
+				obj.AddComponent(transform);
+				obj.AddComponent(mat);
+				obj.AddComponent(shader);
+				obj.AddComponent(spriteRenderer);
+				obj.AddComponent(physics3);
+				mappedObjects.put(x + "," + y + ",0", obj);
+
+				int Result = r.nextInt(High - Low) + Low;
+
+				if (Result == 1) {
+					mat = new GLMaterial("resources/textures/tree.png");
+
+					GLObject tree = new GLObject();
+					tree.setName("tree");
+					tree.AddComponent(transform);
+					tree.AddComponent(mat);
+					tree.AddComponent(shader);
+					tree.AddComponent(spriteRenderer);
+					tree.AddComponent(physics3);
+					mappedObjects.put(x + "," + y + ",1", tree);
+				}
+
+			}
+		}
+
 		GLObject obj = new GLObject();
 
 		// the player globject
@@ -108,7 +120,7 @@ public class Game extends GLDisplay {
 		 * obj.AddProperty(health);
 		 */
 
-		obj.AddComponent(syncTransform);
+		//obj.AddComponent(syncTransform);
 
 		obj.AddComponent(physics);
 		obj.AddComponent(collider);
@@ -220,8 +232,6 @@ public class Game extends GLDisplay {
 			client.start();
 		}
 
-
-		// System.out.println("Size:" + objectInView.size());
 	}
 
 	GLServer server = null;
@@ -248,7 +258,7 @@ public class Game extends GLDisplay {
 				for (int y = (int) Math.floor(view.Y / 32); y < Math.ceil(view.Height / 32) + 1; y++) {
 					String key = (x) + "," + y + "," + z;
 					GLObject obj = mappedObjects.get(key);
-					if (glViewObjects.contains(obj)) {
+					if (!glViewObjects.contains(obj)) {
 						glViewObjects.add(obj);
 					}
 				}
@@ -308,9 +318,14 @@ public class Game extends GLDisplay {
 						float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
 						shader.sendUniform4f("vertColor", colorData);
 						shader.sendTexture("myTexture", mat.getTextureID());
+						
+						
+						float[] floatPosition = {transform.getPosition().getX() + transform.getCenter().getX(),
+								transform.getPosition().getY() + transform.getCenter().getY(), 0};						
+						shader.sendUniform3f("position", floatPosition);
 					}
 				}
-				if (transform != null) {
+				if (transform != null&&true==false) {
 					GL11.glPushMatrix();
 					GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),
 							transform.getPosition().getY() + transform.getCenter().getY(), 0);
@@ -324,7 +339,7 @@ public class Game extends GLDisplay {
 					shader.Stop();
 				}
 
-				if (transform != null) {
+				if (transform != null&&true==false) {
 					GL11.glPopMatrix();
 				}
 			}
