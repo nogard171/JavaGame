@@ -18,7 +18,7 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Game extends GLDisplay {
 
 	// int[][][] cubes;
-	Vector3f size = new Vector3f(10, 5, 10);
+	Vector3f size = new Vector3f(10, 1, 10);
 
 	GLCube[][][] cubes;
 
