@@ -32,7 +32,6 @@ import engine.GLRenderer;
 import engine.GLScript;
 import engine.GLShader;
 import engine.GLSize;
-import engine.GLSync;
 import engine.GLTransform;
 import engine.GLView;
 import engine.GLWindow;
@@ -41,6 +40,7 @@ import network.GLData;
 import network.GLMessage;
 import network.GLProtocol;
 import network.GLServer;
+import network.GLSync;
 import network.GLSyncTransform;
 
 public class Game extends GLDisplay {
@@ -120,7 +120,7 @@ public class Game extends GLDisplay {
 		 * obj.AddProperty(health);
 		 */
 
-		//obj.AddComponent(syncTransform);
+		obj.AddComponent(syncTransform);
 
 		obj.AddComponent(physics);
 		obj.AddComponent(collider);
@@ -204,6 +204,7 @@ public class Game extends GLDisplay {
 					sync.Run();
 					if (sync.syncNow()) {
 						objectsToSync.add(obj);
+						
 					}
 				}
 			}
@@ -215,11 +216,15 @@ public class Game extends GLDisplay {
 				if (sync != null) {
 					GLSyncTransform data = (GLSyncTransform) sync.data;
 					if (data != null) {
-						// System.out.println(data.position.toString());
+						System.out.println(data.position.toString());
 						client.sendGLData(data);
 					}
 				}
 			}
+			for (GLObject obj : client.objectsToSync) {
+				objectInView.add(obj);
+			}
+			client.objectsToSync.clear();
 		}
 		objectsToSync.clear();
 
@@ -332,8 +337,14 @@ public class Game extends GLDisplay {
 					GL11.glRotatef(transform.getRotation(), 0, 0, 1);
 					GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
 				}
-
-				spriteRenderer.Run();
+				if(spriteRenderer!=null)
+				{
+					spriteRenderer.Run();
+				}
+				else
+				{
+					
+				}
 
 				if (shader != null) {
 					shader.Stop();

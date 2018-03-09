@@ -1,16 +1,15 @@
-package engine;
+package network;
 
 import java.time.Instant;
 import java.util.Date;
 
-import network.GLData;
-import network.GLProtocol;
-import network.GLSyncTransform;
+import engine.GLComponent;
+import engine.GLTransform;
 
 public class GLSync extends GLComponent {
 	public GLData data = null;
 	public long previous = 1;
-	public int syncTime = 10000;
+	public int syncTime = 1000;
 	public boolean sync = false;
 	public boolean syncNow = false;
 	public boolean smartSync = false;
