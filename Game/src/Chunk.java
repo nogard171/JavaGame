@@ -6,9 +6,10 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 
 public class Chunk {
-	Vector3f position = new Vector3f(0,0,0);
+	int displayListHandle = -1;
+	Vector3f position = new Vector3f(0, 0, 0);
 	Material[][][] data;
-	Vector3f size =  new Vector3f(16,16,16);
+	Vector3f size = new Vector3f(16, 16, 16);
 	ArrayList<Material> cubes = new ArrayList<Material>();
 
 	public Chunk() {
@@ -18,17 +19,16 @@ public class Chunk {
 	public Chunk(int i, int j, int k) {
 		// TODO Auto-generated constructor stub
 		loadChunk();
-		position = new Vector3f(i,j,k);
+		position = new Vector3f(i, j, k);
 	}
-	
-	public void loadChunk()
-	{
+
+	public void loadChunk() {
 		data = new Material[(int) size.y][(int) size.x][(int) size.z];
 
 		for (int y = 0; y < size.y; y++) {
 			for (int x = 0; x < size.x; x++) {
 				for (int z = 0; z < size.z; z++) {
-					
+
 					data[y][x][z] = new Material();
 				}
 			}
@@ -36,20 +36,35 @@ public class Chunk {
 	}
 
 	public void renderChunk(float step) {
-		GL11.glPushMatrix();
-		GL11.glTranslatef(this.position.x, this.position.y, this.position.z);
-		for (int y = 0; y < size.y; y++) {
-			for (int x = 0; x < size.x; x++) {
-				for (int z = 0; z < size.z; z++) {
-					Material mat = data[y][x][z];
-					if (mat != null) {
-						renderCube(new Vector3f(x, y, z), step, mat);
-					}
+		if (displayListHandle == -1) {
 
+			displayListHandle = GL11.glGenLists(1);
+
+			// Start recording the new display list.
+			GL11.glNewList(displayListHandle, GL11.GL_COMPILE);
+
+			// End the recording of the current display list.
+
+			GL11.glPushMatrix();
+			GL11.glTranslatef(this.position.x, this.position.y, this.position.z);
+			for (int y = 0; y < size.y; y++) {
+				for (int x = 0; x < size.x; x++) {
+					for (int z = 0; z < size.z; z++) {
+						Material mat = data[y][x][z];
+						if (mat != null) {
+							renderCube(new Vector3f(x, y, z), step, mat);
+						}
+
+					}
 				}
 			}
+			GL11.glPopMatrix();
+
+			GL11.glEndList();
+		} else {
+			GL11.glCallList(displayListHandle);
 		}
-		GL11.glPopMatrix();
+
 	}
 
 	public void renderCube(Vector3f vec, float step, Material mat) {
