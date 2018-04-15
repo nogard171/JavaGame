@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -25,95 +26,70 @@ public class GLDisplay {
 	private int HEIGHT = 600;
 	private int FPS = 60;
 	private boolean FPS_LIMITER = false;
-	private String TITLE = "";
-	private DisplayMode DISPLAYMODE = null;
+	private String WINDOW_TITLE = "";
 	private boolean RESIZABLE = true;
 
-	GLFramesPerSecond fps;
 	protected boolean close = false;
-
-	Rectangle view = new Rectangle(0, 0, 400, 400);
 
 	public void Create() {
 		try {
-			this.DISPLAYMODE = new DisplayMode(WIDTH, HEIGHT);
-			Display.setDisplayMode(this.DISPLAYMODE);
-			Display.setResizable(RESIZABLE);
-			Display.setTitle(TITLE);
-			Display.create();
-			this.setupGL();
-			this.Setup();
-			while (!Display.isCloseRequested()) {
-				if (close) {
-					break;
-				}
-				
-				this.Update(fps.getDelta());
-				this.Render();
-				Display.update();
-				if (FPS_LIMITER) {
-					Display.sync(FPS);
-				}
-			}
+			PixelFormat pixelFormat = new PixelFormat();
+			ContextAttribs contextAtrributes = new ContextAttribs(3, 2).withForwardCompatible(true)
+					.withProfileCore(true);
+
+			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+			Display.setTitle(WINDOW_TITLE);
+			Display.create(pixelFormat, contextAtrributes);
+
+			GL11.glViewport(0, 0, WIDTH, HEIGHT);
 		} catch (LWJGLException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
+		// Setup an XNA like background color
+		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+
+		// Map the internal OpenGL coordinate system to the entire screen
+		GL11.glViewport(0, 0, WIDTH, HEIGHT);
+
+		this.setupGL();
+		this.Setup();
+		while (!Display.isCloseRequested()) {
+			if (close) {
+				break;
+			}
+
+			this.Update();
+			this.Render();
+			Display.update();
+			if (FPS_LIMITER) {
+				Display.sync(FPS);
+			}
 		}
 		this.Destroy();
 	}
 
 	private void setupGL() {
-		fps = new GLFramesPerSecond();
-		fps.start();
 		this.SetupViewPort();
-		fps.getDelta();
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
-	public void write(String value) {
-		System.out.println(value);
-	}
+	public void Update() {
 
-	public void glBlendFunc(int val1, int val2) {
-		GL11.glBlendFunc(val1, val2);
-	}
-
-	public void glShadeModel(int enableID) {
-		GL11.glShadeModel(enableID);
-	}
-
-	public void glEnable(int enableID) {
-		GL11.glEnable(enableID);
-	}
-
-	public void Update(float delta) {
-		GLFramesPerSecond.updateFPS();
-		Display.setTitle("FPS:" + fps.fps);
-		if (Display.wasResized()) {
-			this.SetupViewPort();
-		}
 	}
 
 	private void SetupViewPort() {
-		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
 
-		view.setSize(Display.getWidth()+64, Display.getHeight()+64);
 	}
 
 	public void Render() {
-		
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		
+
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 

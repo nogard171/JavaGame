@@ -1,14 +1,19 @@
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
@@ -17,240 +22,88 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Game extends GLDisplay {
 
-	// int[][][] cubes;
-	Vector3f size = new Vector3f(10, 1, 10);
-
-	GLCube[][][] cubes;
-
-	HashMap<String, GLTexture> textures = new HashMap<String, GLTexture>();
-
 	@Override
 	public void Setup() {
 		super.Setup();
-
-		shader = new GLShader("basic.vert", "basic.frag");
-		try {
-			texture = TextureLoader.getTexture("PNG",
-					ResourceLoader.getResourceAsStream("resources/textures/tileset.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		cubes = new GLCube[(int) size.x][100][(int) size.z];
-
-		for (int x = 0; x < size.x; x++) {
-			for (int z = 0; z < size.z; z++) {
-				for (int y = 0; y < size.y; y++) {
-					GLCube cube = new GLCube(x, y, z);
-
-					if (y < size.y - 1) {
-						cube.type = "STONE";
-					}
-
-					if (y == size.y) {
-						cube.type = "BLANK";
-					}
-					cubes[x][y][z] = cube;
-				}
-			}
-		}
-
-		level = (int) size.y;
-
-		String[] textureName = { "GRASS", "DIRT", "UNKNOWN", "STONE" };
-
-		ArrayList<GLTexture> texturesTemp = new ArrayList<GLTexture>();
-
-		texturesTemp.add(new GLTexture("GRASS", new Vector2f(0, 0)));
-		texturesTemp.add(new GLTexture("DIRT", new Vector2f(1, 0)));
-		texturesTemp.add(new GLTexture("UNKNOWN", new Vector2f(0, 1)));
-		texturesTemp.add(new GLTexture("STONE", new Vector2f(1, 1)));
-
-		for (int t = 0; t < texturesTemp.size(); t++) {
-			GLTexture LocalTexture = texturesTemp.get(t);
-
-			LocalTexture.dl = GL11.glGenLists(1);
-
-			// Start recording the new display list.
-			GL11.glNewList(LocalTexture.dl, GL11.GL_COMPILE);
-
-			// RenderCube(texture.top, texture.other);
-			RenderCube(LocalTexture.textureCoords, LocalTexture.size);
-
-			// End the recording of the current display list.
-			GL11.glEndList();
-
-			textures.put(LocalTexture.name, LocalTexture);
-		}
-
-		if (texture != null) {
-			shader.sendTexture("myTexture", texture.getTextureID());
-		}
-
-		checkSurroundings();
+		setupQuad();
 	}
-
-	Texture texture;
-
-	GLShader shader;
 
 	@Override
-	public void Update(float delta) {
-		super.Update(delta);
-
-		float speed = (delta + 1) * 0.5f;
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			view.x -= speed;
-			viewChanged = true;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			view.x += speed;
-			viewChanged = true;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			view.y += speed;
-			viewChanged = true;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			view.y -= speed;
-			viewChanged = true;
-		}
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-					super.close = true;
-				}
-			}
-		}
-		if (viewChanged) {
-			checkSurroundings();
-		}
+	public void Update() {
+		super.Update();
 	}
-
-	boolean viewChanged = false;
-
-	public void checkSurroundings() {
-
-		cubesToRender.clear();
-		for (int x = 0; x < size.x; x++) {
-			for (int z = 0; z < size.z; z++) {
-				int lowest = level - 5;
-				if (lowest < 0) {
-					lowest = 0;
-				}
-				lowest = 0;
-				for (int y = lowest; y < level; y++) {
-					GLCube cube = cubes[x][y][z];
-					if (cube != null) {
-						Vector3f count = getSurrounding(x, y, z);
-						if (count.getY() > 0) {
-							cube.visible = false;
-						}
-						if (view.contains(cube.position2D)) {
-
-							if (!count.equals(new Vector3f(1, 1, 1))) {
-								cubesToRender.add(cube);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public Vector3f getSurrounding(int x, int y, int z) {
-		Vector3f count = new Vector3f(0, 0, 0);
-
-		if (x + 1 < size.x) {
-			if (cubes[x + 1][y][z] != null) {
-				count.x = 1;
-			}
-		}
-		if (z + 1 < size.z) {
-			if (cubes[x][y][z + 1] != null) {
-				count.z = 1;
-			}
-		}
-
-		if (y + 1 < level) {
-			if (cubes[x][y + 1][z] != null) {
-				count.y = 1;
-			}
-		}
-
-		return count;
-	}
-
-	ArrayList<GLCube> cubesToRender = new ArrayList<GLCube>();
-
-	int level = 1;
-	boolean shaderRan = false;
 
 	@Override
 	public void Render() {
 		super.Render();
 
-		shader.Run();
-		if (cubesToRender.size() > 0) {
-			// if (!shaderRan) {
-			float[] colorData = { 1, 1, 1, 1 };
-			shader.sendUniform4f("vertColor", colorData);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-			// shaderRan = true;
-			// }
-			float[] viewPosition = { (float) (-view.getX() - 64), (float) (-view.getY() - 64) };
+		// Bind to the VAO that has all the information about the quad vertices
+		GL30.glBindVertexArray(vaoId);
+		GL20.glEnableVertexAttribArray(0);
 
-			shader.sendUniform2f("view", viewPosition);
+		// Draw the vertices
+		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, vertexCount);
 
-			for (GLCube cube : cubesToRender) {
+		// Put everything back to default (deselect)
+		GL20.glDisableVertexAttribArray(0);
+		GL30.glBindVertexArray(0);
 
-				float[] position = { (float) (cube.position.getX()), (float) (cube.position.getY()),
-						(float) cube.position.getZ() };
-
-				shader.sendUniform3f("position", position);
-
-				if (cube.type != "BLANK") {
-					GLTexture tempTexture = textures.get(cube.type);
-
-					if (!cube.visible) {
-						tempTexture = textures.get("UNKNOWN");
-					}
-
-					GL11.glCallList(tempTexture.dl);
-					/*
-					if (!cube.visible) {
-						 tempTexture =  textures.get("UNKNOWN");
-					}
-					
-					RenderCube(tempTexture.textureCoords,tempTexture.size);*/
-				}
-			}
-
-		}
-	}
-
-	public void RenderCube(Vector2f texture, Vector2f textureSize) {
-		GL11.glBegin(GL11.GL_QUADS);
-		// top
-		GL11.glTexCoord2f(0.5f * (texture.x), 0.5f * (texture.y + textureSize.y));
-		GL11.glVertex2f(0, 0);
-
-		GL11.glTexCoord2f(0.5f * (texture.x + textureSize.x), 0.5f * (texture.y + textureSize.y));
-		GL11.glVertex2f(64 * textureSize.x, 0);
-
-		GL11.glTexCoord2f(0.5f * (texture.x + textureSize.x), 0.5f * (texture.y));
-		GL11.glVertex2f(64 * textureSize.x, 64 * textureSize.y);
-
-		GL11.glTexCoord2f(0.5f * (texture.x), 0.5f * (texture.y));
-		GL11.glVertex2f(0, 64 * textureSize.y);
-
-		GL11.glEnd();
 	}
 
 	@Override
 	public void Destroy() {
 
+		GL20.glDisableVertexAttribArray(0);
+
+		// Delete the VBO
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL15.glDeleteBuffers(vboId);
+
+		// Delete the VAO
+		GL30.glBindVertexArray(0);
+		GL30.glDeleteVertexArrays(vaoId);
 		super.Destroy();
+	}
+
+	private int vaoId = 0;
+	private int vboId = 0;
+	private int vertexCount = 0;
+
+	public void setupQuad() {
+		// OpenGL expects vertices to be defined counter clockwise by default
+		float[] vertices = {
+				// Left bottom triangle
+				-0.5f, 0.5f, 0f, -0.5f, -0.5f, 0f, 0.5f, -0.5f, 0f,
+				// Right top triangle
+				0.5f, -0.5f, 0f, 0.5f, 0.5f, 0f, -0.5f, 0.5f, 0f };
+		// Sending data to OpenGL requires the usage of (flipped) byte buffers
+		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
+		verticesBuffer.put(vertices);
+		verticesBuffer.flip();
+
+		vertexCount = 6;
+
+		// Create a new Vertex Array Object in memory and select it (bind)
+		// A VAO can have up to 16 attributes (VBO's) assigned to it by default
+		vaoId = GL30.glGenVertexArrays();
+		GL30.glBindVertexArray(vaoId);
+
+		// Create a new Vertex Buffer Object in memory and select it (bind)
+		// A VBO is a collection of Vectors which in this case resemble the
+		// location of each vertex.
+		vboId = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verticesBuffer, GL15.GL_STATIC_DRAW);
+		// Put the VBO in the attributes list at index 0
+		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+		// Deselect (bind to 0) the VBO
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		// Deselect (bind to 0) the VAO
+		GL30.glBindVertexArray(0);
+
 	}
 
 }
