@@ -154,8 +154,9 @@ public class Game extends GLWindow
 					obj._type = "GRASSBLADES";
 					obj.SetPosition(x * 32, y * 32);
 					obj.setSize(32, 32);
-					objects.add(obj);
+					//objects.add(obj);
 				}
+				//test
 				
 				Result = r.nextInt(100 - 1) + 1;
 				if (Result <= 10&&obj.getType()=="SAND")
@@ -166,7 +167,7 @@ public class Game extends GLWindow
 					obj.SetPosition(x * 32, y * 32);
 					obj.setSolid(true);
 					obj.setSize(32, 32);
-					objects.add(obj);
+					//objects.add(obj);
 				}
 			}
 		}
