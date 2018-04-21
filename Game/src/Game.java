@@ -172,6 +172,7 @@ public class Game extends GLDisplay {
 		}
 		for (GLObject obj : objectToUpdate) {
 			if (obj != null) {
+				GLTransform transform = (GLTransform) obj.getComponent("transform");
 				GLScript script = (GLScript) obj.getComponent("script");
 				GLMaterial mat = (GLMaterial) obj.getComponent("material");
 				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
@@ -181,6 +182,10 @@ public class Game extends GLDisplay {
 				GLCollider collider = (GLCollider) obj.getComponent("collider");
 				GLSync sync = (GLSync) obj.getComponent("sync");
 
+				if(transform!=null)
+				{
+					transform.Update();
+				}
 				if (physics != null) {
 					physics.Run();
 				}

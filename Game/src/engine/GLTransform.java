@@ -4,6 +4,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class GLTransform extends GLComponent {
 	private Vector2f Position = new Vector2f(0, 0);
+	private Vector2f Velocity = new Vector2f(0, 0);
 	private float Rotation = 0;
 	private Vector2f Center = new Vector2f(16, 16);
 
@@ -54,11 +55,24 @@ public class GLTransform extends GLComponent {
 	}
 
 	public void Move(Vector2f directions) {
-		this.Position = new Vector2f(this.getPosition().getX() + directions.getX(),
-				this.getPosition().getY() + directions.getY());
+		this.setVelocity(new Vector2f(directions.x,directions.y));
 	}
 
 	public void Move(float x, float y) {
 		this.Move(new Vector2f(x, y));
+	}
+	
+	public void Update()
+	{
+		this.Position = new Vector2f(this.getPosition().getX() + this.getVelocity().getX(),
+				this.getPosition().getY() + this.getVelocity().getY());
+	}
+
+	public Vector2f getVelocity() {
+		return Velocity;
+	}
+
+	public void setVelocity(Vector2f velocity) {
+		Velocity = velocity;
 	}
 }
