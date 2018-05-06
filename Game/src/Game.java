@@ -39,7 +39,8 @@ public class Game extends GLDisplay {
 		
 		
 		obj = new GLObject(new GLObjectData());
-		obj.setupQuad();
+		//obj.setupQuad();
+		obj.setupInterleavedQuad();
 	}
 
 	@Override

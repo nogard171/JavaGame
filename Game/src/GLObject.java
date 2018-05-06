@@ -14,9 +14,8 @@ public class GLObject {
 	private int vboiId = 0;
 	private int vbocId = 0;
 	private int indicesCount = 0;
-	
-	public GLObject(GLObjectData newData)
-	{
+
+	public GLObject(GLObjectData newData) {
 		this.data = newData;
 	}
 
@@ -78,6 +77,59 @@ public class GLObject {
 		// Deselect (bind to 0) the VBO
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	}
+
+	public void setupInterleavedQuad() {
+		GLVertex v0 = new GLVertex();
+		v0.setXYZ(-0.5f, 0.5f, 0f);
+		v0.setRGB(1, 0, 0);
+		GLVertex v1 = new GLVertex();
+		v1.setXYZ(-0.5f, -0.5f, 0f);
+		v1.setRGB(0, 1, 0);
+		GLVertex v2 = new GLVertex();
+		v2.setXYZ(0.5f, -0.5f, 0f);
+		v2.setRGB(0, 0, 1);
+		GLVertex v3 = new GLVertex();
+		v3.setXYZ(0.5f, 0.5f, 0f);
+		v3.setRGB(1, 1, 1);
+
+		GLVertex[] vertices = new GLVertex[] { v0, v1, v2, v3 };
+		// Put each 'Vertex' in one FloatBuffer
+		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length * GLVertex.elementCount);
+		for (int i = 0; i < vertices.length; i++) {
+			verticesBuffer.put(vertices[i].getXYZW());
+			verticesBuffer.put(vertices[i].getRGBA());
+		}
+		verticesBuffer.flip();
+
+		// OpenGL expects to draw vertices in counter clockwise order by default
+		byte[] indices = { 0, 1, 2, 2, 3, 0 };
+		indicesCount = indices.length;
+		ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(indicesCount);
+		indicesBuffer.put(indices);
+		indicesBuffer.flip();
+
+		// Create a new Vertex Array Object in memory and select it (bind)
+		vaoId = GL30.glGenVertexArrays();
+		GL30.glBindVertexArray(vaoId);
+
+		// Create a new Vertex Buffer Object in memory and select it (bind)
+		vboId = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verticesBuffer, GL15.GL_STATIC_DRAW);
+		// Put the positions in attribute list 0
+		GL20.glVertexAttribPointer(0, 4, GL11.GL_FLOAT, false, GLVertex.sizeInBytes, 0);
+		// Put the colors in attribute list 1
+		GL20.glVertexAttribPointer(1, 4, GL11.GL_FLOAT, false, GLVertex.sizeInBytes, GLVertex.elementBytes * 4);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+		// Deselect (bind to 0) the VAO
+		GL30.glBindVertexArray(0);
+		// Create a new VBO for the indices and select it (bind) - INDICES
+		vboiId = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboiId);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	public void Render() {
