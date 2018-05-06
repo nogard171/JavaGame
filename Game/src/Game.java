@@ -17,104 +17,68 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Game extends GLDisplay {
 
-	// int[][][] cubes;
-	Vector3f size = new Vector3f(10, 1, 10);
-
-	GLCube[][][] cubes;
-
 	HashMap<String, GLTexture> textures = new HashMap<String, GLTexture>();
 
 	@Override
 	public void Setup() {
 		super.Setup();
-
+		GLShader shader = new GLDataHub().shader;
 		shader = new GLShader("basic.vert", "basic.frag");
 		try {
-			texture = TextureLoader.getTexture("PNG",
-					ResourceLoader.getResourceAsStream("resources/textures/tileset.png"));
+			new GLDataHub().texture = TextureLoader.getTexture("PNG",
+					ResourceLoader.getResourceAsStream("resources/textures/tiles.png"));
+			shader.sendTexture("myTexture", new GLDataHub().texture.getTextureID());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		cubes = new GLCube[(int) size.x][100][(int) size.z];
+		new GLDataHub().shader = shader;
+		new GLDataHub().models.put("GRASS", new GLLoader().loadModel("ground.obj"));
+		new GLDataHub().models.put("PLAYER", new GLLoader().loadModel("player.obj"));
+		new GLDataHub().camera = new GLCamera(Display.getWidth(), Display.getHeight());
+		new GLDataHub().chunkManager = new GLChunkManager();
+		// model = new GLLoader().loadModel("ground.obj");
+		GLChunk chunk = new GLChunk(0, 0, 10, 10);
+		chunk.data[0][4].objects.add(new GLObject("PLAYER", "PLAYER"));
 
-		for (int x = 0; x < size.x; x++) {
-			for (int z = 0; z < size.z; z++) {
-				for (int y = 0; y < size.y; y++) {
-					GLCube cube = new GLCube(x, y, z);
-
-					if (y < size.y - 1) {
-						cube.type = "STONE";
-					}
-
-					if (y == size.y) {
-						cube.type = "BLANK";
-					}
-					cubes[x][y][z] = cube;
-				}
+		new GLDataHub().chunks.add(chunk);
+		
+		for(int x=0;x<10;x++)
+		{
+			for(int y=0;y<10;y++)
+			{
+				new GLDataHub().chunks.add(new GLChunk(x*10, y*10, 10, 10));
 			}
 		}
-
-		level = (int) size.y;
-
-		String[] textureName = { "GRASS", "DIRT", "UNKNOWN", "STONE" };
-
-		ArrayList<GLTexture> texturesTemp = new ArrayList<GLTexture>();
-
-		texturesTemp.add(new GLTexture("GRASS", new Vector2f(0, 0)));
-		texturesTemp.add(new GLTexture("DIRT", new Vector2f(1, 0)));
-		texturesTemp.add(new GLTexture("UNKNOWN", new Vector2f(0, 1)));
-		texturesTemp.add(new GLTexture("STONE", new Vector2f(1, 1)));
-
-		for (int t = 0; t < texturesTemp.size(); t++) {
-			GLTexture LocalTexture = texturesTemp.get(t);
-
-			LocalTexture.dl = GL11.glGenLists(1);
-
-			// Start recording the new display list.
-			GL11.glNewList(LocalTexture.dl, GL11.GL_COMPILE);
-
-			// RenderCube(texture.top, texture.other);
-			RenderCube(LocalTexture.textureCoords, LocalTexture.size);
-
-			// End the recording of the current display list.
-			GL11.glEndList();
-
-			textures.put(LocalTexture.name, LocalTexture);
-		}
-
-		if (texture != null) {
-			shader.sendTexture("myTexture", texture.getTextureID());
-		}
-
-		checkSurroundings();
 	}
 
-	Texture texture;
-
-	GLShader shader;
+	@Override
+	public void UpdateWindow(int width, int height) {
+		new GLDataHub().camera.size = new Vector2f(width, height);
+	}
 
 	@Override
 	public void Update(float delta) {
 		super.Update(delta);
-
+		GLCamera camera = new GLDataHub().camera;
+		new GLDataHub().chunkManager.Update();
 		float speed = (delta + 1) * 0.5f;
 
+		float xSpeed = 0;
+		float ySpeed = 0;
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			view.x -= speed;
-			viewChanged = true;
+			xSpeed = speed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			view.x += speed;
-			viewChanged = true;
+			xSpeed = -speed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			view.y += speed;
-			viewChanged = true;
+			ySpeed = speed;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			view.y -= speed;
-			viewChanged = true;
+			ySpeed = -speed;
 		}
+		camera.Move(new Vector2f(xSpeed, ySpeed));
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
 				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
@@ -122,129 +86,30 @@ public class Game extends GLDisplay {
 				}
 			}
 		}
-		if (viewChanged) {
-			checkSurroundings();
-		}
 	}
-
-	boolean viewChanged = false;
-
-	public void checkSurroundings() {
-
-		cubesToRender.clear();
-		for (int x = 0; x < size.x; x++) {
-			for (int z = 0; z < size.z; z++) {
-				int lowest = level - 5;
-				if (lowest < 0) {
-					lowest = 0;
-				}
-				lowest = 0;
-				for (int y = lowest; y < level; y++) {
-					GLCube cube = cubes[x][y][z];
-					if (cube != null) {
-						Vector3f count = getSurrounding(x, y, z);
-						if (count.getY() > 0) {
-							cube.visible = false;
-						}
-						if (view.contains(cube.position2D)) {
-
-							if (!count.equals(new Vector3f(1, 1, 1))) {
-								cubesToRender.add(cube);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public Vector3f getSurrounding(int x, int y, int z) {
-		Vector3f count = new Vector3f(0, 0, 0);
-
-		if (x + 1 < size.x) {
-			if (cubes[x + 1][y][z] != null) {
-				count.x = 1;
-			}
-		}
-		if (z + 1 < size.z) {
-			if (cubes[x][y][z + 1] != null) {
-				count.z = 1;
-			}
-		}
-
-		if (y + 1 < level) {
-			if (cubes[x][y + 1][z] != null) {
-				count.y = 1;
-			}
-		}
-
-		return count;
-	}
-
-	ArrayList<GLCube> cubesToRender = new ArrayList<GLCube>();
-
-	int level = 1;
-	boolean shaderRan = false;
 
 	@Override
 	public void Render() {
 		super.Render();
+		GLCamera camera = new GLDataHub().camera;
+		GLShader shader = new GLDataHub().shader;
+		ArrayList<GLChunk> chunkToRender = new GLDataHub().chunkToRender;
 
 		shader.Run();
-		if (cubesToRender.size() > 0) {
-			// if (!shaderRan) {
-			float[] colorData = { 1, 1, 1, 1 };
-			shader.sendUniform4f("vertColor", colorData);
 
-			// shaderRan = true;
-			// }
-			float[] viewPosition = { (float) (-view.getX() - 64), (float) (-view.getY() - 64) };
+		float[] colorData = { 1, 1, 1, 1 };
+		shader.sendUniform4f("vertColor", colorData);
 
-			shader.sendUniform2f("view", viewPosition);
+		float[] viewPosition = { camera.position.x, camera.position.y, 0 };
 
-			for (GLCube cube : cubesToRender) {
+		shader.sendUniform2f("view", viewPosition);
+		// chunk.Render();
 
-				float[] position = { (float) (cube.position.getX()), (float) (cube.position.getY()),
-						(float) cube.position.getZ() };
+		for (GLChunk chunk : chunkToRender) {
 
-				shader.sendUniform3f("position", position);
-
-				if (cube.type != "BLANK") {
-					GLTexture tempTexture = textures.get(cube.type);
-
-					if (!cube.visible) {
-						tempTexture = textures.get("UNKNOWN");
-					}
-
-					GL11.glCallList(tempTexture.dl);
-					/*
-					if (!cube.visible) {
-						 tempTexture =  textures.get("UNKNOWN");
-					}
-					
-					RenderCube(tempTexture.textureCoords,tempTexture.size);*/
-				}
-			}
-
+			chunk.Render();
 		}
-	}
 
-	public void RenderCube(Vector2f texture, Vector2f textureSize) {
-		GL11.glBegin(GL11.GL_QUADS);
-		// top
-		GL11.glTexCoord2f(0.5f * (texture.x), 0.5f * (texture.y + textureSize.y));
-		GL11.glVertex2f(0, 0);
-
-		GL11.glTexCoord2f(0.5f * (texture.x + textureSize.x), 0.5f * (texture.y + textureSize.y));
-		GL11.glVertex2f(64 * textureSize.x, 0);
-
-		GL11.glTexCoord2f(0.5f * (texture.x + textureSize.x), 0.5f * (texture.y));
-		GL11.glVertex2f(64 * textureSize.x, 64 * textureSize.y);
-
-		GL11.glTexCoord2f(0.5f * (texture.x), 0.5f * (texture.y));
-		GL11.glVertex2f(0, 64 * textureSize.y);
-
-		GL11.glEnd();
 	}
 
 	@Override

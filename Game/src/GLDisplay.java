@@ -47,6 +47,7 @@ public class GLDisplay {
 				if (close) {
 					break;
 				}
+				UpdateWindow(Display.getWidth(),Display.getHeight());
 				
 				this.Update(fps.getDelta());
 				this.Render();
@@ -102,11 +103,14 @@ public class GLDisplay {
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, Display.getWidth(), 0, Display.getHeight(), 1, -1);
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-
-		view.setSize(Display.getWidth()+64, Display.getHeight()+64);
+		
+	}
+	public void UpdateWindow(int width, int height)
+	{
+		
 	}
 
 	public void Render() {
