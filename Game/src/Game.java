@@ -32,9 +32,6 @@ public class Game extends GLDisplay {
 			e.printStackTrace();
 		}
 		new GLDataHub().shader = shader;
-		new GLDataHub().models.put("GRASS", new GLLoader().loadModel("ground.obj"));
-		new GLDataHub().models.put("PLAYER", new GLLoader().loadModel("player.obj"));
-		new GLDataHub().camera = new GLCamera(Display.getWidth(), Display.getHeight());
 
 	}
 
@@ -89,7 +86,7 @@ public class Game extends GLDisplay {
 
 		shader.sendUniform2f("view", viewPosition);
 
-		GL11.glCallList(new GLDataHub().models.get("GRASS").displayListID);
+		
 	}
 
 	@Override
