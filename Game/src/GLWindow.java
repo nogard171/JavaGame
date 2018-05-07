@@ -30,6 +30,7 @@ public class GLWindow {
 	long lastFrame;
 	int fps;
 	long lastFPS;
+	float currentFPS = 0;
 	// inputs
 	MouseInput mouse = null;
 	KeyboardInput keyboard = null;
@@ -69,7 +70,7 @@ public class GLWindow {
 	}
 
 	public void Update(int delta) {
-Display.setTitle("FPS:"+this._fps);
+Display.setTitle("FPS:"+this.currentFPS);
 		this.keyboard.startPoll();
 		this.mouse.poll(this._height);
 		this.updateFPS(); // update FPS Counter
@@ -167,6 +168,7 @@ Display.setTitle("FPS:"+this._fps);
 	public void updateFPS() {
 		if (this.getTime() - this.lastFPS > 1000) {
 			//Display.setTitle("FPS: " + fps);
+			this.currentFPS= this.fps;
 			this.fps = 0;
 			this.lastFPS += 1000;
 		}
