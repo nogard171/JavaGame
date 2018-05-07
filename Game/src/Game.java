@@ -35,20 +35,7 @@ public class Game extends GLDisplay {
 		new GLDataHub().models.put("GRASS", new GLLoader().loadModel("ground.obj"));
 		new GLDataHub().models.put("PLAYER", new GLLoader().loadModel("player.obj"));
 		new GLDataHub().camera = new GLCamera(Display.getWidth(), Display.getHeight());
-		new GLDataHub().chunkManager = new GLChunkManager();
-		// model = new GLLoader().loadModel("ground.obj");
-		GLChunk chunk = new GLChunk(0, 0, 10, 10);
-		chunk.data[0][4].objects.add(new GLObject("PLAYER", "PLAYER"));
 
-		new GLDataHub().chunks.add(chunk);
-		
-		for(int x=0;x<10;x++)
-		{
-			for(int y=0;y<10;y++)
-			{
-				new GLDataHub().chunks.add(new GLChunk(x*10, y*10, 10, 10));
-			}
-		}
 	}
 
 	@Override
@@ -60,7 +47,6 @@ public class Game extends GLDisplay {
 	public void Update(float delta) {
 		super.Update(delta);
 		GLCamera camera = new GLDataHub().camera;
-		new GLDataHub().chunkManager.Update();
 		float speed = (delta + 1) * 0.5f;
 
 		float xSpeed = 0;
@@ -93,7 +79,6 @@ public class Game extends GLDisplay {
 		super.Render();
 		GLCamera camera = new GLDataHub().camera;
 		GLShader shader = new GLDataHub().shader;
-		ArrayList<GLChunk> chunkToRender = new GLDataHub().chunkToRender;
 
 		shader.Run();
 
@@ -103,13 +88,8 @@ public class Game extends GLDisplay {
 		float[] viewPosition = { camera.position.x, camera.position.y, 0 };
 
 		shader.sendUniform2f("view", viewPosition);
-		// chunk.Render();
 
-		for (GLChunk chunk : chunkToRender) {
-
-			chunk.Render();
-		}
-
+		GL11.glCallList(new GLDataHub().models.get("GRASS").displayListID);
 	}
 
 	@Override

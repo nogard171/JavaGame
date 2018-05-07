@@ -31,21 +31,4 @@ public class GLCamera {
 			changed = false;
 		}			
 	}
-
-	public boolean containsChunk(GLChunk chunk)
-	{
-		boolean contains = false;
-		
-		Rectangle rec = new Rectangle((int)this.position.x,(int)this.position.y,(int)this.size.x,(int)this.size.y);
-		
-		float newX = ((chunk.position.x) * 32) - ((chunk.position.y) * 32);
-		float newY = ((chunk.position.y) * 16) + ((chunk.position.x) * 16);
-		System.out.println(newX+","+newY);
-		if(rec.intersects(new Rectangle(-(int)newX+((int)size.getX()-(10*32)), -(int)newY+((int)size.getY()-(10*32)),10*64,10*64)))
-		{
-			contains = true;
-		}
-		
-		return contains;
-	}
 }
