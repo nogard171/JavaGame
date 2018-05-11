@@ -1,4 +1,4 @@
-
+package utils;
 
 import org.lwjgl.Sys;
 

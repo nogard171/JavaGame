@@ -15,35 +15,41 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
+import classes.GLObject;
+import classes.GLSize;
+import classes.GLSprite;
+import classes.GLVelocity;
+import engine.GLCamera;
+import engine.GLDisplay;
+import engine.GLShader;
+import utils.GLLoader;
+
 public class Game extends GLDisplay {
 
-	HashMap<String, GLTexture> textures = new HashMap<String, GLTexture>();
+	GLShader shader;
+	GLCamera camera;
 
 	@Override
 	public void Setup() {
 		super.Setup();
-		GLShader shader = new GLDataHub().shader;
+		camera = new GLCamera(800, 600);
 		shader = new GLShader("basic.vert", "basic.frag");
-		try {
-			new GLDataHub().texture = TextureLoader.getTexture("PNG",
-					ResourceLoader.getResourceAsStream("resources/textures/tiles.png"));
-			shader.sendTexture("myTexture", new GLDataHub().texture.getTextureID());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		new GLDataHub().shader = shader;
 
+		sprite = new GLLoader().getSprite("resources/textures/bg.png");
 	}
+
+	GLObject obj = new GLObject();
+
+	GLSprite sprite;
 
 	@Override
 	public void UpdateWindow(int width, int height) {
-		new GLDataHub().camera.size = new Vector2f(width, height);
+		camera.size = new GLSize(width, height);
 	}
 
 	@Override
 	public void Update(float delta) {
 		super.Update(delta);
-		GLCamera camera = new GLDataHub().camera;
 		float speed = (delta + 1) * 0.5f;
 
 		float xSpeed = 0;
@@ -61,7 +67,7 @@ public class Game extends GLDisplay {
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			ySpeed = -speed;
 		}
-		camera.Move(new Vector2f(xSpeed, ySpeed));
+		camera.Move(new GLVelocity(xSpeed, ySpeed));
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
 				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
@@ -74,9 +80,6 @@ public class Game extends GLDisplay {
 	@Override
 	public void Render() {
 		super.Render();
-		GLCamera camera = new GLDataHub().camera;
-		GLShader shader = new GLDataHub().shader;
-
 		shader.Run();
 
 		float[] colorData = { 1, 1, 1, 1 };
@@ -86,7 +89,9 @@ public class Game extends GLDisplay {
 
 		shader.sendUniform2f("view", viewPosition);
 
-		
+		shader.sendTexture("myTexture", sprite.textureID);
+
+		GL11.glCallList(sprite.displayLists);
 	}
 
 	@Override
