@@ -1,0 +1,19 @@
+<sprites>
+	<sprite name='GRASS' width='32' height='32'>
+		<src>resources/sprites/tiles.png</src>
+		<x>0</x>
+		<y>0</y>
+		<width>0.5</width>
+		<height>0.5</height>
+	</sprite>
+	<sprite name='DIRT' width='32' height='32'>
+		<src>resources/sprites/tiles.png</src>
+		<x>0.5</x>
+		<y>0</y>
+		<width>0.5</width>
+		<height>0.5</height>
+	</sprite>
+	<sprite name='BG'>
+		<src>resources/sprites/bg.jpg</src>
+	</sprite>
+</sprites>

@@ -1,3 +1,4 @@
+package game;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -36,6 +37,9 @@ public class Game extends GLDisplay {
 		shader = new GLShader("basic.vert", "basic.frag");
 
 		sprite = new GLLoader().getSprite("resources/textures/bg.png");
+		
+		new GLLoader().loadSprites();
+		
 	}
 
 	GLObject obj = new GLObject();
@@ -89,9 +93,9 @@ public class Game extends GLDisplay {
 
 		shader.sendUniform2f("view", viewPosition);
 
-		shader.sendTexture("myTexture", sprite.textureID);
+		shader.sendTexture("myTexture", new GLData().sprites.get("BG").textureID);
 
-		GL11.glCallList(sprite.displayLists);
+		GL11.glCallList(new GLData().sprites.get("BG").displayLists);
 	}
 
 	@Override
