@@ -22,6 +22,7 @@ import classes.GLPosition;
 import classes.GLSize;
 import classes.GLSprite;
 import classes.GLSpriteData;
+import engine.GLRenderer;
 import game.GLData;
 
 public class GLLoader {
@@ -64,32 +65,46 @@ public class GLLoader {
 					String src = srcList.item(0).getChildNodes().item(0).getNodeValue();
 					data.source = src;
 
-					NodeList xList = eElement.getElementsByTagName("x");
-					String x = "0";
-					if (xList != null && xList.getLength() > 0) {
-						x = xList.item(0).getChildNodes().item(0).getNodeValue();
-					}
+					if (new File(data.source).exists()) {
 
-					NodeList yList = eElement.getElementsByTagName("y");
-					String y = "0";
-					if (yList != null && xList.getLength() > 0) {
-						y = xList.item(0).getChildNodes().item(0).getNodeValue();
-					}
-					data.texturePosition = new GLPosition(Float.parseFloat(x), Float.parseFloat(y));
+						Texture a = null;
+						try {
+							a = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(data.source));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 
-					NodeList widthList = eElement.getElementsByTagName("width");
-					String width = "1";
-					if (widthList != null && widthList.getLength() > 0) {
-						width = widthList.item(0).getChildNodes().item(0).getNodeValue();
-					}
+						NodeList xList = eElement.getElementsByTagName("x");
+						float x = 0;
+						if (xList != null && xList.getLength() > 0) {
+							x = Float.parseFloat(xList.item(0).getChildNodes().item(0).getNodeValue())
+									/ a.getTextureWidth();
+						}
 
-					NodeList heightList = eElement.getElementsByTagName("height");
-					String height = "1";
-					if (heightList != null && heightList.getLength() > 0) {
-						height = heightList.item(0).getChildNodes().item(0).getNodeValue();
+						NodeList yList = eElement.getElementsByTagName("y");
+						float y = 0;
+						if (yList != null && xList.getLength() > 0) {
+							y = Float.parseFloat(yList.item(0).getChildNodes().item(0).getNodeValue())
+									/ a.getTextureHeight();
+						}
+						data.texturePosition = new GLPosition(x, y);
+
+						NodeList widthList = eElement.getElementsByTagName("width");
+						float width = 1;
+						if (widthList != null && widthList.getLength() > 0) {
+							width = Float.parseFloat(widthList.item(0).getChildNodes().item(0).getNodeValue())
+									/ a.getTextureWidth();
+						}
+
+						NodeList heightList = eElement.getElementsByTagName("height");
+						float height = 1;
+						if (heightList != null && heightList.getLength() > 0) {
+							height = Float.parseFloat(heightList.item(0).getChildNodes().item(0).getNodeValue())
+									/ a.getTextureHeight();
+						}
+						data.textureSize = new GLSize(width, height);
+						spriteData.add(data);
 					}
-					data.textureSize = new GLSize(Float.parseFloat(width), Float.parseFloat(height));
-					spriteData.add(data);
 				}
 			}
 
@@ -115,8 +130,9 @@ public class GLLoader {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if (sprite.size.equals(new GLSize(-1, -1))) {
-				sprite.size = new GLSize(texture.getImageWidth(), texture.getImageHeight());
+			if (data.size.width == -1 || data.size.height == -1) {
+
+				data.size = new GLSize(texture.getTextureWidth(), texture.getTextureHeight());
 			}
 
 			sprite.textureID = texture.getTextureID();
@@ -127,7 +143,7 @@ public class GLLoader {
 
 			// RenderSprite(32, 32);
 
-			RenderSubSprite(data);
+			new GLRenderer().RenderSubSprite(data);
 
 			GL11.glEndList();
 
@@ -153,7 +169,7 @@ public class GLLoader {
 
 		GL11.glNewList(displayList, GL11.GL_COMPILE);
 
-		RenderSprite(32, 32);
+		new GLRenderer().RenderSprite(32, 32);
 
 		GL11.glEndList();
 
@@ -162,41 +178,4 @@ public class GLLoader {
 		return sprite;
 	}
 
-	public static void RenderSprite(int width, int height) {
-		GL11.glBegin(GL11.GL_QUADS);
-
-		GL11.glTexCoord2f(0, 0);
-		GL11.glVertex2i(0, 0);
-
-		GL11.glTexCoord2f(1, 0);
-		GL11.glVertex2i(width, 0);
-
-		GL11.glTexCoord2f(1, 1);
-		GL11.glVertex2i(width, height);
-
-		GL11.glTexCoord2f(0, 1);
-		GL11.glVertex2i(0, height);
-
-		GL11.glEnd();
-	}
-
-	public static void RenderSubSprite(GLSpriteData SpriteData) {
-
-		GL11.glBegin(GL11.GL_QUADS);
-
-		GL11.glTexCoord2f(SpriteData.texturePosition.x, SpriteData.texturePosition.y);
-		GL11.glVertex2f(0, 0);
-
-		GL11.glTexCoord2f(SpriteData.texturePosition.x + SpriteData.textureSize.width, SpriteData.texturePosition.y);
-		GL11.glVertex2f(+SpriteData.size.width, 0);
-
-		GL11.glTexCoord2f(SpriteData.texturePosition.x + SpriteData.textureSize.width,
-				SpriteData.texturePosition.y + SpriteData.textureSize.height);
-		GL11.glVertex2f(+SpriteData.size.width, +SpriteData.size.height);
-
-		GL11.glTexCoord2f(SpriteData.texturePosition.x, SpriteData.texturePosition.y + SpriteData.textureSize.height);
-		GL11.glVertex2f(0, +SpriteData.size.height);
-
-		GL11.glEnd();
-	}
 }
