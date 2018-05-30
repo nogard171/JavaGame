@@ -3,15 +3,38 @@ package engine;
 import org.lwjgl.opengl.GL11;
 
 import classes.GLChunk;
+import classes.GLMaterialData;
+import classes.GLModel;
+import classes.GLModelData;
+import classes.GLObject;
+import classes.GLPosition;
 import classes.GLSpriteData;
+import game.GLData;
 
 public class GLRenderer {
 
 	public static void RenderChunk(GLChunk chunk) {
-		if (chunk.chunkDisplayList == -1) {
-			chunk.chunkDisplayList = GL11.glGenLists(1);
+		GLShader shader = new GLData().shader;
+		if (shader != null) {
+			if (chunk.chunkDisplayList == -1) {
 
-			GL11.glNewList(chunk.chunkDisplayList, GL11.GL_COMPILE);
+				chunk.chunkDisplayList = GL11.glGenLists(1);
+
+				GL11.glNewList(chunk.chunkDisplayList, GL11.GL_COMPILE);
+				for (GLObject obj : chunk.objects) {
+					float[] position = { obj.position.getX(), obj.position.getY() };
+
+					GLModel model = new GLData().models.get(obj.type);
+
+					shader.sendUniform2f("position", position);
+					shader.sendTexture("myTexture", model.textureID);
+					GL11.glCallList(model.displayList);
+				}
+				GL11.glEndList();
+
+			} else {
+				GL11.glCallList(chunk.chunkDisplayList);
+			}
 		}
 	}
 
@@ -50,6 +73,20 @@ public class GLRenderer {
 		GL11.glTexCoord2f(SpriteData.texturePosition.x, SpriteData.texturePosition.y + SpriteData.textureSize.height);
 		GL11.glVertex2f(0, SpriteData.size.height);
 
+		GL11.glEnd();
+	}
+
+	public static void RenderModel(GLModelData modelData, GLMaterialData materialData) {
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		for (int i = 0; i < modelData.indices.size(); i++) {
+			Byte indice = modelData.indices.get(i);
+			Byte textureIndice = materialData.textureIndices.get(i);
+			GLPosition vector = modelData.vectors.get(indice);
+			GLPosition textureVector = materialData.textureVectors.get(textureIndice);
+
+			GL11.glTexCoord2f(textureVector.x, textureVector.y);
+			GL11.glVertex2f(vector.x, vector.y);
+		}
 		GL11.glEnd();
 	}
 }
