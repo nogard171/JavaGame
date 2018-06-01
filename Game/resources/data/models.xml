@@ -1,6 +1,6 @@
 <models>
 	<model name='GRASS' mat='resources/material/grass.mat'
-		obj='resources/models/cube.obj' />
+		obj='resources/models/tile.obj' />
 	<model name='DIRT' mat='resources/material/dirt.mat'
 		obj='resources/models/cube.obj' />
 </models>

@@ -1,5 +1,8 @@
 package engine;
 
+import java.awt.Point;
+
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import classes.GLChunk;

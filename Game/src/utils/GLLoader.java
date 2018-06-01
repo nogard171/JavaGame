@@ -1,5 +1,6 @@
 package utils;
 
+import java.awt.Polygon;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -263,6 +264,10 @@ public class GLLoader {
 
 		ArrayList<GLPosition> newVectors = new ArrayList<GLPosition>();
 		ArrayList<Byte> newIndices = new ArrayList<Byte>();
+
+		ArrayList<GLPosition> newBoundVectors = new ArrayList<GLPosition>();
+		ArrayList<Byte> newBoundIndices = new ArrayList<Byte>();
+
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(modelFilename));
@@ -285,6 +290,12 @@ public class GLLoader {
 						newIndices.add(Byte.parseByte(data[3]));
 
 					}
+					if (constructor.startsWith("bi")) {
+						newBoundIndices.add(Byte.parseByte(data[1]));
+					}
+					if (constructor.startsWith("bv")) {
+						newBoundVectors.add(new GLPosition(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
+					}
 				}
 				line = br.readLine();
 
@@ -299,7 +310,6 @@ public class GLLoader {
 
 		modelData.vectors = newVectors;
 		modelData.indices = newIndices;
-
 		return modelData;
 	}
 
