@@ -59,7 +59,7 @@ public class Game extends GLDisplay {
 	public void Render() {
 		super.Render();
 		shader.Use();
-		
+	
 		
 		
 		obj.Render();
