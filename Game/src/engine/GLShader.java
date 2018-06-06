@@ -33,7 +33,7 @@ public class GLShader extends GLComponent {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		newShaderId = GL20.glCreateShader(shader);// GL20.GL_VERTEX_SHADER);
+		newShaderId = GL20.glCreateShader(shader);
 		GL20.glShaderSource(newShaderId, shaderFile);
 		GL20.glCompileShader(newShaderId);
 		return newShaderId;
@@ -78,11 +78,11 @@ public class GLShader extends GLComponent {
 			GL20.glAttachShader(programID, vertexShader);
 			GL20.glLinkProgram(programID);
 		}
+
 		GL20.glUseProgram(programID);
 	}
-	
-	public void Stop()
-	{
+
+	public void Stop() {
 		GL20.glUseProgram(0);
 	}
 

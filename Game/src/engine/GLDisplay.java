@@ -81,6 +81,7 @@ public class GLDisplay {
 		fps.getDelta();
 		scripter.loadScript(systemEnableFile);
 		scripter.run();
+
 		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}

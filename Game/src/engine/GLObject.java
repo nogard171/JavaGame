@@ -12,6 +12,8 @@ public class GLObject {
 	private HashMap<String, GLProperty> properties = new HashMap<String, GLProperty>();
 	private String Name = "";
 	private GLObjectType type = GLObjectType.BLANK;
+	
+	public int display = -1;
 
 	public String getName() {
 		return this.Name;

@@ -1,6 +1,6 @@
 dofile "system/scripts/keyboard_keys.lua"
 function setup()
-	this:write("health:")
+	
 end
 function update()
 	

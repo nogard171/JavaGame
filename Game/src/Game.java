@@ -57,11 +57,11 @@ public class Game extends GLDisplay {
 		int High = 10;
 
 		// the generated grass globjects
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
+		for (int x = 0; x < 40; x++) {
+			for (int y = 0; y < 40; y++) {
 				GLPhysics physics3 = new GLPhysics();
 				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
-				GLTransform transform = new GLTransform(x * 32, y * 32);
+				GLTransform transform = new GLTransform(x * 32, -y * 32);
 				GLShader shader = new GLShader("basic.vert", "basic.frag");
 				GLRenderer spriteRenderer = new GLRenderer();
 				GLObject obj = new GLObject();
@@ -71,7 +71,7 @@ public class Game extends GLDisplay {
 				obj.AddComponent(shader);
 				obj.AddComponent(spriteRenderer);
 				obj.AddComponent(physics3);
-				mappedObjects.put(x + "," + y + ",0", obj);
+				mappedObjects.put(x + "," + -y + ",0", obj);
 
 				int Result = r.nextInt(High - Low) + Low;
 
@@ -85,7 +85,7 @@ public class Game extends GLDisplay {
 					tree.AddComponent(shader);
 					tree.AddComponent(spriteRenderer);
 					tree.AddComponent(physics3);
-					mappedObjects.put(x + "," + y + ",1", tree);
+					mappedObjects.put(x + "," + -y + ",1", tree);
 				}
 
 			}
@@ -139,10 +139,10 @@ public class Game extends GLDisplay {
 		// the window globject
 
 		/*
-		 * GLMaterial winmat = new GLMaterial("resources/textures/gui.png");
-		 * GLTransform wintransform = new GLTransform(200, 200); GLRenderer
-		 * winspriteRenderer = new GLRenderer(); GLShader winshader = new
-		 * GLShader("window.vert", "window.frag");
+		 * GLMaterial winmat = new GLMaterial("resources/textures/gui.png"); GLTransform
+		 * wintransform = new GLTransform(200, 200); GLRenderer winspriteRenderer = new
+		 * GLRenderer(); GLShader winshader = new GLShader("window.vert",
+		 * "window.frag");
 		 * 
 		 * GLWindow win = new GLWindow(); GLClickable clickable = new
 		 * GLClickable("resources/scripts/clickableScript.lua");
@@ -166,7 +166,7 @@ public class Game extends GLDisplay {
 	public void Update() {
 		super.Update();
 		if (Display.getWidth() != view.Width || Display.getHeight() != view.Height || view.update) {
-			view = new GLView(0, 0, Display.getWidth(), Display.getHeight());
+			view = new GLView(view.X,view.Y, Display.getWidth(), Display.getHeight());
 			objectInView.clear();
 			this.objectInView = getViewObjects();
 		}
@@ -182,15 +182,14 @@ public class Game extends GLDisplay {
 				GLCollider collider = (GLCollider) obj.getComponent("collider");
 				GLSync sync = (GLSync) obj.getComponent("sync");
 
-				if(transform!=null)
-				{
+				if (transform != null) {
 					transform.Update();
 				}
 				if (physics != null) {
 					physics.Run();
 				}
 				if (collider != null) {
-					// collider.Run(objectToUpdate);
+					collider.Run(objectToUpdate);
 				}
 				if (win != null) {
 					win.Run();
@@ -209,7 +208,7 @@ public class Game extends GLDisplay {
 					sync.Run();
 					if (sync.syncNow()) {
 						objectsToSync.add(obj);
-						
+
 					}
 				}
 			}
@@ -285,6 +284,7 @@ public class Game extends GLDisplay {
 	GLMouse mouse = new GLMouse();
 	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
 	ArrayList<GLObject> objectToUpdate = new ArrayList<GLObject>();
+	boolean shaderUsed = false;
 
 	@Override
 	public void Render() {
@@ -328,35 +328,21 @@ public class Game extends GLDisplay {
 						float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
 						shader.sendUniform4f("vertColor", colorData);
 						shader.sendTexture("myTexture", mat.getTextureID());
-						
-						
-						float[] floatPosition = {transform.getPosition().getX() + transform.getCenter().getX(),
-								transform.getPosition().getY() + transform.getCenter().getY(), 0};						
+
+						float[] floatPosition = {
+								transform.getPosition().getX() + transform.getCenter().getX() + view.X,
+								transform.getPosition().getY() + transform.getCenter().getY() + view.Y, 0 };
 						shader.sendUniform3f("position", floatPosition);
 					}
 				}
-				if (transform != null&&true==false) {
-					GL11.glPushMatrix();
-					GL11.glTranslatef(transform.getPosition().getX() + transform.getCenter().getX(),
-							transform.getPosition().getY() + transform.getCenter().getY(), 0);
-					GL11.glRotatef(transform.getRotation(), 0, 0, 1);
-					GL11.glTranslatef(-transform.getCenter().getX(), -transform.getCenter().getY(), 0);
-				}
-				if(spriteRenderer!=null)
-				{
+				if (spriteRenderer != null) {
 					spriteRenderer.Run();
-				}
-				else
-				{
-					
+				} else {
+
 				}
 
 				if (shader != null) {
 					shader.Stop();
-				}
-
-				if (transform != null&&true==false) {
-					GL11.glPopMatrix();
 				}
 			}
 		}
