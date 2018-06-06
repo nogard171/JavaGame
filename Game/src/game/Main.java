@@ -29,17 +29,17 @@ public class Main extends GLDisplay {
 		super.Update();
 		keys.Update();
 		camera.poll(1);
-		//camera.apply();
+		camera.apply();
 		camera.acceptInputMove(1);
 	}
-GLShader shader;
+	GLShader shader;
 	@Override
 	public void Render() {
 		super.Render();
 		
 		shader.Start();
 		
-		shader.sendUniform3f("position", position);
+		//shader.sendUniform3f("position", position);
 		
 		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_QUADS);
