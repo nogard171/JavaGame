@@ -21,13 +21,21 @@ import org.lwjgl.util.Point;
 import data.DataHub;
 
 public class Window {
+	public int _defaultWidth = 800;
+	public int _defaultHeight = 600;
+	public int _width = 800;
+	public int _height = 600;
+	public int _fps = 300;
+	public boolean _fullscreen = false;
+	public boolean _resizable = true;
+	public boolean _vsync = false;
 
 	public void run() throws LWJGLException {
 		this.init();
 	}
 
 	public void create() throws LWJGLException {
-		Display.setDisplayMode(new DisplayMode(DataHub._defaultWidth, DataHub._defaultHeight));
+		Display.setDisplayMode(new DisplayMode(this._defaultWidth, this._defaultHeight));
 		Display.create();
 
 	}
@@ -37,26 +45,26 @@ public class Window {
 	}
 
 	private void init() throws LWJGLException {
-		Display.setResizable(DataHub._resizable);
+		Display.setResizable(this._resizable);
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, DataHub._defaultWidth, 0, DataHub._defaultHeight, 1, -1);
+		GL11.glOrtho(0, this._defaultWidth, 0, this._defaultHeight, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
 	private void resized() throws LWJGLException {
-		if (DataHub._defaultWidth != Display.getWidth() || DataHub._defaultHeight != Display.getHeight()) {
+		if (this._defaultWidth != Display.getWidth() || this._defaultHeight != Display.getHeight()) {
 
-			DataHub._defaultWidth = Display.getWidth();
-			DataHub._defaultHeight = Display.getHeight();
+			this._defaultWidth = Display.getWidth();
+			this._defaultHeight = Display.getHeight();
 
-			GL11.glViewport(0, 0, DataHub._defaultWidth, DataHub._defaultHeight);
+			GL11.glViewport(0, 0, this._defaultWidth, this._defaultHeight);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
-			GL11.glOrtho(0, DataHub._defaultWidth, 0, DataHub._defaultHeight, 1, -1);
+			GL11.glOrtho(0, this._defaultWidth, 0, this._defaultHeight, 1, -1);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		}
 	}
@@ -74,7 +82,9 @@ public class Window {
 
 	public void sync() throws LWJGLException {
 		Display.update();
-		Display.sync(DataHub._fps); // cap fps to 60fps
+		if (this._vsync) {
+			Display.sync(this._fps);
+		}
 	}
 
 	public void destroy() throws LWJGLException {

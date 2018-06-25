@@ -3,13 +3,13 @@ package engine;
 import org.lwjgl.Sys;
 
 public class FPSEngine {
-	private static long lastFrame;
-	private static int fps;
-	private static long lastFPS;
-	private static double delta;
-	private static int currentFPS;
+	private long lastFrame;
+	private int fps;
+	private long lastFPS;
+	private double delta;
+	private int currentFPS;
 
-	public static int getDelta() {
+	public int getDelta() {
 		long time = getTime();
 		int delta = (int) (time - lastFrame);
 		lastFrame = time;
@@ -17,11 +17,11 @@ public class FPSEngine {
 		return delta;
 	}
 
-	public static long getTime() {
+	public long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
 
-	public static void updateFPS() {
+	public void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
 			currentFPS = fps;
 			fps = 0;
@@ -30,17 +30,17 @@ public class FPSEngine {
 		fps++;
 	}
 
-	public static void initilize() {
+	public void initilize() {
 		getDelta();
 		lastFPS = getTime();
 	}
 
-	public static void update() {
-		delta = getDelta();
+	public void update() {
+		//delta = getDelta();
 		updateFPS();
 	}
 
-	public static int getFPS() {
+	public int getFPS() {
 		return currentFPS;
 	}
 }

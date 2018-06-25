@@ -1,38 +1,42 @@
 package engine;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
 
 import data.DataHub;
 
 public class Platform {
+	Window window;
+	public Input input;
+	public FPSEngine fps;
 
 	public void run() throws LWJGLException {
-		DataHub.window.create();
-		this.initilize();
-		DataHub.window.run();
-		FPSEngine.initilize();
+		window = new Window();
+		input = new Input();
+		fps = new FPSEngine();
 
-		while (!DataHub.window.isActive()) {
-			DataHub.window.update();
+		window.create();
+		this.initilize();
+		window.run();
+		fps.initilize();
+
+		while (!window.isActive()) {
+			window.update();
 			this.update();
-			DataHub.window.render();
+			window.render();
 			this.render();
-			DataHub.window.sync();
+			window.sync();
 		}
-		DataHub.window.destroy();
+		window.destroy();
 	}
 
 	public void initilize() {
-		Initilizer.initilize();
-
 	}
 
 	public void update() {
-		Updater.update();
-		FPSEngine.update();
+		fps.update();
 	}
 
 	public void render() {
-		Renderer.render();
 	}
 }

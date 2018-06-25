@@ -7,6 +7,9 @@ import classes.Position;
 import data.DataHub;
 
 public class Input {
+	public Position mouse = new Position(0, 0);
+	public boolean[] mouseButtons = null;
+	public boolean[] keys = null;
 
 	public void poll() {
 		this.pollMouse();
@@ -14,41 +17,41 @@ public class Input {
 	}
 
 	public void pollMouse() {
-		DataHub.mouse.setX(Mouse.getX());
-		DataHub.mouse.setY(Mouse.getY());
+		this.mouse.setX(Mouse.getX());
+		this.mouse.setY(Mouse.getY());
 
-		if (DataHub.mouseButtons == null) {
-			DataHub.mouseButtons = new boolean[Mouse.getButtonCount()];
+		if (this.mouseButtons == null) {
+			this.mouseButtons = new boolean[Mouse.getButtonCount()];
 		}
 
-		for (int m = 0; m < DataHub.mouseButtons.length; m++) {
+		for (int m = 0; m < this.mouseButtons.length; m++) {
 			if (Mouse.isButtonDown(m)) {
-				DataHub.mouseButtons[m] = true;
+				this.mouseButtons[m] = true;
 			} else {
-				DataHub.mouseButtons[m] = false;
+				this.mouseButtons[m] = false;
 			}
 		}
 	}
 
 	public void pollKeys() {
-		if (DataHub.keys == null) {
-			DataHub.keys = new boolean[Keyboard.getKeyCount()];
+		if (this.keys == null) {
+			this.keys = new boolean[Keyboard.getKeyCount()];
 		}
 
-		for (int k = 0; k < DataHub.keys.length; k++) {
+		for (int k = 0; k < this.keys.length; k++) {
 			if (Keyboard.isKeyDown(k)) {
-				DataHub.keys[k] = true;
+				this.keys[k] = true;
 			} else {
-				DataHub.keys[k] = false;
+				this.keys[k] = false;
 			}
 		}
 	}
 
 	public boolean mouseIsDown(int index) {
-		return DataHub.mouseButtons[index];
+		return this.mouseButtons[index];
 	}
 
 	public boolean isKeyDown(int index) {
-		return DataHub.keys[index];
+		return this.keys[index];
 	}
 }
