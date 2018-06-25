@@ -23,32 +23,20 @@ import data.DataHub;
 public class Window {
 
 	public void run() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Run");
-		}
 		this.init();
 	}
 
 	public void create() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Create");
-		}
 		Display.setDisplayMode(new DisplayMode(DataHub._defaultWidth, DataHub._defaultHeight));
 		Display.create();
 
 	}
 
 	public boolean isActive() {
-		if (DataHub._debug) {
-			System.out.println("Window IsActive");
-		}
 		return Display.isCloseRequested();
 	}
 
 	private void init() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Init");
-		}
 		Display.setResizable(DataHub._resizable);
 
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -60,9 +48,6 @@ public class Window {
 	}
 
 	private void resized() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Resize");
-		}
 		if (DataHub._defaultWidth != Display.getWidth() || DataHub._defaultHeight != Display.getHeight()) {
 
 			DataHub._defaultWidth = Display.getWidth();
@@ -73,41 +58,26 @@ public class Window {
 			GL11.glLoadIdentity();
 			GL11.glOrtho(0, DataHub._defaultWidth, 0, DataHub._defaultHeight, 1, -1);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-			if (DataHub._debug) {
-				System.out.println("Window Was Resized");
-			}
 		}
 	}
 
 	public void update() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Update");
-		}
 		if (Display.wasResized()) {
 			this.resized();
 		}
 	}
 
 	public void render() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Render");
-		}
 		// Clear the screen and depth buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
 	public void sync() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Sync");
-		}
 		Display.update();
+		Display.sync(DataHub._fps); // cap fps to 60fps
 	}
 
 	public void destroy() throws LWJGLException {
-		if (DataHub._debug) {
-			System.out.println("Window Destroy");
-		}
 		Display.destroy();
 		System.exit(0);
 	}

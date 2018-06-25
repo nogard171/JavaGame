@@ -1,6 +1,7 @@
 package data;
 
 import classes.Position;
+import engine.FPSEngine;
 import engine.Input;
 import engine.Window;
 

@@ -10,6 +10,8 @@ public class Platform {
 		DataHub.window.create();
 		this.initilize();
 		DataHub.window.run();
+		FPSEngine.initilize();
+
 		while (!DataHub.window.isActive()) {
 			DataHub.window.update();
 			this.update();
@@ -22,12 +24,12 @@ public class Platform {
 
 	public void initilize() {
 		Initilizer.initilize();
-		
+
 	}
 
 	public void update() {
 		Updater.update();
-
+		FPSEngine.update();
 	}
 
 	public void render() {
