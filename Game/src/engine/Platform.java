@@ -3,7 +3,6 @@ package engine;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 
-import data.DataHub;
 
 public class Platform {
 	Window window;

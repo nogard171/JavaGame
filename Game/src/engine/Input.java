@@ -4,7 +4,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import classes.Position;
-import data.DataHub;
 
 public class Input {
 	public Position mouse = new Position(0, 0);

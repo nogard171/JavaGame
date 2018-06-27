@@ -18,8 +18,6 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
-import data.DataHub;
-
 public class Window {
 	public int _defaultWidth = 800;
 	public int _defaultHeight = 600;
@@ -52,6 +50,8 @@ public class Window {
 		GL11.glOrtho(0, this._defaultWidth, 0, this._defaultHeight, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
@@ -76,15 +76,13 @@ public class Window {
 	}
 
 	public void render() throws LWJGLException {
-		// Clear the screen and depth buffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 
 	public void sync() throws LWJGLException {
 		Display.update();
-		if (this._vsync) {
-			Display.sync(this._fps);
-		}
+		Display.setVSyncEnabled(this._vsync);
+		Display.sync(this._fps);
 	}
 
 	public void destroy() throws LWJGLException {

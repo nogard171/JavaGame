@@ -1,27 +1,27 @@
 package classes;
 
 public class Position {
-	float X = 0;
-	float Y = 0;
+	int X = 0;
+	int Y = 0;
 
-	public Position(float newX, float newY) {
+	public Position(int newX, int newY) {
 		this.setX(newX);
 		this.setY(newY);
 	}
 
-	public float getX() {
+	public int getX() {
 		return this.X;
 	}
 
-	public float getY() {
+	public int getY() {
 		return this.Y;
 	}
 
-	public void setX(float newX) {
+	public void setX(int newX) {
 		this.X = newX;
 	}
 
-	public void setY(float newY) {
+	public void setY(int newY) {
 		this.Y = newY;
 	}
 }

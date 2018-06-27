@@ -1,4 +1,5 @@
 package utils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,62 +7,75 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
+import classes.Sprite;
+
 public class Loader {
-	public static HashMap<String, String> getConfig(String string) {
-		HashMap<String, String> options = new HashMap<String, String>();
-		// TODO Auto-generated method stub
-		String configLocation = "system/config.ini";
-		File f = new File(configLocation);
-		if (f.exists() && !f.isDirectory()) {
+	private static int textureX = 0;
+	private static int textureY = 0;
 
-		} else {
-			try {
+	public static Sprite loadSprite(String spriteFile, int width, int height) {
+		Sprite newSprite = null;
 
-				File file = new File(configLocation);
+		Texture texture = loadTexture("resources/sprites/" + spriteFile);
 
-				if (file.createNewFile()) {
-					System.out.println("File is created!");
-				} else {
-					System.out.println("File already exists.");
-				}
+		textureX = texture.getTextureWidth() / width;
+		textureY = texture.getTextureHeight() / height;
 
-			} catch (IOException e) {
-				e.printStackTrace();
+		newSprite = new Sprite(textureX, textureY);
+
+		newSprite.setTextureID(texture.getTextureID());
+
+		for (int x = 0; x < textureX; x++) {
+			for (int y = 0; y < textureY; y++) {
+				int displayListID = GL11.glGenLists(1);
+
+				GL11.glNewList(displayListID, GL11.GL_COMPILE);
+
+				renderSprite(x, y, 32, 32);
+
+				GL11.glEndList();
+
+				newSprite.setFrame(displayListID, x, y);
 			}
 		}
 
-		// Construct BufferedReader from FileReader
-		BufferedReader br;
+		return newSprite;
+	}
+
+	private static void renderSprite(int x, int y, int width, int height) {
+
+		float textureStepX = (float) 1 / (float) textureX;
+		float textureStepY = (float) 1 / (float) textureY;
+
+		GL11.glBegin(GL11.GL_QUADS);
+
+		GL11.glTexCoord2f(textureStepX * x, textureStepY * y);
+		GL11.glVertex2i(0, 0);
+		GL11.glTexCoord2f(textureStepX * (x + 1), textureStepY * y);
+		GL11.glVertex2i(width, 0);
+		GL11.glTexCoord2f(textureStepX * (x + 1), textureStepY * (y + 1));
+		GL11.glVertex2i(width, height);
+		GL11.glTexCoord2f(textureStepX * x, textureStepY * (y + 1));
+		GL11.glVertex2i(0, height);
+
+		GL11.glEnd();
+	}
+
+	public static Texture loadTexture(String filename) {
+		Texture texture = null;
+
 		try {
-			br = new BufferedReader(new FileReader(f));
-
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				// System.out.println(line);
-				String[] parent = line.split("\\.");
-				if (parent[0].equals(string)) {
-					String[] child = parent[1].split("=");
-					// System.out.println(child[0]+"="+ child[1]);
-					options.put(child[0], child[1]);
-				}
-
-			}
-
-			try {
-				br.close();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(filename));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return options;
+		return texture;
 	}
-
 }
