@@ -50,7 +50,7 @@ public class Window {
 		GL11.glOrtho(0, this._defaultWidth, 0, this._defaultHeight, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
@@ -81,7 +81,7 @@ public class Window {
 
 	public void sync() throws LWJGLException {
 		Display.update();
-		Display.setVSyncEnabled(this._vsync);
+		//Display.setVSyncEnabled(this._vsync);
 		Display.sync(this._fps);
 	}
 
