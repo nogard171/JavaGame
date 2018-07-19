@@ -1,6 +1,6 @@
-#version 330 core
 
-uniform vec2 position;
+uniform vec3 position;
+uniform vec3 chunkPosition;
 
 uniform vec2 view;
 

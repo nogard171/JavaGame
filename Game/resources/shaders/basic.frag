@@ -1,5 +1,3 @@
-#version 330 core
-
 uniform sampler2D myTexture;
 
 uniform vec4 vertColor;
