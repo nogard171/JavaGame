@@ -3,10 +3,10 @@ package engine;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import classes.Position;
+import classes.GLPosition;
 
 public class Input {
-	public Position mouse = new Position(0, 0);
+	public GLPosition mouse = new GLPosition(0, 0);
 	public boolean[] mouseButtons = null;
 	public boolean[] keys = null;
 

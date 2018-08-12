@@ -3,14 +3,13 @@ package engine;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 
-
-public class Platform {
-	Window window;
+public class GLPlatform {
+	GLWindow window;
 	public Input input;
 	public FPSEngine fps;
 
 	public void run() throws LWJGLException {
-		window = new Window();
+		window = new GLWindow();
 		input = new Input();
 		fps = new FPSEngine();
 
