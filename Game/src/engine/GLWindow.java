@@ -19,21 +19,22 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 
 public class GLWindow {
-	public int _defaultWidth = 800;
-	public int _defaultHeight = 600;
-	public int _width = 800;
-	public int _height = 600;
-	public int _fps = 300;
-	public boolean _fullscreen = false;
-	public boolean _resizable = true;
-	public boolean _vsync = false;
+	private int defaultWidth = 800;
+	private int defaultHeight = 600;
+	public static int width = 800;
+	public static int height = 600;
+	private int fps = 300;
+	private boolean limitFPS = false;
+	private boolean fullscreen = false;
+	private boolean resizable = true;
+	private boolean vsync = false;
 
 	public void run() throws LWJGLException {
 		this.init();
 	}
 
 	public void create() throws LWJGLException {
-		Display.setDisplayMode(new DisplayMode(this._defaultWidth, this._defaultHeight));
+		Display.setDisplayMode(new DisplayMode(this.defaultWidth, this.defaultHeight));
 		Display.create();
 
 	}
@@ -43,28 +44,33 @@ public class GLWindow {
 	}
 
 	private void init() throws LWJGLException {
-		Display.setResizable(this._resizable);
+		Display.setResizable(this.resizable);
 
+		Display.setVSyncEnabled(this.vsync);
+
+		GL11.glViewport(0, 0, this.width, this.height);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, this._defaultWidth, 0, this._defaultHeight, 1, -1);
+		GL11.glOrtho(0, this.defaultWidth, this.defaultHeight,0 , 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
 	private void resized() throws LWJGLException {
-		if (this._defaultWidth != Display.getWidth() || this._defaultHeight != Display.getHeight()) {
+		if (this.defaultWidth != Display.getWidth() || this.defaultHeight != Display.getHeight()) {
 
-			this._defaultWidth = Display.getWidth();
-			this._defaultHeight = Display.getHeight();
+			this.width = Display.getWidth();
+			this.height = Display.getHeight();
 
-			GL11.glViewport(0, 0, this._defaultWidth, this._defaultHeight);
+			GL11.glViewport(0, 0, this.width, this.height);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
-			GL11.glOrtho(0, this._defaultWidth, 0, this._defaultHeight, 1, -1);
+			GL11.glOrtho(0, this.width,this.height, 0,  1, -1);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		}
 	}
@@ -81,8 +87,9 @@ public class GLWindow {
 
 	public void sync() throws LWJGLException {
 		Display.update();
-		//Display.setVSyncEnabled(this._vsync);
-		Display.sync(this._fps);
+		if (this.limitFPS) {
+			Display.sync(this.fps);
+		}
 	}
 
 	public void destroy() throws LWJGLException {

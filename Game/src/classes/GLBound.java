@@ -4,9 +4,12 @@ public class GLBound {
 	public GLPosition position;
 	public GLSize size;
 
-	public GLBound(int newX, int newY, int newWidth, int newHeight) {
-		this.position = new GLPosition(newX, newY);
+	public GLBound(float x, float y, float newWidth, float newHeight) {
+		this.position = new GLPosition(x, y);
 		this.size = new GLSize(newWidth, newHeight);
+	}
+
+	public GLBound() {
 	}
 
 	public boolean containsPosition(GLPosition otherPosition) {

@@ -1,31 +1,33 @@
 package classes;
 
 public class GLSize {
-	private int width = 0;
-	private int height = 0;
+	private float width = 0;
+	private float height = 0;
 
-	public GLSize(int newWidth, int newHeight) {
+	public GLSize(float newWidth, float newHeight) {
 		this.setSize(newWidth, newHeight);
 	}
 
-	public int getHeight() {
+	public GLSize() {
+	}
+
+	public float getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public void setHeight(float height) {
 		this.height = height;
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public void setWidth(float width) {
 		this.width = width;
 	}
-	
-	public void setSize(int newWidth, int newHeight)
-	{
+
+	public void setSize(float newWidth, float newHeight) {
 		this.setWidth(newWidth);
 		this.setHeight(newHeight);
 	}

@@ -1,9 +1,18 @@
 package classes;
 
 public class GLTextureData {
-	private GLPosition position = new GLPosition(0, 0);
+	public GLPosition position = new GLPosition(0, 0);
 
-	private GLSize size = new GLSize(0, 0);
+	public GLSize size = new GLSize(1f, 1f);
+
+	public GLTextureData() {
+
+	}
+
+	public GLTextureData(float newX, float newY, float newWidth, float newHeight) {
+		this.position.setPosition(newX, newY);
+		this.size.setSize(newWidth, newHeight);
+	}
 
 	public float getX() {
 		return this.position.getX();

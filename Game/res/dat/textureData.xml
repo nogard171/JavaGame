@@ -1,0 +1,6 @@
+<textures file='res/tex/grass.png'>
+	<textureData name='GRASS' x='0' y='0' width='0' height='0'  offsetX='0' offsetY='0'/>
+	<textureData name='DIRT' x='0' y='0' width='0' height='0'  offsetX='0' offsetY='0' />
+	
+	<textureData name='TREE' x='0' y='0' width='0' height='0'  offsetX='0' offsetY='64' />
+</textures>
