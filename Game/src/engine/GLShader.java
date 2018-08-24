@@ -45,7 +45,7 @@ public class GLShader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		newShaderId = GL20.glCreateShader(shader);// GL20.GL_VERTEX_SHADER);
+		newShaderId = GL20.glCreateShader(shader);
 		GL20.glShaderSource(newShaderId, shaderFile);
 		GL20.glCompileShader(newShaderId);
 		return newShaderId;

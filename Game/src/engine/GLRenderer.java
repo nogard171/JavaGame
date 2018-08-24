@@ -23,10 +23,12 @@ public class GLRenderer {
 
 				chunk.chunkDisplayList = GL11.glGenLists(1);
 
+				System.out.println("Count: " + chunk.objects.size());
+				
 				GL11.glNewList(chunk.chunkDisplayList, GL11.GL_COMPILE);
 				for (GLObject obj : chunk.objects) {
 					float[] position = { obj.position.getX(), obj.position.getY() };
-
+					//System.out.println("X:"+obj.position.getX()+"\nY:"+ obj.position.getY());
 					GLModel model = new GLData().models.get(obj.type);
 
 					shader.sendUniform2f("position", position);

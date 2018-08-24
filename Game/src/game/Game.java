@@ -18,7 +18,9 @@ import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import classes.GLChunk;
+import classes.GLMaterialData;
 import classes.GLModel;
+import classes.GLModelData;
 import classes.GLObject;
 import classes.GLPosition;
 import classes.GLSize;
@@ -40,14 +42,49 @@ public class Game extends GLDisplay {
 		super.Setup();
 		camera = new GLCamera(800, 600);
 		GLShader newShader = new GLShader("basic.vert", "basic.frag");
-
 		GLData.shader = newShader;
 
 		GLLoader.loadModels();
 
 		chunk = new GLChunk();
+		modelData.vectors.add(new GLPosition(0, 0));
+		modelData.vectors.add(new GLPosition(0, 64));
+		modelData.vectors.add(new GLPosition(64, 64));
+		modelData.vectors.add(new GLPosition(64, 0));
 
+		modelData.indices.add((byte) 0);
+		modelData.indices.add((byte) 1);
+		modelData.indices.add((byte) 2);
+
+		modelData.indices.add((byte) 0);
+		modelData.indices.add((byte) 3);
+		modelData.indices.add((byte) 2);
+
+		materialData.textureVectors.add(new GLPosition(0.5f, 0));
+		materialData.textureVectors.add(new GLPosition(0.5f, 0.5f));
+		materialData.textureVectors.add(new GLPosition(1, 0.5f));
+		materialData.textureVectors.add(new GLPosition(1, 0));
+
+		materialData.textureIndices.add((byte) 0);
+		materialData.textureIndices.add((byte) 1);
+		materialData.textureIndices.add((byte) 2);
+
+		materialData.textureIndices.add((byte) 0);
+		materialData.textureIndices.add((byte) 3);
+		materialData.textureIndices.add((byte) 2);
+
+		try {
+			texture = TextureLoader.getTexture("PNG",
+					ResourceLoader.getResourceAsStream("resources/textures/tiles.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
+
+	Texture texture;
+	GLModelData modelData = new GLModelData();
+
+	GLMaterialData materialData = new GLMaterialData();
 
 	@Override
 	public void UpdateWindow(int width, int height) {
@@ -91,7 +128,6 @@ public class Game extends GLDisplay {
 	public void Render() {
 		super.Render();
 		GLShader shader = GLData.shader;
-		// System.out.println(shader);
 		if (shader != null) {
 			shader.Run();
 
@@ -103,6 +139,19 @@ public class Game extends GLDisplay {
 			shader.sendUniform2f("view", viewPosition);
 
 			GLRenderer.RenderChunk(chunk);
+
+			// GL11.glColor3f(1, 0, 0);
+
+			/*
+			 * GLModel mod = GLData.models.get("GRASS");
+			 * 
+			 * int id = mod.textureID;//this.texture.getTextureID();
+			 * System.out.println("ID: " +id);
+			 * 
+			 * shader.sendTexture("myTexture", id);
+			 * 
+			 * GLRenderer.RenderModel(modelData, materialData);
+			 */
 
 		}
 	}
