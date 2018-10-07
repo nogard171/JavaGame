@@ -59,4 +59,8 @@ public class GLHandler {
 	public static void SetViewportBackgroundColor() {
 		glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
+
+	public static void SetViewportBackgroundColor(float r, float g, float b, float a) {
+		glClearColor(r, g, b, a);
+	}
 }

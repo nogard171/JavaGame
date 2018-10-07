@@ -1,23 +1,3 @@
-
-import static org.lwjgl.opengl.GL11.glCallList;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Vector2f;
-import org.newdawn.slick.openal.Audio;
-import org.newdawn.slick.openal.AudioLoader;
-import org.newdawn.slick.openal.SoundStore;
-import org.newdawn.slick.util.ResourceLoader;
-
-import components.GLComponent;
 import components.GLTransform;
 import engine.GLDisplay;
 
@@ -57,5 +37,6 @@ public class Game {
 	}
 
 	public void Render() {
+		
 	}
 }

@@ -17,6 +17,8 @@ public class GLDisplay {
 		CreateDisplay(this);
 
 		SetupDisplayViewport(this);
+
+		SetViewportBackgroundColor();
 	}
 
 	public void Setup() {
