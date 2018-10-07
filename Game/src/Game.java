@@ -17,336 +17,45 @@ import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.util.ResourceLoader;
 
-import engine.GLAnimator;
-import engine.GLAudio;
-import engine.GLClickable;
-import engine.GLCollider;
-import engine.GLColor;
+import components.GLComponent;
+import components.GLTransform;
 import engine.GLDisplay;
-import engine.GLMaterial;
-import engine.GLMouse;
-import engine.GLObject;
-import engine.GLPhysics;
-import engine.GLProperty;
-import engine.GLRenderer;
-import engine.GLScript;
-import engine.GLShader;
-import engine.GLSize;
-import engine.GLTransform;
-import engine.GLView;
-import engine.GLWindow;
-import network.GLClient;
-import network.GLData;
-import network.GLMessage;
-import network.GLProtocol;
-import network.GLServer;
-import network.GLSync;
-import network.GLSyncTransform;
 
-public class Game extends GLDisplay {
+public class Game {
+	private GLDisplay display;
+	
 	public void Start() {
-		super.Create();
-
+		this.display = new GLDisplay(800,600);
+		this.display.Create();
+		
+		GLTransform test = new GLTransform();
+		
+		System.out.println("Type: " +test.GetType());
+		
+		Setup();
+		GameLoop();
 	}
 
-	@Override
 	public void Setup() {
 
-		Random r = new Random();
-		int Low = 1;
-		int High = 10;
-
-		// the generated grass globjects
-		for (int x = 0; x < 40; x++) {
-			for (int y = 0; y < 40; y++) {
-				GLPhysics physics3 = new GLPhysics();
-				GLMaterial mat = new GLMaterial("resources/textures/grass.png");
-				GLTransform transform = new GLTransform(x * 32, -y * 32);
-				GLShader shader = new GLShader("basic.vert", "basic.frag");
-				GLRenderer spriteRenderer = new GLRenderer();
-				GLObject obj = new GLObject();
-				obj.setName("Grass");
-				obj.AddComponent(transform);
-				obj.AddComponent(mat);
-				obj.AddComponent(shader);
-				obj.AddComponent(spriteRenderer);
-				obj.AddComponent(physics3);
-				mappedObjects.put(x + "," + -y + ",0", obj);
-
-				int Result = r.nextInt(High - Low) + Low;
-
-				if (Result == 1) {
-					mat = new GLMaterial("resources/textures/tree.png");
-
-					GLObject tree = new GLObject();
-					tree.setName("tree");
-					tree.AddComponent(transform);
-					tree.AddComponent(mat);
-					tree.AddComponent(shader);
-					tree.AddComponent(spriteRenderer);
-					tree.AddComponent(physics3);
-					mappedObjects.put(x + "," + -y + ",1", tree);
-				}
-
-			}
+	}
+	
+	public void GameLoop()
+	{
+		while(!display.IsClosed())
+		{
+			this.Update();
+			this.Render();
 		}
-
-		GLObject obj = new GLObject();
-
-		// the player globject
-		GLMaterial mat = new GLMaterial("resources/textures/guy.png");
-		GLTransform transform = new GLTransform(0, 0);
-		GLScript script = new GLScript("resources/scripts/main.lua");
-		GLShader shader = new GLShader("basic.vert", "basic.frag");
-		GLRenderer spriteRenderer2 = new GLRenderer();
-		GLAnimator animator = new GLAnimator();
-		animator.setSize(new GLSize(32, 64));
-
-		GLPhysics physics = new GLPhysics();
-		GLCollider collider = new GLCollider(0, 0, 32, 32);
-
-		GLSync syncTransform = new GLSync(new GLSyncTransform());
-
-		// GLAudio audio = new GLAudio("resources/audio/walking.wav");
-		// audio.setVolume(0.1f);
-		/*
-		 * GLClickable clickable2 = new GLClickable(); GLProperty health = new
-		 * GLProperty(); health.setName("health"); health.setIntValue(100);
-		 * 
-		 * 
-		 * // obj.AddComponent(audio); obj.AddComponent(clickable2);
-		 * 
-		 * 
-		 * obj.AddProperty(health);
-		 */
-
-		obj.AddComponent(syncTransform);
-
-		obj.AddComponent(physics);
-		obj.AddComponent(collider);
-
-		obj.setName("player");
-		obj.AddComponent(transform);
-		obj.AddComponent(script);
-		obj.AddComponent(mat);
-		obj.AddComponent(shader);
-		obj.AddComponent(spriteRenderer2);
-		obj.AddComponent(animator);
-
-		objects.add(obj);
-		// mappedObjects.put("0,0,1", obj);
-
-		// the window globject
-
-		/*
-		 * GLMaterial winmat = new GLMaterial("resources/textures/gui.png"); GLTransform
-		 * wintransform = new GLTransform(200, 200); GLRenderer winspriteRenderer = new
-		 * GLRenderer(); GLShader winshader = new GLShader("window.vert",
-		 * "window.frag");
-		 * 
-		 * GLWindow win = new GLWindow(); GLClickable clickable = new
-		 * GLClickable("resources/scripts/clickableScript.lua");
-		 * 
-		 * GLObject window = new GLObject();
-		 * 
-		 * window.AddComponent(winmat); window.AddComponent(wintransform);
-		 * window.AddComponent(winspriteRenderer); window.AddComponent(win);
-		 * window.AddComponent(winshader); window.AddComponent(clickable);
-		 * 
-		 * objects.add(window);
-		 */
-
 	}
 
-	ArrayList<GLObject> objects = new ArrayList<GLObject>();
-	ArrayList<GLObject> objectsToSync = new ArrayList<GLObject>();
-	HashMap<String, GLObject> mappedObjects = new HashMap<String, GLObject>();
-
-	@Override
 	public void Update() {
-		super.Update();
-		if (Display.getWidth() != view.Width || Display.getHeight() != view.Height || view.update) {
-			view = new GLView(view.X,view.Y, Display.getWidth(), Display.getHeight());
-			objectInView.clear();
-			this.objectInView = getViewObjects();
-		}
-		for (GLObject obj : objectToUpdate) {
-			if (obj != null) {
-				GLTransform transform = (GLTransform) obj.getComponent("transform");
-				GLScript script = (GLScript) obj.getComponent("script");
-				GLMaterial mat = (GLMaterial) obj.getComponent("material");
-				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
-				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
-				GLWindow win = (GLWindow) obj.getComponent("window");
-				GLPhysics physics = (GLPhysics) obj.getComponent("physics");
-				GLCollider collider = (GLCollider) obj.getComponent("collider");
-				GLSync sync = (GLSync) obj.getComponent("sync");
-
-				if (transform != null) {
-					transform.Update();
-				}
-				if (physics != null) {
-					physics.Run();
-				}
-				if (collider != null) {
-					collider.Run(objectToUpdate);
-				}
-				if (win != null) {
-					win.Run();
-				}
-				if (clickable != null) {
-					clickable.Run();
-				}
-				if (script != null) {
-					script.Run();
-				}
-				if (animator != null) {
-					animator.Run();
-				}
-
-				if (sync != null) {
-					sync.Run();
-					if (sync.syncNow()) {
-						objectsToSync.add(obj);
-
-					}
-				}
-			}
-		}
-		objectToUpdate.clear();
-		if (client != null && client.started) {
-			for (GLObject obj : objectsToSync) {
-				GLSync sync = (GLSync) obj.getComponent("sync");
-				if (sync != null) {
-					GLSyncTransform data = (GLSyncTransform) sync.data;
-					if (data != null) {
-						System.out.println(data.position.toString());
-						client.sendGLData(data);
-					}
-				}
-			}
-			for (GLObject obj : client.objectsToSync) {
-				objectInView.add(obj);
-			}
-			client.objectsToSync.clear();
-		}
-		objectsToSync.clear();
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_F1) && server == null) {
-			server = new GLServer();
-			server.start();
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_F2) && client == null) {
-			client = new GLClient();
-			client.start();
-		}
-
+		display.Update();
 	}
 
-	GLServer server = null;
-	GLClient client = null;
-
-	@Override
 	public void Destroy() {
-		for (GLObject obj : objects) {
-			obj.Destroy();
-		}
-		if (server != null) {
-			server.destroy();
-
-		}
-		super.Destroy();
 	}
 
-	GLView view = new GLView(0, 0, 400, 400);
-
-	public ArrayList<GLObject> getViewObjects() {
-		ArrayList<GLObject> glViewObjects = new ArrayList<GLObject>();
-		for (int z = 0; z < 10; z++) {
-			for (int x = (int) Math.floor(view.X / 32); x < Math.ceil(view.Width / 32) + 1; x++) {
-				for (int y = (int) Math.floor(view.Y / 32); y < Math.ceil(view.Height / 32) + 1; y++) {
-					String key = (x) + "," + y + "," + z;
-					GLObject obj = mappedObjects.get(key);
-					if (!glViewObjects.contains(obj)) {
-						glViewObjects.add(obj);
-					}
-				}
-			}
-		}
-		for (GLObject obj : objects) {
-			if (view.isObjectInView(obj)) {
-				glViewObjects.add(obj);
-			}
-		}
-		return glViewObjects;
-	}
-
-	GLMouse mouse = new GLMouse();
-	ArrayList<GLObject> objectInView = new ArrayList<GLObject>();
-	ArrayList<GLObject> objectToUpdate = new ArrayList<GLObject>();
-	boolean shaderUsed = false;
-
-	@Override
 	public void Render() {
-		super.Render();
-		for (GLObject obj : objects) {
-			GLScript script = (GLScript) obj.getComponent("script");
-			if (script != null) {
-				// script.Run();
-				objectToUpdate.add(obj);
-			}
-		}
-		for (GLObject obj : objectInView) {
-			if (obj != null) {
-				Boolean updateObject = false;
-				GLMaterial mat = (GLMaterial) obj.getComponent("material");
-				GLTransform transform = (GLTransform) obj.getComponent("transform");
-				GLScript script = (GLScript) obj.getComponent("script");
-				GLShader shader = (GLShader) obj.getComponent("shader");
-				GLRenderer spriteRenderer = (GLRenderer) obj.getComponent("renderer");
-				GLAnimator animator = (GLAnimator) obj.getComponent("animator");
-				GLWindow win = (GLWindow) obj.getComponent("window");
-				GLClickable clickable = (GLClickable) obj.getComponent("clickable");
-				GLPhysics physics = (GLPhysics) obj.getComponent("physics");
-				GLCollider collider = (GLCollider) obj.getComponent("collider");
-
-				if (collider != null) {
-					collider.Run(objectToUpdate);
-				}
-
-				if (win != null || clickable != null || script != null || animator != null || physics != null
-						|| collider != null) {
-					updateObject = true;
-				}
-				if (updateObject) {
-					objectToUpdate.add(obj);
-				}
-				if (shader != null) {
-					shader.Run();
-					if (mat != null) {
-						GLColor color = mat.getColorAsFloats();
-						float[] colorData = { color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() };
-						shader.sendUniform4f("vertColor", colorData);
-						shader.sendTexture("myTexture", mat.getTextureID());
-
-						float[] floatPosition = {
-								transform.getPosition().getX() + transform.getCenter().getX() + view.X,
-								transform.getPosition().getY() + transform.getCenter().getY() + view.Y, 0 };
-						shader.sendUniform3f("position", floatPosition);
-					}
-				}
-				if (spriteRenderer != null) {
-					spriteRenderer.Run();
-				} else {
-
-				}
-
-				if (shader != null) {
-					shader.Stop();
-				}
-			}
-		}
-
-		GL11.glColor3f(0, 0, 0);
 	}
 }
