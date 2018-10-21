@@ -8,23 +8,23 @@ public class GLPosition {
 	}
 
 	public GLPosition(float newX, float newY) {
-		this.setPosition(newX, newY);
+		this.SetPosition(newX, newY);
 	}
 
-	public void setPosition(float newX, float newY) {
+	public void SetPosition(float newX, float newY) {
 		this.x = newX;
 		this.y = newY;
 	}
 
-	public void setPosition(GLPosition newPosition) {
-		this.setPosition(newPosition.getX(), newPosition.getY());
+	public void SetPosition(GLPosition newPosition) {
+		this.SetPosition(newPosition.GetX(), newPosition.GetY());
 	}
 
-	public float getX() {
+	public float GetX() {
 		return this.x;
 	}
 
-	public float getY() {
+	public float GetY() {
 		return this.y;
 	}
 }

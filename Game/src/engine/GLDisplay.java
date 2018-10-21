@@ -7,7 +7,7 @@ public class GLDisplay {
 
 	private GLSize size;
 	private boolean isResizable = true;
-	private int targetFPS = 60;
+	private int targetFPS = -1;
 
 	public GLDisplay(int newWidth, int newHeight) {
 		this.size = new GLSize(newWidth, newHeight);
@@ -24,10 +24,15 @@ public class GLDisplay {
 	public void Setup() {
 
 	}
+	
+	public void SetTitle(String newTitle)
+	{
+		SetDisplayTitle(newTitle);
+	}
 
 	public void Update() {
 		if (DisplayResized()) {
-			this.ResizeDisplay();
+			ResizeDisplay(this);
 		}
 
 		UpdateDisplay(this);
@@ -35,10 +40,6 @@ public class GLDisplay {
 	}
 
 	public void Destroy() {
-
-	}
-
-	private void ResizeDisplay() {
 
 	}
 
