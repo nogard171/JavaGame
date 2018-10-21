@@ -20,7 +20,8 @@ import engine.GLDisplay;
 
 public class GLHandler {
 	private static HashMap<Integer, TrueTypeFont> fonts = new HashMap<Integer, TrueTypeFont>();
-	private static HashMap<GLQuadData, Integer> quads = new HashMap<GLQuadData, Integer>();
+	private static HashMap<String, Integer> quads = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> shaders = new HashMap<String, Integer>();
 
 	public static void CreateDisplay(GLDisplay display) {
 		try {
@@ -121,16 +122,12 @@ public class GLHandler {
 	}
 
 	public static void RenderQuadData(GLQuadData quadData, int mode) {
-		/*if (quads.size() == 0 || !quads.containsKey(quadData)) {
-			int dl = GL11.glGenLists(1);
-			GL11.glNewList(dl, GL11.GL_COMPILE);
-			RenderRawQuadData(quadData, mode);
-			GL11.glEndList();
-			quads.put(quadData, dl);
-		}
-		int dl = quads.get(quadData);
-		glCallList(dl);
-		*/
+		/*
+		 * if (quads.size() == 0 || !quads.containsKey(quadData)) { int dl =
+		 * GL11.glGenLists(1); GL11.glNewList(dl, GL11.GL_COMPILE);
+		 * RenderRawQuadData(quadData, mode); GL11.glEndList(); quads.put(quadData, dl);
+		 * } int dl = quads.get(quadData); glCallList(dl);
+		 */
 		RenderRawQuadData(quadData, mode);
 	}
 
@@ -141,5 +138,9 @@ public class GLHandler {
 			glVertex2f(vector.GetX(), vector.GetY());
 		}
 		glEnd();
+	}
+
+	public static void UseShader() {
+
 	}
 }
