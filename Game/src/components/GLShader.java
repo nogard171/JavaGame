@@ -72,8 +72,8 @@ public class GLShader extends GLComponent {
 			GL20.glAttachShader(programID, fragmentShader);
 			GL20.glAttachShader(programID, vertexShader);
 			GL20.glLinkProgram(programID);
+			GL20.glValidateProgram(programID);
 		}
-
 		GL20.glUseProgram(programID);
 	}
 

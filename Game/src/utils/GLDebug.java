@@ -29,7 +29,7 @@ public class GLDebug {
 	public static void RenderBackground(float x, float y, float width, float height) {
 
 		GLHandler.SetRenderColor(0, 0, 0, 0.5f);
-
+		quadData.setName("debug");
 		GLPosition[] vectors = { new GLPosition(x, y), new GLPosition(x + width, y),
 				new GLPosition(x + width, y + height), new GLPosition(x, y + height) };
 		quadData.SetVectors(vectors);

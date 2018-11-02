@@ -1,6 +1,7 @@
 package classes;
 
 public class GLQuadData {
+	private String name = "";
 	private GLPosition[] vectors;
 	private byte[] indices;
 
@@ -18,5 +19,13 @@ public class GLQuadData {
 
 	public byte[] GetIndices() {
 		return this.indices;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

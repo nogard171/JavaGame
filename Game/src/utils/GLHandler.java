@@ -8,6 +8,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.TextureImpl;
 
+import classes.GLModelData;
 import classes.GLPosition;
 import classes.GLQuadData;
 
@@ -117,18 +118,35 @@ public class GLHandler {
 		SetRenderColor(r, g, b, 1);
 	}
 
-	public static void RenderQuad(GLQuadData quadData) {
-		RenderQuadData(quadData, GL_QUADS);
+	public static void RenderModel(GLModelData data) {
+		int dl = quads.get(data.getQuadName());
+		glCallList(dl);
 	}
 
-	public static void RenderQuadData(GLQuadData quadData, int mode) {
-		/*
-		 * if (quads.size() == 0 || !quads.containsKey(quadData)) { int dl =
-		 * GL11.glGenLists(1); GL11.glNewList(dl, GL11.GL_COMPILE);
-		 * RenderRawQuadData(quadData, mode); GL11.glEndList(); quads.put(quadData, dl);
-		 * } int dl = quads.get(quadData); glCallList(dl);
-		 */
-		RenderRawQuadData(quadData, mode);
+	public static void AddQuad(GLQuadData quadData) {
+		SetupQuadData(quadData, GL_QUADS);
+	}
+
+	public static void RenderQuad(GLQuadData quadData) {
+
+		// RenderRawQuadData(quadData, GL_QUADS);
+		//
+		if (!quads.containsKey(quadData.getName())) {
+			SetupQuadData(quadData, GL_QUADS);
+		}
+
+		int dl = quads.get(quadData.getName());
+		glCallList(dl);
+	}
+
+	public static void SetupQuadData(GLQuadData quadData, int mode) {
+		if (quads.size() == 0 || !quads.containsKey(quadData.getName())) {
+			int dl = GL11.glGenLists(1);
+			GL11.glNewList(dl, GL11.GL_COMPILE);
+			RenderRawQuadData(quadData, mode);
+			GL11.glEndList();
+			quads.put(quadData.getName(), dl);
+		}
 	}
 
 	private static void RenderRawQuadData(GLQuadData quadData, int mode) {
