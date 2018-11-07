@@ -11,6 +11,7 @@ import org.newdawn.slick.opengl.TextureImpl;
 import classes.GLModelData;
 import classes.GLPosition;
 import classes.GLQuadData;
+import classes.GLSize;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -89,6 +90,7 @@ public class GLHandler {
 	}
 
 	public static void ResizeDisplay(GLDisplay display) {
+
 		display.SetHeight(Display.getHeight());
 		display.SetWidth(Display.getWidth());
 
@@ -128,18 +130,16 @@ public class GLHandler {
 	}
 
 	public static void RenderQuad(GLQuadData quadData) {
-
-		// RenderRawQuadData(quadData, GL_QUADS);
-		//
 		if (!quads.containsKey(quadData.getName())) {
 			SetupQuadData(quadData, GL_QUADS);
 		}
-
 		int dl = quads.get(quadData.getName());
 		glCallList(dl);
+
 	}
 
 	public static void SetupQuadData(GLQuadData quadData, int mode) {
+
 		if (quads.size() == 0 || !quads.containsKey(quadData.getName())) {
 			int dl = GL11.glGenLists(1);
 			GL11.glNewList(dl, GL11.GL_COMPILE);

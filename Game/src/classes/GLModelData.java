@@ -2,7 +2,9 @@ package classes;
 
 public class GLModelData {
 	private String name = "";
+	private GLPosition position = new GLPosition();
 	private String quadName = "";
+	public int quadDl = -1;
 	private String orientation = "";
 	private GLPosition start = new GLPosition();
 	private GLSize size = new GLSize();
@@ -45,5 +47,13 @@ public class GLModelData {
 
 	public void setSize(GLSize size) {
 		this.size = size;
+	}
+
+	public GLPosition getPosition() {
+		return position;
+	}
+
+	public void setPosition(GLPosition position) {
+		this.position = position;
 	}
 }

@@ -1,9 +1,17 @@
 package states;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.opengl.TextureImpl;
 
+import classes.GLChunk;
 import classes.GLGameState;
 import classes.GLModelData;
 import classes.GLPosition;
@@ -13,6 +21,7 @@ import components.GLShader;
 import components.GLTransform;
 import engine.GLDisplay;
 import engine.GLInput;
+import utils.GLChunkManager;
 import utils.GLDebug;
 import utils.GLFPS;
 import utils.GLHandler;
@@ -42,6 +51,15 @@ public class Game {
 
 		shader = new GLShader("basic.vert", "basic.frag");
 
+		for (int x = -10; x < 10; x++) {
+			for (int y = -10; y < 10; y++) {
+				GLChunkManager.chunks.add(new GLChunk(x, y));
+
+			}
+		}
+
+		GLChunkManager.UpdateChunks();
+
 	}
 
 	public static void Update() {
@@ -49,23 +67,13 @@ public class Game {
 	}
 
 	static GLShader shader;
+	static int dl = -1;
 
 	public static void Render() {
-		GL11.glPushMatrix();
 		shader.Run();
-		//GLHandler.SetRenderColor(1, 0, 0, 1);
-		float[] color = { 1, 0, 0, 1 };
-		shader.sendUniform4f("vertColor", color);
-		for (int x = 0; x < 50; x++) {
-			for (int y = 0; y < 50; y++) {
-				float[] position = { (x-y) * 32, (y+x) * 16 };
-				shader.sendUniform2f("position", position);
-				GLHandler.RenderModel(model);
-				
-			}
-		}
-		 GL11.glPopMatrix();
-		
+
+		GLChunkManager.RenderChunks(shader);
 		shader.Stop();
+
 	}
 }
