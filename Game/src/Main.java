@@ -10,6 +10,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.util.vector.Vector2f;
 
 import core.GLChunk;
 import core.GLDisplay;
@@ -36,17 +37,32 @@ public class Main extends GLDisplay {
 		this.destroyDisplay();
 	}
 
+	Vector2f camera = new Vector2f(0, 0);
+
 	public void update() {
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-
+		float speed = 0.5f * fps.getDelta();
+		chunk.update(camera);
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+			camera.x += speed;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			camera.x -= speed;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			camera.y += speed;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			camera.y -= speed;
 		}
 	}
 
 	@Override
 	public void render() {
 		super.render();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(camera.x, camera.y, 0);
 		chunk.render();
+		GL11.glPopMatrix();
 	}
 
 	public static void main(String[] args) {

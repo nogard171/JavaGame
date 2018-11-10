@@ -12,4 +12,8 @@ public class GLObject {
 	public GLType getType() {
 		return this.type;
 	}
+
+	public void setType(GLType newType) {
+		this.type = newType;
+	}
 }
