@@ -1,6 +1,7 @@
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -20,11 +21,17 @@ import core.GLQuad;
 public class Main extends GLDisplay {
 	GLFPS fps = new GLFPS();
 
-	GLChunk chunk;
+	ArrayList<GLChunk> chunks = new ArrayList<GLChunk>();
 
 	public void run() {
 		this.createDisplay();
-		chunk = new GLChunk();
+		/*
+		 * for (int x = 0; x < 10; x++) { for (int z = 0; z < 10; z++) { GLChunk chunk =
+		 * new GLChunk(x, 0, z); chunks.add(chunk); } }
+		 */
+
+		GLChunk chunk = new GLChunk(0, 0, 0);
+		chunks.add(chunk);
 
 		while (!Display.isCloseRequested()) {
 			fps.updateFPS();
@@ -41,7 +48,9 @@ public class Main extends GLDisplay {
 
 	public void update() {
 		float speed = 0.5f * fps.getDelta();
-		chunk.update(camera);
+		for (GLChunk chunk : chunks) {
+			chunk.update(camera);
+		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			camera.x += speed;
 		}
@@ -61,7 +70,10 @@ public class Main extends GLDisplay {
 		super.render();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camera.x, camera.y, 0);
-		chunk.render();
+		for (GLChunk chunk : chunks) {
+			chunk.render();
+		}
+
 		GL11.glPopMatrix();
 	}
 
