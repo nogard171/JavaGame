@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class GLChunk {
 	public Point position;
-	public Vector3f size = new Vector3f(100, 16, 100);
+	public Vector3f size = new Vector3f(10, 16, 10);
 	private int dlId = -1;
 	private GLObject[][][] objects;
 	private Polygon bounds;
@@ -79,6 +79,7 @@ public class GLChunk {
 							color = new Color(128, 255, 128, 255);
 						}
 						if (obj.getType() != GLType.BLANK) {
+
 							Vector3f vec = isVisible(x, y, z);
 							Vector2f out = isOutFacing(x, y, z);
 							if (vec.x == 0 && vec.y == 0 && vec.z == 0) {
@@ -180,6 +181,7 @@ public class GLChunk {
 		int posY = (y - 1) * 32;
 		int posZ = ((z + x) * 16) + posY;
 		Color oldColor = color;
+
 		if (visiblility.y == 1) {// || y == this.currentLevel + 1) {
 			GL11.glColor4f((float) color.getRed() / (float) 255, (float) color.getGreen() / (float) 255,
 					(float) color.getBlue() / (float) 255, (float) color.getAlpha() / (float) 255);
@@ -204,7 +206,7 @@ public class GLChunk {
 			GL11.glVertex2f(posX, posZ + 48);
 		}
 		color = oldColor;
-		if (visiblility.x == 1) {// || outFacing.x == 1 || y == this.currentLevel + 1) {
+		if (visiblility.x == 1) {// || outFacing.x == 1 || y ==this.currentLevel + 1) {
 			if (outFacing.x == 1) {
 				color = new Color(128, 128, 128);
 			}
@@ -224,9 +226,11 @@ public class GLChunk {
 	public void update(Vector2f camera) {
 		Point mousePoint = new Point(Mouse.getX() - (int) camera.x,
 				Display.getHeight() - Mouse.getY() - (int) camera.y);
+
 		boolean mouseInChunk = bounds.contains(mousePoint);
 		if (mouseInChunk) {
 			hover = null;
+
 			int xCount = objects.length;
 			int zCount = objects[0].length;
 			int yCount = objects[0][0].length;
@@ -255,7 +259,6 @@ public class GLChunk {
 			}
 
 			if (Mouse.isButtonDown(0) && hover != null) {
-				// System.out.println("test2: " + this.currentLevel);
 				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
 				updateDisplayList();
 			}
