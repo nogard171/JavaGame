@@ -1,13 +1,9 @@
-package engine;
+package core;
 
 import java.awt.Rectangle;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
-
-import classes.GLPosition;
-import classes.GLSize;
-import classes.GLVelocity;
 
 public class GLCamera {
 	boolean changed = true;
@@ -15,8 +11,7 @@ public class GLCamera {
 	public GLSize size = new GLSize(100, 100);
 
 	public GLCamera(int width, int height) {
-		this.size.width = width;
-		this.size.height = height;
+		this.size.setSize(width, height);
 	}
 
 	public boolean containsVector(Vector2f vec) {
@@ -25,10 +20,9 @@ public class GLCamera {
 		return contains;
 	}
 
-	public void Move(GLVelocity glVelocity) {
-		this.position.x += glVelocity.xVelocity;
-		this.position.y += glVelocity.yVelocity;
-		if (glVelocity.xVelocity != 0 || glVelocity.yVelocity != 0) {
+	public void Move(GLVelocity velocity) {
+		this.position.translate(velocity.getX(), velocity.getY());
+		if (velocity.hasVelocity()) {
 			changed = true;
 		} else {
 			changed = false;

@@ -3,43 +3,43 @@ package utils;
 import org.lwjgl.Sys;
 
 public class GLFramesPerSecond {
-	
+
 	static long lastFPS;
 	static long lastFrame;
 	static int oldFPS;
-	public static int fps =0;
-	public static float currentDelta =0;
+	public static int fps = 0;
+	public static float currentDelta = 0;
 
 	public static float getCurrentDelta() {
 		return currentDelta;
 	}
+
 	public static long getTime() {
-	    return System.nanoTime() / 1000000;
+		return System.nanoTime() / 1000000;
 	}
+
 	public static float getDelta() {
-	    long time = getTime();
-	    float delta = (float) (time - lastFrame);
-	    lastFrame = time;
-	    return delta;
+		long time = getTime();
+		float delta = (float) (time - lastFrame);
+		lastFrame = time;
+		return delta;
 	}
-	public static int getFPS()
-	{
+
+	public static int getFPS() {
 		return fps;
 	}
+
 	public static void start() {
-	    lastFPS = getTime(); //initialise lastFPS by setting to current Time
+		lastFPS = getTime();
 	}
-	 
-	/**
-	 * Calculate the FPS and set it in the title bar
-	 */
+
 	public static void updateFPS() {
-	    if (getTime() - lastFPS > 1000) {
-	    	fps = oldFPS;
-	    	oldFPS = 0;
-	    	lastFPS += 1000;
-	    }
-	    oldFPS++;
-	    currentDelta = getDelta();
+		if (getTime() - lastFPS > 1000) {
+			fps = oldFPS;
+			oldFPS = 0;
+			lastFPS += 1000;
+		}
+		oldFPS++;
+		currentDelta = getDelta();
 	}
 }
