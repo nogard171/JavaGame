@@ -12,14 +12,14 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class GLChunk {
 	public Point position;
-	public Vector3f size = new Vector3f(10, 16, 10);
+	public Vector3f size = new Vector3f(16, 16, 16);
 	private int dlId = -1;
 	private GLObject[][][] objects;
 	private Polygon bounds;
 	int currentLevel = 0;
 
 	public GLChunk(int x, int y, int z) {
-		position = new Point((int) ((x - z) * (size.x * 32)), 0);// ((z + x) * (16 * 16)) + (y * (16 * 32)));
+		position = new Point((int) ((x - z) * (size.x * 32)), (int) (((z + x) * (size.x * 16)) + (y * (size.y * 32))));
 		this.setupChunk();
 	}
 
@@ -34,11 +34,15 @@ public class GLChunk {
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
 				for (int y = 0; y < yCount; y++) {
+
+					GLObject obj = new GLObject(GLType.BLANK);
+
 					if (y > 1) {
-						objects[x][z][y] = new GLObject(GLType.GRASS);
-					} else {
-						objects[x][z][y] = new GLObject(GLType.BLANK);
+						obj = new GLObject(GLType.GRASS);
 					}
+
+					// obj.bounds = poly;
+					objects[x][z][y] = obj;
 				}
 			}
 		}
@@ -82,8 +86,27 @@ public class GLChunk {
 
 							Vector3f vec = isVisible(x, y, z);
 							Vector2f out = isOutFacing(x, y, z);
+
 							if (vec.x == 0 && vec.y == 0 && vec.z == 0) {
 								color = new Color(128, 128, 128, 255);
+							}
+
+							if (vec.y == 1) {
+
+								int posX = position.x + ((x - z) * 32);
+								int posY = position.y + ((this.currentLevel) * 32);
+								int posZ = ((z + x) * 16) + posY;
+
+								Polygon poly = new Polygon();
+								poly.addPoint(posX + 32, posZ);
+								poly.addPoint(posX + 64, posZ + 16);
+
+								poly.addPoint(posX + 32, posZ + 32);
+								poly.addPoint(posX, posZ + 16);
+
+								obj.bounds = poly;
+							} else {
+								obj.bounds = null;
 							}
 							renderObject(vec, out, color, x, y, z);
 							renderCount++;
@@ -177,8 +200,8 @@ public class GLChunk {
 
 	private void renderObject(Vector3f visiblility, Vector2f outFacing, Color color, int x, int y, int z) {
 
-		int posX = (x - z) * 32;
-		int posY = (y - 1) * 32;
+		int posX = position.x + ((x - z) * 32);
+		int posY = position.y + ((y - 1) * 32);
 		int posZ = ((z + x) * 16) + posY;
 		Color oldColor = color;
 
@@ -221,11 +244,11 @@ public class GLChunk {
 		}
 	}
 
-	Vector2f hover;
+	Vector3f hover;
 
 	public void update(Vector2f camera) {
 		Point mousePoint = new Point(Mouse.getX() - (int) camera.x,
-				Display.getHeight() - Mouse.getY() - (int) camera.y);
+				Display.getHeight() - Mouse.getY() - (int) camera.y - (this.currentLevel * 32));
 
 		boolean mouseInChunk = bounds.contains(mousePoint);
 		if (mouseInChunk) {
@@ -234,54 +257,44 @@ public class GLChunk {
 			int xCount = objects.length;
 			int zCount = objects[0].length;
 			int yCount = objects[0][0].length;
+
 			for (int x = 0; x < xCount; x++) {
 				for (int z = 0; z < zCount; z++) {
 					GLObject obj = objects[x][z][this.currentLevel];
 					if (obj != null) {
-						int posX = position.x + (x - z) * 32;
-						int posY = position.y + this.currentLevel * 32;
-						int posZ = ((z + x) * 16) + posY;
-						Polygon poly = new Polygon();
-						poly.addPoint(posX + 32, posZ);
-						poly.addPoint(posX + 64, posZ + 16);
-
-						poly.addPoint(posX + 32, posZ + 32);
-						poly.addPoint(posX, posZ + 16);
-
-						if (poly.contains(mousePoint)) {
-							if (objects[x][z][this.currentLevel] != null) {
-								hover = new Vector2f(x, z);
+						Polygon poly = obj.bounds;
+						if (poly != null) {
+							if (poly.contains(mousePoint)) {
+								if (objects[x][z][this.currentLevel] != null) {
+									hover = new Vector3f(x, this.currentLevel, z);
+									break;
+								}
 							}
-							break;
+
 						}
 					}
 				}
 			}
-
 			if (Mouse.isButtonDown(0) && hover != null) {
-				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
+				objects[(int) hover.x][(int) hover.z][this.currentLevel].setType(GLType.BLANK);
 				updateDisplayList();
 			}
 		} else {
 			hover = null;
 		}
 		if (Mouse.isButtonDown(1) && hover != null) {
-			objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.GRASS);
+			objects[(int) hover.x][(int) hover.z][this.currentLevel].setType(GLType.GRASS);
 			updateDisplayList();
 		}
-		int mouseWheel = Mouse.getDWheel();
-		if (mouseWheel < 0 && this.currentLevel < size.y - 1) {
-			this.currentLevel++;
-			updateDisplayList();
-		}
+	}
 
-		if (mouseWheel > 0 && this.currentLevel > 0) {
-			this.currentLevel--;
-			updateDisplayList();
+	public int getLevel() {
+		return this.currentLevel;
+	}
 
-		}
-		// Display.setTitle("Level: " + this.currentLevel);
-
+	public void changeLevel(int level) {
+		this.currentLevel = level;
+		this.updateDisplayList();
 	}
 
 	public boolean isBlank(int x, int y, int z) {
@@ -313,15 +326,10 @@ public class GLChunk {
 	public void render() {
 		GL11.glCallList(this.dlId);
 		if (hover != null) {
-
-			int posX = (int) ((hover.x - hover.y) * 32);
-			int posY = this.currentLevel * 32;
-			int posZ = (int) (((hover.y + hover.x) * 16) + posY);
-
-			int height = 0;
-			if (isHoverEmpty()) {
-				height = 1;
-			}
+			int posX = position.x + (int) ((hover.x - hover.z) * 32);
+			int posY = (int) (((this.currentLevel) * 32));
+			int posZ = (int) (position.y + ((hover.z + hover.x) * 16) + posY + 32);
+			System.out.println("Level: " + posY);
 
 			GL11.glBegin(GL11.GL_LINE_LOOP);
 			GL11.glColor3f(0, 0, 0);
@@ -330,20 +338,6 @@ public class GLChunk {
 			GL11.glVertex2f(posX + 32, posZ + 32);
 			GL11.glVertex2f(posX, posZ + 16);
 			GL11.glVertex2f(posX + 32, posZ);
-
-			if (isBlank((int) hover.x, 1, (int) hover.y)) {
-
-				GL11.glVertex2f(posX + 32, posZ);
-				GL11.glVertex2f(posX, posZ + 16);
-				GL11.glVertex2f(posX, posZ + (32 * height) + 16);
-				GL11.glVertex2f(posX, posZ + (32 * height) + 16);
-				GL11.glVertex2f(posX + 32, posZ + (32 * height) + 32);
-
-				GL11.glVertex2f(posX + 32, posZ + (32 * height) + 32);
-				GL11.glVertex2f(posX + 64, posZ + (32 * height) + 16);
-				GL11.glVertex2f(posX + 64, posZ + 16);
-
-			}
 			GL11.glEnd();
 
 		}
