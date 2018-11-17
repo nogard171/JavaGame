@@ -244,11 +244,12 @@ public class GLChunk {
 		}
 	}
 
-	Vector3f hover;
+
+	Vector2f hover;
 
 	public void update(Vector2f camera) {
 		Point mousePoint = new Point(Mouse.getX() - (int) camera.x,
-				Display.getHeight() - Mouse.getY() - (int) camera.y - (this.currentLevel * 32));
+				Display.getHeight() - Mouse.getY() - (int) camera.y);
 
 		boolean mouseInChunk = bounds.contains(mousePoint);
 		if (mouseInChunk) {
@@ -257,35 +258,54 @@ public class GLChunk {
 			int xCount = objects.length;
 			int zCount = objects[0].length;
 			int yCount = objects[0][0].length;
-
 			for (int x = 0; x < xCount; x++) {
 				for (int z = 0; z < zCount; z++) {
 					GLObject obj = objects[x][z][this.currentLevel];
 					if (obj != null) {
-						Polygon poly = obj.bounds;
-						if (poly != null) {
-							if (poly.contains(mousePoint)) {
-								if (objects[x][z][this.currentLevel] != null) {
-									hover = new Vector3f(x, this.currentLevel, z);
-									break;
-								}
-							}
+						int posX = position.x + (x - z) * 32;
+						int posY = position.y + this.currentLevel * 32;
+						int posZ = ((z + x) * 16) + posY;
+						Polygon poly = new Polygon();
+						poly.addPoint(posX + 32, posZ);
+						poly.addPoint(posX + 64, posZ + 16);
 
+						poly.addPoint(posX + 32, posZ + 32);
+						poly.addPoint(posX, posZ + 16);
+
+						if (poly.contains(mousePoint)) {
+							if (objects[x][z][this.currentLevel] != null) {
+								hover = new Vector2f(x, z);
+							}
+							break;
 						}
 					}
 				}
 			}
+
 			if (Mouse.isButtonDown(0) && hover != null) {
-				objects[(int) hover.x][(int) hover.z][this.currentLevel].setType(GLType.BLANK);
+				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
 				updateDisplayList();
 			}
 		} else {
 			hover = null;
 		}
 		if (Mouse.isButtonDown(1) && hover != null) {
-			objects[(int) hover.x][(int) hover.z][this.currentLevel].setType(GLType.GRASS);
+			objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.GRASS);
 			updateDisplayList();
 		}
+		int mouseWheel = Mouse.getDWheel();
+		if (mouseWheel < 0 && this.currentLevel < size.y - 1) {
+			this.currentLevel++;
+			updateDisplayList();
+		}
+
+		if (mouseWheel > 0 && this.currentLevel > 0) {
+			this.currentLevel--;
+			updateDisplayList();
+
+		}
+		// Display.setTitle("Level: " + this.currentLevel);
+
 	}
 
 	public int getLevel() {
@@ -326,10 +346,15 @@ public class GLChunk {
 	public void render() {
 		GL11.glCallList(this.dlId);
 		if (hover != null) {
-			int posX = position.x + (int) ((hover.x - hover.z) * 32);
-			int posY = (int) (((this.currentLevel) * 32));
-			int posZ = (int) (position.y + ((hover.z + hover.x) * 16) + posY + 32);
-			System.out.println("Level: " + posY);
+
+			int posX = (int) ((hover.x - hover.y) * 32);
+			int posY = this.currentLevel * 32;
+			int posZ = (int) (((hover.y + hover.x) * 16) + posY);
+
+			int height = 0;
+			if (isHoverEmpty()) {
+				height = 1;
+			}
 
 			GL11.glBegin(GL11.GL_LINE_LOOP);
 			GL11.glColor3f(0, 0, 0);
@@ -338,6 +363,20 @@ public class GLChunk {
 			GL11.glVertex2f(posX + 32, posZ + 32);
 			GL11.glVertex2f(posX, posZ + 16);
 			GL11.glVertex2f(posX + 32, posZ);
+
+			if (isBlank((int) hover.x, 1, (int) hover.y)) {
+
+				GL11.glVertex2f(posX + 32, posZ);
+				GL11.glVertex2f(posX, posZ + 16);
+				GL11.glVertex2f(posX, posZ + (32 * height) + 16);
+				GL11.glVertex2f(posX, posZ + (32 * height) + 16);
+				GL11.glVertex2f(posX + 32, posZ + (32 * height) + 32);
+
+				GL11.glVertex2f(posX + 32, posZ + (32 * height) + 32);
+				GL11.glVertex2f(posX + 64, posZ + (32 * height) + 16);
+				GL11.glVertex2f(posX + 64, posZ + 16);
+
+			}
 			GL11.glEnd();
 
 		}
