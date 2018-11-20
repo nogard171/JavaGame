@@ -244,7 +244,6 @@ public class GLChunk {
 		}
 	}
 
-
 	Vector2f hover;
 
 	public void update(Vector2f camera) {
@@ -347,8 +346,8 @@ public class GLChunk {
 		GL11.glCallList(this.dlId);
 		if (hover != null) {
 
-			int posX = (int) ((hover.x - hover.y) * 32);
-			int posY = this.currentLevel * 32;
+			int posX = this.position.x + (int) ((hover.x - hover.y) * 32);
+			int posY = this.position.y + (this.currentLevel * 32);
 			int posZ = (int) (((hover.y + hover.x) * 16) + posY);
 
 			int height = 0;
