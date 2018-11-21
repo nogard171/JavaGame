@@ -30,7 +30,6 @@ public class Main extends GLDisplay {
 
 	public void run() {
 		this.createDisplay();
-
 		for (int x = 0; x < 10; x++) {
 			for (int z = 0; z < 10; z++) {
 				GLChunk chunk = new GLChunk(x, 0, z);
@@ -106,13 +105,12 @@ public class Main extends GLDisplay {
 	@Override
 	public void render() {
 		super.render();
-		GL11.glPushMatrix();
-		GL11.glTranslatef(camera.x, camera.y, 0);
-		for (GLChunk chunk : chunks) {
-			chunk.render();
-		}
-
-		GL11.glPopMatrix();
+		/*
+		 * GL11.glPushMatrix(); GL11.glTranslatef(camera.x, camera.y, 0); for (GLChunk
+		 * chunk : chunks) { chunk.render(); }
+		 * 
+		 * GL11.glPopMatrix();
+		 */
 	}
 
 	public static void main(String[] args) {

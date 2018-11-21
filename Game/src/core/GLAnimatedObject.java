@@ -14,11 +14,9 @@ public class GLAnimatedObject extends GLObject {
 	public GLAnimatedObject(GLType newType) {
 		super(newType);
 	}
-
+	Texture texture;
 	public void loadFrames(String filename) {
 		if (new File(filename).exists()) {
-			// GL11.glEnable(GL11.GL_TEXTURE_2D);
-			Texture texture = null;
 			String ext = filename.substring(filename.lastIndexOf('.') + 1, filename.length());
 			try {
 				texture = TextureLoader.getTexture(ext, ResourceLoader.getResourceAsStream(filename));
@@ -27,14 +25,18 @@ public class GLAnimatedObject extends GLObject {
 			}
 			if (texture != null) {
 				GL11.glColor4f(1, 0, 0, 1);
-				// texture.bind();
+				texture.bind();
 				GL11.glBegin(GL11.GL_QUADS);
-
-				GL11.glVertex2f(1, 1);
-				GL11.glVertex2f(32, 1);
+				GL11.glTexCoord2f(0, 0);
+				GL11.glVertex2f(0, 0);
+				GL11.glTexCoord2f(1, 0);
+				GL11.glVertex2f(32, 0);
+				GL11.glTexCoord2f(1, 1);
 				GL11.glVertex2f(32, 32);
-				GL11.glVertex2f(1, 32);
+				GL11.glTexCoord2f(0, 1);
+				GL11.glVertex2f(0, 32);
 				GL11.glEnd();
+
 			} else {
 
 				System.out.println("Error: ");
