@@ -1,0 +1,10 @@
+<sprites>
+	<sprite name='BLANK'>
+		<size width='64' height='64' />
+		<texture x='0' y='0' width='0.5' height='0.5' />
+	</sprite>
+	<sprite name='GRASS'>
+		<size width='64' height='64' />
+		<texture x='0.5' y='0' width='0.5' height='0.5' />
+	</sprite>
+</sprites>

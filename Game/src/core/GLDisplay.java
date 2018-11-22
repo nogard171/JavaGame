@@ -10,6 +10,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class GLDisplay {
 	public int WIDTH = 800;
@@ -21,8 +22,6 @@ public class GLDisplay {
 			Display.create();
 
 			Display.setResizable(true);
-
-			GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 
 			this.setupViewPort();
 
@@ -42,9 +41,17 @@ public class GLDisplay {
 		glOrtho(0, WIDTH, HEIGHT, 0, -1, 1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
+		// GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+
+		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
 	public void destroyDisplay() {
@@ -60,6 +67,6 @@ public class GLDisplay {
 		if (Display.wasResized()) {
 			this.setupViewPort();
 		}
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 	}
 }

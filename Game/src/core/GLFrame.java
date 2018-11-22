@@ -1,7 +1,7 @@
 package core;
 
 public class GLFrame {
-	private int dl = -1;
+	private int dl = -1;	
 
 	public GLFrame(int newDL) {
 		this.setDL(newDL);

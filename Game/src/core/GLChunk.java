@@ -2,6 +2,7 @@ package core;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.util.HashMap;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -9,6 +10,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+
+import game.Main;
 
 public class GLChunk {
 	public Point position;
@@ -64,6 +67,9 @@ public class GLChunk {
 
 	public void updateDisplayList() {
 		this.updateBounds();
+
+		HashMap<String, GLSpriteData> sprites = Main.sprites;
+
 		renderCount = 0;
 		dlId = GL11.glGenLists(1);
 		GL11.glNewList(dlId, GL11.GL_COMPILE);
@@ -108,9 +114,16 @@ public class GLChunk {
 							} else {
 								obj.bounds = null;
 							}
-							renderObject(vec, out, color, x, y, z);
-							renderCount++;
 
+							GLSpriteData sprite = sprites.get("BLANK");
+							if (vec.x == 1 || vec.y == 1 || vec.z == 1) {
+								sprite = sprites.get(obj.getType().toString());
+							}
+							if (sprite != null) {
+
+								renderObject(sprite, x, y, z);
+								renderCount++;
+							}
 						}
 					}
 				}
@@ -170,9 +183,15 @@ public class GLChunk {
 					visible.y = 1;
 				}
 			}
-		} else {
-			visible.y = 1;
-		}
+		} 
+		if (y +1<size.y) {
+			GLObject top = objects[x][z][y + 1];
+			if (top != null) {
+				if (top.getType() == GLType.BLANK) {
+					visible.y = 1;
+				}
+			}
+		} 
 
 		if (x + 1 < objects.length) {
 			GLObject top = objects[x + 1][z][y];
@@ -181,10 +200,17 @@ public class GLChunk {
 					visible.x = 1;
 				}
 			}
-		} else {
-			visible.x = 1;
-		}
+		} 
 
+
+		if (x - 1 >0) {
+			GLObject top = objects[x - 1][z][y];
+			if (top != null) {
+				if (top.getType() == GLType.BLANK) {
+					visible.x = 1;
+				}
+			}
+		} 
 		if (z + 1 < objects[0].length) {
 			GLObject top = objects[x][z + 1][y];
 			if (top != null) {
@@ -192,55 +218,39 @@ public class GLChunk {
 					visible.z = 1;
 				}
 			}
-		} else {
-			visible.z = 1;
 		}
+		
+
+		if (z - 1 >0) {
+			GLObject top = objects[x][z - 1][y];
+			if (top != null) {
+				if (top.getType() == GLType.BLANK) {
+					visible.z = 1;
+				}
+			}
+		} 
+		
 		return visible;
 	}
 
-	private void renderObject(Vector3f visiblility, Vector2f outFacing, Color color, int x, int y, int z) {
+	private void renderObject(GLSpriteData spriteData, int x, int y, int z) {
+		if (spriteData != null) {
+			GL11.glColor3f(1, 1, 1);
 
-		int posX = position.x + ((x - z) * 32);
-		int posY = position.y + ((y - 1) * 32);
-		int posZ = ((z + x) * 16) + posY;
-		Color oldColor = color;
+			int posX = position.x + ((x - z) * 32);
+			int posY = position.y + ((y - 1) * 32);
+			int posZ = ((z + x) * 16) + posY;
 
-		if (visiblility.y == 1) {// || y == this.currentLevel + 1) {
-			GL11.glColor4f((float) color.getRed() / (float) 255, (float) color.getGreen() / (float) 255,
-					(float) color.getBlue() / (float) 255, (float) color.getAlpha() / (float) 255);
+			GL11.glTexCoord2f(spriteData.textureData.x, spriteData.textureData.y);
+			GL11.glVertex2f(posX, posZ);
+			GL11.glTexCoord2f(spriteData.textureData.x + spriteData.textureData.z, spriteData.textureData.y);
+			GL11.glVertex2f(posX + spriteData.size.getWidth(), posZ);
+			GL11.glTexCoord2f(spriteData.textureData.x + spriteData.textureData.z,
+					spriteData.textureData.y + spriteData.textureData.w);
+			GL11.glVertex2f(posX + spriteData.size.getWidth(), posZ + spriteData.size.getHeight());
+			GL11.glTexCoord2f(spriteData.textureData.x, spriteData.textureData.y + spriteData.textureData.w);
+			GL11.glVertex2f(posX, posZ + spriteData.size.getHeight());
 
-			GL11.glVertex2f(posX + 32, posZ);
-			GL11.glVertex2f(posX + 64, posZ + 16);
-			GL11.glVertex2f(posX + 32, posZ + 32);
-			GL11.glVertex2f(posX, posZ + 16);
-		}
-		color = oldColor;
-		if (visiblility.z == 1) {// || outFacing.y == 1 || y == this.currentLevel + 1) {
-			if (outFacing.y == 1) {
-				color = new Color(128, 128, 128);
-			}
-			GL11.glColor4f(((float) color.getRed() / (float) 255) * 0.75f,
-					((float) color.getGreen() / (float) 255) * 0.75f, ((float) color.getBlue() / (float) 255) * 0.75f,
-					(float) color.getAlpha() / (float) 255);
-
-			GL11.glVertex2f(posX, posZ + 16);
-			GL11.glVertex2f(posX + 32, posZ + 32);
-			GL11.glVertex2f(posX + 32, posZ + 64);
-			GL11.glVertex2f(posX, posZ + 48);
-		}
-		color = oldColor;
-		if (visiblility.x == 1) {// || outFacing.x == 1 || y ==this.currentLevel + 1) {
-			if (outFacing.x == 1) {
-				color = new Color(128, 128, 128);
-			}
-			GL11.glColor4f(((float) color.getRed() / (float) 255) * 0.5f,
-					((float) color.getGreen() / (float) 255) * 0.5f, ((float) color.getBlue() / (float) 255) * 0.5f,
-					(float) color.getAlpha() / (float) 255);
-
-			GL11.glVertex2f(posX + 32, posZ + 32);
-			GL11.glVertex2f(posX + 64, posZ + 16);
-			GL11.glVertex2f(posX + 64, posZ + 48);
-			GL11.glVertex2f(posX + 32, posZ + 64);
 		}
 	}
 
@@ -343,7 +353,7 @@ public class GLChunk {
 	}
 
 	public void render() {
-		GL11.glCallList(this.dlId);
+
 		if (hover != null) {
 
 			int posX = this.position.x + (int) ((hover.x - hover.y) * 32);
@@ -356,7 +366,7 @@ public class GLChunk {
 			}
 
 			GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glColor3f(0, 0, 0);
+			GL11.glColor3f(1, 1, 1);
 			GL11.glVertex2f(posX + 32, posZ);
 			GL11.glVertex2f(posX + 64, posZ + 16);
 			GL11.glVertex2f(posX + 32, posZ + 32);
@@ -379,5 +389,6 @@ public class GLChunk {
 			GL11.glEnd();
 
 		}
+		GL11.glCallList(this.dlId);
 	}
 }
