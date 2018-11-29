@@ -50,8 +50,8 @@ public class Main extends GLDisplay {
 		}
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
-		for (int x = 0; x < 1; x++) {
-			for (int z = 0; z < 1; z++) {
+		for (int x = 0; x < 2; x++) {
+			for (int z = 0; z < 2; z++) {
 				GLChunk chunk = new GLChunk(x, 0, z);
 				chunks.add(chunk);
 			}
