@@ -2,6 +2,7 @@ package core;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -17,12 +18,16 @@ import game.Main;
 public class GLChunk {
 	public Point position;
 	public Vector3f size = new Vector3f(16, 16, 16);
+	public Vector3f index = new Vector3f();
 	private int dlId = -1;
 	private GLObject[][][] objects;
 	private Polygon bounds;
 	int currentLevel = 0;
+	boolean needsUpdating = false;
+	boolean isEmpty = false;
 
 	public GLChunk(int x, int y, int z) {
+		index = new Vector3f(x, y, z);
 		position = new Point((int) ((x - z) * (size.x * 32)), (int) (((z + x) * (size.x * 16)) + (y * (size.y * 32))));
 		this.setupChunk();
 	}
@@ -34,8 +39,8 @@ public class GLChunk {
 		int yCount = objects[0][0].length;
 
 		this.updateBounds();
-		
-		domidpoint() ;
+
+		// domidpoint() ;
 
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
@@ -43,7 +48,7 @@ public class GLChunk {
 
 					GLObject obj = new GLObject(GLType.BLANK);
 
-					if (y > map[x][z]-5) {
+					if (y > map[x][z] - 5) {
 						obj = new GLObject(GLType.GRASS);
 					}
 					objects[x][z][y] = obj;
@@ -66,12 +71,12 @@ public class GLChunk {
 			}
 		}
 		// Setup points in the 4 corners of the map.
-		map[0][0] = (int)size.y;
-		map[(int) size.x-1][0] = (int)size.y;
-		map[(int) size.x-1][(int) size.z-1] = (int)size.y;
-		map[0][(int) size.z-1] = (int)size.y;
+		map[0][0] = (int) size.y;
+		map[(int) size.x - 1][0] = (int) size.y;
+		map[(int) size.x - 1][(int) size.z - 1] = (int) size.y;
+		map[0][(int) size.z - 1] = (int) size.y;
 		// Do the midpoint
-		midpoint(0, 0, (int) size.x-1, (int) size.z-1);
+		midpoint(0, 0, (int) size.x - 1, (int) size.z - 1);
 	}
 
 	// This is the actual mid point displacement code.
@@ -131,8 +136,19 @@ public class GLChunk {
 
 	int renderCount = 0;
 
-	public void updateDisplayList() {
+	public void updateDisplayList(HashMap<String, GLChunk> chunks) {
+		this.isEmpty = false;
 		this.updateBounds();
+		GLChunk left = null;
+		GLChunk right = null;
+
+		if (chunks != null) {
+			left = chunks.get((int) (index.x + 1) + "," + (int) index.y + "," + (int) index.z);
+			right = chunks.get((int) index.x + "," + (int) index.y + "," + (int) (index.z + 1));
+		}
+		if (left != null) {
+			System.out.println(left.index);
+		}
 
 		HashMap<String, GLSpriteData> sprites = Main.sprites;
 
@@ -157,7 +173,7 @@ public class GLChunk {
 						if (obj.getType() != GLType.BLANK) {
 
 							Vector3f vec = isVisible(x, y, z);
-							Vector2f out = isOutFacing(x, y, z);
+							Vector2f out = isOutFacing(x, y, z, left, right);
 
 							if (vec.x == 0 && vec.y == 0 && vec.z == 0) {
 								color = new Color(128, 128, 128, 255);
@@ -181,9 +197,12 @@ public class GLChunk {
 								obj.bounds = null;
 							}
 
-							GLSpriteData sprite = sprites.get("BLANK");
+							GLSpriteData sprite = null;
 							if (vec.x == 1 || vec.y == 1 || vec.z == 1) {
 								sprite = sprites.get(obj.getType().toString());
+							}
+							if (out.x == 1 || out.y == 1) {
+								sprite = sprites.get("BLANK");
 							}
 							if (sprite != null) {
 
@@ -197,9 +216,13 @@ public class GLChunk {
 		}
 		GL11.glEnd();
 		GL11.glEndList();
+		if (renderCount == 0) {
+			this.isEmpty = true;
+		}
 	}
 
-	private Vector2f isOutFacing(int x, int y, int z) {
+	private Vector2f isOutFacing(int x, int y, int z, GLChunk leftChunk, GLChunk rightChunk) {
+
 		Vector2f visible = new Vector2f(0, 0);
 		boolean topFacing = false;
 		if (y - 1 > 0) {
@@ -221,7 +244,16 @@ public class GLChunk {
 					}
 				}
 			} else {
-				visible.x = 1;
+				if (leftChunk != null) {
+					GLObject leftChunkObject = leftChunk.objects[0][z][y];
+					if (leftChunkObject != null) {
+						if (leftChunkObject.getType() == GLType.BLANK) {
+							visible.x = 1;
+						}
+					}
+				} else {
+					visible.x = 1;
+				}
 			}
 
 			if (z + 1 < objects[0].length) {
@@ -232,7 +264,16 @@ public class GLChunk {
 					}
 				}
 			} else {
-				visible.y = 1;
+				if (rightChunk != null) {
+					GLObject rightChunkObject = rightChunk.objects[x][0][y];
+					if (rightChunkObject != null) {
+						if (rightChunkObject.getType() == GLType.BLANK) {
+							visible.y = 1;
+						}
+					}
+				} else {
+					visible.y = 1;
+				}
 			}
 		} else {
 			visible = new Vector2f(0, 0);
@@ -322,7 +363,7 @@ public class GLChunk {
 
 	Vector2f hover;
 
-	public void update(Vector2f camera) {
+	public void update(Vector2f camera, HashMap<String, GLChunk> chunks) {
 		Point mousePoint = new Point(Mouse.getX() - (int) camera.x,
 				Display.getHeight() - Mouse.getY() - (int) camera.y);
 
@@ -359,28 +400,38 @@ public class GLChunk {
 
 			if (Mouse.isButtonDown(0) && hover != null) {
 				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
-				updateDisplayList();
+				// updateDisplayList();
+				needsUpdating = true;
 			}
 		} else {
 			hover = null;
 		}
 		if (Mouse.isButtonDown(1) && hover != null) {
 			objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.GRASS);
-			updateDisplayList();
+			// updateDisplayList();
+			needsUpdating = true;
 		}
 		int mouseWheel = Mouse.getDWheel();
 		if (mouseWheel < 0 && this.currentLevel < size.y - 1) {
 			this.currentLevel++;
-			updateDisplayList();
+			// updateDisplayList();
+			needsUpdating = true;
 		}
 
 		if (mouseWheel > 0 && this.currentLevel > 0) {
 			this.currentLevel--;
-			updateDisplayList();
-
+			// updateDisplayList();
+			needsUpdating = true;
 		}
 		// Display.setTitle("Level: " + this.currentLevel);
+		if (needsUpdating) {
+			updateDisplayList(chunks);
+			needsUpdating = false;
+		}
+	}
 
+	public boolean isEmpty() {
+		return this.isEmpty;
 	}
 
 	public int getLevel() {
@@ -389,7 +440,7 @@ public class GLChunk {
 
 	public void changeLevel(int level) {
 		this.currentLevel = level;
-		this.updateDisplayList();
+		needsUpdating = true;
 	}
 
 	public boolean isBlank(int x, int y, int z) {
@@ -455,9 +506,8 @@ public class GLChunk {
 			GL11.glEnd();
 
 		}
-		if(this.dlId==-1)
-		{
-			updateDisplayList();
+		if (this.dlId == -1) {
+			needsUpdating = true;
 		}
 		GL11.glCallList(this.dlId);
 	}

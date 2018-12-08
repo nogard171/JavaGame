@@ -33,8 +33,8 @@ public class Main extends GLDisplay {
 	GLFPS fps = new GLFPS();
 
 	public static HashMap<String, GLSpriteData> sprites = new HashMap<String, GLSpriteData>();
-
-	ArrayList<GLChunk> chunks = new ArrayList<GLChunk>();
+	HashMap<String, GLChunk> chunks = new HashMap<String, GLChunk>();
+	// ArrayList<GLChunk> chunks = new ArrayList<GLChunk>();
 	int currentLevel = 0;
 	// GLAnimatedObject aniObj;
 	Texture texture;
@@ -50,10 +50,12 @@ public class Main extends GLDisplay {
 		}
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
+
 		for (int x = 0; x < 2; x++) {
 			for (int z = 0; z < 2; z++) {
 				GLChunk chunk = new GLChunk(x, 0, z);
-				chunks.add(chunk);
+				System.out.println(x + ",0," + z);
+				chunks.put(x + ",0," + z, chunk);
 			}
 		}
 
@@ -89,7 +91,7 @@ public class Main extends GLDisplay {
 		float speed = 0.5f * fps.getDelta();
 
 		int mouseWheel = Mouse.getDWheel();
-		if (mouseWheel < 0 && this.currentLevel < 16) {
+		if (mouseWheel < 0 && this.currentLevel < 3) {
 			this.currentLevel++;
 		}
 
@@ -97,13 +99,24 @@ public class Main extends GLDisplay {
 			this.currentLevel--;
 
 		}
+		/*
+		 * for (GLChunk chunk : chunks) { if (chunk.getLevel() != this.currentLevel) {
+		 * chunk.changeLevel(this.currentLevel); } chunk.update(camera,chunks); }
+		 */
 
-		for (GLChunk chunk : chunks) {
-			if (chunk.getLevel() != this.currentLevel) {
-				chunk.changeLevel(this.currentLevel);
+		for (Object obj : chunks.values()) {
+			GLChunk chunk = (GLChunk) obj;
+			if (chunk != null) {
+				if (!chunk.isEmpty()) {
+					if (chunk.getLevel() != this.currentLevel) {
+						chunk.changeLevel(this.currentLevel);
+					}
+				}
+				chunk.update(camera, chunks);
+
 			}
-			chunk.update(camera);
 		}
+
 		/*
 		 * while (Keyboard.next()) { if (Keyboard.isKeyDown(Keyboard.KEY_A)) { camera.x
 		 * += 64; } if (Keyboard.isKeyDown(Keyboard.KEY_D)) { camera.x -= 64; } if
@@ -131,8 +144,25 @@ public class Main extends GLDisplay {
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camera.x, camera.y, 0);
-		for (GLChunk chunk : chunks) {
-			chunk.render();
+		/*
+		 * for (GLChunk chunk : chunks) { chunk.render(); }
+		 */
+		/*
+		 * for (Object obj : chunks.values()) { GLChunk chunk = (GLChunk) obj; if (chunk
+		 * != null) { chunk.render(); } }
+		 */
+
+		for (int x = 0; x < 2; x++) {
+			for (int z = 0; z < 2; z++) {
+				GLChunk chunk = chunks.get(x + ",0," + z);
+
+				if (chunk != null) {
+					if (!chunk.isEmpty()) {
+						chunk.render();
+					}
+
+				}
+			}
 		}
 
 		GL11.glPopMatrix();
