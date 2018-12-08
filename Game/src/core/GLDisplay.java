@@ -51,7 +51,8 @@ public class GLDisplay {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
-		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+		//GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+		GL11.glClearColor(0,0,0,0);
 	}
 
 	public void destroyDisplay() {

@@ -37,7 +37,7 @@ public class Main extends GLDisplay {
 	// ArrayList<GLChunk> chunks = new ArrayList<GLChunk>();
 	int currentLevel = 0;
 	// GLAnimatedObject aniObj;
-	Texture texture;
+	public static Texture texture;
 
 	public void run() {
 		this.createDisplay();
@@ -52,10 +52,10 @@ public class Main extends GLDisplay {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 
 		for (int x = 0; x < 2; x++) {
-			for (int z = 0; z < 2; z++) {
-				GLChunk chunk = new GLChunk(x, 0, z);
-				System.out.println(x + ",0," + z);
-				chunks.put(x + ",0," + z, chunk);
+			for (int y = 0; y < 2; y++) {
+				GLChunk chunk = new GLChunk(x, y);
+				System.out.println(x + "," + y);
+				chunks.put(x + "," + y, chunk);
 			}
 		}
 
@@ -78,7 +78,6 @@ public class Main extends GLDisplay {
 			this.update();
 
 			this.render();
-			// aniObj.loadFrames("resources/textures/tree.png", new GLSize(32, 32));
 
 			this.postRender();
 		}
@@ -90,39 +89,14 @@ public class Main extends GLDisplay {
 	public void update() {
 		float speed = 0.5f * fps.getDelta();
 
-		int mouseWheel = Mouse.getDWheel();
-		if (mouseWheel < 0 && this.currentLevel < 3) {
-			this.currentLevel++;
-		}
-
-		if (mouseWheel > 0 && this.currentLevel > 0) {
-			this.currentLevel--;
-
-		}
-		/*
-		 * for (GLChunk chunk : chunks) { if (chunk.getLevel() != this.currentLevel) {
-		 * chunk.changeLevel(this.currentLevel); } chunk.update(camera,chunks); }
-		 */
-
 		for (Object obj : chunks.values()) {
 			GLChunk chunk = (GLChunk) obj;
 			if (chunk != null) {
-				if (!chunk.isEmpty()) {
-					if (chunk.getLevel() != this.currentLevel) {
-						chunk.changeLevel(this.currentLevel);
-					}
-				}
-				chunk.update(camera, chunks);
+				chunk.update();
 
 			}
 		}
 
-		/*
-		 * while (Keyboard.next()) { if (Keyboard.isKeyDown(Keyboard.KEY_A)) { camera.x
-		 * += 64; } if (Keyboard.isKeyDown(Keyboard.KEY_D)) { camera.x -= 64; } if
-		 * (Keyboard.isKeyDown(Keyboard.KEY_W)) { camera.y += 32; } if
-		 * (Keyboard.isKeyDown(Keyboard.KEY_S)) { camera.y -= 32; } }
-		 */
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			camera.x += speed;
 		}
@@ -144,23 +118,12 @@ public class Main extends GLDisplay {
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camera.x, camera.y, 0);
-		/*
-		 * for (GLChunk chunk : chunks) { chunk.render(); }
-		 */
-		/*
-		 * for (Object obj : chunks.values()) { GLChunk chunk = (GLChunk) obj; if (chunk
-		 * != null) { chunk.render(); } }
-		 */
-
 		for (int x = 0; x < 2; x++) {
-			for (int z = 0; z < 2; z++) {
-				GLChunk chunk = chunks.get(x + ",0," + z);
+			for (int y = 0; y < 2; y++) {
+				GLChunk chunk = chunks.get(x + "," + y);
 
 				if (chunk != null) {
-					if (!chunk.isEmpty()) {
-						chunk.render();
-					}
-
+					chunk.render();
 				}
 			}
 		}

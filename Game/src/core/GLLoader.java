@@ -58,10 +58,12 @@ public class GLLoader {
 					if (nNode3.getNodeType() == Node.ELEMENT_NODE) {
 
 						Element eElement2 = (Element) nNode3;
-						float texX = Float.parseFloat(eElement2.getAttribute("x"));
-						float texY = Float.parseFloat(eElement2.getAttribute("y"));
-						float texWidth = Float.parseFloat(eElement2.getAttribute("width"));
-						float texHeight = Float.parseFloat(eElement2.getAttribute("height"));
+						float texX = Float.parseFloat(eElement2.getAttribute("x")) / Main.texture.getTextureWidth();
+						float texY = Float.parseFloat(eElement2.getAttribute("y")) / Main.texture.getTextureHeight();
+						float texWidth = Float.parseFloat(eElement2.getAttribute("width"))
+								/ Main.texture.getTextureWidth();
+						float texHeight = Float.parseFloat(eElement2.getAttribute("height"))
+								/ Main.texture.getTextureHeight();
 						newSpriteData.textureData = new Vector4f(texX, texY, texWidth, texHeight);
 					}
 					spriteData.add(newSpriteData);
