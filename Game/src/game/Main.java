@@ -20,7 +20,6 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-import core.GLAnimatedObject;
 import core.GLChunk;
 import core.GLDisplay;
 import core.GLFPS;
@@ -34,9 +33,7 @@ public class Main extends GLDisplay {
 
 	public static HashMap<String, GLSpriteData> sprites = new HashMap<String, GLSpriteData>();
 	HashMap<String, GLChunk> chunks = new HashMap<String, GLChunk>();
-	// ArrayList<GLChunk> chunks = new ArrayList<GLChunk>();
 	int currentLevel = 0;
-	// GLAnimatedObject aniObj;
 	Texture texture;
 
 	public void run() {
@@ -51,8 +48,8 @@ public class Main extends GLDisplay {
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 
-		for (int x = 0; x < 2; x++) {
-			for (int z = 0; z < 2; z++) {
+		for (int x = 0; x < 1; x++) {
+			for (int z = 0; z < 1; z++) {
 				GLChunk chunk = new GLChunk(x, 0, z);
 				System.out.println(x + ",0," + z);
 				chunks.put(x + ",0," + z, chunk);
@@ -60,25 +57,18 @@ public class Main extends GLDisplay {
 		}
 
 		GLLoader.loadSprites("resources/data/sprites.xml");
-
-		// aniObj = new GLAnimatedObject(GLType.GRASS);
-
-		// GLChunk chunk = new GLChunk(0, 0, 0);
-		// chunks.add(chunk);
+		
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
-		// Setup wrap mode, i.e. how OpenGL will handle pixels outside of the expected
-		// range
-		// Note: GL_CLAMP_TO_EDGE is part of GL12
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+		
 		while (!Display.isCloseRequested()) {
 			fps.updateFPS();
 			this.update();
 
 			this.render();
-			// aniObj.loadFrames("resources/textures/tree.png", new GLSize(32, 32));
 
 			this.postRender();
 		}
@@ -91,7 +81,7 @@ public class Main extends GLDisplay {
 		float speed = 0.5f * fps.getDelta();
 
 		int mouseWheel = Mouse.getDWheel();
-		if (mouseWheel < 0 && this.currentLevel < 3) {
+		if (mouseWheel < 0 && this.currentLevel < 14) {
 			this.currentLevel++;
 		}
 
@@ -99,10 +89,6 @@ public class Main extends GLDisplay {
 			this.currentLevel--;
 
 		}
-		/*
-		 * for (GLChunk chunk : chunks) { if (chunk.getLevel() != this.currentLevel) {
-		 * chunk.changeLevel(this.currentLevel); } chunk.update(camera,chunks); }
-		 */
 
 		for (Object obj : chunks.values()) {
 			GLChunk chunk = (GLChunk) obj;
@@ -117,12 +103,6 @@ public class Main extends GLDisplay {
 			}
 		}
 
-		/*
-		 * while (Keyboard.next()) { if (Keyboard.isKeyDown(Keyboard.KEY_A)) { camera.x
-		 * += 64; } if (Keyboard.isKeyDown(Keyboard.KEY_D)) { camera.x -= 64; } if
-		 * (Keyboard.isKeyDown(Keyboard.KEY_W)) { camera.y += 32; } if
-		 * (Keyboard.isKeyDown(Keyboard.KEY_S)) { camera.y -= 32; } }
-		 */
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			camera.x += speed;
 		}

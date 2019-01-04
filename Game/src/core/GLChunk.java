@@ -40,7 +40,7 @@ public class GLChunk {
 
 		this.updateBounds();
 
-		// domidpoint() ;
+		//domidpoint() ;
 
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
@@ -201,9 +201,13 @@ public class GLChunk {
 							if (vec.x == 1 || vec.y == 1 || vec.z == 1) {
 								sprite = sprites.get(obj.getType().toString());
 							}
-							if (out.x == 1 || out.y == 1) {
+							else
+							{
 								sprite = sprites.get("BLANK");
 							}
+							//if (out.x == 1 || out.y == 1) {
+								//sprite = sprites.get("BLANK");
+							//}
 							if (sprite != null) {
 
 								renderObject(sprite, x, y, z);
