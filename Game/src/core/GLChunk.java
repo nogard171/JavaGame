@@ -143,8 +143,8 @@ public class GLChunk {
 		GLChunk right = null;
 
 		if (chunks != null) {
-			left = chunks.get((int) (index.x + 1) + "," + (int) index.y + "," + (int) index.z);
-			right = chunks.get((int) index.x + "," + (int) index.y + "," + (int) (index.z + 1));
+			//left = chunks.get((int) (index.x + 1) + "," + (int) index.y + "," + (int) index.z);
+			//right = chunks.get((int) index.x + "," + (int) index.y + "," + (int) (index.z + 1));
 		}
 		if (left != null) {
 			System.out.println(left.index);
@@ -203,11 +203,11 @@ public class GLChunk {
 							}
 							else
 							{
-								sprite = sprites.get("BLANK");
-							}
-							//if (out.x == 1 || out.y == 1) {
 								//sprite = sprites.get("BLANK");
-							//}
+							}
+							if (out.x == 1 || out.y == 1) {
+								//sprite = sprites.get("BLANK");
+							}
 							if (sprite != null) {
 
 								renderObject(sprite, x, y, z);
@@ -372,7 +372,7 @@ public class GLChunk {
 				Display.getHeight() - Mouse.getY() - (int) camera.y);
 
 		boolean mouseInChunk = bounds.contains(mousePoint);
-		if (mouseInChunk) {
+		if (mouseInChunk&&Mouse.isButtonDown(0)) {
 			hover = null;
 
 			int xCount = objects.length;
@@ -402,7 +402,7 @@ public class GLChunk {
 				}
 			}
 
-			if (Mouse.isButtonDown(0) && hover != null) {
+			if ( hover != null) {
 				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
 				// updateDisplayList();
 				needsUpdating = true;

@@ -132,8 +132,8 @@ public class Main extends GLDisplay {
 		 * != null) { chunk.render(); } }
 		 */
 
-		for (int x = 0; x < 2; x++) {
-			for (int z = 0; z < 2; z++) {
+		for (int x = 0; x < 1; x++) {
+			for (int z = 0; z < 1; z++) {
 				GLChunk chunk = chunks.get(x + ",0," + z);
 
 				if (chunk != null) {
