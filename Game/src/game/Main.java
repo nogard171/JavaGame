@@ -34,7 +34,7 @@ public class Main extends GLDisplay {
 	public static HashMap<String, GLSpriteData> sprites = new HashMap<String, GLSpriteData>();
 	HashMap<String, GLChunk> chunks = new HashMap<String, GLChunk>();
 	int currentLevel = 0;
-	Texture texture;
+	public static Texture texture;
 
 	public void run() {
 		this.createDisplay();

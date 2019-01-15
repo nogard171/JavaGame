@@ -40,7 +40,7 @@ public class GLChunk {
 
 		this.updateBounds();
 
-		//domidpoint() ;
+		// domidpoint() ;
 
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
@@ -48,7 +48,7 @@ public class GLChunk {
 
 					GLObject obj = new GLObject(GLType.BLANK);
 
-					if (y > map[x][z] - 5) {
+					if (y > 1) {
 						obj = new GLObject(GLType.GRASS);
 					}
 					objects[x][z][y] = obj;
@@ -143,8 +143,10 @@ public class GLChunk {
 		GLChunk right = null;
 
 		if (chunks != null) {
-			//left = chunks.get((int) (index.x + 1) + "," + (int) index.y + "," + (int) index.z);
-			//right = chunks.get((int) index.x + "," + (int) index.y + "," + (int) (index.z + 1));
+			// left = chunks.get((int) (index.x + 1) + "," + (int) index.y + "," + (int)
+			// index.z);
+			// right = chunks.get((int) index.x + "," + (int) index.y + "," + (int) (index.z
+			// + 1));
 		}
 		if (left != null) {
 			System.out.println(left.index);
@@ -198,16 +200,12 @@ public class GLChunk {
 							}
 
 							GLSpriteData sprite = null;
-							if (vec.x == 1 || vec.y == 1 || vec.z == 1) {
+							if (vec.x == 1 || vec.y == 1 || vec.z == 1||out.x == 1 || out.y == 1) {
 								sprite = sprites.get(obj.getType().toString());
+							} else {
+								sprite = sprites.get("BLANK");
 							}
-							else
-							{
-								//sprite = sprites.get("BLANK");
-							}
-							if (out.x == 1 || out.y == 1) {
-								//sprite = sprites.get("BLANK");
-							}
+							
 							if (sprite != null) {
 
 								renderObject(sprite, x, y, z);
@@ -290,7 +288,7 @@ public class GLChunk {
 		if (y - 1 > 0) {
 			GLObject top = objects[x][z][y - 1];
 			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
+				if (top.getType() == GLType.BLANK || top.getType() == GLType.TREE) {
 					visible.y = 1;
 				}
 			}
@@ -348,9 +346,9 @@ public class GLChunk {
 		if (spriteData != null) {
 			GL11.glColor3f(1, 1, 1);
 
-			int posX = position.x + ((x - z) * 32);
+			int posX = (int) (position.x + ((x - z) * 32) + spriteData.offset.x);
 			int posY = position.y + ((y - 1) * 32);
-			int posZ = ((z + x) * 16) + posY;
+			int posZ = (int) (((z + x) * 16) + posY + spriteData.offset.y);
 
 			GL11.glTexCoord2f(spriteData.textureData.x, spriteData.textureData.y);
 			GL11.glVertex2f(posX, posZ);
@@ -372,7 +370,9 @@ public class GLChunk {
 				Display.getHeight() - Mouse.getY() - (int) camera.y);
 
 		boolean mouseInChunk = bounds.contains(mousePoint);
-		if (mouseInChunk&&Mouse.isButtonDown(0)) {
+		boolean mouseIsDown = ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) ? true : false);
+
+		if (mouseInChunk && mouseIsDown) {
 			hover = null;
 
 			int xCount = objects.length;
@@ -402,18 +402,18 @@ public class GLChunk {
 				}
 			}
 
-			if ( hover != null) {
+			if (hover != null && Mouse.isButtonDown(0)) {
+				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.TREE);
+				// updateDisplayList();
+				needsUpdating = true;
+			}
+			if (hover != null && Mouse.isButtonDown(1)) {
 				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
 				// updateDisplayList();
 				needsUpdating = true;
 			}
 		} else {
 			hover = null;
-		}
-		if (Mouse.isButtonDown(1) && hover != null) {
-			objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.GRASS);
-			// updateDisplayList();
-			needsUpdating = true;
 		}
 		int mouseWheel = Mouse.getDWheel();
 		if (mouseWheel < 0 && this.currentLevel < size.y - 1) {

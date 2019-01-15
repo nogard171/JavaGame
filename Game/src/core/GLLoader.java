@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,6 +22,11 @@ import game.Main;
 
 public class GLLoader {
 	public static void loadSprites(String filename) {
+
+		float textureWidth = Main.texture.getImageWidth();
+		float textureHeight = Main.texture.getImageHeight();
+
+		System.out.println("Width:" + textureHeight);
 
 		ArrayList<GLSpriteData> spriteData = new ArrayList<GLSpriteData>();
 
@@ -42,27 +48,47 @@ public class GLLoader {
 					System.out.println("Name: " + newName);
 
 					newSpriteData.name = newName;
+
 					NodeList nList2 = eElement.getElementsByTagName("size");
-					Node nNode2 = nList2.item(0);
-					if (nNode2.getNodeType() == Node.ELEMENT_NODE) {
+					if (nList2 != null) {
+						Node nNode2 = nList2.item(0);
+						if (nNode2.getNodeType() == Node.ELEMENT_NODE) {
 
-						Element eElement2 = (Element) nNode2;
-						int sizeWidth = Integer.parseInt(eElement2.getAttribute("width"));
-						int sizeHeight = Integer.parseInt(eElement2.getAttribute("height"));
+							Element eElement2 = (Element) nNode2;
+							int sizeWidth = Integer.parseInt(eElement2.getAttribute("width"));
+							int sizeHeight = Integer.parseInt(eElement2.getAttribute("height"));
 
-						newSpriteData.size = new GLSize(sizeWidth, sizeHeight);
+							newSpriteData.size = new GLSize(sizeWidth, sizeHeight);
+						}
+					}
+					NodeList nList3 = eElement.getElementsByTagName("offset");
+					if (nList3 != null) {
+						Node nNode3 = nList3.item(0);
+						if (nNode3 != null) {
+							if (nNode3.getNodeType() == Node.ELEMENT_NODE) {
+
+								Element eElement2 = (Element) nNode3;
+								float texX = Float.parseFloat(eElement2.getAttribute("x"));
+								float texY = Float.parseFloat(eElement2.getAttribute("y"));
+								newSpriteData.offset = new Vector2f(texX, texY);
+							}
+						}
 					}
 
-					NodeList nList3 = eElement.getElementsByTagName("texture");
-					Node nNode3 = nList3.item(0);
-					if (nNode3.getNodeType() == Node.ELEMENT_NODE) {
+					NodeList nList4 = eElement.getElementsByTagName("texture");
+					if (nList4 != null) {
+						Node nNode4 = nList4.item(0);
+						if (nNode4.getNodeType() == Node.ELEMENT_NODE) {
 
-						Element eElement2 = (Element) nNode3;
-						float texX = Float.parseFloat(eElement2.getAttribute("x"));
-						float texY = Float.parseFloat(eElement2.getAttribute("y"));
-						float texWidth = Float.parseFloat(eElement2.getAttribute("width"));
-						float texHeight = Float.parseFloat(eElement2.getAttribute("height"));
-						newSpriteData.textureData = new Vector4f(texX, texY, texWidth, texHeight);
+							Element eElement2 = (Element) nNode4;
+							float texX = Float.parseFloat(eElement2.getAttribute("x")) / textureWidth;
+							System.out.println("x:" + texX);
+							float texY = Float.parseFloat(eElement2.getAttribute("y")) / textureHeight;
+							float texWidth = Float.parseFloat(eElement2.getAttribute("width")) / textureWidth;
+							float texHeight = Float.parseFloat(eElement2.getAttribute("height")) / textureHeight;
+
+							newSpriteData.textureData = new Vector4f(texX, texY, texWidth, texHeight);
+						}
 					}
 					spriteData.add(newSpriteData);
 				}
