@@ -103,8 +103,8 @@ public class GLChunk {
 		if (spriteData != null) {
 			GL11.glColor3f(1, 1, 1);
 
-			int posX = position.x + (x * 34);
-			int posY = position.y + (y * 34);
+			int posX = position.x + (x * 32);
+			int posY = position.y + (y * 32);
 
 			GL11.glTexCoord2f(spriteData.textureData.x, spriteData.textureData.y);
 			GL11.glVertex2f(posX, posY);
