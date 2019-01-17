@@ -1,5 +1,5 @@
 <sprites>
-	<sprite name='BLANK'>
+	<sprite name='UNKNOWN'>
 		<size width='64' height='64' />
 		<texture x='0' y='0' width='64' height='64' />
 	</sprite>

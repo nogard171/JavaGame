@@ -25,6 +25,7 @@ public class GLChunk {
 	int currentLevel = 0;
 	boolean needsUpdating = false;
 	boolean isEmpty = false;
+	Vector2f hover;
 
 	public GLChunk(int x, int y, int z) {
 		index = new Vector3f(x, y, z);
@@ -40,17 +41,18 @@ public class GLChunk {
 
 		this.updateBounds();
 
-		// domidpoint() ;
+		domidpoint();
 
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
 				for (int y = 0; y < yCount; y++) {
 
-					GLObject obj = new GLObject(GLType.BLANK);
-
-					if (y > 1) {
-						obj = new GLObject(GLType.GRASS);
+					GLObject obj = new GLObject(GLType.GRASS);
+					if (y == 0) {
+						obj.setKnown(true);
+						obj.setVisible(true);
 					}
+					obj.setPositionIndex(x, y, z);
 					objects[x][z][y] = obj;
 				}
 			}
@@ -125,13 +127,13 @@ public class GLChunk {
 
 	public void updateBounds() {
 		bounds = new Polygon();
-		bounds.addPoint(position.x + 32, position.y + (0 + (this.currentLevel * 32)));
+		bounds.addPoint(position.x + 32, position.y + (0 + ((this.currentLevel - 1) * 32)));
 		bounds.addPoint((int) (position.x + ((size.x + 1) * 32)),
-				(int) (position.y + (size.x * 16 + (this.currentLevel * 32))));
+				(int) (position.y + (size.x * 16 + ((this.currentLevel - 1) * 32))));
 		bounds.addPoint((int) (position.x + (size.x - size.z + 1) * 32),
-				(int) (position.y + ((size.z + size.x) * 16 + (this.currentLevel * 32))));
+				(int) (position.y + ((size.z + size.x) * 16 + ((this.currentLevel - 1) * 32))));
 		bounds.addPoint((int) (position.x + ((1 - size.z) * 32)),
-				(int) (position.y + (size.z * 16 + (this.currentLevel * 32))));
+				(int) (position.y + (size.z * 16 + ((this.currentLevel - 1) * 32))));
 	}
 
 	int renderCount = 0;
@@ -164,63 +166,89 @@ public class GLChunk {
 		int yCount = objects[0][0].length;
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
-				for (int y = yCount - 1; y > this.currentLevel; y--) {
+				for (int y = yCount - 1; y >= this.currentLevel; y--) {
 					GLObject obj = objects[x][z][y];
 					if (obj != null) {
 						Color color = new Color(128, 128, 128, 255);
-						if (obj.getType() == GLType.BLANK) {
+						if (obj.getType() == GLType.UNKNOWN) {
 						} else if (obj.getType() == GLType.GRASS) {
 							color = new Color(128, 255, 128, 255);
 						}
-						if (obj.getType() != GLType.BLANK) {
 
-							Vector3f vec = isVisible(x, y, z);
-							Vector2f out = isOutFacing(x, y, z, left, right);
-
-							if (vec.x == 0 && vec.y == 0 && vec.z == 0) {
-								color = new Color(128, 128, 128, 255);
-							}
-
-							if (vec.y == 1) {
-
-								int posX = position.x + ((x - z) * 32);
-								int posY = position.y + ((this.currentLevel) * 32);
-								int posZ = ((z + x) * 16) + posY;
-
-								Polygon poly = new Polygon();
-								poly.addPoint(posX + 32, posZ);
-								poly.addPoint(posX + 64, posZ + 16);
-
-								poly.addPoint(posX + 32, posZ + 32);
-								poly.addPoint(posX, posZ + 16);
-
-								obj.bounds = poly;
-							} else {
-								obj.bounds = null;
-							}
-
-							GLSpriteData sprite = null;
-							if (vec.x == 1 || vec.y == 1 || vec.z == 1||out.x == 1 || out.y == 1) {
-								sprite = sprites.get(obj.getType().toString());
-							} else {
-								sprite = sprites.get("BLANK");
-							}
-							
-							if (sprite != null) {
-
-								renderObject(sprite, x, y, z);
-								renderCount++;
-							}
+						checkObjectVisibility(obj);
+						GLSpriteData sprite = null;
+						if (obj.isVisible()) {
+							sprite = sprites.get(obj.getType().toString());
 						}
+
+						if (sprite != null) {
+							renderObject(obj, sprite);
+							renderCount++;
+						}
+
 					}
 				}
 			}
 		}
+
+		System.out.println("Count: " + renderCount);
 		GL11.glEnd();
 		GL11.glEndList();
 		if (renderCount == 0) {
 			this.isEmpty = true;
 		}
+	}
+
+	private void checkObjectVisibility(GLObject obj) {
+
+		boolean visible = obj.isVisible();
+
+		int x = (int) obj.getPositionIndex().getX();
+		int y = (int) obj.getPositionIndex().getY();
+		int z = (int) obj.getPositionIndex().getZ();
+
+		if (y - 1 >= 0) {
+			GLObject top = objects[x][z][y - 1];
+			if (top != null) {
+				System.out.println("Type: " + top.getType());
+				if (isMask(top.getType())) {
+					visible = true;
+				}
+			}
+		} else {
+			visible = true;
+		}
+
+		if (x + 1 < objects.length) {
+			GLObject left = objects[x + 1][z][y];
+			if (left != null) {
+				if (isMask(left.getType())) {
+					visible = true;
+				}
+			}
+		} else {
+			visible = true;
+		}
+
+		obj.setVisible(visible);
+	}
+
+	public boolean isMask(GLType type) {
+		boolean isMask = false;
+
+		switch (type) {
+		case BLANK:
+			isMask = true;
+			break;
+		case TREE:
+			isMask = true;
+			break;
+		default:
+			isMask = false;
+			break;
+		}
+
+		return isMask;
 	}
 
 	private Vector2f isOutFacing(int x, int y, int z, GLChunk leftChunk, GLChunk rightChunk) {
@@ -285,64 +313,21 @@ public class GLChunk {
 
 	private Vector3f isVisible(int x, int y, int z) {
 		Vector3f visible = new Vector3f(0, 0, 0);
-		if (y - 1 > 0) {
-			GLObject top = objects[x][z][y - 1];
-			if (top != null) {
-				if (top.getType() == GLType.BLANK || top.getType() == GLType.TREE) {
-					visible.y = 1;
-				}
-			}
-		} else {
-			visible.y = 1;
-		}
-		if (y + 1 < size.y) {
-			GLObject top = objects[x][z][y + 1];
-			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
-					visible.y = 1;
-				}
-			}
-		}
 
-		if (x + 1 < objects.length) {
-			GLObject top = objects[x + 1][z][y];
-			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
-					visible.x = 1;
-				}
-			}
-		}
-
-		if (x - 1 > 0) {
-			GLObject top = objects[x - 1][z][y];
-			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
-					visible.x = 1;
-				}
-			}
-		}
-		if (z + 1 < objects[0].length) {
-			GLObject top = objects[x][z + 1][y];
-			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
-					visible.z = 1;
-				}
-			}
-		}
-
-		if (z - 1 > 0) {
-			GLObject top = objects[x][z - 1][y];
-			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
-					visible.z = 1;
-				}
+		GLObject top = objects[x][z][y - 1];
+		if (top != null) {
+			if (top.getType() == GLType.BLANK || top.getType() == GLType.TREE) {
+				visible.y = 1;
 			}
 		}
 
 		return visible;
 	}
 
-	private void renderObject(GLSpriteData spriteData, int x, int y, int z) {
+	private void renderObject(GLObject obj, GLSpriteData spriteData) {
+		int x = (int) obj.getPositionIndex().getX();
+		int y = (int) obj.getPositionIndex().getY();
+		int z = (int) obj.getPositionIndex().getZ();
 		if (spriteData != null) {
 			GL11.glColor3f(1, 1, 1);
 
@@ -363,8 +348,6 @@ public class GLChunk {
 		}
 	}
 
-	Vector2f hover;
-
 	public void update(Vector2f camera, HashMap<String, GLChunk> chunks) {
 		Point mousePoint = new Point(Mouse.getX() - (int) camera.x,
 				Display.getHeight() - Mouse.getY() - (int) camera.y);
@@ -383,7 +366,7 @@ public class GLChunk {
 					GLObject obj = objects[x][z][this.currentLevel];
 					if (obj != null) {
 						int posX = position.x + (x - z) * 32;
-						int posY = position.y + this.currentLevel * 32;
+						int posY = position.y + (this.currentLevel - 1) * 32;
 						int posZ = ((z + x) * 16) + posY;
 						Polygon poly = new Polygon();
 						poly.addPoint(posX + 32, posZ);
@@ -403,13 +386,15 @@ public class GLChunk {
 			}
 
 			if (hover != null && Mouse.isButtonDown(0)) {
-				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.TREE);
-				// updateDisplayList();
+				GLObject obj = objects[(int) hover.x][(int) hover.y][this.currentLevel];
+				obj.setKnown(true);
+				obj.setType(GLType.TREE);
 				needsUpdating = true;
 			}
 			if (hover != null && Mouse.isButtonDown(1)) {
-				objects[(int) hover.x][(int) hover.y][this.currentLevel + 1].setType(GLType.BLANK);
-				// updateDisplayList();
+				GLObject obj = objects[(int) hover.x][(int) hover.y][this.currentLevel];
+				obj.setKnown(false);
+				obj.setType(GLType.GRASS);
 				needsUpdating = true;
 			}
 		} else {
@@ -418,16 +403,13 @@ public class GLChunk {
 		int mouseWheel = Mouse.getDWheel();
 		if (mouseWheel < 0 && this.currentLevel < size.y - 1) {
 			this.currentLevel++;
-			// updateDisplayList();
 			needsUpdating = true;
 		}
 
 		if (mouseWheel > 0 && this.currentLevel > 0) {
 			this.currentLevel--;
-			// updateDisplayList();
 			needsUpdating = true;
 		}
-		// Display.setTitle("Level: " + this.currentLevel);
 		if (needsUpdating) {
 			updateDisplayList(chunks);
 			needsUpdating = false;
@@ -447,72 +429,21 @@ public class GLChunk {
 		needsUpdating = true;
 	}
 
-	public boolean isBlank(int x, int y, int z) {
-		boolean visible = false;
-		GLObject top = objects[x][z][y];
-		if (top.getType() == GLType.BLANK) {
-			visible = true;
-		}
-		return visible;
-	}
-
-	public boolean isHoverEmpty() {
-		boolean empty = false;
-		if (hover != null) {
-			int yCount = objects[0][0].length;
-			for (int y = yCount - 1; y > this.currentLevel; y--) {
-				GLObject top = objects[(int) hover.x][(int) hover.y][y];
-				if (top != null) {
-					if (top.getType() == GLType.BLANK) {
-						empty = true;
-						break;
-					}
-				}
-			}
-		}
-		return empty;
-	}
-
 	public void render() {
 
-		if (hover != null) {
-
-			int posX = this.position.x + (int) ((hover.x - hover.y) * 32);
-			int posY = this.position.y + (this.currentLevel * 32);
-			int posZ = (int) (((hover.y + hover.x) * 16) + posY);
-
-			int height = 0;
-			if (isHoverEmpty()) {
-				height = 1;
-			}
-
-			GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glColor3f(1, 1, 1);
-			GL11.glVertex2f(posX + 32, posZ);
-			GL11.glVertex2f(posX + 64, posZ + 16);
-			GL11.glVertex2f(posX + 32, posZ + 32);
-			GL11.glVertex2f(posX, posZ + 16);
-			GL11.glVertex2f(posX + 32, posZ);
-
-			if (isBlank((int) hover.x, 1, (int) hover.y)) {
-
-				GL11.glVertex2f(posX + 32, posZ);
-				GL11.glVertex2f(posX, posZ + 16);
-				GL11.glVertex2f(posX, posZ + (32 * height) + 16);
-				GL11.glVertex2f(posX, posZ + (32 * height) + 16);
-				GL11.glVertex2f(posX + 32, posZ + (32 * height) + 32);
-
-				GL11.glVertex2f(posX + 32, posZ + (32 * height) + 32);
-				GL11.glVertex2f(posX + 64, posZ + (32 * height) + 16);
-				GL11.glVertex2f(posX + 64, posZ + 16);
-
-			}
-			GL11.glEnd();
-
-		}
 		if (this.dlId == -1) {
 			needsUpdating = true;
 		}
 		GL11.glCallList(this.dlId);
+
+		/*
+		 * GL11.glDisable(GL11.GL_TEXTURE_2D);
+		 * 
+		 * GL11.glBegin(GL11.GL_LINE_LOOP); GL11.glColor3f(1, 0, 0); for (int x = 0; x <
+		 * bounds.xpoints.length; x++) { float posX = bounds.xpoints[x]; float posZ =
+		 * bounds.ypoints[x]; GL11.glVertex2f(posX, posZ); } GL11.glEnd();
+		 * GL11.glEnable(GL11.GL_TEXTURE_2D);
+		 * 
+		 */
 	}
 }
