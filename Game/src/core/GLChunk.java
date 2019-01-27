@@ -17,7 +17,7 @@ import game.Main;
 
 public class GLChunk {
 	public Point position;
-	public Vector3f size = new Vector3f(16, 16, 16);
+	public Vector3f size = new Vector3f(5, 5, 5);
 	public Vector3f index = new Vector3f();
 	private int dlId = -1;
 	private GLObject[][][] objects;
@@ -169,16 +169,15 @@ public class GLChunk {
 				for (int y = yCount - 1; y >= this.currentLevel; y--) {
 					GLObject obj = objects[x][z][y];
 					if (obj != null) {
-						Color color = new Color(128, 128, 128, 255);
-						if (obj.getType() == GLType.UNKNOWN) {
-						} else if (obj.getType() == GLType.GRASS) {
-							color = new Color(128, 255, 128, 255);
-						}
 
 						checkObjectVisibility(obj);
 						GLSpriteData sprite = null;
 						if (obj.isVisible()) {
-							sprite = sprites.get(obj.getType().toString());
+							if (obj.isKnown()) {
+								sprite = sprites.get(obj.getType().toString());
+							} else {
+								sprite = sprites.get("UNKNOWN");
+							}
 						}
 
 						if (sprite != null) {
@@ -210,8 +209,8 @@ public class GLChunk {
 		if (y - 1 >= 0) {
 			GLObject top = objects[x][z][y - 1];
 			if (top != null) {
-				System.out.println("Type: " + top.getType());
 				if (isMask(top.getType())) {
+					obj.setKnown(true);
 					visible = true;
 				}
 			}
@@ -220,9 +219,10 @@ public class GLChunk {
 		}
 
 		if (x + 1 < objects.length) {
-			GLObject left = objects[x + 1][z][y];
-			if (left != null) {
-				if (isMask(left.getType())) {
+			GLObject right = objects[x + 1][z][y];
+			if (right != null) {
+				if (isMask(right.getType())) {
+					obj.setKnown(true);
 					visible = true;
 				}
 			}
@@ -230,6 +230,36 @@ public class GLChunk {
 			visible = true;
 		}
 
+		if (x - 1 >= 0) {
+			GLObject right = objects[x - 1][z][y];
+			if (right != null) {
+				if (isMask(right.getType())) {
+					obj.setKnown(true);
+					visible = true;
+				}
+			}
+		}
+		if (z + 1 < objects[0].length) {
+			GLObject left = objects[x][z + 1][y];
+			if (left != null) {
+				if (isMask(left.getType())) {
+					obj.setKnown(true);
+					visible = true;
+				}
+			}
+		} else {
+			visible = true;
+		}
+
+		if (z - 1 >= 0) {
+			GLObject left = objects[x][z - 1][y];
+			if (left != null) {
+				if (isMask(left.getType())) {
+					obj.setKnown(true);
+					visible = true;
+				}
+			}
+		}
 		obj.setVisible(visible);
 	}
 
@@ -393,7 +423,7 @@ public class GLChunk {
 			}
 			if (hover != null && Mouse.isButtonDown(1)) {
 				GLObject obj = objects[(int) hover.x][(int) hover.y][this.currentLevel];
-				obj.setKnown(false);
+				obj.setKnown(true);
 				obj.setType(GLType.GRASS);
 				needsUpdating = true;
 			}
