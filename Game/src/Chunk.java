@@ -8,7 +8,8 @@ import org.newdawn.slick.opengl.Texture;
 public class Chunk {
 	int displayListHandle = -1;
 	Vector3f position = new Vector3f(0, 0, 0);
-	Material[][][] data;
+	Vector3f index = new Vector3f(0, 0, 0);
+	public static Material[][][] data;
 	Vector3f size = new Vector3f(16, 16, 16);
 	ArrayList<Material> cubes = new ArrayList<Material>();
 
@@ -17,9 +18,9 @@ public class Chunk {
 	}
 
 	public Chunk(int i, int j, int k) {
-		// TODO Auto-generated constructor stub
 		loadChunk();
 		position = new Vector3f(i, j, k);
+		index = new Vector3f(i / 16, j / 16, k / 16);
 	}
 
 	public void loadChunk() {
@@ -29,10 +30,40 @@ public class Chunk {
 			for (int x = 0; x < size.x; x++) {
 				for (int z = 0; z < size.z; z++) {
 
-					data[y][x][z] = new Material();
+					if (x == 0 && y == 14 && z == 0) {
+						data[y][x][z] = new Material(Type.AIR);
+					} else {
+						data[y][x][z] = new Material(Type.GRASS);
+					}
 				}
 			}
 		}
+	}
+
+	Type[] blankTypes = { Type.AIR, Type.BLANK };
+
+	public boolean containsType(Type[] types, Type newType) {
+		boolean containsType = false;
+		for (int i = 0; i < types.length; i++) {
+
+			if (types[i].toString() == newType.toString()) {
+				containsType = true;
+				break;
+			}
+		}
+		return containsType;
+	}
+
+	public boolean isCubeBlank(Material mat) {
+		boolean isBlank = false;
+		if (mat != null) {
+			if (containsType(blankTypes, mat.type)) {
+				isBlank = true;
+			}
+		} else {
+			isBlank = true;
+		}
+		return isBlank;
 	}
 
 	public void renderChunk(float step) {
@@ -47,17 +78,20 @@ public class Chunk {
 
 			GL11.glPushMatrix();
 			GL11.glTranslatef(this.position.x, this.position.y, this.position.z);
+			GL11.glBegin(GL11.GL_QUADS);
 			for (int y = 0; y < size.y; y++) {
 				for (int x = 0; x < size.x; x++) {
 					for (int z = 0; z < size.z; z++) {
 						Material mat = data[y][x][z];
 						if (mat != null) {
-							renderCube(new Vector3f(x, y, z), step, mat);
+							if (!isCubeBlank(mat)) {
+								renderCube(new Vector3f(x, y, z), step, mat);
+							}
 						}
-
 					}
 				}
 			}
+			GL11.glEnd();
 			GL11.glPopMatrix();
 
 			GL11.glEndList();
@@ -71,109 +105,206 @@ public class Chunk {
 		float x = vec.x;
 		float y = vec.y;
 		float z = vec.z;
-		GL11.glBegin(GL11.GL_QUADS);
+		Vector2f tex = null;
 		Material check = null;
 		if (y + 1 < size.y) {
 			check = data[(int) y + 1][(int) x][(int) z];
+		} else {
+
+			String key = (int) index.x + "," + ((int) index.y + 1) + "," + (int) index.z;
+			Chunk chunkCheck = Application.chunks.get(key);
+
+			if (chunkCheck != null) {
+				Material matCheck = chunkCheck.data[0][(int) x][(int) z];
+
+				if (matCheck != null) {
+					boolean isBlank = isCubeBlank(matCheck);
+					if (!isBlank) {
+						check = matCheck;
+					}
+				}
+			}
 		}
-		Vector2f tex = null;
-		if (check == null) {
-			tex = mat.vec[0];
-			// top
-			GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
-			GL11.glVertex3f(x + 1, y + 1, z);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
-			GL11.glVertex3f(x, y + 1, z);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x, y + 1, z + 1);
-			GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x + 1, y + 1, z + 1);
+		if (isCubeBlank(check)) {
+			tex = mat.type.getVec()[0];
+			if (tex != null) {
+				// top
+				GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
+				GL11.glVertex3f(x + 1, y + 1, z);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
+				GL11.glVertex3f(x, y + 1, z);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x, y + 1, z + 1);
+				GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x + 1, y + 1, z + 1);
+			}
 		}
 
 		check = null;
 		if (y - 1 >= 0) {
 			check = data[(int) y - 1][(int) x][(int) z];
+			System.out.println("check: " + check);
+		} else {
+
+			String key = (int) index.x + "," + ((int) index.y - 1) + "," + (int) index.z;
+			Chunk chunkCheck = Application.chunks.get(key);
+
+			if (chunkCheck != null) {
+				Material matCheck = chunkCheck.data[(int) (size.y - 1)][(int) x][(int) z];
+				if (matCheck != null) {
+					boolean isBlank = isCubeBlank(matCheck);
+					if (!isBlank) {
+						check = matCheck;
+					}
+				}
+			}
 		}
-		if (check == null) {
-			tex = mat.vec[1];
-			// bottom
-			GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
-			GL11.glVertex3f(x + 1, y, z + 1);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
-			GL11.glVertex3f(x, y, z + 1);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x, y, z);
-			GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x + 1, y, z);
+		if (isCubeBlank(check)) {
+			tex = mat.type.getVec()[1];
+			if (tex != null) {
+				// bottom
+				GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
+				GL11.glVertex3f(x + 1, y, z + 1);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
+				GL11.glVertex3f(x, y, z + 1);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x, y, z);
+				GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x + 1, y, z);
+			}
 		}
 
 		check = null;
 		if (z - 1 >= 0) {
 			check = data[(int) y][(int) x][(int) z - 1];
+		} else {
+
+			String key = (int) index.x + "," + (int) index.y + "," + (int) (index.z - 1);
+			Chunk chunkCheck = Application.chunks.get(key);
+
+			if (chunkCheck != null) {
+				Material matCheck = chunkCheck.data[(int) y][(int) x][(int) (size.z - 1)];
+				if (matCheck != null) {
+					boolean isBlank = isCubeBlank(matCheck);
+					if (!isBlank) {
+						check = matCheck;
+					}
+				}
+			}
 		}
-		if (check == null) {
-			tex = mat.vec[2];
-			// south
-			GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
-			GL11.glVertex3f(x + 1, y, z);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
-			GL11.glVertex3f(x, y, z);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x, y + 1, z);
-			GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x + 1, y + 1, z);
+		if (isCubeBlank(check)) {
+			tex = mat.type.getVec()[2];
+			if (tex != null) {
+				// south
+				GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
+				GL11.glVertex3f(x + 1, y, z);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
+				GL11.glVertex3f(x, y, z);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x, y + 1, z);
+				GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x + 1, y + 1, z);
+			}
 		}
 
 		check = null;
 		if (z + 1 < size.z) {
 			check = data[(int) y][(int) x][(int) z + 1];
+		} else {
+
+			String key = (int) index.x + "," + (int) index.y + "," + (int) (index.z + 1);
+			Chunk chunkCheck = Application.chunks.get(key);
+
+			if (chunkCheck != null) {
+				Material matCheck = chunkCheck.data[(int) y][(int) x][0];
+				if (matCheck != null) {
+					boolean isBlank = isCubeBlank(matCheck);
+					if (!isBlank) {
+						check = matCheck;
+					}
+				}
+			}
 		}
-		if (check == null) {
-			tex = mat.vec[3];
-			// north
-			GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
-			GL11.glVertex3f(x, y, z + 1);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
-			GL11.glVertex3f(x + 1, y, z + 1);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x + 1, y + 1, z + 1);
-			GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x, y + 1, z + 1);
+		if (isCubeBlank(check)) {
+			tex = mat.type.getVec()[3];
+			if (tex != null) {
+				// north
+				GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
+				GL11.glVertex3f(x, y, z + 1);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
+				GL11.glVertex3f(x + 1, y, z + 1);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x + 1, y + 1, z + 1);
+				GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x, y + 1, z + 1);
+			}
 		}
 
 		check = null;
 		if (x + 1 < size.x) {
 			check = data[(int) y][(int) x + 1][(int) z];
+		} else {
+
+			String key = (int) (index.x + 1) + "," + (int) index.y + "," + (int) index.z;
+			Chunk chunkCheck = Application.chunks.get(key);
+
+			if (chunkCheck != null) {
+				Material matCheck = chunkCheck.data[(int) y][0][(int) z];
+				if (matCheck != null) {
+					boolean isBlank = isCubeBlank(matCheck);
+					if (!isBlank) {
+						check = matCheck;
+					}
+				}
+			}
 		}
-		if (check == null) {
-			tex = mat.vec[4];
-			// east
-			GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
-			GL11.glVertex3f(x + 1, y, z + 1);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
-			GL11.glVertex3f(x + 1, y, z);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x + 1, y + 1, z);
-			GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x + 1, y + 1, z + 1);
+		if (isCubeBlank(check)) {
+			tex = mat.type.getVec()[4];
+			if (tex != null) {
+				// east
+				GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
+				GL11.glVertex3f(x + 1, y, z + 1);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
+				GL11.glVertex3f(x + 1, y, z);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x + 1, y + 1, z);
+				GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x + 1, y + 1, z + 1);
+			}
 		}
 
 		check = null;
 		if (x - 1 >= 0) {
 			check = data[(int) y][(int) x - 1][(int) z];
+		} else {
+
+			String key = (int) (index.x - 1) + "," + (int) index.y + "," + (int) index.z;
+			Chunk chunkCheck = Application.chunks.get(key);
+
+			if (chunkCheck != null) {
+				Material matCheck = chunkCheck.data[(int) y][(int) (size.x - 1)][(int) z];
+				if (matCheck != null) {
+					boolean isBlank = isCubeBlank(matCheck);
+					if (!isBlank) {
+						check = matCheck;
+					}
+				}
+			}
 		}
-		if (check == null) {
-			tex = mat.vec[5];
-			// west
-			GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
-			GL11.glVertex3f(x, y, z);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
-			GL11.glVertex3f(x, y, z + 1);
-			GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x, y + 1, z + 1);
-			GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
-			GL11.glVertex3f(x, y + 1, z);
+		if (isCubeBlank(check)) {
+			tex = mat.type.getVec()[5];
+			if (tex != null) {
+				// west
+				GL11.glTexCoord2f((tex.x) * step, (tex.y) * step);
+				GL11.glVertex3f(x, y, z);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y) * step);
+				GL11.glVertex3f(x, y, z + 1);
+				GL11.glTexCoord2f((tex.x + 1) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x, y + 1, z + 1);
+				GL11.glTexCoord2f((tex.x) * step, (tex.y + 1) * step);
+				GL11.glVertex3f(x, y + 1, z);
+			}
 		}
-		GL11.glEnd();
+
 	}
 }

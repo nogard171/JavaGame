@@ -34,12 +34,8 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
-
-
 // First Person Camera Controller
 public class Camera implements Serializable {
-
-	public static float moveSpeed = 0.005f;
 
 	private static float maxLook = 85;
 
@@ -60,24 +56,40 @@ public class Camera implements Serializable {
 			rotation.y += 360;
 		}
 		GL11.glLoadIdentity();
-		GL11.glRotatef(rotation.x, 1, 0, 0);
-		GL11.glRotatef(rotation.y, 0, 1, 0);
-		GL11.glRotatef(rotation.z, 0, 0, 1);
+		GL11.glRotatef(rotation.x, mouseSensitivity, 0, 0);
+		GL11.glRotatef(rotation.y, 0, mouseSensitivity, 0);
+		GL11.glRotatef(rotation.z, 0, 0, mouseSensitivity);
 		GL11.glTranslatef(-pos.x, -pos.y, -pos.z);
 	}
 
 	public static void acceptInput(float delta) {
+		Mouse.poll();
 		acceptInputRotate(delta);
 		acceptInputGrab();
-		acceptInputMove(delta);
+	}
+
+	public static void move(float speed) {
+		pos.x -= Math.sin(Math.toRadians(rotation.y)) * speed;
+		pos.z += Math.cos(Math.toRadians(rotation.y)) * speed;
+	}
+
+	public static void strafe(float speed) {
+		pos.x += Math.sin(Math.toRadians(rotation.y - 90)) * speed;
+		pos.z -= Math.cos(Math.toRadians(rotation.y - 90)) * speed;
+	}
+
+	public static void fly(float speed) {
+		pos.y += speed;
 	}
 
 	public static void acceptInputRotate(float delta) {
 		if (Mouse.isGrabbed()) {
 			float mouseDX = Mouse.getDX();
 			float mouseDY = -Mouse.getDY();
-			rotation.y += mouseDX * mouseSensitivity * delta;
-			rotation.x += mouseDY * mouseSensitivity * delta;
+			float speed = delta / 50;
+
+			rotation.y += mouseDX * speed;
+			rotation.x += mouseDY * speed;
 			rotation.x = Math.max(-maxLook, Math.min(maxLook, rotation.x));
 		}
 	}
@@ -89,57 +101,6 @@ public class Camera implements Serializable {
 		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			Mouse.setGrabbed(false);
 		}
-	}
-
-	public static void acceptInputMove(float delta) {
-		boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_W);
-		boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_S);
-		boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_D);
-		boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_A);
-		boolean keyFast = Keyboard.isKeyDown(Keyboard.KEY_Q);
-		boolean keySlow = Keyboard.isKeyDown(Keyboard.KEY_E);
-		boolean keyFlyUp = Keyboard.isKeyDown(Keyboard.KEY_SPACE);
-		boolean keyFlyDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-
-		float speed;
-
-		if (keyFast) {
-			speed = moveSpeed * 5;
-		} else if (keySlow) {
-			speed = moveSpeed / 2;
-		} else {
-			speed = moveSpeed;
-		}
-
-		speed *= delta;
-
-		if (keyFlyUp) {
-			pos.y += speed;
-		}
-		if (keyFlyDown) {
-			pos.y -= speed;
-		}
-
-		if (keyDown) {
-			pos.x -= Math.sin(Math.toRadians(rotation.y)) * speed;
-			pos.z += Math.cos(Math.toRadians(rotation.y)) * speed;
-		}
-		if (keyUp) {
-			pos.x += Math.sin(Math.toRadians(rotation.y)) * speed;
-			pos.z -= Math.cos(Math.toRadians(rotation.y)) * speed;
-		}
-		if (keyLeft) {
-			pos.x += Math.sin(Math.toRadians(rotation.y - 90)) * speed;
-			pos.z -= Math.cos(Math.toRadians(rotation.y - 90)) * speed;
-		}
-		if (keyRight) {
-			pos.x += Math.sin(Math.toRadians(rotation.y + 90)) * speed;
-			pos.z -= Math.cos(Math.toRadians(rotation.y + 90)) * speed;
-		}
-	}
-
-	public static void setSpeed(float speed) {
-		moveSpeed = speed;
 	}
 
 	public static void setPos(Vector3f pos) {
