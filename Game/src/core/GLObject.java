@@ -1,22 +1,31 @@
 package core;
 
-import java.awt.Polygon;
-
-import org.lwjgl.util.vector.Vector2f;
-
 public class GLObject {
-	private GLType type = GLType.BLANK;
-	public Polygon bounds = new Polygon();
+	private GLPosition position = new GLPosition(0, 0);
+	private GLPosition spriteOffset = new GLPosition(0, 0);
+	private GLSpriteType spriteType = GLSpriteType.NONE;
 
-	public GLObject(GLType newType) {
-		this.type = newType;
+	public void setPosition(float newX, float newY) {
+		this.position.setPosition(newX, newY);
 	}
 
-	public GLType getType() {
-		return this.type;
+	public void setSpriteOffset(float newX, float newY) {
+		this.spriteOffset.setPosition(newX, newY);
 	}
 
-	public void setType(GLType newType) {
-		this.type = newType;
+	public GLPosition getPosition() {
+		return this.position;
+	}
+
+	public GLPosition getSpriteOffset() {
+		return this.spriteOffset;
+	}
+
+	public GLSpriteType getSpriteType() {
+		return spriteType;
+	}
+
+	public void setSpriteType(GLSpriteType newSpriteType) {
+		this.spriteType = newSpriteType;
 	}
 }

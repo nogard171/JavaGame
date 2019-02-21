@@ -1,23 +1,27 @@
 package core;
 
 public class GLSize {
-	private float width = 0;
-	private float height = 0;
+	private int width = 0;
+	private int height = 0;
 
-	public GLSize(float newWidth, float newHeight) {
+	public GLSize() {
+
+	}
+
+	public GLSize(int newWidth, int newHeight) {
 		this.setSize(newWidth, newHeight);
 	}
 
-	public void setSize(float newWidth, float newHeight) {
+	public void setSize(int newWidth, int newHeight) {
 		this.width = newWidth;
 		this.height = newHeight;
 	}
 
-	public float getWidth() {
+	public int getWidth() {
 		return this.width;
 	}
 
-	public float getHeight() {
+	public int getHeight() {
 		return this.height;
 	}
 }

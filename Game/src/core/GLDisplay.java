@@ -1,69 +1,102 @@
 package core;
 
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
+
+import java.awt.Rectangle;
+import java.io.File;
+import java.util.concurrent.Callable;
+
+import javax.swing.JOptionPane;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.PixelFormat;
+
+import utils.GLFramesPerSecond;
 
 public class GLDisplay {
-	public int WIDTH = 800;
-	public int HEIGHT = 600;
 
-	public void createDisplay() {
+	private int WIDTH = 800;
+	private int HEIGHT = 600;
+	private int FPS = 60;
+	private boolean FPS_LIMITER = false;
+	private String TITLE = "";
+	private DisplayMode DISPLAYMODE = null;
+	private boolean RESIZABLE = true;
+
+	private boolean close = false;
+
+	public void create() {
 		try {
-			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+			this.DISPLAYMODE = new DisplayMode(WIDTH, HEIGHT);
+			Display.setDisplayMode(this.DISPLAYMODE);
+			Display.setResizable(RESIZABLE);
+			Display.setTitle(TITLE);
 			Display.create();
-
-			Display.setResizable(true);
-
-			this.setupViewPort();
-
+			this.setupGL();
 		} catch (LWJGLException e) {
-			e.printStackTrace();
-			System.exit(0);
 		}
 	}
 
-	public void setupViewPort() {
-		this.WIDTH = Display.getWidth();
-		this.HEIGHT = Display.getHeight();
+	private void setupGL() {
+		this.setupViewPort();
 
-		glViewport(0, 0, WIDTH, HEIGHT);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, WIDTH, HEIGHT, 0, -1, 1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-		// GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-
+		// Setup an XNA like background color
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
-		//GL11.glClearColor(0,0,0,0);
 	}
 
-	public void destroyDisplay() {
-		Display.destroy();
-	}
-
-	public void postRender() {
-		Display.update();
-		// Display.sync(60);
-	}
-
-	public void render() {
-		if (Display.wasResized()) {
+	public void update() {
+		if (wasResized()) {
 			this.setupViewPort();
 		}
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		if (this.close) {
+			Display.destroy();
+		}
 	}
+
+	public boolean wasResized() {
+		return Display.wasResized();
+	}
+
+	public boolean closed() {
+		return Display.isCloseRequested();
+	}
+
+	private void setupViewPort() {
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+
+	}
+
+	public void clean() {
+
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+	}
+
+	public void sync() {
+		Display.update();
+		if (FPS_LIMITER) {
+			Display.sync(FPS);
+		}
+	}
+
+	public void close() {
+		this.close = true;
+	}
+
 }
