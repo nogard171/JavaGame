@@ -27,7 +27,6 @@ import utils.GLLogger;
 public class Game {
 	GLDisplay display;
 	GLFramesPerSecond fps;
-	// GLShader shader;
 	GLCamera camera;
 	GLInput input;
 
@@ -53,7 +52,7 @@ public class Game {
 
 		input = new GLInput();
 		camera = new GLCamera(800, 600);
-		//newShader = GLShaderProgram.loadShader("basic.vert", "basic.frag");
+		newShader = GLShaderProgram.loadShader("basic.vert", "basic.frag");
 
 	}
 
@@ -94,12 +93,21 @@ public class Game {
 	}
 
 	public void render() {
-		//newShader.run();
+		newShader.run();
+
+		GL11.glColor3f(1, 0, 0);
+		GL11.glBegin(GL11.GL_TRIANGLES);
+
+		GL11.glVertex2i(0, 0);
+		GL11.glVertex2i(32, 0);
+		GL11.glVertex2i(32, 32);
+
+		GL11.glEnd();
 	}
 
 	public void destroy() {
-		//newShader.stop();
-		//newShader.destroy();
+		newShader.stop();
+		newShader.destroy();
 		display.close();
 	}
 
