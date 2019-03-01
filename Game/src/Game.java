@@ -12,6 +12,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -21,6 +22,7 @@ import core.GLDisplay;
 import core.GLInput;
 import core.GLShader;
 import core.GLShaderProgram;
+import utils.GLDebugger;
 import utils.GLFramesPerSecond;
 import utils.GLLogger;
 
@@ -95,7 +97,7 @@ public class Game {
 	public void render() {
 		newShader.run();
 
-		GL11.glColor3f(1, 0, 0);
+		GL11.glColor4f(1, 0, 0, 1);
 		GL11.glBegin(GL11.GL_TRIANGLES);
 
 		GL11.glVertex2i(0, 0);
@@ -103,6 +105,7 @@ public class Game {
 		GL11.glVertex2i(32, 32);
 
 		GL11.glEnd();
+		GLDebugger.showMessage("test", 100, 100, 12, Color.white);
 	}
 
 	public void destroy() {
