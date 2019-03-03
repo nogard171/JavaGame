@@ -1,3 +1,4 @@
+package game;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -20,10 +21,13 @@ import org.newdawn.slick.util.ResourceLoader;
 import core.GLCamera;
 import core.GLDisplay;
 import core.GLInput;
+import core.GLRenderer;
 import core.GLShader;
 import core.GLShaderProgram;
+import core.GLSpriteType;
 import utils.GLDebugger;
 import utils.GLFramesPerSecond;
+import utils.GLLoader;
 import utils.GLLogger;
 
 public class Game {
@@ -31,6 +35,7 @@ public class Game {
 	GLFramesPerSecond fps;
 	GLCamera camera;
 	GLInput input;
+	GLShader newShader;
 
 	public void start() {
 		this.setup();
@@ -56,9 +61,8 @@ public class Game {
 		camera = new GLCamera(800, 600);
 		newShader = GLShaderProgram.loadShader("basic.vert", "basic.frag");
 
+		GLLoader.loadSprites();
 	}
-
-	GLShader newShader;
 
 	public void UpdateWindow(int width, int height) {
 
@@ -96,16 +100,17 @@ public class Game {
 
 	public void render() {
 		newShader.run();
+		
+		float[] color = { 1, 0, 0,1 };
+		newShader.sendUniform4f("vertColor", color);
 
-		GL11.glColor4f(1, 0, 0, 1);
-		GL11.glBegin(GL11.GL_TRIANGLES);
+		//newShader.sendTexture("myTexture", DataHub.texture.getTextureID());
 
-		GL11.glVertex2i(0, 0);
-		GL11.glVertex2i(32, 0);
-		GL11.glVertex2i(32, 32);
-
-		GL11.glEnd();
-		GLDebugger.showMessage("test", 100, 100, 12, Color.white);
+		GLRenderer.RenderSprite(DataHub.spriteData.get(GLSpriteType.GRASS));
+		/*
+		 * GLDebugger.showBackground(0, 0, 100, 32); GLDebugger.showMessage("FPS: " +
+		 * fps.getFPS(), 0, 0, 12, Color.white);
+		 */
 	}
 
 	public void destroy() {
