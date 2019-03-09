@@ -51,9 +51,11 @@ public class GLDisplay {
 		this.setupViewPort();
 
 		GL11.glEnable(GL11.GL_BLEND);
-		//GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		// Setup an XNA like background color
+		//GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA); 
+		
+		GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
 	}
 
@@ -64,6 +66,10 @@ public class GLDisplay {
 		if (this.close) {
 			Display.destroy();
 		}
+
+		if (Display.isCloseRequested()) {
+			this.close = true;
+		}
 	}
 
 	public boolean wasResized() {
@@ -71,7 +77,7 @@ public class GLDisplay {
 	}
 
 	public boolean closed() {
-		return Display.isCloseRequested();
+		return this.close;
 	}
 
 	private void setupViewPort() {
@@ -85,7 +91,6 @@ public class GLDisplay {
 	}
 
 	public void clean() {
-
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 

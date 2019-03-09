@@ -1,54 +1,47 @@
 package game;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.UUID;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-import org.newdawn.slick.util.ResourceLoader;
 
 import core.GLCamera;
+import core.GLChunk;
 import core.GLDisplay;
 import core.GLInput;
-import core.GLRenderer;
 import core.GLShader;
 import core.GLShaderProgram;
 import core.GLSpriteType;
+import core.GLVelocity;
 import utils.GLDebugger;
 import utils.GLFramesPerSecond;
 import utils.GLLoader;
 import utils.GLLogger;
+import utils.GLRenderer;
 
 public class Game {
 	GLDisplay display;
 	GLFramesPerSecond fps;
 	GLCamera camera;
 	GLInput input;
-	GLShader newShader;
+
+	public static GLShader shader;
 
 	public void start() {
 		this.setup();
 		while (!display.closed()) {
 			fps.update();
 			float delta = fps.getDelta();
-			this.update(delta);
 			display.clean();
+			this.update(delta);
 			this.render();
 			display.sync();
 		}
 		this.destroy();
 	}
+
+	GLChunk chunk;
 
 	public void setup() {
 		display = new GLDisplay();
@@ -58,10 +51,17 @@ public class Game {
 		fps.start();
 
 		input = new GLInput();
-		camera = new GLCamera(800, 600);
-		newShader = GLShaderProgram.loadShader("basic.vert", "basic.frag");
+		camera = new GLCamera();
+
+		shader = GLShaderProgram.loadShader("resources/shaders/basic.vert", "resources/shaders/basic.frag");
 
 		GLLoader.loadSprites();
+
+		chunk = new GLChunk();
+
+		chunk.create();
+		chunk.generate();
+		chunk.build();
 	}
 
 	public void UpdateWindow(int width, int height) {
@@ -70,52 +70,65 @@ public class Game {
 
 	public void update(float delta) {
 		display.update();
-		input.update();
-		float speed = (delta + 1) * 0.5f;
 
-		float xSpeed = 0;
-		float ySpeed = 0;
+		if (Keyboard.isCreated()) {
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			xSpeed = speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			xSpeed = -speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			ySpeed = speed;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			ySpeed = -speed;
-		}
+			input.update();
+			float speed = (delta + 1) * 0.5f;
 
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-					display.close();
+			float xSpeed = 0;
+			float ySpeed = 0;
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				xSpeed = speed;
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				xSpeed = -speed;
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				ySpeed = speed;
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				ySpeed = -speed;
+			}
+			camera.Move(new GLVelocity(xSpeed, ySpeed));
+			camera.update();
+
+			while (Keyboard.next()) {
+				if (Keyboard.getEventKeyState()) {
+					if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+						display.close();
+					}
 				}
 			}
 		}
 	}
 
 	public void render() {
-		newShader.run();
+		shader.run();
 		
-		float[] color = { 1, 0, 0,1 };
-		newShader.sendUniform4f("vertColor", color);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, DataHub.texture.getTextureID());
 
-		//newShader.sendTexture("myTexture", DataHub.texture.getTextureID());
+		float[] cameraPosition = { camera.getPosition().getX(), camera.getPosition().getY() };
+		Game.shader.sendUniform2f("cameraPosition", cameraPosition);
 
-		GLRenderer.RenderSprite(DataHub.spriteData.get(GLSpriteType.GRASS));
-		/*
-		 * GLDebugger.showBackground(0, 0, 100, 32); GLDebugger.showMessage("FPS: " +
-		 * fps.getFPS(), 0, 0, 12, Color.white);
-		 */
+		float[] color = { 1, 1, 1 };
+		Game.shader.sendUniform3f("color", color);
+
+		shader.sendTexture("myTexture", DataHub.texture.getTextureID());
+
+		chunk.render();
+
+		shader.stop();
+
+		GLDebugger.showBackground(0, 0, 100, 32);
+		GLDebugger.showMessage("FPS: " + fps.getFPS(), 0, 0, 12, Color.white);
+
 	}
 
 	public void destroy() {
-		newShader.stop();
-		newShader.destroy();
+		DataHub.texture.release();
+		Keyboard.destroy();
 		display.close();
 	}
 

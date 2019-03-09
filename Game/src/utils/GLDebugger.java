@@ -43,9 +43,6 @@ public class GLDebugger {
 		if (font != null) {
 			font.drawString(x, y, message, fontColor);
 		}
-
-		// GL11.glEnable(GL11.GL_TEXTURE_2D);
-		// GL11.glDisable(GL11.GL_BLEND);
 		TextureImpl.bindNone();
 	}
 }

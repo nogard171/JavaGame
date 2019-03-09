@@ -3,6 +3,7 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Document;
@@ -43,6 +44,7 @@ public class GLLoader {
 					int h = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "h"));
 
 					GLSpriteData spriteData = new GLSpriteData();
+
 					spriteData.x = (float) x / DataHub.texture.getImageWidth();
 					spriteData.y = (float) y / DataHub.texture.getImageHeight();
 					spriteData.w = (float) w / DataHub.texture.getImageWidth();

@@ -35,7 +35,7 @@ public class GLShaderProgram {
 		int newShaderId;
 		String shaderFile = "";
 		try {
-			shaderFile = new String(Files.readAllBytes(Paths.get("resources/shaders/" + filename)));
+			shaderFile = new String(Files.readAllBytes(Paths.get( filename)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
