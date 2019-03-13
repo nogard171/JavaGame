@@ -1,7 +1,34 @@
 <sprites spriteSheet='tileset.png'>
-	<sprite name='blank' x='0' y='0' w='32' h='32' />
-	<sprite name='grass' x='32' y='0' w='32' h='32' />
-	<sprite name='water' x='32' y='32' w='32' h='32' />
-	<sprite name='dirt' x='0' y='32' w='32' h='32' />
-	<sprite name='stone' x='64' y='0' w='32' h='32' />
+	<sprite name='blank'>
+		<data x='0' y='0' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='grass'>
+		<data x='32' y='0' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='grass'>
+		<data x='32' y='0' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='water'>
+		<data x='32' y='32' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='dirt'>
+		<data x='0' y='32' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='stone'>
+		<data x='64' y='0' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='tree_trunk'>
+		<data x='0' y='64' w='32' h='32' />
+		<offset x='0' y='0' />
+	</sprite>
+	<sprite name='tree_top'>
+		<data x='96' y='32' w='32' h='96' />
+		<offset x='0' y='-64' />
+	</sprite>
 </sprites>

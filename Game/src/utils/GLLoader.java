@@ -38,19 +38,61 @@ public class GLLoader {
 				for (int temp2 = 0; temp2 < spriteList.getLength(); temp2++) {
 					Node spriteNode = spriteList.item(temp2);
 					String name = GLXMLHandler.getAttribute(spriteNode, "name");
-					int x = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "x"));
-					int y = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "y"));
-					int w = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "w"));
-					int h = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "h"));
 
 					GLSpriteData spriteData = new GLSpriteData();
 
-					spriteData.x = (float) x / DataHub.texture.getImageWidth();
-					spriteData.y = (float) y / DataHub.texture.getImageHeight();
-					spriteData.w = (float) w / DataHub.texture.getImageWidth();
-					spriteData.h = (float) h / DataHub.texture.getImageHeight();
+					NodeList spriteDataList = GLXMLHandler.getNodes(spriteNode, "data");
+					for (int temp3 = 0; temp3 < spriteDataList.getLength(); temp3++) {
+						Node spriteDataNode = spriteDataList.item(temp3);
+						int x = Integer.parseInt(GLXMLHandler.getAttribute(spriteDataNode, "x"));
+						int y = Integer.parseInt(GLXMLHandler.getAttribute(spriteDataNode, "y"));
+						int tw = Integer.parseInt(GLXMLHandler.getAttribute(spriteDataNode, "w"));
+						int th = Integer.parseInt(GLXMLHandler.getAttribute(spriteDataNode, "h"));
+
+						spriteData.tx = (float) x / DataHub.texture.getImageWidth();
+						spriteData.ty = (float) y / DataHub.texture.getImageHeight();
+						spriteData.tw = (float) tw / DataHub.texture.getImageWidth();
+						spriteData.th = (float) th / DataHub.texture.getImageHeight();
+
+						int w = Integer.parseInt(GLXMLHandler.getAttribute(spriteDataNode, "w"));
+						int h = Integer.parseInt(GLXMLHandler.getAttribute(spriteDataNode, "h"));
+
+						spriteData.w = w;
+						spriteData.h = h;
+					}
+
+					NodeList spriteOffsetList = GLXMLHandler.getNodes(spriteNode, "offset");
+					for (int temp3 = 0; temp3 < spriteOffsetList.getLength(); temp3++) {
+						Node spriteOffsetNode = spriteOffsetList.item(temp3);
+						int x = Integer.parseInt(GLXMLHandler.getAttribute(spriteOffsetNode, "x"));
+						int y = Integer.parseInt(GLXMLHandler.getAttribute(spriteOffsetNode, "y"));
+
+						spriteData.ox = x;
+						spriteData.oy = y;
+					}
 
 					DataHub.spriteData.put(GLSpriteType.getType(name), spriteData);
+					/*
+					 * int x = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "x")); int y =
+					 * Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "y")); int tw =
+					 * Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "w")); int th =
+					 * Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "h"));
+					 * 
+					 * int w = Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "w")); int h =
+					 * Integer.parseInt(GLXMLHandler.getAttribute(spriteNode, "h"));
+					 * 
+					 * 
+					 * 
+					 * spriteData.tx = (float) x / DataHub.texture.getImageWidth(); spriteData.ty =
+					 * (float) y / DataHub.texture.getImageHeight(); spriteData.tw = (float) tw /
+					 * DataHub.texture.getImageWidth(); spriteData.th = (float) th /
+					 * DataHub.texture.getImageHeight();
+					 * 
+					 * spriteData.w = w; spriteData.h = h;
+					 * 
+					 * DataHub.spriteData.put(GLSpriteType.getType(name), spriteData);
+					 */
+
 				}
 			}
 		} catch (IOException e) {

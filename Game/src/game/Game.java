@@ -74,7 +74,7 @@ public class Game {
 		if (Keyboard.isCreated()) {
 
 			input.update();
-			float speed = (delta + 1) * 0.5f;
+			float speed = (delta + 1) * 0.1f;
 
 			float xSpeed = 0;
 			float ySpeed = 0;
@@ -106,7 +106,7 @@ public class Game {
 
 	public void render() {
 		shader.run();
-		
+
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, DataHub.texture.getTextureID());
 
 		float[] cameraPosition = { camera.getPosition().getX(), camera.getPosition().getY() };
@@ -123,6 +123,7 @@ public class Game {
 
 		GLDebugger.showBackground(0, 0, 100, 32);
 		GLDebugger.showMessage("FPS: " + fps.getFPS(), 0, 0, 12, Color.white);
+		GLDebugger.showMessage("Delta: " + fps.getDelta(), 0, 16, 12, Color.white);
 
 	}
 

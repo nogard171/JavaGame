@@ -33,9 +33,16 @@ public class GLChunk {
 			for (int stackY = 0; stackY < stackSize.getHeight(); stackY++) {
 				GLObject obj = new GLObject();
 				obj.setSpriteType(GLSpriteType.GRASS);
-				if(stackX==0&&stackY==0)
-				{
-					obj.setSpriteType(GLSpriteType.DIRT);					
+				if (stackX == 0 && stackY == 0) {
+					GLObject obj2 = new GLObject();
+					obj2.setSpriteType(GLSpriteType.TREE_TOP);
+					obj2.setPosition(stackX * 32, stackY * 32);
+					objectStacks[stackX][stackY].addObject(obj2, 2);
+
+					GLObject obj3 = new GLObject();
+					obj3.setSpriteType(GLSpriteType.TREE_TRUNK);
+					obj3.setPosition(stackX * 32, stackY * 32);
+					objectStacks[stackX][stackY].addObject(obj3, 1);
 				}
 				obj.setPosition(stackX * 32, stackY * 32);
 				objectStacks[stackX][stackY].addObject(obj, 0);
@@ -50,6 +57,7 @@ public class GLChunk {
 			for (int stackY = 0; stackY < stackSize.getHeight(); stackY++) {
 				GLObjectStack objStack = objectStacks[stackX][stackY];
 				int layerMax = objStack.getLayerMax();
+				System.out.println("max: " + layerMax);
 				for (int stackMax = 0; stackMax < layerMax; stackMax++) {
 					GLObject obj = objStack.getObjectAtIndex(stackMax);
 					if (obj != null) {

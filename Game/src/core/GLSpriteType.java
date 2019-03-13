@@ -1,7 +1,7 @@
 package core;
 
 public enum GLSpriteType {
-	NONE, GRASS,DIRT,WATER,STONE;
+	NONE, GRASS,DIRT,WATER,STONE,TREE_TRUNK,TREE_TOP;
 	public static GLSpriteType getType(String newType) {
 		GLSpriteType type = GLSpriteType.NONE;
 		switch (newType.toLowerCase()) {
@@ -19,6 +19,12 @@ public enum GLSpriteType {
 			break;
 		case "stone":
 			type = GLSpriteType.STONE;
+			break;
+		case "tree_trunk":
+			type = GLSpriteType.TREE_TRUNK;
+			break;
+		case "tree_top":
+			type = GLSpriteType.TREE_TOP;
 			break;
 		}
 		return type;
