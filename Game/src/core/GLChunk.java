@@ -17,7 +17,7 @@ import game.Main;
 
 public class GLChunk {
 	public Point position;
-	public Vector3f size = new Vector3f(5, 5, 5);
+	public Vector3f size = new Vector3f(16, 16, 16);
 	public Vector3f index = new Vector3f();
 	private int dlId = -1;
 	private GLObject[][][] objects;
@@ -26,6 +26,7 @@ public class GLChunk {
 	boolean needsUpdating = false;
 	boolean isEmpty = false;
 	Vector2f hover;
+	GLGenerator gen;
 
 	public GLChunk(int x, int y, int z) {
 		index = new Vector3f(x, y, z);
@@ -34,6 +35,10 @@ public class GLChunk {
 	}
 
 	public void setupChunk() {
+
+		gen = new GLGenerator();
+		gen.init();
+
 		objects = new GLObject[(int) size.x][(int) size.z][(int) size.y];
 		int xCount = objects.length;
 		int zCount = objects[0].length;
@@ -46,8 +51,12 @@ public class GLChunk {
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
 				for (int y = 0; y < yCount; y++) {
-
-					GLObject obj = new GLObject(GLType.GRASS);
+					int height = gen.map[x][z];
+					System.out.println("Height: " + height);
+					GLObject obj = new GLObject(GLType.BLANK);
+					if (y > height) {
+						obj.setType(GLType.GRASS);
+					}
 					if (y == 0) {
 						obj.setKnown(true);
 						obj.setVisible(true);

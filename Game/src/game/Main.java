@@ -37,6 +37,9 @@ public class Main extends GLDisplay {
 	int currentLevel = 0;
 	public static Texture texture;
 
+	int mapWidth = 1;
+	int mapHeight = 1;
+
 	public void run() {
 		this.createDisplay();
 
@@ -49,8 +52,8 @@ public class Main extends GLDisplay {
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 
-		for (int x = 0; x < 1; x++) {
-			for (int z = 0; z < 1; z++) {
+		for (int x = 0; x < mapWidth; x++) {
+			for (int z = 0; z < mapHeight; z++) {
 				GLChunk chunk = new GLChunk(x, 0, z);
 				System.out.println(x + ",0," + z);
 				chunks.put(x + ",0," + z, chunk);
@@ -82,7 +85,7 @@ public class Main extends GLDisplay {
 		float speed = 0.5f * fps.getDelta();
 
 		int mouseWheel = Mouse.getDWheel();
-		if (mouseWheel < 0 && this.currentLevel < 4) {
+		if (mouseWheel < 0 && this.currentLevel < 15) {
 			this.currentLevel++;
 		}
 
@@ -133,8 +136,8 @@ public class Main extends GLDisplay {
 		 * != null) { chunk.render(); } }
 		 */
 
-		for (int x = 0; x < 1; x++) {
-			for (int z = 0; z < 1; z++) {
+		for (int x = 0; x < mapWidth; x++) {
+			for (int z = 0; z < mapHeight; z++) {
 				GLChunk chunk = chunks.get(x + ",0," + z);
 
 				if (chunk != null) {
