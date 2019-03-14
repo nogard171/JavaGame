@@ -16,11 +16,13 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
 import core.GLChunk;
+import core.GLDebug;
 import core.GLDisplay;
 import core.GLFPS;
 import core.GLLoader;
@@ -125,7 +127,7 @@ public class Main extends GLDisplay {
 	@Override
 	public void render() {
 		super.render();
-
+		texture.bind();
 		GL11.glPushMatrix();
 		GL11.glTranslatef(camera.x, camera.y, 0);
 		/*
@@ -150,6 +152,9 @@ public class Main extends GLDisplay {
 		}
 
 		GL11.glPopMatrix();
+
+		GLDebug.RenderBackground(0, 0, 100, 50);
+		GLDebug.RenderString(0, 0, "FPS: " + this.fps.fps, 12, Color.white);
 	}
 
 	public static void main(String[] args) {

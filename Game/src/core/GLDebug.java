@@ -1,6 +1,7 @@
-package utils;
+package core;
 
 import java.awt.Font;
+import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
@@ -9,6 +10,7 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.TextureImpl;
 
 public class GLDebug {
+	static HashMap<Integer, TrueTypeFont> fonts = new HashMap<Integer, TrueTypeFont>();
 	private static boolean isSetup = false;
 	private static boolean enabled = true;
 
@@ -25,6 +27,7 @@ public class GLDebug {
 	}
 
 	public static void RenderBackground(float x, float y, float width, float height) {
+		TextureImpl.bindNone();
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glColor4f(0, 0, 0, 0.5f);
 
@@ -38,9 +41,22 @@ public class GLDebug {
 
 	public static void RenderString(float x, float y, String text) {
 
+		RenderString(x, y, text, 12, Color.black);
 	}
 
-	public static void RenderString(Vector2f position, String text) {
-		RenderString(position.GetX(), position.GetY(), text);
+	public static void RenderString(float x, float y, String text, int fontSize) {
+
+		RenderString(x, y, text, fontSize, Color.black);
+	}
+
+	public static void RenderString(float x, float y, String text, int fontSize, Color color) {
+		TrueTypeFont font = fonts.get(fontSize);
+		if (font == null) {
+			Font awtFont = new Font("Times New Roman", Font.PLAIN, fontSize);
+			font = new TrueTypeFont(awtFont, false);
+			fonts.put(fontSize, font);
+		}
+		font.drawString(x, y, text, color);
+		TextureImpl.bindNone();
 	}
 }

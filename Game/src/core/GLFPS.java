@@ -8,7 +8,8 @@ public class GLFPS {
 	private static long lastFrame;
 
 	/** frames per second */
-	static int fps;
+	public static int fps;
+	private static int currentFPS;
 	/** last fps time */
 	private static long lastFPS = 0;
 
@@ -44,10 +45,10 @@ public class GLFPS {
 	 */
 	public static void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps);
-			fps = 0;
+			fps = currentFPS;
+			currentFPS = 0;
 			lastFPS += 1000;
 		}
-		fps++;
+		currentFPS++;
 	}
 }

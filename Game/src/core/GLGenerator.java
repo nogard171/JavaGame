@@ -22,10 +22,10 @@ public class GLGenerator {
 			}
 		}
 		// Setup points in the 4 corners of the map.
-		map[0][0] = 16;
-		map[map.length - 1][0] = 16;
-		map[map.length - 1][map[0].length - 1] = 16;
-		map[0][map[0].length - 1] = 16;
+		map[0][0] = 2;
+		map[map.length - 1][0] = 2;
+		map[map.length - 1][map[0].length - 1] = 2;
+		map[0][map[0].length - 1] = 2;
 		// Do the midpoint
 		midpoint(0, 0, map.length - 1, map[0].length - 1);
 	}
