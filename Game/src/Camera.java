@@ -69,13 +69,13 @@ public class Camera implements Serializable {
 	}
 
 	public static void move(float speed) {
-		pos.x -= Math.sin(Math.toRadians(rotation.y)) * speed;
-		pos.z += Math.cos(Math.toRadians(rotation.y)) * speed;
+		pos.x -= Math.sin(Math.toRadians(rotation.x)) * speed;
+		pos.z += Math.cos(Math.toRadians(rotation.z)) * speed;
 	}
 
 	public static void strafe(float speed) {
-		pos.x += Math.sin(Math.toRadians(rotation.y - 90)) * speed;
-		pos.z -= Math.cos(Math.toRadians(rotation.y - 90)) * speed;
+		pos.x += Math.sin(Math.toRadians(rotation.x - 90)) * speed;
+		pos.z -= Math.cos(Math.toRadians(rotation.z - 90)) * speed;
 	}
 
 	public static void fly(float speed) {
