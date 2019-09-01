@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 public class GLObject {
-	private GLType type = GLType.BLANK;
+	private GLType type = GLType.AIR;
 	public Polygon bounds = new Polygon();
 	private Vector3f positionIndex = new Vector3f(0, 0, 0);
 	private boolean isVisible = false;

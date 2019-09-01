@@ -25,6 +25,7 @@ import core.GLChunk;
 import core.GLDebug;
 import core.GLDisplay;
 import core.GLFPS;
+import core.GLGenerator;
 import core.GLLoader;
 import core.GLSize;
 import core.GLSpriteData;
@@ -39,8 +40,10 @@ public class Main extends GLDisplay {
 	int currentLevel = 0;
 	public static Texture texture;
 
-	int mapWidth = 1;
-	int mapHeight = 1;
+	int mapWidth = 3;
+	int mapDepth = 3;
+	
+	int mapMaxHeight = 16;
 
 	public void run() {
 		this.createDisplay();
@@ -54,10 +57,18 @@ public class Main extends GLDisplay {
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureID());
 
+		GLGenerator gen = new GLGenerator();
+		gen.setupMultiChunk(mapWidth, mapDepth);
+		gen.init();
+		
 		for (int x = 0; x < mapWidth; x++) {
-			for (int z = 0; z < mapHeight; z++) {
+			for (int z = 0; z < mapDepth; z++) {
 				GLChunk chunk = new GLChunk(x, 0, z);
-				System.out.println(x + ",0," + z);
+				int[][] test = gen.getMultiChunkMap(x,z);
+
+				
+				chunk.setData(test);
+				chunk.setupChunk(false);
 				chunks.put(x + ",0," + z, chunk);
 			}
 		}
@@ -87,7 +98,7 @@ public class Main extends GLDisplay {
 		float speed = 0.5f * fps.getDelta();
 
 		int mouseWheel = Mouse.getDWheel();
-		if (mouseWheel < 0 && this.currentLevel < 15) {
+		if (mouseWheel < 0 && this.currentLevel < mapMaxHeight-1) {
 			this.currentLevel++;
 		}
 
@@ -99,11 +110,11 @@ public class Main extends GLDisplay {
 		for (Object obj : chunks.values()) {
 			GLChunk chunk = (GLChunk) obj;
 			if (chunk != null) {
-				if (!chunk.isEmpty()) {
+				//if (!chunk.isEmpty()) {
 					if (chunk.getLevel() != this.currentLevel) {
 						chunk.changeLevel(this.currentLevel);
 					}
-				}
+				//}
 				chunk.update(camera, chunks);
 
 			}
@@ -133,13 +144,9 @@ public class Main extends GLDisplay {
 		/*
 		 * for (GLChunk chunk : chunks) { chunk.render(); }
 		 */
-		/*
-		 * for (Object obj : chunks.values()) { GLChunk chunk = (GLChunk) obj; if (chunk
-		 * != null) { chunk.render(); } }
-		 */
 
 		for (int x = 0; x < mapWidth; x++) {
-			for (int z = 0; z < mapHeight; z++) {
+			for (int z = 0; z < mapDepth; z++) {
 				GLChunk chunk = chunks.get(x + ",0," + z);
 
 				if (chunk != null) {
@@ -158,10 +165,6 @@ public class Main extends GLDisplay {
 	}
 
 	public static void main(String[] args) {
-		try {
-			new Main().run();
-		} catch (Exception e) {
-			System.out.println("Error2: " + e.getLocalizedMessage());
-		}
+		new Main().run();
 	}
 }

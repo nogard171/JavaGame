@@ -23,7 +23,7 @@ public class GLChunk {
 	private GLObject[][][] objects;
 	private Polygon bounds;
 	int currentLevel = 0;
-	boolean needsUpdating = false;
+	boolean needsUpdating = true;
 	boolean isEmpty = false;
 	Vector2f hover;
 	GLGenerator gen;
@@ -31,13 +31,15 @@ public class GLChunk {
 	public GLChunk(int x, int y, int z) {
 		index = new Vector3f(x, y, z);
 		position = new Point((int) ((x - z) * (size.x * 32)), (int) (((z + x) * (size.x * 16)) + (y * (size.y * 32))));
-		this.setupChunk();
+		// this.setupChunk();
 	}
 
-	public void setupChunk() {
+	public void setupChunk(boolean generate) {
 
-		gen = new GLGenerator();
-		gen.init();
+		if (generate) {
+			gen = new GLGenerator();
+			gen.init();
+		}
 
 		objects = new GLObject[(int) size.x][(int) size.z][(int) size.y];
 		int xCount = objects.length;
@@ -50,16 +52,31 @@ public class GLChunk {
 			for (int z = 0; z < zCount; z++) {
 				for (int y = 0; y < yCount; y++) {
 					int height = gen.map[x][z];
-					System.out.println("Height: " + height);
-					GLObject obj = new GLObject(GLType.BLANK);
+					GLObject obj = new GLObject(GLType.AIR);
 					if (y > height) {
 						obj.setType(GLType.GRASS);
 					}
+					if (y > height && y == 3) {
+						obj.setType(GLType.SAND);
+						// objects[x][z][y] = new GLObject(GLType.WATER);
+
+					}
+					if (y > 3) {
+						obj.setType(GLType.SAND);
+					}
+
+					if (y == 3 && obj.getType() == GLType.AIR) {
+						obj.setType(GLType.WATER);
+					}
+
 					if (y == 0) {
 						obj.setKnown(true);
 						obj.setVisible(true);
 					}
 					obj.setPositionIndex(x, y, z);
+					if (y < 2) {
+						obj.setType(GLType.AIR);
+					}
 					objects[x][z][y] = obj;
 				}
 			}
@@ -82,18 +99,6 @@ public class GLChunk {
 	public void updateDisplayList(HashMap<String, GLChunk> chunks) {
 		this.isEmpty = false;
 		this.updateBounds();
-		GLChunk left = null;
-		GLChunk right = null;
-
-		if (chunks != null) {
-			// left = chunks.get((int) (index.x + 1) + "," + (int) index.y + "," + (int)
-			// index.z);
-			// right = chunks.get((int) index.x + "," + (int) index.y + "," + (int) (index.z
-			// + 1));
-		}
-		if (left != null) {
-			System.out.println(left.index);
-		}
 
 		HashMap<String, GLSpriteData> sprites = Main.sprites;
 
@@ -110,28 +115,32 @@ public class GLChunk {
 				for (int y = yCount - 1; y >= this.currentLevel; y--) {
 					GLObject obj = objects[x][z][y];
 					if (obj != null) {
+						if (obj.getType() != GLType.AIR) {
+							Color c = (Color) Color.WHITE;
+							if (y != this.currentLevel) {
+								c = new Color(128, 128, 128);
+							}
+							checkObjectVisibility(obj);
+							GLSpriteData sprite = null;
+							if (obj.isVisible()) {
+								if (obj.isKnown()) {
+									sprite = sprites.get(obj.getType().toString());
+								} else {
+									// sprite = sprites.get("UNKNOWN");
+								}
+							}
 
-						checkObjectVisibility(obj);
-						GLSpriteData sprite = null;
-						if (obj.isVisible()) {
-							if (obj.isKnown()) {
-								sprite = sprites.get(obj.getType().toString());
-							} else {
-								sprite = sprites.get("UNKNOWN");
+							if (sprite != null) {
+								renderObject(obj, sprite, c);
+								renderCount++;
 							}
 						}
-
-						if (sprite != null) {
-							renderObject(obj, sprite);
-							renderCount++;
-						}
-
 					}
 				}
 			}
 		}
 
-		System.out.println("Count: " + renderCount);
+		// System.out.println("Count: " + renderCount);
 		GL11.glEnd();
 		GL11.glEndList();
 		if (renderCount == 0) {
@@ -208,7 +217,7 @@ public class GLChunk {
 		boolean isMask = false;
 
 		switch (type) {
-		case BLANK:
+		case AIR:
 			isMask = true;
 			break;
 		case TREE:
@@ -229,7 +238,7 @@ public class GLChunk {
 		if (y - 1 > 0) {
 			GLObject top = objects[x][z][y - 1];
 			if (top != null) {
-				if (top.getType() == GLType.BLANK) {
+				if (top.getType() == GLType.AIR) {
 					topFacing = true;
 				}
 			}
@@ -240,7 +249,7 @@ public class GLChunk {
 			if (x + 1 < objects.length) {
 				GLObject right = objects[x + 1][z][y];
 				if (right != null) {
-					if (right.getType() == GLType.BLANK) {
+					if (right.getType() == GLType.AIR) {
 						visible.x = 1;
 					}
 				}
@@ -248,7 +257,7 @@ public class GLChunk {
 				if (leftChunk != null) {
 					GLObject leftChunkObject = leftChunk.objects[0][z][y];
 					if (leftChunkObject != null) {
-						if (leftChunkObject.getType() == GLType.BLANK) {
+						if (leftChunkObject.getType() == GLType.AIR) {
 							visible.x = 1;
 						}
 					}
@@ -260,7 +269,7 @@ public class GLChunk {
 			if (z + 1 < objects[0].length) {
 				GLObject top = objects[x][z + 1][y];
 				if (top != null) {
-					if (top.getType() == GLType.BLANK) {
+					if (top.getType() == GLType.AIR) {
 						visible.y = 1;
 					}
 				}
@@ -268,7 +277,7 @@ public class GLChunk {
 				if (rightChunk != null) {
 					GLObject rightChunkObject = rightChunk.objects[x][0][y];
 					if (rightChunkObject != null) {
-						if (rightChunkObject.getType() == GLType.BLANK) {
+						if (rightChunkObject.getType() == GLType.AIR) {
 							visible.y = 1;
 						}
 					}
@@ -287,7 +296,7 @@ public class GLChunk {
 
 		GLObject top = objects[x][z][y - 1];
 		if (top != null) {
-			if (top.getType() == GLType.BLANK || top.getType() == GLType.TREE) {
+			if (top.getType() == GLType.AIR || top.getType() == GLType.TREE) {
 				visible.y = 1;
 			}
 		}
@@ -295,12 +304,12 @@ public class GLChunk {
 		return visible;
 	}
 
-	private void renderObject(GLObject obj, GLSpriteData spriteData) {
+	private void renderObject(GLObject obj, GLSpriteData spriteData, Color c) {
 		int x = (int) obj.getPositionIndex().getX();
 		int y = (int) obj.getPositionIndex().getY();
 		int z = (int) obj.getPositionIndex().getZ();
 		if (spriteData != null) {
-			GL11.glColor3f(1, 1, 1);
+			GL11.glColor3f((float) c.getRed() / 255, (float) c.getGreen() / 255, (float) c.getBlue() / 255);
 
 			int posX = (int) (position.x + ((x - z) * 32) + spriteData.offset.x);
 			int posY = position.y + ((y - 1) * 32);
@@ -322,8 +331,7 @@ public class GLChunk {
 	public void update(Vector2f camera, HashMap<String, GLChunk> chunks) {
 		Point mousePoint = new Point(Mouse.getX() - (int) camera.x,
 				Display.getHeight() - Mouse.getY() - (int) camera.y);
-
-		boolean mouseInChunk = bounds.contains(mousePoint);
+		boolean mouseInChunk = ((bounds == null) ? false : bounds.contains(mousePoint));
 		boolean mouseIsDown = ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) ? true : false);
 
 		if (mouseInChunk && mouseIsDown) {
@@ -339,6 +347,7 @@ public class GLChunk {
 						int posX = position.x + (x - z) * 32;
 						int posY = position.y + (this.currentLevel - 1) * 32;
 						int posZ = ((z + x) * 16) + posY;
+
 						Polygon poly = new Polygon();
 						poly.addPoint(posX + 32, posZ);
 						poly.addPoint(posX + 64, posZ + 16);
@@ -407,14 +416,22 @@ public class GLChunk {
 		}
 		GL11.glCallList(this.dlId);
 
-		/*
-		 * GL11.glDisable(GL11.GL_TEXTURE_2D);
-		 * 
-		 * GL11.glBegin(GL11.GL_LINE_LOOP); GL11.glColor3f(1, 0, 0); for (int x = 0; x <
-		 * bounds.xpoints.length; x++) { float posX = bounds.xpoints[x]; float posZ =
-		 * bounds.ypoints[x]; GL11.glVertex2f(posX, posZ); } GL11.glEnd();
-		 * GL11.glEnable(GL11.GL_TEXTURE_2D);
-		 * 
-		 */
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+		GL11.glBegin(GL11.GL_LINE_LOOP);
+		GL11.glColor3f(1, 0, 0);
+		for (int x = 0; x < bounds.xpoints.length; x++) {
+			float posX = bounds.xpoints[x];
+			float posZ = bounds.ypoints[x];
+			GL11.glVertex2f(posX, posZ);
+		}
+		GL11.glEnd();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+	}
+
+	public void setData(int[][] multiChunkMap) {
+		gen = new GLGenerator();
+		gen.map = multiChunkMap;
 	}
 }

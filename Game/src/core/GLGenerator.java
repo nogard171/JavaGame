@@ -13,19 +13,36 @@ public class GLGenerator {
 		domidpoint();
 	}
 
+	public void setupMultiChunk(int numXChunks, int numYChunks) {
+		map = new int[16 * numXChunks][16 * numYChunks];
+		//domidpoint();
+	}
+
+	public int[][] getMultiChunkMap(int chunkX, int chunkY) {
+		int[][] tempMap = new int[16][16];
+
+		for (int y = 0; y < tempMap.length ; y++) {
+			for (int x = 0; x < tempMap[0].length; x++) {
+				tempMap[x][y] = map[((chunkX) * 15) + x][((chunkY) * 15) + y];
+			}
+		}
+
+		return tempMap;
+	}
+
 	// Here the midpoint code begins.
 	public void domidpoint() {
 		// Erase the old map array..
-		for (int y = 0; y < map.length - 1; y++) {
-			for (int x = 0; x < map[0].length - 1; x++) {
+		for (int x = 0; x < map.length - 1; x++) {
+			for (int y = 0; y < map[0].length - 1; y++) {
 				map[x][y] = 0;
 			}
 		}
 		// Setup points in the 4 corners of the map.
 		map[0][0] = 2;
-		map[map.length - 1][0] = 2;
-		map[map.length - 1][map[0].length - 1] = 2;
-		map[0][map[0].length - 1] = 2;
+		map[map.length - 1][0] = 3;
+		map[map.length - 1][map[0].length - 1] = 4;
+		map[0][map[0].length - 1] = 4;
 		// Do the midpoint
 		midpoint(0, 0, map.length - 1, map[0].length - 1);
 	}
@@ -40,7 +57,7 @@ public class GLGenerator {
 		// Find distance between points and
 		// use when generating a random number.
 		int dist = (x2 - x1 + y2 - y1);
-		int hdist = dist / 2;
+		int hdist = dist /2;
 		// Find Middle Point
 		int midx = (x1 + x2) / 2;
 		int midy = (y1 + y2) / 2;

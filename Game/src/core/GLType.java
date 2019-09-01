@@ -1,5 +1,5 @@
 package core;
 
 public enum GLType {
-	BLANK, UNKNOWN, GRASS, DIRT, TREE;
+	AIR, UNKNOWN, GRASS, DIRT, TREE, SAND,WATER;
 }
