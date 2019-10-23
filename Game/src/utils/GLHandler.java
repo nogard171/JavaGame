@@ -122,13 +122,18 @@ public class GLHandler {
 	}
 
 	public static void RenderQuadData(GLQuadData quadData, int mode) {
-		/*
-		 * if (quads.size() == 0 || !quads.containsKey(quadData)) { int dl =
-		 * GL11.glGenLists(1); GL11.glNewList(dl, GL11.GL_COMPILE);
-		 * RenderRawQuadData(quadData, mode); GL11.glEndList(); quads.put(quadData, dl);
-		 * } int dl = quads.get(quadData); glCallList(dl);
-		 */
-		RenderRawQuadData(quadData, mode);
+
+		if (quads.size() == 0 || !quads.containsKey(quadData.getName())) {
+			int dl = GL11.glGenLists(1);
+			GL11.glNewList(dl, GL11.GL_COMPILE);
+			RenderRawQuadData(quadData, mode);
+			GL11.glEndList();
+			quads.put(quadData.getName(), dl);
+		}
+		int dl = quads.get(quadData.getName());
+		glCallList(dl);
+
+		//RenderRawQuadData(quadData, mode);
 	}
 
 	private static void RenderRawQuadData(GLQuadData quadData, int mode) {

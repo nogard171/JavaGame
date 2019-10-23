@@ -10,7 +10,7 @@ import classes.GLPosition;
 import classes.GLQuadData;
 
 public class GLDebug {
-	public static GLQuadData quadData = new GLQuadData();
+	public static GLQuadData quadData = new GLQuadData("background");
 	private static boolean isSetup = false;
 	private static boolean enabled = true;
 
