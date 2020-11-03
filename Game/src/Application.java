@@ -20,71 +20,65 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Application extends GLWindow
-{
+public class Application extends GLWindow {
 	// the grid boolean, used for render things as lines.
 
-	public static void main(final String[] argv)
-	{
+	public static void main(final String[] argv) {
 		final Application app = new Application();
-		SwingUtilities.invokeLater(new Runnable()
-		{
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				app.CreateWindow();
 			}
 		});
 	}
+
 	Texture texture;
 	ShaderProgram shader = new ShaderProgram();
 	float step = 0;
+
 	@Override
-	public void Setup()
-	{
+	public void Setup() {
 		try {
-			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("resources/textures/tileset.jpg"));
-			step = ((float)32/(float)texture.getImageWidth());
+			texture = TextureLoader.getTexture("PNG",
+					ResourceLoader.getResourceAsStream("resources/textures/tileset.jpg"));
+			step = ((float) 32 / (float) texture.getImageWidth());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		System.out.println(step);
 		shader.createProgram();
-		
-		for(int x=0;x<5;x++)
-		{
-			for(int y=0;y<5;y++)
-			{
-				chunks.add(new Chunk(x*16,0,y*16));
+
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				chunks.add(new Chunk(x * 8, -18, y * 8));
 			}
 		}
 	}
+
 	ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+
 	@Override
-	public void Render()
-	{
+	public void Render() {
 		super.Render();
 		shader.Start();
 		shader.sendUniform1f("myTexture", texture.getTextureID());
-		for(int i=0;i<chunks.size();i++){
+		for (int i = 0; i < chunks.size(); i++) {
 			chunks.get(i).renderChunk(step);
 		}
-		
+
 	}
 
 	@Override
-	public void Update(double delta)
-	{
+	public void Update(double delta) {
 		super.Update(delta);
 
-		if (keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
-		{
+		if (keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			System.exit(0);
 		}
-		
-		if(Mouse.isButtonDown(0))
-		{
+
+		if (Mouse.isButtonDown(0)) {
 			System.out.println("test");
 		}
 

@@ -34,8 +34,6 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
-
-
 // First Person Camera Controller
 public class Camera implements Serializable {
 
@@ -43,7 +41,7 @@ public class Camera implements Serializable {
 
 	private static float maxLook = 85;
 
-	private static float mouseSensitivity = 0.05f;
+	private static float mouseSensitivity = 0.5f;
 
 	private static Vector3f pos;
 	private static Vector3f rotation;
@@ -67,17 +65,17 @@ public class Camera implements Serializable {
 	}
 
 	public static void acceptInput(float delta) {
-		acceptInputRotate(delta);
+		acceptInputRotate();
 		acceptInputGrab();
 		acceptInputMove(delta);
 	}
 
-	public static void acceptInputRotate(float delta) {
+	public static void acceptInputRotate() {
 		if (Mouse.isGrabbed()) {
 			float mouseDX = Mouse.getDX();
 			float mouseDY = -Mouse.getDY();
-			rotation.y += mouseDX * mouseSensitivity * delta;
-			rotation.x += mouseDY * mouseSensitivity * delta;
+			rotation.y += mouseDX * mouseSensitivity;
+			rotation.x += mouseDY * mouseSensitivity;
 			rotation.x = Math.max(-maxLook, Math.min(maxLook, rotation.x));
 		}
 	}

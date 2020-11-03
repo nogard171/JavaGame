@@ -29,8 +29,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Vector3f;
 
-public class GLWindow
-{
+public class GLWindow {
 	// width and height of the display
 	static int WIDTH = 800;
 	static int HEIGHT = 600;
@@ -58,29 +57,29 @@ public class GLWindow
 	 */
 	int fps = 0;
 
-	public void UpdateFPS()
-	{
-		if (getTime() - lastFPS > 1000)
-		{
-			Display.setTitle("FPS: " + fps);
+	public void UpdateFPS() {
+		if (getTime() - lastFPS > 1000) {
+			// Display.setTitle("FPS: " + fps);
+			System.out.println("FPS: " + fps);
 			fps = 0; // reset the FPS counter
 			lastFPS += 1000; // add one second
 		}
 		fps++;
 	}
 
-	public void CreateWindow()
-	{
+	public void CreateWindow() {
 		this.createGLWindow();
 		SetupOpenGL();
 		this.Setup();
 		this.SetupControllers();
 		this.loop();
 	}
+
 	// Under the class definition
 	private static long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
+
 	private static double getDelta() {
 		long currentTime = getTime();
 		double delta = (double) currentTime - (double) lastFrame;
@@ -88,50 +87,40 @@ public class GLWindow
 		return delta;
 	}
 
-	
-	
-	private void SetupOpenGL()
-	{
+	private void SetupOpenGL() {
 		Mouse.setGrabbed(true);
 		// TODO Auto-generated method stub
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GLU.gluPerspective((float)FOV, ((float)WIDTH / (float)HEIGHT), 0.1f, FARVIEW);
+		GLU.gluPerspective((float) FOV, ((float) WIDTH / (float) HEIGHT), 0.1f, FARVIEW);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		
-		
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
-		
 
-		//glEnable(GL_COLOR_MATERIAL);
-		//glEnable(GL_BLEND);
-		 //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		// GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		// glEnable(GL_COLOR_MATERIAL);
+		// glEnable(GL_BLEND);
+		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 		glEnable(GL_CULL_FACE);
-		
-		
 
 		GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
-		
+
 		camera.create();
 	}
 
-	public void Update(double delta)
-	{
+	public void Update(double delta) {
 		keyboard.poll();
 		camera.acceptInput((float) delta);
 		camera.apply();
 	}
 
-	public void SetupControllers()
-	{
+	public void SetupControllers() {
 		Mouse.setGrabbed(this.MOUSEFOCUS);
 	}
 
-	public void Render()
-	{
+	public void Render() {
 		keyboard.end();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -139,32 +128,25 @@ public class GLWindow
 
 	}
 
-	
-	private void createGLWindow()
-	{
-		try
-		{
+	private void createGLWindow() {
+		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 			Display.setTitle("A fresh display!");
 			Display.create();
-		} catch (LWJGLException e)
-		{
+		} catch (LWJGLException e) {
 			e.printStackTrace();
 			Display.destroy();
 			System.exit(1);
 		}
 	}
 
-	public void Setup()
-	{
+	public void Setup() {
 
 	}
 
-	public void loop()
-	{
+	public void loop() {
 		lastFPS = getTime();
-		while (!Display.isCloseRequested())
-		{
+		while (!Display.isCloseRequested()) {
 			// set the modelview matrix back to the identit
 			GL11.glLoadIdentity();
 			double delta = getDelta();
@@ -172,16 +154,14 @@ public class GLWindow
 			this.Update(delta);
 			this.Render();
 			Display.update();
-			if(this.FPSLIMITER)
-			{
+			if (this.FPSLIMITER) {
 				Display.sync(MAXFPS);
 			}
 		}
 		this.Destroy();
 	}
 
-	public void Destroy()
-	{
+	public void Destroy() {
 		Display.destroy();
 		System.exit(0);
 	}

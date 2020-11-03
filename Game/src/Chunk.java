@@ -9,7 +9,7 @@ public class Chunk {
 	int displayListHandle = -1;
 	Vector3f position = new Vector3f(0, 0, 0);
 	Material[][][] data;
-	Vector3f size = new Vector3f(16, 16, 16);
+	Vector3f size = new Vector3f(8, 8, 8);
 	ArrayList<Material> cubes = new ArrayList<Material>();
 
 	public Chunk() {
