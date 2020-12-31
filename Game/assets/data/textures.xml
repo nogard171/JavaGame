@@ -1,0 +1,4 @@
+<textures>
+	<texture name="GRASS" texture="assets/textures/grass.png" />
+	<texture name="DIRT" texture="assets/textures/dirt.png" />
+</textures>
