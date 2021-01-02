@@ -194,7 +194,7 @@ public class GameThread extends BaseThread {
 		GL11.glVertex2f(32, 32 );
 		GL11.glVertex2f(0, 32);
 
-		setUniformVariables(program, new Vector2f(1, 1));
+		setUniformVariables(program, new Vector2f(100, 100));
 		GL11.glVertex2f(0, 0);
 		GL11.glVertex2f(32, 0);
 		GL11.glVertex2f(32, 32 );
