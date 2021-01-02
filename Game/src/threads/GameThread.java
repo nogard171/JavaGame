@@ -18,9 +18,13 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.Color;
 
+import classes.Position;
+import core.GameData;
 import core.Input;
 import utils.FPS;
+import utils.Renderer;
 
 public class GameThread extends BaseThread {
 
@@ -32,42 +36,34 @@ public class GameThread extends BaseThread {
 	@Override
 	public void update() {
 		super.update();
-		if (Input.isMousePressed(0)) {
-			System.out.println("Mouse Pressed");
-		}
-		float speed = FPS.getDelta() * 0.5f;
+		float speed = FPS.getDelta() * 0.15f;
+		Vector2f velocity = new Vector2f(0, 0);
 		if (Input.isKeyDown(Keyboard.KEY_A)) {
-			pos.x -= speed;
+			velocity.x = -speed;
 		}
 		if (Input.isKeyDown(Keyboard.KEY_W)) {
-			pos.y -= speed;
+			velocity.y = -speed;
 		}
 		if (Input.isKeyDown(Keyboard.KEY_S)) {
-			pos.y += speed;
+			velocity.y = speed;
 		}
 		if (Input.isKeyDown(Keyboard.KEY_D)) {
-			pos.x += speed;
+			velocity.x = speed;
 		}
+		pos.move(velocity);
 	}
 
-	Vector2f pos = new Vector2f(100, 100);
+	Position pos = new Position(100, 100);
 
 	@Override
 	public void render() {
 		super.render();
 		GL11.glColor3f(1, 0, 0);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(pos.x, pos.y);
-		GL11.glVertex2f(32 + pos.x, pos.y);
-		GL11.glVertex2f(32 + pos.x, pos.y + 32);
-		GL11.glVertex2f(pos.x, pos.y + 32);
 
-		GL11.glColor3f(0, 1, 0);
-		GL11.glVertex2f(100, 100);
-		GL11.glVertex2f(32 + 100, 100);
-		GL11.glVertex2f(32 + 100, 32 + 100);
-		GL11.glVertex2f(100, 32 + 100);
-		GL11.glEnd();
+		Renderer.beginDraw(GL11.GL_QUADS);
+		Renderer.drawQuad(pos.x, pos.y, 32, 32, Color.red);
+		Renderer.drawQuad(100, 100, 32, 32, Color.green);
+		Renderer.endDraw();
 	}
 
 	@Override

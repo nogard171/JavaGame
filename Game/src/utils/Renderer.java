@@ -33,7 +33,7 @@ public class Renderer {
 		GL11.glEnd();
 	}
 
-	public static void drawText(int x, int y, String t, int s, Color c) {
+	public static void drawText(float x, float y, String t, int s, Color c) {
 		TrueTypeFont f = GameData.fonts.get(s);
 		if (f == null) {
 			Font awtFont = new Font("Times New Roman", Font.BOLD, s);
@@ -46,12 +46,12 @@ public class Renderer {
 		GameData.renderCount++;
 	}
 
-	public static void drawQuad(int x, int y, int w, int h, Color c) {
-		GL11.glColor4f(c.r, c.g, c.b, c.a);
-		GL11.glVertex2i(x, y);
-		GL11.glVertex2i(x + w, y);
-		GL11.glVertex2i(x + w, y + h);
-		GL11.glVertex2i(x, y + h);
+	public static void drawQuad(float x, float y, int w, int h, Color color) {
+		GL11.glColor4f(color.r, color.g, color.b, color.a);
+		GL11.glVertex2f(x, y);
+		GL11.glVertex2f(x + w, y);
+		GL11.glVertex2f(x + w, y + h);
+		GL11.glVertex2f(x, y + h);
 		GameData.renderCount++;
 	}
 

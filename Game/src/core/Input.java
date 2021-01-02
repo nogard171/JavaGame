@@ -47,7 +47,6 @@ public class Input {
 				}
 			}
 		}
-
 		return -1;
 	}
 
