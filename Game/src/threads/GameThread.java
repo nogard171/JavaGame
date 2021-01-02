@@ -20,16 +20,13 @@ import java.nio.IntBuffer;
 import org.lwjgl.util.vector.Vector2f;
 
 import core.Input;
-import core.ShaderProgram;
 import utils.FPS;
 
 public class GameThread extends BaseThread {
-	ShaderProgram shader;
 
 	@Override
 	public void init() {
 		super.init();
-		shader = new ShaderProgram("assets/shaders/screen.vert", "assets/shaders/screen.frag");
 	}
 
 	@Override
@@ -58,24 +55,19 @@ public class GameThread extends BaseThread {
 	@Override
 	public void render() {
 		super.render();
-		shader.Run();
-		float[] position = { pos.x, pos.y };
-		shader.sendUniform2f("position", position);
-		// GL11.glColor3f(1, 0, 0);
+		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(0, 0);
-		GL11.glVertex2f(32, 0);
-		GL11.glVertex2f(32, 32);
-		GL11.glVertex2f(0, 32);
+		GL11.glVertex2f(pos.x, pos.y);
+		GL11.glVertex2f(32 + pos.x, pos.y);
+		GL11.glVertex2f(32 + pos.x, pos.y + 32);
+		GL11.glVertex2f(pos.x, pos.y + 32);
 
-		float[] position2 = { 100, 100 };
-		shader.sendUniform2f("position", position2);
-		GL11.glVertex2f(0, 0);
-		GL11.glVertex2f(32, 0);
-		GL11.glVertex2f(32, 32);
-		GL11.glVertex2f(0, 32);
+		GL11.glColor3f(0, 1, 0);
+		GL11.glVertex2f(100, 100);
+		GL11.glVertex2f(32 + 100, 100);
+		GL11.glVertex2f(32 + 100, 32 + 100);
+		GL11.glVertex2f(100, 32 + 100);
 		GL11.glEnd();
-		shader.Stop();
 	}
 
 	@Override
