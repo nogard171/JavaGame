@@ -43,6 +43,7 @@ public class Renderer {
 		TextureImpl.bindNone();
 		f.drawString(x, y, t, c);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GameData.renderCount++;
 	}
 
 	public static void drawQuad(int x, int y, int w, int h, Color c) {
@@ -51,9 +52,11 @@ public class Renderer {
 		GL11.glVertex2i(x + w, y);
 		GL11.glVertex2i(x + w, y + h);
 		GL11.glVertex2i(x, y + h);
+		GameData.renderCount++;
 	}
 
 	public static void drawBatch(int batchId) {
 		GL11.glCallList(batchId);
+		GameData.renderCount++;
 	}
 }

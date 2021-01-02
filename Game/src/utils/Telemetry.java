@@ -10,6 +10,7 @@ public class Telemetry {
 	private static int telemetryCount = 0;
 
 	private static void checkTelemetryChange() {
+		telemetryChanged = false;
 		int c = telemetryCount();
 		if (c != telemetryCount) {
 			telemetryCount = c;
@@ -22,11 +23,17 @@ public class Telemetry {
 		if (GameData.activeFPS) {
 			count++;
 		}
+		if (GameData.activeCount) {
+			count++;
+		}
 		return count;
 	}
 
 	public static void update() {
 		checkTelemetryChange();
+		if (GameData.activeCount) {
+			GameData.renderCount = 0;
+		}
 		if (GameData.activeFPS) {
 			if (!FPS.isSetup) {
 				FPS.setup();
@@ -40,10 +47,12 @@ public class Telemetry {
 		Renderer.beginDraw(GL11.GL_QUADS);
 		Renderer.drawQuad(0, 0, 200, telemetryCount * 18, new Color(0, 0, 0, 0.5f));
 		Renderer.endDraw();
-		if (GameData.activeFPS) {
-			System.out.println("FPS: " + GameData.fps);
 
+		if (GameData.activeFPS) {
 			Renderer.drawText(0, 0, "Frames Per Second: " + GameData.fps, 16, Color.white);
+		}
+		if (GameData.activeCount) {
+			Renderer.drawText(0, 16, "Render Count: " + (GameData.renderCount+1), 16, Color.white);
 		}
 
 	}

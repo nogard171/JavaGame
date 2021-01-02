@@ -7,20 +7,22 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
 public class GameData {
-	
+
 	public static Properties config = new Properties();
-	
-	//Input variables
+
+	// Input variables
 	public static int mainAction = 0;
 	public static int secondaryAction = 0;
+	public static int[] mouseActions = new int[2];
 	
 	//Telemetry
 	public static boolean activeFPS = true;
 	public static int fps = 0;
-	
-	//Renderer variables
+	public static boolean activeCount = true;
+	public static int renderCount = 0;
+
+	// Renderer variables
 	public static HashMap<String, Texture> slickTextures = new HashMap<String, Texture>();
 	public static HashMap<String, Integer> compiledTextures = new HashMap<String, Integer>();
-	public static HashMap<Integer,TrueTypeFont> fonts = new HashMap<Integer,TrueTypeFont>();
-	
+	public static HashMap<Integer, TrueTypeFont> fonts = new HashMap<Integer, TrueTypeFont>();
 }
