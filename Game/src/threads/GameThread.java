@@ -25,25 +25,29 @@ import classes.Position;
 import core.GameData;
 import core.Input;
 import core.Window;
+import core.World;
 import utils.FPS;
 import utils.Loader;
 import utils.Renderer;
 
 public class GameThread extends BaseThread {
+	World world;
 
 	@Override
 	public void init() {
 		super.init();
 
-		//Loader.loadMaterials();
-		//Loader.loadModels();
+		// Loader.loadMaterials();
+		// Loader.loadModels();
 		Loader.loadTextures();
+		world = new World();
+		world.init();
 	}
 
 	@Override
 	public void update() {
 		super.update();
-
+		world.update();
 		float speed = FPS.getDelta() * 0.15f;
 		Vector2f velocity = new Vector2f(0, 0);
 		if (Input.isKeyDown(Keyboard.KEY_A)) {
@@ -58,23 +62,23 @@ public class GameThread extends BaseThread {
 		if (Input.isKeyDown(Keyboard.KEY_D)) {
 			velocity.x = speed;
 		}
-		pos.move(velocity);
-	}
+		GameData.player.move(velocity);
 
-	Position pos = new Position(100, 100);
+		// System.out.println("player: " + GameData.player.getIndex() + "," +
+		// GameData.player.getChunkIndex());
+
+	}
 
 	@Override
 	public void render() {
 		super.render();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, GameData.texture.getTextureID());
-		Renderer.beginDraw(GL11.GL_QUADS);
-		// Renderer.renderModel(pos.x, pos.y, "SQUARE", "GRASS", Color.white);
-		Renderer.renderTexture(pos.x, pos.y, "grass", Color.white);
-		Renderer.endDraw();
+		world.render();
 	}
 
 	@Override
 	public void destroy() {
+		world.destroy();
 		super.destroy();
 	}
 }

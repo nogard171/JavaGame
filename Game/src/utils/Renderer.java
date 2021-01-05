@@ -88,6 +88,10 @@ public class Renderer {
 		return ID;
 	}
 
+	public static void renderTexture(float x, float y, String texture) {
+		renderTexture(x, y, texture, Color.white);
+	}
+
 	public static void renderTexture(float x, float y, String texture, Color c) {
 		boolean validDraw = true;
 		if (intersectCheck) {
@@ -108,7 +112,7 @@ public class Renderer {
 				GL11.glVertex2f(x, y);
 
 				texX = ((float) data.shape.x + (float) data.shape.width) / (float) GameData.texture.getImageWidth();
-				
+
 				GL11.glTexCoord2f(texX, texY);
 				GL11.glVertex2f(x + data.shape.width, y);
 
@@ -119,45 +123,13 @@ public class Renderer {
 				GL11.glVertex2f(x + data.shape.width, y + data.shape.height);
 
 				texX = (float) data.shape.x / (float) GameData.texture.getImageWidth();
-				
+
 				GL11.glTexCoord2f(texX, texY);
 				GL11.glVertex2f(x, y + data.shape.height);
 
 				GameData.renderCount++;
 			}
 
-		}
-	}
-
-	public static void renderModel(float x, float y, String model, String material, Color c) {
-		boolean validDraw = true;
-		if (intersectCheck) {
-			if (!GameData.view.intersects(x, y, 32, 32)) {
-				validDraw = false;
-			}
-		}
-		if (validDraw) {
-			ModelData raw = GameData.modelData.get(model);
-			if (raw != null) {
-				MaterialData mat = GameData.materialData.get(material);
-				if (mat != null) {
-					GL11.glColor4f(c.r, c.g, c.b, c.a);
-					for (int b = 0; b < raw.indices.length; b++) {
-						byte i = raw.indices[b];
-						byte ti = i;
-						if (mat.indices.length > 0) {
-							ti = mat.indices[b];
-						}
-						Vector2f textureVec = mat.vectors[ti];
-
-						GL11.glTexCoord2f(textureVec.x / GameData.texture.getImageWidth(),
-								textureVec.y / GameData.texture.getImageHeight());
-						Vector2f vec = raw.vectors[i];
-						GL11.glVertex2f(vec.x + x + mat.offset.x, vec.y + y + mat.offset.y);
-					}
-					GameData.renderCount++;
-				}
-			}
 		}
 	}
 }

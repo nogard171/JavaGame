@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
 import core.GameData;
+import core.Input;
 import core.Window;
 
 public class Telemetry {
@@ -30,6 +31,9 @@ public class Telemetry {
 		if (GameData.activeCount) {
 			count++;
 		}
+		if (GameData.activeMousePosition) {
+			count++;
+		}
 		return count;
 	}
 
@@ -51,9 +55,9 @@ public class Telemetry {
 	}
 
 	public static void render() {
-		//Renderer.beginDraw(GL11.GL_QUADS);
+		// Renderer.beginDraw(GL11.GL_QUADS);
 		Renderer.drawQuad(position.x, position.y, 200, telemetryCount * 18, new Color(0, 0, 0, 0.5f));
-		//Renderer.endDraw();
+		// Renderer.endDraw();
 
 		if (GameData.activeFPS) {
 			Renderer.drawText(position.x, position.y, "Frames Per Second: " + GameData.fps, 16, Color.white);
@@ -61,6 +65,10 @@ public class Telemetry {
 		if (GameData.activeCount) {
 			Renderer.drawText(position.x, position.y + 16, "Render Count: " + (GameData.renderCount + 1), 16,
 					Color.white);
+		}
+		if (GameData.activeCount) {
+			Renderer.drawText(position.x, position.y + 32,
+					"Mouse Position: " + Input.getMouseX() + "," + Input.getMouseY(), 16, Color.white);
 		}
 
 	}
