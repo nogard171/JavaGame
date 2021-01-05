@@ -1,4 +1,12 @@
-<textures>
-	<texture name="GRASS" texture="assets/textures/grass.png" />
-	<texture name="DIRT" texture="assets/textures/dirt.png" />
+<textures file="assets/textures/tileset.png">
+	<texture name="grass">
+		<shape x="32" y="0" w="32" h="32" />
+	</texture>
+	<texture name="dirt">
+		<shape x="0" y="32" w="32" h="32" />
+	</texture>
+	<texture name="stone">
+		<shape x="32" y="96" w="32" h="32" />
+		<collider type="trigger" x="0" y="0" w="32" h="32" />
+	</texture>
 </textures>

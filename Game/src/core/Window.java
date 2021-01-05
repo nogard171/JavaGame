@@ -46,14 +46,6 @@ public class Window {
 		return Display.wasResized();
 	}
 
-	public static boolean checkResolutionDifference() {
-		boolean diff = false;
-		if (width != Display.getWidth() || height != Display.getHeight()) {
-			diff = true;
-		}
-		return diff;
-	}
-
 	private static void viewport() {
 		width = Display.getWidth();
 		height = Display.getHeight();
@@ -80,19 +72,15 @@ public class Window {
 
 	public static void render() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		/*
-		 * GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S,
-		 * GL11.GL_CLAMP); GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-		 * GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		 * 
-		 * GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S,
-		 * GL12.GL_CLAMP_TO_EDGE); GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-		 * GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		 * 
-		 * GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
-		 * GL11.GL_NEAREST); GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-		 * GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		 */
+
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 
 	}
 

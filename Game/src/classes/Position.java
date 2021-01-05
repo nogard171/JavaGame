@@ -10,7 +10,9 @@ public class Position extends Vector2f {
 	}
 
 	public void move(Vector2f velocity) {
-		this.x += velocity.x;
-		this.y += velocity.y;
+		if (velocity.x != 0 || velocity.y != 0) {
+			this.x += velocity.x;
+			this.y += velocity.y;
+		}
 	}
 }

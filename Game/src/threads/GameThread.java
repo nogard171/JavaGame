@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL20;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -23,7 +24,9 @@ import org.newdawn.slick.Color;
 import classes.Position;
 import core.GameData;
 import core.Input;
+import core.Window;
 import utils.FPS;
+import utils.Loader;
 import utils.Renderer;
 
 public class GameThread extends BaseThread {
@@ -31,11 +34,16 @@ public class GameThread extends BaseThread {
 	@Override
 	public void init() {
 		super.init();
+
+		//Loader.loadMaterials();
+		//Loader.loadModels();
+		Loader.loadTextures();
 	}
 
 	@Override
 	public void update() {
 		super.update();
+
 		float speed = FPS.getDelta() * 0.15f;
 		Vector2f velocity = new Vector2f(0, 0);
 		if (Input.isKeyDown(Keyboard.KEY_A)) {
@@ -58,11 +66,10 @@ public class GameThread extends BaseThread {
 	@Override
 	public void render() {
 		super.render();
-		GL11.glColor3f(1, 0, 0);
-
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, GameData.texture.getTextureID());
 		Renderer.beginDraw(GL11.GL_QUADS);
-		Renderer.drawQuad(pos.x, pos.y, 32, 32, Color.red);
-		Renderer.drawQuad(100, 100, 32, 32, Color.green);
+		// Renderer.renderModel(pos.x, pos.y, "SQUARE", "GRASS", Color.white);
+		Renderer.renderTexture(pos.x, pos.y, "grass", Color.white);
 		Renderer.endDraw();
 	}
 

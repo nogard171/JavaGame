@@ -4,25 +4,32 @@ import java.awt.Font;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.TextureImpl;
 
+import classes.MaterialData;
+import classes.ModelData;
+import classes.TextureData;
 import core.GameData;
 
 public class Renderer {
+	private static boolean intersectCheck = true;
+	private static int tempBatch = -1;
 
-	public static int beginBatch(int mode) {
-		int listID = GL11.glGenLists(1);
-		GL11.glNewList(listID, GL11.GL_COMPILE);
+	public static void beginBatch(int mode) {
+		tempBatch = GL11.glGenLists(1);
+		GL11.glNewList(tempBatch, GL11.GL_COMPILE);
 		GL11.glBegin(mode);
-
-		return listID;
+		intersectCheck = false;
 	}
 
-	public static void endBatch() {
+	public static int endBatch() {
 		GL11.glEnd();
 		GL11.glEndList();
+		intersectCheck = true;
+		return tempBatch;
 	}
 
 	public static void beginDraw(int mode) {
@@ -34,29 +41,123 @@ public class Renderer {
 	}
 
 	public static void drawText(float x, float y, String t, int s, Color c) {
-		TrueTypeFont f = GameData.fonts.get(s);
-		if (f == null) {
-			Font awtFont = new Font("Times New Roman", Font.BOLD, s);
-			f = new TrueTypeFont(awtFont, false);
-			GameData.fonts.put(s, f);
+		if (GameData.view.intersects(x, y, t.length() * 10, s)) {
+			TrueTypeFont f = GameData.fonts.get(s);
+			if (f == null) {
+				Font awtFont = new Font("Times New Roman", Font.BOLD, s);
+				f = new TrueTypeFont(awtFont, false);
+				GameData.fonts.put(s, f);
+			}
+			TextureImpl.bindNone();
+			f.drawString(x, y, t, c);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			GameData.renderCount++;
 		}
-		TextureImpl.bindNone();
-		f.drawString(x, y, t, c);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		GameData.renderCount++;
 	}
 
 	public static void drawQuad(float x, float y, int w, int h, Color color) {
-		GL11.glColor4f(color.r, color.g, color.b, color.a);
-		GL11.glVertex2f(x, y);
-		GL11.glVertex2f(x + w, y);
-		GL11.glVertex2f(x + w, y + h);
-		GL11.glVertex2f(x, y + h);
-		GameData.renderCount++;
+
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		boolean validDraw = true;
+		if (intersectCheck) {
+			if (!GameData.view.intersects(x, y, w, h)) {
+				validDraw = false;
+			}
+		}
+		if (validDraw) {
+			Renderer.beginDraw(GL11.GL_QUADS);
+			GL11.glColor4f(color.r, color.g, color.b, color.a);
+			GL11.glVertex2f(x, y);
+			GL11.glVertex2f(x + w, y);
+			GL11.glVertex2f(x + w, y + h);
+			GL11.glVertex2f(x, y + h);
+			GL11.glEnd();
+			GameData.renderCount++;
+		}
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
 	public static void drawBatch(int batchId) {
 		GL11.glCallList(batchId);
 		GameData.renderCount++;
+	}
+
+	public static int getBatchID() {
+		int ID = tempBatch;
+		tempBatch = -1;
+		return ID;
+	}
+
+	public static void renderTexture(float x, float y, String texture, Color c) {
+		boolean validDraw = true;
+		if (intersectCheck) {
+			if (!GameData.view.intersects(x, y, 32, 32)) {
+				validDraw = false;
+			}
+		}
+		if (validDraw) {
+
+			TextureData data = GameData.textureData.get(texture);
+			if (data != null) {
+
+				GL11.glColor4f(c.r, c.g, c.b, c.a);
+				float texX = (float) data.shape.x / (float) GameData.texture.getImageWidth();
+				float texY = (float) data.shape.y / (float) GameData.texture.getImageHeight();
+
+				GL11.glTexCoord2f(texX, texY);
+				GL11.glVertex2f(x, y);
+
+				texX = ((float) data.shape.x + (float) data.shape.width) / (float) GameData.texture.getImageWidth();
+				
+				GL11.glTexCoord2f(texX, texY);
+				GL11.glVertex2f(x + data.shape.width, y);
+
+				texX = ((float) data.shape.x + (float) data.shape.width) / (float) GameData.texture.getImageWidth();
+				texY = ((float) data.shape.y + (float) data.shape.height) / (float) GameData.texture.getImageHeight();
+
+				GL11.glTexCoord2f(texX, texY);
+				GL11.glVertex2f(x + data.shape.width, y + data.shape.height);
+
+				texX = (float) data.shape.x / (float) GameData.texture.getImageWidth();
+				
+				GL11.glTexCoord2f(texX, texY);
+				GL11.glVertex2f(x, y + data.shape.height);
+
+				GameData.renderCount++;
+			}
+
+		}
+	}
+
+	public static void renderModel(float x, float y, String model, String material, Color c) {
+		boolean validDraw = true;
+		if (intersectCheck) {
+			if (!GameData.view.intersects(x, y, 32, 32)) {
+				validDraw = false;
+			}
+		}
+		if (validDraw) {
+			ModelData raw = GameData.modelData.get(model);
+			if (raw != null) {
+				MaterialData mat = GameData.materialData.get(material);
+				if (mat != null) {
+					GL11.glColor4f(c.r, c.g, c.b, c.a);
+					for (int b = 0; b < raw.indices.length; b++) {
+						byte i = raw.indices[b];
+						byte ti = i;
+						if (mat.indices.length > 0) {
+							ti = mat.indices[b];
+						}
+						Vector2f textureVec = mat.vectors[ti];
+
+						GL11.glTexCoord2f(textureVec.x / GameData.texture.getImageWidth(),
+								textureVec.y / GameData.texture.getImageHeight());
+						Vector2f vec = raw.vectors[i];
+						GL11.glVertex2f(vec.x + x + mat.offset.x, vec.y + y + mat.offset.y);
+					}
+					GameData.renderCount++;
+				}
+			}
+		}
 	}
 }
