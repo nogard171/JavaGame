@@ -38,7 +38,7 @@ public class Telemetry {
 	}
 
 	public static void update() {
-		if (position == null) {
+		if (position == null || Window.wasResized()) {
 			position = new Vector2f(Window.getWidth() - 200, 0);
 		}
 		checkTelemetryChange();
@@ -55,20 +55,18 @@ public class Telemetry {
 	}
 
 	public static void render() {
-		// Renderer.beginDraw(GL11.GL_QUADS);
-		Renderer.drawQuad(position.x, position.y, 200, telemetryCount * 18, new Color(0, 0, 0, 0.5f));
-		// Renderer.endDraw();
+		Renderer.drawQuad(position.x, position.y, 200, telemetryCount * 18, new Color(0, 0, 0, 0.5f), false);
 
 		if (GameData.activeFPS) {
-			Renderer.drawText(position.x, position.y, "Frames Per Second: " + GameData.fps, 16, Color.white);
+			Renderer.drawText(position.x, position.y, "Frames Per Second: " + GameData.fps, 16, Color.white, false);
 		}
 		if (GameData.activeCount) {
 			Renderer.drawText(position.x, position.y + 16, "Render Count: " + (GameData.renderCount + 1), 16,
-					Color.white);
+					Color.white, false);
 		}
-		if (GameData.activeCount) {
+		if (GameData.activeMousePosition) {
 			Renderer.drawText(position.x, position.y + 32,
-					"Mouse Position: " + Input.getMouseX() + "," + Input.getMouseY(), 16, Color.white);
+					"Mouse Position: " + Input.getMouseX() + "," + Input.getMouseY(), 16, Color.white, false);
 		}
 
 	}

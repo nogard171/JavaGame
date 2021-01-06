@@ -41,7 +41,18 @@ public class Renderer {
 	}
 
 	public static void drawText(float x, float y, String t, int s, Color c) {
-		if (GameData.view.intersects(x, y, t.length() * 10, s)) {
+		drawText(x, y, t, s, c, intersectCheck);
+	}
+
+	public static void drawText(float x, float y, String t, int s, Color c, boolean intersectCheck) {
+
+		boolean validDraw = true;
+		if (intersectCheck) {
+			if (!GameData.view.intersects(x, y, t.length() * 10, s)) {
+				validDraw = false;
+			}
+		}
+		if (validDraw) {
 			TrueTypeFont f = GameData.fonts.get(s);
 			if (f == null) {
 				Font awtFont = new Font("Times New Roman", Font.BOLD, s);
@@ -55,7 +66,7 @@ public class Renderer {
 		}
 	}
 
-	public static void drawQuad(float x, float y, int w, int h, Color color) {
+	public static void drawQuad(float x, float y, int w, int h, Color color, boolean intersectCheck) {
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		boolean validDraw = true;
@@ -77,6 +88,10 @@ public class Renderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
+	public static void drawQuad(float x, float y, int w, int h, Color color) {
+		drawQuad(x, y, w, h, color, intersectCheck);
+	}
+
 	public static void drawBatch(int batchId) {
 		GL11.glCallList(batchId);
 		GameData.renderCount++;
@@ -89,10 +104,14 @@ public class Renderer {
 	}
 
 	public static void renderTexture(float x, float y, String texture) {
-		renderTexture(x, y, texture, Color.white);
+		renderTexture(x, y, texture, Color.white, intersectCheck);
 	}
 
-	public static void renderTexture(float x, float y, String texture, Color c) {
+	public static void renderTexture(float x, float y, String texture, boolean intersectCheck) {
+		renderTexture(x, y, texture, Color.white, intersectCheck);
+	}
+
+	public static void renderTexture(float x, float y, String texture, Color c, boolean intersectCheck) {
 		boolean validDraw = true;
 		if (intersectCheck) {
 			if (!GameData.view.intersects(x, y, 32, 32)) {

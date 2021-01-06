@@ -85,7 +85,6 @@ public class Window {
 	}
 
 	public static void finalizeRender() {
-
 		Display.update();
 		if (loseFocus > 0 && !hasFocus()) {
 			Display.sync(loseFocus);

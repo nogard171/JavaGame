@@ -24,6 +24,8 @@ import org.newdawn.slick.Color;
 import classes.Position;
 import core.GameData;
 import core.Input;
+import core.PlayerController;
+import core.ViewController;
 import core.Window;
 import core.World;
 import utils.FPS;
@@ -36,9 +38,6 @@ public class GameThread extends BaseThread {
 	@Override
 	public void init() {
 		super.init();
-
-		// Loader.loadMaterials();
-		// Loader.loadModels();
 		Loader.loadTextures();
 		world = new World();
 		world.init();
@@ -48,24 +47,6 @@ public class GameThread extends BaseThread {
 	public void update() {
 		super.update();
 		world.update();
-		float speed = FPS.getDelta() * 0.15f;
-		Vector2f velocity = new Vector2f(0, 0);
-		if (Input.isKeyDown(Keyboard.KEY_A)) {
-			velocity.x = -speed;
-		}
-		if (Input.isKeyDown(Keyboard.KEY_W)) {
-			velocity.y = -speed;
-		}
-		if (Input.isKeyDown(Keyboard.KEY_S)) {
-			velocity.y = speed;
-		}
-		if (Input.isKeyDown(Keyboard.KEY_D)) {
-			velocity.x = speed;
-		}
-		GameData.player.move(velocity);
-
-		// System.out.println("player: " + GameData.player.getIndex() + "," +
-		// GameData.player.getChunkIndex());
 
 	}
 

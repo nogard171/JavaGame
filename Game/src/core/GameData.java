@@ -38,8 +38,9 @@ public class GameData {
 	public static HashMap<Integer, TrueTypeFont> fonts = new HashMap<Integer, TrueTypeFont>();
 
 	// World Data
+	public static boolean autoGenerateWorld = false;
 	public static Player player = new Player();
-	// public static Vector2f playerIndex = new Vector2f(0, 0);
 	public static HashMap<Point, Chunk> chunks = new HashMap<Point, Chunk>();
 	public static Dimension chunkSize = new Dimension(16, 16);
+
 }

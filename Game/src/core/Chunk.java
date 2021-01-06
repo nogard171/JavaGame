@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.Color;
 
 import classes.Object;
 import utils.Renderer;
@@ -13,6 +14,7 @@ public class Chunk {
 	private int batchID = -1;
 	private boolean needsUpdating = false;
 	private Point index = new Point(0, 0);
+	private Vector2f position = null;
 	public HashMap<Point, Object> objects = new HashMap<Point, Object>();
 
 	public Chunk() {
@@ -38,6 +40,8 @@ public class Chunk {
 				objects.put(new Point(x, y), obj);
 			}
 		}
+		position = new Vector2f((float) (index.x * 32 * GameData.chunkSize.getWidth()),
+				(float) (index.y * 32 * GameData.chunkSize.getHeight()));
 		build();
 	}
 
@@ -48,8 +52,10 @@ public class Chunk {
 				for (int y = 0; y < GameData.chunkSize.getHeight(); y++) {
 					Object obj = objects.get(new Point(x, y));
 					if (obj != null) {
-						System.out.println("test");
-						Renderer.renderTexture(x * 33, y * 33, obj.getTexture());
+						// System.out.println("test");
+						int chunkX = (int) (index.x * GameData.chunkSize.getWidth() * 32);
+						int chunkY = (int) (index.y * GameData.chunkSize.getHeight() * 32);
+						Renderer.renderTexture(chunkX + (x * 32), chunkY + (y * 32), obj.getTexture());
 					}
 				}
 			}
@@ -65,6 +71,21 @@ public class Chunk {
 	}
 
 	public void render() {
-		Renderer.drawBatch(batchID);
+		boolean validDraw = false;
+		if (GameData.view.intersects(position.x, position.y, GameData.chunkSize.getWidth() * 32,
+				GameData.chunkSize.getHeight() * 32)) {
+			validDraw = true;
+		}
+		if (validDraw) {
+			Renderer.drawBatch(batchID);
+		}
+		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+
+		Renderer.beginDraw(GL11.GL_QUADS);
+		Renderer.drawQuad(position.x, position.y, (int) ((float) GameData.chunkSize.getWidth() * (float) 32),
+				(int) ((float) GameData.chunkSize.getHeight() * (float) 32), Color.red);
+		Renderer.endDraw();
+
+		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 	}
 }

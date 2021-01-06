@@ -1,5 +1,0 @@
-<models>
-	<model name='SQUARE'>
-		<data file="assets/data/models/square.obj" />
-	</model>
-</models>
