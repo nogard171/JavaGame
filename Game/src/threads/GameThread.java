@@ -24,6 +24,7 @@ import org.newdawn.slick.Color;
 import classes.Position;
 import core.GameData;
 import core.Input;
+import core.MainMenu;
 import core.PlayerController;
 import core.ViewController;
 import core.Window;
@@ -34,11 +35,14 @@ import utils.Renderer;
 
 public class GameThread extends BaseThread {
 	World world;
+	MainMenu menu;
 
 	@Override
 	public void init() {
 		super.init();
 		Loader.loadTextures();
+		menu = new MainMenu();
+		menu.init();
 		world = new World();
 		world.init();
 	}
@@ -46,6 +50,7 @@ public class GameThread extends BaseThread {
 	@Override
 	public void update() {
 		super.update();
+		menu.update();
 		world.update();
 
 	}
@@ -55,11 +60,13 @@ public class GameThread extends BaseThread {
 		super.render();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, GameData.texture.getTextureID());
 		world.render();
+		menu.render();
 	}
 
 	@Override
 	public void destroy() {
 		world.destroy();
+		menu.destroy();
 		super.destroy();
 	}
 }

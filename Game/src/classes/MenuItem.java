@@ -1,0 +1,51 @@
+package classes;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+
+import core.*;
+
+public class MenuItem {
+	private String name = "";
+	public Rectangle bounds = null;
+	public boolean hovered = false;
+	public AFunction func;
+	private int clicked = 0;
+
+	public MenuItem(AFunction aFunction) {
+		func = aFunction;
+	}
+
+	public MenuItem() {
+	}
+
+	public void update() {
+		hovered = bounds.contains(new Point(Input.getMouseX(), Input.getMouseY()));
+		if (hovered && Input.isMousePressed(0)) {
+			click(this);
+		} else {
+			unclick();
+		}
+	}
+
+	public void click(MenuItem item) {
+		if (func != null) {
+			if (clicked == 0) {
+				func.click();
+				clicked++;
+			}
+		}
+	}
+
+	public void unclick() {
+		clicked = 0;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+}

@@ -10,8 +10,6 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;
 
-import classes.MaterialData;
-import classes.ModelData;
 import classes.Player;
 import classes.TextureData;
 

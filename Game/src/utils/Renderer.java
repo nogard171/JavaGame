@@ -9,8 +9,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.TextureImpl;
 
-import classes.MaterialData;
-import classes.ModelData;
 import classes.TextureData;
 import core.GameData;
 
@@ -67,7 +65,7 @@ public class Renderer {
 	}
 
 	public static void drawQuad(float x, float y, int w, int h, Color color, boolean intersectCheck) {
-
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		boolean validDraw = true;
 		if (intersectCheck) {
@@ -89,6 +87,10 @@ public class Renderer {
 	}
 
 	public static void drawQuad(float x, float y, int w, int h, Color color) {
+		drawQuad(x, y, w, h, color, intersectCheck);
+	}
+
+	public static void drawQuad(int x, int y, int w, int h, Color color) {
 		drawQuad(x, y, w, h, color, intersectCheck);
 	}
 
