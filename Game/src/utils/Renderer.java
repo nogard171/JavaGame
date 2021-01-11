@@ -53,7 +53,7 @@ public class Renderer {
 		if (validDraw) {
 			TrueTypeFont f = GameData.fonts.get(s);
 			if (f == null) {
-				Font awtFont = new Font("Times New Roman", Font.BOLD, s);
+				Font awtFont = new Font("Times New Roman", Font.PLAIN, s);
 				f = new TrueTypeFont(awtFont, false);
 				GameData.fonts.put(s, f);
 			}

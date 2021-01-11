@@ -1,6 +1,9 @@
 package core;
 
+import java.awt.Rectangle;
+
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
 import classes.*;
@@ -8,12 +11,19 @@ import utils.Renderer;
 
 public class MainMenu {
 	ListView menu;
+	int subMenu = -1;
+	int settingsTab = 0;
+
+	MenuItem backBtn;
+	MenuItem controlsBtn;
+	MenuItem graphicsBtn;
+	MenuItem audioBtn;
 
 	public void init() {
 		menu = new ListView();
 
 		MenuItem resume = new MenuItem(new AFunction() {
-			public void click(MenuItem item) {
+			public void onClick(MenuItem item) {
 				System.out.println(item.getName());
 			}
 		});
@@ -21,33 +31,136 @@ public class MainMenu {
 		menu.addItem(resume);
 
 		MenuItem settings = new MenuItem(new AFunction() {
-			public void click(MenuItem item) {
+			public void onClick(MenuItem item) {
 				System.out.println(item.getName());
+				subMenu = 0;
 			}
 		});
 		settings.setName("Settings");
 		menu.addItem(settings);
 
 		MenuItem help = new MenuItem(new AFunction() {
-			public void click(MenuItem item) {
+			public void onClick(MenuItem item) {
 				System.out.println(item.getName());
+				subMenu = 1;
 			}
 		});
 		help.setName("Help");
 		menu.addItem(help);
 
 		MenuItem exit = new MenuItem(new AFunction() {
-			public void click(MenuItem item) {
+			public void onClick(MenuItem item) {
 				System.out.println(item.getName());
 			}
 		});
 		exit.setName("Exit");
 		menu.addItem(exit);
 
+		backBtn = new MenuItem(new AFunction() {
+			public void onClick(MenuItem item) {
+				subMenu = -1;
+			}
+		});
+		backBtn.bounds = new Rectangle((Window.getWidth() / 2) - 200, (Window.getHeight() / 2) - 200, 60, 24);
+		backBtn.setName("Exit");
+
+		controlsBtn = new MenuItem(new AFunction() {
+			public void onClick(MenuItem item) {
+				settingsTab = 0;
+				item.color = new Color(0.5f, 1, 0.5f, 0.5f);
+			}
+
+			public void onMouseHover(MenuItem item) {
+				item.color = new Color(1f, 0.5f, 0.5f, 0.5f);
+
+			}
+
+			public void onMouseOut(MenuItem item) {
+				if (settingsTab == 0) {
+					item.color = new Color(0.5f, 1, 0.5f, 0.5f);
+				} else {
+					item.color = new Color(0.5f, 1, 0.5f, 0f);
+				}
+			}
+		});
+		controlsBtn.bounds = new Rectangle(backBtn.bounds.x + 65, backBtn.bounds.y, 100, 24);
+		controlsBtn.setName("Controls");
+
+		graphicsBtn = new MenuItem(new AFunction() {
+			public void onClick(MenuItem item) {
+				settingsTab = 1;
+				item.color = new Color(0.5f, 1, 0.5f, 0.5f);
+			}
+
+			public void onMouseHover(MenuItem item) {
+				item.color = new Color(1f, 0.5f, 0.5f, 0.5f);
+
+			}
+
+			public void onMouseOut(MenuItem item) {
+				if (settingsTab == 1) {
+					item.color = new Color(0.5f, 1, 0.5f, 0.5f);
+				} else {
+					item.color = new Color(0.5f, 1, 0.5f, 0f);
+				}
+			}
+		});
+		graphicsBtn.bounds = new Rectangle(backBtn.bounds.x + 175, backBtn.bounds.y, 100, 24);
+		graphicsBtn.setName("Graphics");
+
+		audioBtn = new MenuItem(new AFunction() {
+			public void onClick(MenuItem item) {
+				settingsTab = 2;
+				item.color = new Color(0.5f, 1, 0.5f, 0.5f);
+			}
+
+			public void onMouseHover(MenuItem item) {
+				item.color = new Color(1f, 0.5f, 0.5f, 0.5f);
+			}
+
+			public void onMouseOut(MenuItem item) {
+				if (settingsTab == 2) {
+					item.color = new Color(0.5f, 1, 0.5f, 0.5f);
+				} else {
+					item.color = new Color(0.5f, 1, 0.5f, 0f);
+				}
+			}
+		});
+		audioBtn.bounds = new Rectangle(backBtn.bounds.x + 285, backBtn.bounds.y, 100, 24);
+		audioBtn.setName("Audio");
 	}
 
 	public void update() {
-		menu.update();
+		boolean isActive = true;
+		if (subMenu != -1) {
+			backBtn.bounds.x = (Window.getWidth() / 2) - 200;
+			backBtn.bounds.y = (Window.getHeight() / 2) - 200;
+			backBtn.update();
+			switch (subMenu) {
+			case 0:
+				controlsBtn.update();
+				graphicsBtn.update();
+				audioBtn.update();
+				switch (settingsTab) {
+				case 0:
+
+					break;
+				case 1:
+
+					break;
+				default:
+					break;
+				}
+				break;
+			case 1:
+
+				break;
+			default:
+				break;
+			}
+			isActive = false;
+		}
+		menu.update(isActive);
 	}
 
 	public void render() {
@@ -56,6 +169,93 @@ public class MainMenu {
 		Renderer.endDraw();
 		menu.render();
 
+		if (subMenu != -1) {
+			Renderer.beginDraw(GL11.GL_QUADS);
+			Renderer.drawQuad(backBtn.bounds.x, backBtn.bounds.y, 400, 400, new Color(0, 0, 0, 1f));
+			Renderer.endDraw();
+
+			Color backBackgroundColor = new Color(1, 1, 1, 0.5f);
+			if (backBtn.hovered) {
+				backBackgroundColor = new Color(1, 0, 0, 0.5f);
+			}
+			Renderer.beginDraw(GL11.GL_QUADS);
+			Renderer.drawQuad(backBtn.bounds.x, backBtn.bounds.y, backBtn.bounds.width, backBtn.bounds.height,
+					backBackgroundColor);
+			Renderer.endDraw();
+			Renderer.drawText(backBtn.bounds.x, backBtn.bounds.y, "Back", 24, Color.white);
+			switch (subMenu) {
+			case 0:
+				Renderer.drawText(backBtn.bounds.x + 70, backBtn.bounds.y, "Controls", 24, Color.white);
+				Renderer.drawText(backBtn.bounds.x + 180, backBtn.bounds.y, "Graphics", 24, Color.white);
+				Renderer.drawText(backBtn.bounds.x + 300, backBtn.bounds.y, "Audio", 24, Color.white);
+
+				Renderer.beginDraw(GL11.GL_QUADS);
+				Renderer.drawQuad(controlsBtn.bounds.x, controlsBtn.bounds.y,controlsBtn.bounds.width,controlsBtn.bounds.height, controlsBtn.color);
+				Renderer.endDraw();
+
+				Renderer.beginDraw(GL11.GL_QUADS);
+				Renderer.drawQuad(graphicsBtn.bounds.x, graphicsBtn.bounds.y,graphicsBtn.bounds.width,graphicsBtn.bounds.height, graphicsBtn.color);
+				Renderer.endDraw();
+
+				Renderer.beginDraw(GL11.GL_QUADS);
+				Renderer.drawQuad(audioBtn.bounds.x, audioBtn.bounds.y,audioBtn.bounds.width,audioBtn.bounds.height, audioBtn.color);
+				Renderer.endDraw();
+
+				switch (settingsTab) {
+				case 0:
+
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 28, "Forward", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 46, "Backward", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 64, "Straft Left", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 82, "Straft Right", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 100, "Jump", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 118, "Sneak", 18, Color.white);
+
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 164, "Action", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 182, "Secondary Action", 18,
+							Color.white);
+
+					Renderer.drawText(backBtn.bounds.x + 220, backBtn.bounds.y + 28, "Inventory", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 220, backBtn.bounds.y + 46, "Character", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 220, backBtn.bounds.y + 64, "Skills", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 220, backBtn.bounds.y + 82, "Spellbook", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 220, backBtn.bounds.y + 100, "Quests", 18, Color.white);
+					Renderer.drawText(backBtn.bounds.x + 220, backBtn.bounds.y + 118, "Journal", 18, Color.white);
+
+					Renderer.beginDraw(GL11.GL_QUADS);
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 66, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 84, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 102, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 120, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 166, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 184, 60, 16, new Color(1, 1, 1, 0.5f));
+
+					Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 30, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 48, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 66, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 84, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 102, 60, 16, new Color(1, 1, 1, 0.5f));
+					Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 120, 60, 16, new Color(1, 1, 1, 0.5f));
+
+					Renderer.endDraw();
+					break;
+				case 1:
+
+					break;
+				default:
+					break;
+				}
+
+				break;
+			case 1:
+
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	public void destroy() {

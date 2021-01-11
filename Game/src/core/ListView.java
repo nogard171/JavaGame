@@ -22,7 +22,7 @@ public class ListView {
 		items.add(item);
 	}
 
-	public void update() {
+	public void update(boolean active) {
 		position = new Vector2f((Window.getWidth() / 2) - 50, (Window.getHeight() / 2) - (16 * items.size()));
 		int y = 0;
 		for (MenuItem item : items) {
@@ -32,7 +32,9 @@ public class ListView {
 				item.bounds.x = (int) position.x;
 				item.bounds.y = (int) position.y + ((item.bounds.height + 2) * y);
 			}
-			item.update();
+			if (active) {
+				item.update();
+			}
 			y++;
 		}
 	}
