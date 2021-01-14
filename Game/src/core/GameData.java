@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.Texture;

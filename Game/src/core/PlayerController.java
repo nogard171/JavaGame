@@ -10,16 +10,22 @@ public class PlayerController {
 	public static void update() {
 		float speed = FPS.getDelta() * 0.15f;
 		Vector2f velocity = new Vector2f(0, 0);
-		if (Input.isKeyDown(Keyboard.KEY_A)) {
+
+		boolean forward = Input.isKeyDown(Keyboard.getKeyIndex(GameData.config.getProperty("control.forward")));
+		boolean backward = Input.isKeyDown(Keyboard.getKeyIndex(GameData.config.getProperty("control.backward")));
+		boolean straftLeft = Input.isKeyDown(Keyboard.getKeyIndex(GameData.config.getProperty("control.left")));
+		boolean straftRight = Input.isKeyDown(Keyboard.getKeyIndex(GameData.config.getProperty("control.right")));
+
+		if (straftLeft) {
 			velocity.x = -speed;
 		}
-		if (Input.isKeyDown(Keyboard.KEY_W)) {
+		if (forward) {
 			velocity.y = -speed;
 		}
-		if (Input.isKeyDown(Keyboard.KEY_S)) {
+		if (backward) {
 			velocity.y = speed;
 		}
-		if (Input.isKeyDown(Keyboard.KEY_D)) {
+		if (straftRight) {
 			velocity.x = speed;
 		}
 		GameData.player.move(velocity);

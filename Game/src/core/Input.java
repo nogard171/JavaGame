@@ -50,6 +50,26 @@ public class Input {
 		return -1;
 	}
 
+	public static int getInput() {
+
+		while (Keyboard.next() || Mouse.next()) {
+			if (Keyboard.getEventKeyState()) {
+				if (!Keyboard.isRepeatEvent()) {
+					return Keyboard.getEventKey();
+				}
+			}
+
+			if (Mouse.getEventButtonState()) {
+				int btn = Mouse.getEventButton();
+				if (Mouse.isButtonDown(btn)) {
+					System.out.println("btn: " + btn);
+					return btn;
+				}
+			}
+		}
+		return -1;
+	}
+
 	public static String getKey(int keycode) {
 		return Keyboard.getKeyName(keycode);
 	}

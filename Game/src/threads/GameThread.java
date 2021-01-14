@@ -51,8 +51,13 @@ public class GameThread extends BaseThread {
 	public void update() {
 		super.update();
 		menu.update();
-		world.update();
-
+		if (!menu.showMenu) {
+			world.update();
+		}
+		if(Input.isKeyPressed(Keyboard.KEY_ESCAPE))
+		{
+			menu.show();
+		}
 	}
 
 	@Override

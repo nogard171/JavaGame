@@ -45,15 +45,17 @@ public class ListView {
 		int y = 0;
 
 		for (MenuItem item : items) {
-			Color c = new Color(1, 1, 1, 0.5f);
-			if (item.hovered) {
-				c = new Color(1, 0, 0, 0.5f);
+			if (item.bounds != null) {
+				Color c = new Color(1, 1, 1, 0.5f);
+				if (item.hovered) {
+					c = new Color(1, 0, 0, 0.5f);
+				}
+				Renderer.beginDraw(GL11.GL_QUADS);
+				Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width, item.bounds.height + 2, c);
+				Renderer.endDraw();
+				Renderer.drawText(item.bounds.x, item.bounds.y, item.getName(), item.bounds.height, Color.black);
+				y++;
 			}
-			Renderer.beginDraw(GL11.GL_QUADS);
-			Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width, item.bounds.height + 2, c);
-			Renderer.endDraw();
-			Renderer.drawText(item.bounds.x, item.bounds.y, item.getName(), item.bounds.height, Color.black);
-			y++;
 		}
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
