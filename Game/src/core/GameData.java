@@ -31,6 +31,7 @@ public class GameData {
 	public static boolean activeMousePosition = true;
 
 	// Renderer variables
+	public static boolean mainMenuShown = false;
 	public static Rectangle view;
 	public static Texture texture;
 	public static HashMap<String, TextureData> textureData = new HashMap<String, TextureData>();

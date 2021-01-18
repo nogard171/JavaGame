@@ -23,6 +23,10 @@ public class Input {
 		return returnDown;
 	}
 
+	public static boolean isMouseDown(int button) {
+		return Mouse.isButtonDown(button);
+	}
+
 	public static int getMouseX() {
 		return Mouse.getX();
 	}
@@ -51,23 +55,24 @@ public class Input {
 	}
 
 	public static int getInput() {
-
 		while (Keyboard.next() || Mouse.next()) {
 			if (Keyboard.getEventKeyState()) {
 				if (!Keyboard.isRepeatEvent()) {
 					return Keyboard.getEventKey();
 				}
 			}
-
 			if (Mouse.getEventButtonState()) {
 				int btn = Mouse.getEventButton();
-				if (Mouse.isButtonDown(btn)) {
-					System.out.println("btn: " + btn);
-					return btn;
+				if (Mouse.isButtonDown(btn) && mouseDownCount[btn] == 0) {
+					mouseDownCount[btn]++;
+					System.out.println("btn: " + (-(btn + 1)));
+					return -(btn + 1);
+				} else {
+					mouseDownCount[btn] = 0;
 				}
 			}
 		}
-		return -1;
+		return -99;
 	}
 
 	public static String getKey(int keycode) {

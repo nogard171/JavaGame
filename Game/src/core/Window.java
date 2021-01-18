@@ -12,6 +12,7 @@ public class Window {
 	private static int height = 600;
 	private static int vsync = 60;
 	private static int loseFocus = 0;
+	private static int menuVsync = 0;
 
 	public static void create() {
 		setupProperties();
@@ -32,6 +33,9 @@ public class Window {
 		height = Integer.parseInt(GameData.config.getProperty("window.height"));
 		if (GameData.config.containsKey("window.vsync")) {
 			vsync = Integer.parseInt(GameData.config.getProperty("window.vsync"));
+		}
+		if (GameData.config.containsKey("window.menu_vsync")) {
+			menuVsync = Integer.parseInt(GameData.config.getProperty("window.menu_vsync"));
 		}
 		if (GameData.config.containsKey("window.lose_focus")) {
 			loseFocus = Integer.parseInt(GameData.config.getProperty("window.lose_focus"));
@@ -86,7 +90,9 @@ public class Window {
 
 	public static void finalizeRender() {
 		Display.update();
-		if (loseFocus > 0 && !hasFocus()) {
+		if (GameData.mainMenuShown) {
+			Display.sync(menuVsync);
+		} else if (loseFocus > 0 && !hasFocus()) {
 			Display.sync(loseFocus);
 		} else {
 			if (vsync > 0) {

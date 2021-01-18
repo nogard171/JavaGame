@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 
@@ -26,15 +27,23 @@ public class MainMenu {
 	MenuItem controlsBtn;
 	MenuItem graphicsBtn;
 	MenuItem audioBtn;
-	LinkedList<MenuItem> test = new LinkedList<MenuItem>();
+	LinkedList<MenuItem> controlInputs = new LinkedList<MenuItem>();
+
+	LinkedList<MenuSlider> audioSliders = new LinkedList<MenuSlider>();
 	MenuItem forwardBtn;
+
+	public void menuVisible(boolean visible) {
+		showMenu = visible;
+		GameData.mainMenuShown = visible;
+	}
 
 	public void init() {
 		menu = new ListView();
 
 		MenuItem resume = new MenuItem(new AFunction() {
 			public void onClick(MenuItem item) {
-				showMenu = false;
+				menuVisible(false);
+
 			}
 		});
 		resume.setName("Resume");
@@ -67,7 +76,7 @@ public class MainMenu {
 		menu.addItem(save);
 		MenuItem exit = new MenuItem(new AFunction() {
 			public void onClick(MenuItem item) {
-				showMenu = false;
+				menuVisible(false);
 			}
 		});
 		exit.setName("Exit");
@@ -168,11 +177,11 @@ public class MainMenu {
 						configName = item.getName();
 					}
 				});
-				testBtn.bounds = new Rectangle(backBtn.bounds.x +90 + (x * 200), backBtn.bounds.y + 28 + (y * 24), 100,
+				testBtn.bounds = new Rectangle(backBtn.bounds.x + 90 + (x * 200), backBtn.bounds.y + 28 + (y * 24), 100,
 						24);
 				testBtn.setName(key);
 
-				test.add(testBtn);
+				controlInputs.add(testBtn);
 				if (x >= 1) {
 					x = 0;
 					y++;
@@ -181,18 +190,55 @@ public class MainMenu {
 				}
 			}
 		}
+
+		slider = new MenuSlider();
+		slider.name = "Master";
+		slider.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 235, 16);
+		audioSliders.add(slider);
+
+		slider = new MenuSlider();
+		slider.name = "Sound Effects";
+		slider.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 235, 16);
+		audioSliders.add(slider);
+
+		slider = new MenuSlider();
+		slider.name = "Music";
+		slider.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 66, 235, 16);
+		audioSliders.add(slider);
 	}
+
+	boolean firstInput = true;
+
+	MenuSlider slider;
 
 	public void update() {
 		if (waitingForInput) {
 			if (Input.isKeyDown(Keyboard.KEY_ESCAPE)) {
 				waitingForInput = false;
+				firstInput = true;
 			} else {
+				if (firstInput) {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					firstInput = false;
+				}
 				int key = Input.getInput();
-				if (key != -1) {
-					String keyName = Keyboard.getKeyName(key);
+				System.out.println("Mouse: " + key + "/" + ((-key) - 1));
+				if (key != -99) {
+					String keyName = "";
+					if (key < 0) {
+						System.out.println("Mouse: " + ((-key) - 1));
+						keyName = Mouse.getButtonName((-key) - 1);
+					} else {
+						keyName = Keyboard.getKeyName(key);
+					}
 					GameData.config.setProperty(configName, keyName);
 					waitingForInput = false;
+					firstInput = true;
 				}
 			}
 
@@ -211,12 +257,17 @@ public class MainMenu {
 						switch (settingsTab) {
 						case 0:
 							forwardBtn.update();
-							for (MenuItem btn : test) {
+							for (MenuItem btn : controlInputs) {
 								btn.update();
 							}
 							break;
 						case 1:
 
+							break;
+						case 2:
+							for (MenuSlider slider : audioSliders) {
+								slider.update();
+							}
 							break;
 						default:
 							break;
@@ -225,6 +276,7 @@ public class MainMenu {
 					case 1:
 
 						break;
+
 					default:
 						break;
 					}
@@ -310,7 +362,7 @@ public class MainMenu {
 						 * GameData.config.getProperty("control.forward"), 18, Color.white);
 						 */
 
-						for (MenuItem btn : test) {
+						for (MenuItem btn : controlInputs) {
 
 							Renderer.drawText(btn.bounds.x - 85, btn.bounds.y, btn.getName().replaceAll("control.", ""),
 									18, Color.white);
@@ -324,7 +376,7 @@ public class MainMenu {
 						}
 						Renderer.beginDraw(GL11.GL_QUADS);
 
-						for (MenuItem btn : test) {
+						for (MenuItem btn : controlInputs) {
 							Renderer.drawQuad(btn.bounds.x - 5, btn.bounds.y, btn.bounds.width, btn.bounds.height,
 									new Color(1, 1, 1, 0.5f));
 						}
@@ -387,27 +439,20 @@ public class MainMenu {
 						break;
 					case 2:
 
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 28, "Master", 18, Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 46, "Sound Effects", 18,
-								Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 64, "Music", 18, Color.white);
+						for (MenuSlider slider : audioSliders) {
+							Renderer.drawText(slider.bounds.x - 145, slider.bounds.y - 4, slider.name, 18, Color.white);
+						}
 
 						Renderer.beginDraw(GL11.GL_QUADS);
+						for (MenuSlider slider : audioSliders) {
+							Renderer.drawQuad(slider.bounds.x, slider.bounds.y, slider.bounds.width,
+									slider.bounds.height, new Color(0.5f, 0.5f, 0.5f, 0.5f));
 
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 235, 16,
-								new Color(0.5f, 0.5f, 0.5f, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 235, 16,
-								new Color(0.5f, 0.5f, 0.5f, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 66, 235, 16,
-								new Color(0.5f, 0.5f, 0.5f, 0.5f));
-
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 170, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 66, 235, 16,
-								new Color(1, 1, 1, 0.5f));
-
+							Renderer.drawQuad(slider.bounds.x, slider.bounds.y,
+									(int) (((float) slider.value / (float) slider.maxValue)
+											* (float) slider.bounds.width),
+									slider.bounds.height, new Color(1, 1, 1, 0.5f));
+						}
 						Renderer.endDraw();
 						break;
 					default:
@@ -433,5 +478,6 @@ public class MainMenu {
 		showMenu = !showMenu;
 		subMenu = -1;
 		settingsTab = 0;
+		GameData.mainMenuShown = showMenu;
 	}
 }
