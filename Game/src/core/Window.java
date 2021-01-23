@@ -1,10 +1,14 @@
 package core;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.lwjgl.util.vector.Vector2f;
 
 public class Window {
 
@@ -25,6 +29,21 @@ public class Window {
 		} catch (LWJGLException e) {
 			destroy();
 		}
+	}
+
+	public static ArrayList<Point> getResolutions() {
+		ArrayList<Point> resolutions = new ArrayList<Point>();
+		try {
+			DisplayMode[] displayModes = Display.getAvailableDisplayModes();
+
+			for (DisplayMode displayMode : displayModes) {
+				resolutions.add(new Point(displayMode.getWidth(), displayMode.getHeight()));
+			}
+		} catch (LWJGLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resolutions;
 	}
 
 	private static void setupProperties() {

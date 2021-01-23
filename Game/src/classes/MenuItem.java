@@ -23,7 +23,9 @@ public class MenuItem {
 	}
 
 	public void update() {
-		hovered = bounds.contains(new Point(Input.getMouseX(), Input.getMouseY()));
+		if (bounds != null) {
+			hovered = bounds.contains(new Point(Input.getMouseX(), Input.getMouseY()));
+		}
 		if (hovered) {
 			if (func != null) {
 				func.onMouseHover(this);
@@ -34,6 +36,8 @@ public class MenuItem {
 			}
 		}
 		if (hovered && Input.isMousePressed(0)) {
+
+			
 			if (func != null) {
 				if (clicked == 0) {
 					func.onClick(this);

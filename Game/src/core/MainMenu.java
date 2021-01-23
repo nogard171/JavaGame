@@ -1,5 +1,6 @@
 package core;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,15 +23,17 @@ public class MainMenu {
 	int settingsTab = 0;
 	private boolean waitingForInput = false;
 	private String configName = "";
+	public static Point menuPosition;
 
 	MenuItem backBtn;
 	MenuItem controlsBtn;
 	MenuItem graphicsBtn;
 	MenuItem audioBtn;
 	LinkedList<MenuItem> controlInputs = new LinkedList<MenuItem>();
-
 	LinkedList<MenuSlider> audioSliders = new LinkedList<MenuSlider>();
-	MenuItem forwardBtn;
+	MenuDropDown fullscreenDD;
+
+	MenuDropDown resolutionDD;
 
 	public void menuVisible(boolean visible) {
 		showMenu = visible;
@@ -38,6 +41,9 @@ public class MainMenu {
 	}
 
 	public void init() {
+//change the positioning for the menu to reflect the rendering position not the init position of the objects.
+		menuPosition = new Point((Window.getWidth() / 2) - 200, (Window.getHeight() / 2) - 200);
+
 		menu = new ListView();
 
 		MenuItem resume = new MenuItem(new AFunction() {
@@ -87,7 +93,7 @@ public class MainMenu {
 				subMenu = -1;
 			}
 		});
-		backBtn.bounds = new Rectangle((Window.getWidth() / 2) - 200, (Window.getHeight() / 2) - 200, 60, 24);
+		backBtn.bounds = new Rectangle(0, 0, 60, 24);
 		backBtn.setName("Exit");
 
 		controlsBtn = new MenuItem(new AFunction() {
@@ -109,7 +115,7 @@ public class MainMenu {
 				}
 			}
 		});
-		controlsBtn.bounds = new Rectangle(backBtn.bounds.x + 65, backBtn.bounds.y, 100, 24);
+		controlsBtn.bounds = new Rectangle(65, 0, 100, 24);
 		controlsBtn.setName("Controls");
 
 		graphicsBtn = new MenuItem(new AFunction() {
@@ -131,7 +137,7 @@ public class MainMenu {
 				}
 			}
 		});
-		graphicsBtn.bounds = new Rectangle(backBtn.bounds.x + 175, backBtn.bounds.y, 100, 24);
+		graphicsBtn.bounds = new Rectangle(175, 0, 100, 24);
 		graphicsBtn.setName("Graphics");
 
 		audioBtn = new MenuItem(new AFunction() {
@@ -152,17 +158,9 @@ public class MainMenu {
 				}
 			}
 		});
-		audioBtn.bounds = new Rectangle(backBtn.bounds.x + 285, backBtn.bounds.y, 100, 24);
+		audioBtn.bounds = new Rectangle(285, 0, 100, 24);
 		audioBtn.setName("Audio");
 
-		forwardBtn = new MenuItem(new AFunction() {
-			public void onClick(MenuItem item) {
-				waitingForInput = true;
-				configName = item.getName();
-			}
-		});
-		forwardBtn.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 60, 24);
-		forwardBtn.setName("control.forward");
 		Set<String> keys = GameData.config.stringPropertyNames();
 		List<String> keyList = new ArrayList<String>(keys);
 		Collections.sort(keyList);
@@ -177,8 +175,7 @@ public class MainMenu {
 						configName = item.getName();
 					}
 				});
-				testBtn.bounds = new Rectangle(backBtn.bounds.x + 90 + (x * 200), backBtn.bounds.y + 28 + (y * 24), 100,
-						24);
+				testBtn.bounds = new Rectangle(90 + (x * 200), 28 + (y * 24), 100, 24);
 				testBtn.setName(key);
 
 				controlInputs.add(testBtn);
@@ -193,18 +190,86 @@ public class MainMenu {
 
 		slider = new MenuSlider();
 		slider.name = "Master";
-		slider.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 235, 16);
+		slider.bounds = new Rectangle(150, 30, 235, 16);
 		audioSliders.add(slider);
 
 		slider = new MenuSlider();
 		slider.name = "Sound Effects";
-		slider.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 235, 16);
+		slider.bounds = new Rectangle(150, 48, 235, 16);
 		audioSliders.add(slider);
 
 		slider = new MenuSlider();
 		slider.name = "Music";
-		slider.bounds = new Rectangle(backBtn.bounds.x + 150, backBtn.bounds.y + 66, 235, 16);
+		slider.bounds = new Rectangle(150, 66, 235, 16);
 		audioSliders.add(slider);
+
+		fullscreenDD = new MenuDropDown();
+		fullscreenDD.bounds = new Rectangle(150, 30, 60, 16);
+		MenuItem yes = new MenuItem(new AFunction() {
+			public void onClick(MenuItem item) {
+				GameData.config.setProperty("window.fullscreen", "true");
+				fullscreenDD.showDropDown = false;
+				System.out.println("yes fullscreen");
+			}
+		});
+		yes.setName("Yes");
+
+		fullscreenDD.addItem(yes);
+		MenuItem no = new MenuItem(new AFunction() {
+			public void onClick(MenuItem item) {
+				GameData.config.setProperty("window.fullscreen", "false");
+				fullscreenDD.showDropDown = false;
+				System.out.println("no fullscreen");
+			}
+		});
+		no.setName("no");
+		fullscreenDD.addItem(no);
+
+		resolutionDD = new MenuDropDown();
+		resolutionDD.bounds = new Rectangle(150, 48, 60, 16);
+
+		ArrayList<Point> resolutions = Window.getResolutions();
+		System.out.println("res: " + resolutions.size());
+		for (Point res : resolutions) {
+			MenuItem resItem = new MenuItem(new AFunction() {
+				public void onClick(MenuItem item) {
+					String[] data = item.getName().split("x");
+					int width = Integer.parseInt(data[0]);
+					int height = Integer.parseInt(data[1]);
+					GameData.config.setProperty("window.width", width + "");
+					GameData.config.setProperty("window.height", height + "");
+					resolutionDD.showDropDown = false;
+					System.out.println("select Res: " + width + "x" + height);
+				}
+			});
+			resItem.setName(res.x + "x" + res.y);
+			resolutionDD.addItem(resItem);
+		}
+
+		updateBounds();
+	}
+
+	public void updateBounds() {
+		backBtn.bounds.x = menuPosition.x;
+		backBtn.bounds.y = menuPosition.y;
+
+		controlsBtn.bounds.x = menuPosition.x + 65;
+		controlsBtn.bounds.y = menuPosition.y;
+
+		graphicsBtn.bounds.x = menuPosition.x + 175;
+		graphicsBtn.bounds.y = menuPosition.y;
+
+		audioBtn.bounds.x = menuPosition.x + 285;
+		audioBtn.bounds.y = menuPosition.y;
+
+		slider.bounds.x = menuPosition.x + 150;
+		slider.bounds.y = menuPosition.y + 30;
+
+		fullscreenDD.bounds.x = menuPosition.x + 150;
+		fullscreenDD.bounds.y = menuPosition.y + 30;
+
+		resolutionDD.bounds.x = menuPosition.x + 150;
+		resolutionDD.bounds.y = menuPosition.y + 48;
 	}
 
 	boolean firstInput = true;
@@ -246,8 +311,9 @@ public class MainMenu {
 			if (showMenu) {
 				boolean isActive = true;
 				if (subMenu != -1) {
-					backBtn.bounds.x = (Window.getWidth() / 2) - 200;
-					backBtn.bounds.y = (Window.getHeight() / 2) - 200;
+					updateBounds();
+					menuPosition.x = (Window.getWidth() / 2) - 200;
+					menuPosition.y = (Window.getHeight() / 2) - 200;
 					backBtn.update();
 					switch (subMenu) {
 					case 0:
@@ -256,17 +322,31 @@ public class MainMenu {
 						audioBtn.update();
 						switch (settingsTab) {
 						case 0:
-							forwardBtn.update();
+							int x = 0;
+							int y = 0;
 							for (MenuItem btn : controlInputs) {
+								btn.bounds.x = menuPosition.x + 90 + (x * 200);
+								btn.bounds.y = menuPosition.y + 28 + (y * 24);
 								btn.update();
+								if (x >= 1) {
+									x = 0;
+									y++;
+								} else {
+									x++;
+								}
 							}
 							break;
 						case 1:
-
+							fullscreenDD.update();
+							resolutionDD.update();
 							break;
 						case 2:
+							int y2 = 0;
 							for (MenuSlider slider : audioSliders) {
+								slider.bounds.x = menuPosition.x + 150;
+								slider.bounds.y = menuPosition.y + 30 + (y2 * 18);
 								slider.update();
+								y2++;
 							}
 							break;
 						default:
@@ -296,7 +376,7 @@ public class MainMenu {
 
 			if (subMenu != -1) {
 				Renderer.beginDraw(GL11.GL_QUADS);
-				Renderer.drawQuad(backBtn.bounds.x, backBtn.bounds.y, 400, 400, new Color(0, 0, 0, 1f));
+				Renderer.drawQuad(menuPosition.x, menuPosition.y, 400, 400, new Color(0, 0, 0, 1f));
 				Renderer.endDraw();
 
 				Color backBackgroundColor = new Color(1, 1, 1, 0.5f);
@@ -307,12 +387,12 @@ public class MainMenu {
 				Renderer.drawQuad(backBtn.bounds.x, backBtn.bounds.y, backBtn.bounds.width, backBtn.bounds.height,
 						backBackgroundColor);
 				Renderer.endDraw();
-				Renderer.drawText(backBtn.bounds.x, backBtn.bounds.y, "Back", 24, Color.white);
+				Renderer.drawText(menuPosition.x, menuPosition.y, "Back", 24, Color.white);
 				switch (subMenu) {
 				case 0:
-					Renderer.drawText(backBtn.bounds.x + 70, backBtn.bounds.y, "Controls", 24, Color.white);
-					Renderer.drawText(backBtn.bounds.x + 180, backBtn.bounds.y, "Graphics", 24, Color.white);
-					Renderer.drawText(backBtn.bounds.x + 300, backBtn.bounds.y, "Audio", 24, Color.white);
+					Renderer.drawText(menuPosition.x + 70, menuPosition.y, "Controls", 24, Color.white);
+					Renderer.drawText(menuPosition.x + 180, menuPosition.y, "Graphics", 24, Color.white);
+					Renderer.drawText(menuPosition.x + 300, menuPosition.y, "Audio", 24, Color.white);
 
 					Renderer.beginDraw(GL11.GL_QUADS);
 					Renderer.drawQuad(controlsBtn.bounds.x, controlsBtn.bounds.y, controlsBtn.bounds.width,
@@ -333,7 +413,7 @@ public class MainMenu {
 					case 0:
 
 						/*
-						 * Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 28, "Forward", 18,
+						 * Renderer.drawText(menuPosition.x + 5, menuPosition.y + 28, "Forward", 18,
 						 * Color.white); Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 46,
 						 * "Backward", 18, Color.white); Renderer.drawText(backBtn.bounds.x + 5,
 						 * backBtn.bounds.y + 64, "Straft Left", 18, Color.white);
@@ -381,59 +461,92 @@ public class MainMenu {
 									new Color(1, 1, 1, 0.5f));
 						}
 						Renderer.endDraw();
-						/*
-						 * Renderer.beginDraw(GL11.GL_QUADS); Renderer.drawQuad(backBtn.bounds.x + 150,
-						 * backBtn.bounds.y + 30, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 60, 16, new
-						 * Color(1, 1, 1, 0.5f)); Renderer.drawQuad(backBtn.bounds.x + 150,
-						 * backBtn.bounds.y + 66, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 84, 60, 16, new
-						 * Color(1, 1, 1, 0.5f)); Renderer.drawQuad(backBtn.bounds.x + 150,
-						 * backBtn.bounds.y + 102, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 120, 60, 16, new
-						 * Color(1, 1, 1, 0.5f)); Renderer.drawQuad(backBtn.bounds.x + 150,
-						 * backBtn.bounds.y + 166, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 184, 60, 16, new
-						 * Color(1, 1, 1, 0.5f));
-						 * 
-						 * Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 30, 60, 16, new
-						 * Color(1, 1, 1, 0.5f)); Renderer.drawQuad(backBtn.bounds.x + 335,
-						 * backBtn.bounds.y + 48, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 66, 60, 16, new
-						 * Color(1, 1, 1, 0.5f)); Renderer.drawQuad(backBtn.bounds.x + 335,
-						 * backBtn.bounds.y + 84, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * Renderer.drawQuad(backBtn.bounds.x + 335, backBtn.bounds.y + 102, 60, 16, new
-						 * Color(1, 1, 1, 0.5f)); Renderer.drawQuad(backBtn.bounds.x + 335,
-						 * backBtn.bounds.y + 120, 60, 16, new Color(1, 1, 1, 0.5f));
-						 * 
-						 * Renderer.endDraw();
-						 */
+
 						break;
 					case 1:
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 28, "Fullscreen", 18, Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 46, "Resolution	", 18, Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 64, "VSync", 18, Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 82, "Target FPS", 18, Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 100, "Quailty", 18, Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 118, "Lost Focus VSync", 18,
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 28, "Fullscreen", 18, Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 46, "Resolution	", 18, Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 64, "VSync", 18, Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 82, "Target FPS", 18, Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 100, "Quailty", 18, Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 118, "Lost Focus VSync", 18,
 								Color.white);
-						Renderer.drawText(backBtn.bounds.x + 5, backBtn.bounds.y + 136, "Lost Focus FPS", 18,
-								Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 136, "Lost Focus FPS", 18, Color.white);
+
+						Renderer.drawText(menuPosition.x + 155, menuPosition.y + 28,
+								GameData.config.getProperty("window.fullscreen"), 18, Color.white);
+
+						Renderer.drawText(menuPosition.x + 155, menuPosition.y + 46,
+								GameData.config.getProperty("window.width") + "x"
+										+ GameData.config.getProperty("window.height"),
+								18, Color.white);
+
 						Renderer.beginDraw(GL11.GL_QUADS);
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 30, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 48, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 66, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 84, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 102, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 120, 60, 16,
-								new Color(1, 1, 1, 0.5f));
-						Renderer.drawQuad(backBtn.bounds.x + 150, backBtn.bounds.y + 138, 60, 16,
-								new Color(1, 1, 1, 0.5f));
+						if (fullscreenDD.showDropDown) {
+							Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 30, 60,
+									16 + ((fullscreenDD.getItems().size() - 1) * 18),
+									new Color(0.25f, 0.25f, 0.25f, 1f));
+						}
+						Renderer.endDraw();
+						if (fullscreenDD.showDropDown) {
+							int y = 0;
+							for (MenuItem item : fullscreenDD.getItems()) {
+								// System.out.println("test" + item.bounds);
+								if (item.bounds == null) {
+									item.bounds = new Rectangle(fullscreenDD.bounds.x, fullscreenDD.bounds.y + (y * 18),
+											fullscreenDD.bounds.width, fullscreenDD.bounds.height);
+								}
+								Renderer.drawText(item.bounds.x + 5, item.bounds.y, item.getName(), 18, Color.white);
+								y++;
+							}
+						}
+
+						if (resolutionDD.showDropDown) {
+							Renderer.drawQuad(resolutionDD.bounds.x, resolutionDD.bounds.y, 100,
+									16 + ((resolutionDD.getItems().size() - 1) * 18),
+									new Color(0.25f, 0.25f, 0.25f, 1f));
+						}
+						Renderer.endDraw();
+						if (resolutionDD.showDropDown) {
+							int y = 0;
+							for (MenuItem item : resolutionDD.getItems()) {
+								// System.out.println("test" + item.bounds);
+								if (item.bounds == null) {
+									item.bounds = new Rectangle(resolutionDD.bounds.x, resolutionDD.bounds.y + (y * 18),
+											resolutionDD.bounds.width, resolutionDD.bounds.height);
+								}
+								Renderer.drawText(item.bounds.x + 5, item.bounds.y, item.getName(), 18, Color.white);
+								y++;
+							}
+						}
+						Renderer.beginDraw(GL11.GL_QUADS);
+						if (fullscreenDD.showDropDown) {
+							int y = 0;
+							for (MenuItem item : fullscreenDD.getItems()) {
+								if (item.hovered) {
+									Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width,
+											item.bounds.height, new Color(1, 0, 0, 0.5f));
+								}
+								y++;
+							}
+						}
+						if (resolutionDD.showDropDown) {
+							int y = 0;
+							for (MenuItem item : resolutionDD.getItems()) {
+								if (item.hovered) {
+									Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width,
+											item.bounds.height, new Color(1, 0, 0, 0.5f));
+								}
+								y++;
+							}
+						}
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 30, 60, 16, new Color(1, 1, 1, 0.5f));
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 48, 60, 16, new Color(1, 1, 1, 0.5f));
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 66, 60, 16, new Color(1, 1, 1, 0.5f));
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 84, 60, 16, new Color(1, 1, 1, 0.5f));
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 102, 60, 16, new Color(1, 1, 1, 0.5f));
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 120, 60, 16, new Color(1, 1, 1, 0.5f));
+						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 138, 60, 16, new Color(1, 1, 1, 0.5f));
 
 						Renderer.endDraw();
 						break;

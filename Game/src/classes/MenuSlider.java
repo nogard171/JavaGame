@@ -9,7 +9,7 @@ import core.Input;
 
 public class MenuSlider {
 	public String name = "";
-	public int value = 0;
+	public int value = 100;
 	public int maxValue = 100;
 	public Rectangle bounds;
 	public Color color = Color.white;
