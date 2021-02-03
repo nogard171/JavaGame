@@ -1,15 +1,15 @@
 package classes;
 
-public interface AFunction {
-	public default void onClick(MenuItem item) {
+public interface AFunction<T> {
+	public default void onClick(T item) {
 
 	}
 
-	public default void onMouseHover(MenuItem item) {
+	public default void onMouseHover(T item) {
 
 	}
 
-	public default void onMouseOut(MenuItem item) {
+	public default void onMouseOut(T item) {
 
 	}
 }

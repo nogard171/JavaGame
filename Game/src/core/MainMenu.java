@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class MainMenu {
 	ListView menu;
 	int subMenu = -1;
 	int settingsTab = 0;
+	private boolean waitingForKey = false;
 	private boolean waitingForInput = false;
 	private String configName = "";
 	public static Point menuPosition;
@@ -32,8 +34,14 @@ public class MainMenu {
 	LinkedList<MenuItem> controlInputs = new LinkedList<MenuItem>();
 	LinkedList<MenuSlider> audioSliders = new LinkedList<MenuSlider>();
 	MenuDropDown fullscreenDD;
-
 	MenuDropDown resolutionDD;
+	MenuDropDown vsyncDD;
+	MenuInput vsync;
+	MenuDropDown qualityDD;
+	MenuInput lostFocusFPS;
+	MenuInput menuFPS;
+	int inputID = -1;
+	String inputValue = "";
 
 	public void menuVisible(boolean visible) {
 		showMenu = visible;
@@ -41,12 +49,11 @@ public class MainMenu {
 	}
 
 	public void init() {
-//change the positioning for the menu to reflect the rendering position not the init position of the objects.
 		menuPosition = new Point((Window.getWidth() / 2) - 200, (Window.getHeight() / 2) - 200);
 
 		menu = new ListView();
 
-		MenuItem resume = new MenuItem(new AFunction() {
+		MenuItem resume = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				menuVisible(false);
 
@@ -55,7 +62,7 @@ public class MainMenu {
 		resume.setName("Resume");
 		menu.addItem(resume);
 
-		MenuItem settings = new MenuItem(new AFunction() {
+		MenuItem settings = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				System.out.println(item.getName());
 				subMenu = 0;
@@ -64,7 +71,7 @@ public class MainMenu {
 		settings.setName("Settings");
 		menu.addItem(settings);
 
-		MenuItem help = new MenuItem(new AFunction() {
+		MenuItem help = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				System.out.println(item.getName());
 				subMenu = 1;
@@ -73,14 +80,14 @@ public class MainMenu {
 		help.setName("Help");
 		menu.addItem(help);
 
-		MenuItem save = new MenuItem(new AFunction() {
+		MenuItem save = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				System.out.println("Save");
 			}
 		});
 		save.setName("Save");
 		menu.addItem(save);
-		MenuItem exit = new MenuItem(new AFunction() {
+		MenuItem exit = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				menuVisible(false);
 			}
@@ -88,7 +95,7 @@ public class MainMenu {
 		exit.setName("Exit");
 		menu.addItem(exit);
 
-		backBtn = new MenuItem(new AFunction() {
+		backBtn = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				subMenu = -1;
 			}
@@ -96,7 +103,7 @@ public class MainMenu {
 		backBtn.bounds = new Rectangle(0, 0, 60, 24);
 		backBtn.setName("Exit");
 
-		controlsBtn = new MenuItem(new AFunction() {
+		controlsBtn = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				settingsTab = 0;
 				item.color = new Color(0.5f, 1, 0.5f, 0.5f);
@@ -118,7 +125,7 @@ public class MainMenu {
 		controlsBtn.bounds = new Rectangle(65, 0, 100, 24);
 		controlsBtn.setName("Controls");
 
-		graphicsBtn = new MenuItem(new AFunction() {
+		graphicsBtn = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				settingsTab = 1;
 				item.color = new Color(0.5f, 1, 0.5f, 0.5f);
@@ -140,7 +147,7 @@ public class MainMenu {
 		graphicsBtn.bounds = new Rectangle(175, 0, 100, 24);
 		graphicsBtn.setName("Graphics");
 
-		audioBtn = new MenuItem(new AFunction() {
+		audioBtn = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				settingsTab = 2;
 				item.color = new Color(0.5f, 1, 0.5f, 0.5f);
@@ -169,9 +176,9 @@ public class MainMenu {
 		int x = 0;
 		for (String key : keyList) {
 			if (key.startsWith("control.")) {
-				MenuItem testBtn = new MenuItem(new AFunction() {
+				MenuItem testBtn = new MenuItem(new AFunction<MenuItem>() {
 					public void onClick(MenuItem item) {
-						waitingForInput = true;
+						waitingForKey = true;
 						configName = item.getName();
 					}
 				});
@@ -205,7 +212,7 @@ public class MainMenu {
 
 		fullscreenDD = new MenuDropDown();
 		fullscreenDD.bounds = new Rectangle(150, 30, 60, 16);
-		MenuItem yes = new MenuItem(new AFunction() {
+		MenuItem yes = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				GameData.config.setProperty("window.fullscreen", "true");
 				fullscreenDD.showDropDown = false;
@@ -215,7 +222,7 @@ public class MainMenu {
 		yes.setName("Yes");
 
 		fullscreenDD.addItem(yes);
-		MenuItem no = new MenuItem(new AFunction() {
+		MenuItem no = new MenuItem(new AFunction<MenuItem>() {
 			public void onClick(MenuItem item) {
 				GameData.config.setProperty("window.fullscreen", "false");
 				fullscreenDD.showDropDown = false;
@@ -226,25 +233,53 @@ public class MainMenu {
 		fullscreenDD.addItem(no);
 
 		resolutionDD = new MenuDropDown();
-		resolutionDD.bounds = new Rectangle(150, 48, 60, 16);
+		resolutionDD.bounds = new Rectangle(150, 48, 100, 16);
 
 		ArrayList<Point> resolutions = Window.getResolutions();
 		System.out.println("res: " + resolutions.size());
 		for (Point res : resolutions) {
-			MenuItem resItem = new MenuItem(new AFunction() {
+			MenuItem resItem = new MenuItem(new AFunction<MenuItem>() {
 				public void onClick(MenuItem item) {
 					String[] data = item.getName().split("x");
 					int width = Integer.parseInt(data[0]);
 					int height = Integer.parseInt(data[1]);
 					GameData.config.setProperty("window.width", width + "");
 					GameData.config.setProperty("window.height", height + "");
+					Window.updateWindow();
 					resolutionDD.showDropDown = false;
 					System.out.println("select Res: " + width + "x" + height);
 				}
 			});
+
 			resItem.setName(res.x + "x" + res.y);
 			resolutionDD.addItem(resItem);
 		}
+		vsync = new MenuInput(new AFunction<MenuInput>() {
+			public void onClick(MenuInput item) {
+				inputID = 0;
+				waitingForInput = true;
+				System.out.println("test");
+			}
+		});
+		vsync.bounds = new Rectangle(0, 0, 60, 16);
+		vsync.value = GameData.config.getProperty("window.vsync");
+		lostFocusFPS = new MenuInput(new AFunction<MenuInput>() {
+			public void onClick(MenuInput item) {
+				inputID = 1;
+				waitingForInput = true;
+			}
+		});
+		lostFocusFPS.bounds = new Rectangle(0, 0, 60, 16);
+		lostFocusFPS.value = GameData.config.getProperty("window.lose_focus");
+		menuFPS = new MenuInput(new AFunction<MenuInput>() {
+			public void onClick(MenuInput item) {
+				inputID = 2;
+				waitingForInput = true;
+
+			}
+		});
+		menuFPS.bounds = new Rectangle(0, 0, 60, 16);
+		menuFPS.value = GameData.config.getProperty("window.menu_vsync");
 
 		updateBounds();
 	}
@@ -270,6 +305,15 @@ public class MainMenu {
 
 		resolutionDD.bounds.x = menuPosition.x + 150;
 		resolutionDD.bounds.y = menuPosition.y + 48;
+
+		vsync.bounds.x = menuPosition.x + 150;
+		vsync.bounds.y = menuPosition.y + 66;
+
+		lostFocusFPS.bounds.x = menuPosition.x + 150;
+		lostFocusFPS.bounds.y = menuPosition.y + 120;
+
+		menuFPS.bounds.x = menuPosition.x + 150;
+		menuFPS.bounds.y = menuPosition.y + 138;
 	}
 
 	boolean firstInput = true;
@@ -277,9 +321,9 @@ public class MainMenu {
 	MenuSlider slider;
 
 	public void update() {
-		if (waitingForInput) {
+		if (waitingForKey) {
 			if (Input.isKeyDown(Keyboard.KEY_ESCAPE)) {
-				waitingForInput = false;
+				waitingForKey = false;
 				firstInput = true;
 			} else {
 				if (firstInput) {
@@ -302,18 +346,70 @@ public class MainMenu {
 						keyName = Keyboard.getKeyName(key);
 					}
 					GameData.config.setProperty(configName, keyName);
-					waitingForInput = false;
+					waitingForKey = false;
 					firstInput = true;
 				}
+			}
+
+		} else if (waitingForInput) {
+			// System.out.println("test:" + inputID);
+			if (Input.isKeyDown(Keyboard.KEY_ESCAPE) || Input.isKeyDown(Keyboard.KEY_RETURN)) {
+				if (inputID == 0) {
+					vsync.value = inputValue;
+				}
+				if (inputID == 1) {
+					lostFocusFPS.value = inputValue;
+				}
+				if (inputID == 2) {
+					menuFPS.value = inputValue;
+				}
+				inputValue = "";
+				waitingForInput = false;
+				firstInput = true;
+			} else {
+				if (firstInput) {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					inputValue = "";
+					firstInput = false;
+				}
+				int key = Input.getInput();
+				// System.out.println("value: " + inputValue);
+				if (key >= 0) {
+					String keyName = Keyboard.getKeyName(key);
+					// System.out.println("Key: " + keyName);
+					if (keyName.length() == 1) {
+						inputValue += keyName;
+					} else if (keyName.equals("BACK") && inputValue.length() > 0) {
+						inputValue = inputValue.substring(0, inputValue.length() - 1);
+
+					}
+					if (inputID == 0) {
+						vsync.value = inputValue + "_";
+					}
+					if (inputID == 1) {
+						lostFocusFPS.value = inputValue + "_";
+					}
+					if (inputID == 2) {
+						menuFPS.value = inputValue + "_";
+					}
+				}
+
 			}
 
 		} else {
 			if (showMenu) {
 				boolean isActive = true;
 				if (subMenu != -1) {
-					updateBounds();
+
 					menuPosition.x = (Window.getWidth() / 2) - 200;
 					menuPosition.y = (Window.getHeight() / 2) - 200;
+					updateBounds();
 					backBtn.update();
 					switch (subMenu) {
 					case 0:
@@ -339,6 +435,10 @@ public class MainMenu {
 						case 1:
 							fullscreenDD.update();
 							resolutionDD.update();
+							vsync.update();
+							lostFocusFPS.update();
+							menuFPS.update();
+
 							break;
 						case 2:
 							int y2 = 0;
@@ -356,7 +456,6 @@ public class MainMenu {
 					case 1:
 
 						break;
-
 					default:
 						break;
 					}
@@ -375,10 +474,10 @@ public class MainMenu {
 			menu.render();
 
 			if (subMenu != -1) {
+
 				Renderer.beginDraw(GL11.GL_QUADS);
 				Renderer.drawQuad(menuPosition.x, menuPosition.y, 400, 400, new Color(0, 0, 0, 1f));
 				Renderer.endDraw();
-
 				Color backBackgroundColor = new Color(1, 1, 1, 0.5f);
 				if (backBtn.hovered) {
 					backBackgroundColor = new Color(1, 0, 0, 0.5f);
@@ -448,7 +547,7 @@ public class MainMenu {
 									18, Color.white);
 
 							String key = GameData.config.getProperty(btn.getName());
-							if (waitingForInput && this.configName.equals(btn.getName())) {
+							if (waitingForKey && this.configName.equals(btn.getName())) {
 								key = "_";
 							}
 
@@ -471,7 +570,14 @@ public class MainMenu {
 						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 100, "Quailty", 18, Color.white);
 						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 118, "Lost Focus VSync", 18,
 								Color.white);
-						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 136, "Lost Focus FPS", 18, Color.white);
+						Renderer.drawText(menuPosition.x + 5, menuPosition.y + 136, "Menu FPS", 18, Color.white);
+
+						Renderer.drawText(vsync.bounds.x + 2, vsync.bounds.y - 2, vsync.value, 18, Color.white);
+
+						Renderer.drawText(lostFocusFPS.bounds.x + 2, lostFocusFPS.bounds.y - 2, lostFocusFPS.value, 18,
+								Color.white);
+
+						Renderer.drawText(menuFPS.bounds.x + 2, menuFPS.bounds.y - 2, menuFPS.value, 18, Color.white);
 
 						Renderer.drawText(menuPosition.x + 155, menuPosition.y + 28,
 								GameData.config.getProperty("window.fullscreen"), 18, Color.white);
@@ -491,11 +597,10 @@ public class MainMenu {
 						if (fullscreenDD.showDropDown) {
 							int y = 0;
 							for (MenuItem item : fullscreenDD.getItems()) {
-								// System.out.println("test" + item.bounds);
-								if (item.bounds == null) {
-									item.bounds = new Rectangle(fullscreenDD.bounds.x, fullscreenDD.bounds.y + (y * 18),
-											fullscreenDD.bounds.width, fullscreenDD.bounds.height);
-								}
+								// if (item.bounds == null) {
+								item.bounds = new Rectangle(fullscreenDD.bounds.x, fullscreenDD.bounds.y + (y * 18),
+										fullscreenDD.bounds.width, fullscreenDD.bounds.height);
+								// }
 								Renderer.drawText(item.bounds.x + 5, item.bounds.y, item.getName(), 18, Color.white);
 								y++;
 							}
@@ -510,34 +615,30 @@ public class MainMenu {
 						if (resolutionDD.showDropDown) {
 							int y = 0;
 							for (MenuItem item : resolutionDD.getItems()) {
-								// System.out.println("test" + item.bounds);
-								if (item.bounds == null) {
-									item.bounds = new Rectangle(resolutionDD.bounds.x, resolutionDD.bounds.y + (y * 18),
-											resolutionDD.bounds.width, resolutionDD.bounds.height);
-								}
+								// if (item.bounds == null) {
+								item.bounds = new Rectangle(resolutionDD.bounds.x, resolutionDD.bounds.y + (y * 18),
+										resolutionDD.bounds.width, resolutionDD.bounds.height);
+								// }
 								Renderer.drawText(item.bounds.x + 5, item.bounds.y, item.getName(), 18, Color.white);
 								y++;
 							}
 						}
 						Renderer.beginDraw(GL11.GL_QUADS);
 						if (fullscreenDD.showDropDown) {
-							int y = 0;
 							for (MenuItem item : fullscreenDD.getItems()) {
 								if (item.hovered) {
-									Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width,
-											item.bounds.height, new Color(1, 0, 0, 0.5f));
+									Renderer.drawQuad(item.bounds.x, item.bounds.y, fullscreenDD.bounds.width,
+											fullscreenDD.bounds.height, new Color(1, 0, 0, 0.5f));
 								}
-								y++;
 							}
 						}
 						if (resolutionDD.showDropDown) {
-							int y = 0;
 							for (MenuItem item : resolutionDD.getItems()) {
 								if (item.hovered) {
-									Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width,
-											item.bounds.height, new Color(1, 0, 0, 0.5f));
+									System.out.println("width: " + item.bounds.x);
+									Renderer.drawQuad(item.bounds.x, item.bounds.y, resolutionDD.bounds.width,
+											resolutionDD.bounds.height, new Color(1, 0, 0, 0.5f));
 								}
-								y++;
 							}
 						}
 						Renderer.drawQuad(menuPosition.x + 150, menuPosition.y + 30, 60, 16, new Color(1, 1, 1, 0.5f));

@@ -11,11 +11,13 @@ import classes.Object;
 import utils.Renderer;
 
 public class Chunk {
-	private int batchID = -1;
+	private int objectID = -1;
+	private int maskID = -1;
 	private boolean needsUpdating = false;
 	private Point index = new Point(0, 0);
 	private Vector2f position = null;
 	public HashMap<Point, Object> objects = new HashMap<Point, Object>();
+	public HashMap<Point, Object> mask = new HashMap<Point, Object>();
 
 	public Chunk() {
 	}
@@ -46,7 +48,7 @@ public class Chunk {
 	}
 
 	public void build() {
-		if (batchID == -1) {
+		if (objectID == -1) {
 			Renderer.beginBatch(GL11.GL_QUADS);
 			for (int x = 0; x < GameData.chunkSize.getWidth(); x++) {
 				for (int y = 0; y < GameData.chunkSize.getHeight(); y++) {
@@ -59,7 +61,21 @@ public class Chunk {
 					}
 				}
 			}
-			batchID = Renderer.endBatch();
+			objectID = Renderer.endBatch();
+		}
+		if (maskID == -1) {
+			Renderer.beginBatch(GL11.GL_QUADS);
+			for (int x = 0; x < GameData.chunkSize.getWidth(); x++) {
+				for (int y = 0; y < GameData.chunkSize.getHeight(); y++) {
+					Object obj = mask.get(new Point(x, y));
+					if (obj != null) {
+						int chunkX = (int) (index.x * GameData.chunkSize.getWidth() * 32);
+						int chunkY = (int) (index.y * GameData.chunkSize.getHeight() * 32);
+						Renderer.renderTexture(chunkX + (x * 32), chunkY + (y * 32), obj.getTexture());
+					}
+				}
+			}
+			maskID = Renderer.endBatch();
 		}
 	}
 
@@ -77,7 +93,7 @@ public class Chunk {
 			validDraw = true;
 		}
 		if (validDraw) {
-			Renderer.drawBatch(batchID);
+			Renderer.drawBatch(objectID);
 		}
 		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 
@@ -87,5 +103,16 @@ public class Chunk {
 		Renderer.endDraw();
 
 		GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+	}
+
+	public void renderMask() {
+		boolean validDraw = false;
+		if (GameData.view.intersects(position.x, position.y, GameData.chunkSize.getWidth() * 32,
+				GameData.chunkSize.getHeight() * 32)) {
+			validDraw = true;
+		}
+		if (validDraw) {
+			Renderer.drawBatch(maskID);
+		}
 	}
 }

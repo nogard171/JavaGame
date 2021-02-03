@@ -60,7 +60,8 @@ public class World {
 
 	public void render() {
 		GL11.glPushMatrix();
-		GL11.glTranslatef(-GameData.view.x, -GameData.view.y, 0);
+		GL11.glTranslatef(-GameData.view.x + (Window.getWidth() / 2) - 16,
+				-GameData.view.y + (Window.getHeight() / 2) - 16, 0);
 
 		for (int x = chunkXMin; x < chunkXMax; x++) {
 			for (int y = chunkYMin; y < chunkYMax; y++) {

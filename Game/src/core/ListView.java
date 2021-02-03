@@ -51,7 +51,7 @@ public class ListView {
 					c = new Color(1, 0, 0, 0.5f);
 				}
 				Renderer.beginDraw(GL11.GL_QUADS);
-				Renderer.drawQuad(item.bounds.x, item.bounds.y, item.bounds.width, item.bounds.height + 2, c);
+				Renderer.drawQuad(item.bounds.x,item.bounds.y, item.bounds.width, item.bounds.height + 2, c);
 				Renderer.endDraw();
 				Renderer.drawText(item.bounds.x, item.bounds.y, item.getName(), item.bounds.height, Color.black);
 				y++;
