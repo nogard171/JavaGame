@@ -95,6 +95,7 @@ public class Chunk {
 			GL11.glPopMatrix();
 
 			GL11.glEndList();
+			System.out.println("Building...");
 		} else {
 			GL11.glCallList(displayListHandle);
 		}

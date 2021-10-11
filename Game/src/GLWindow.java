@@ -34,7 +34,7 @@ public class GLWindow {
 	static int WIDTH = 800;
 	static int HEIGHT = 600;
 	int MAXFPS = 120;
-	boolean FPSLIMITER = true;
+	boolean FPSLIMITER = false;
 	// the farest rendering distance
 	int FARVIEW = 50;
 	int FOV = 45;
@@ -48,12 +48,15 @@ public class GLWindow {
 	KeyboardInput keyboard = new KeyboardInput();
 
 	int fps = 0;
+	int currentFPS = 0;
 
 	public void UpdateFPS() {
 		if (getTime() - lastFPS > 1000) {
 			// Display.setTitle("FPS: " + fps);
+			currentFPS = fps;
 			fps = 0; // reset the FPS counter
 			lastFPS += 1000; // add one second
+
 		}
 		fps++;
 	}
@@ -141,10 +144,10 @@ public class GLWindow {
 			// set the modelview matrix back to the identit
 			GL11.glLoadIdentity();
 			double delta = getDelta();
-			Display.setTitle("Delta: " + delta);
 			UpdateFPS();
 			this.Update(delta);
 			this.Render();
+			System.out.println("FPS:" + currentFPS);
 			Display.update();
 			if (this.FPSLIMITER) {
 				Display.sync(MAXFPS);
