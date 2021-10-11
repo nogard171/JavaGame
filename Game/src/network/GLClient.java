@@ -53,9 +53,7 @@ public class GLClient extends Thread {
 							} else if (data.protocol == GLProtocol.TRANSFORM) {
 								sync = true;
 								GLSyncTransform syncTransform = (GLSyncTransform) data;
-								// System.out.println("Transform (" +
-								// data.ClientID + "): " +
-								// syncTransform.position.toString());
+								
 								engine.GLTransform transform = new engine.GLTransform(syncTransform.position.x,
 										syncTransform.position.y);
 

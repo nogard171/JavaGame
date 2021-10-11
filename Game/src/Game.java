@@ -226,6 +226,9 @@ public class Game extends GLDisplay {
 				}
 			}
 			for (GLObject obj : client.objectsToSync) {
+				System.out.println("Object Added..."+obj.getComponent("renderer"));
+				//GLRenderer spriteRenderer2 = new GLRenderer();
+				//obj.AddComponent(spriteRenderer2);
 				objectInView.add(obj);
 			}
 			client.objectsToSync.clear();
