@@ -5,6 +5,9 @@
 	<material name='DIRT'>
 		<data file="data/materials/dirt.mat" />
 	</material>
+	<material name='TREE'>
+		<data file="data/materials/tree.mat" />
+	</material>
 	<material name='SAND'>
 		<data file="data/materials/sand.mat" />
 	</material>

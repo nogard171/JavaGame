@@ -1,5 +1,6 @@
 package threads;
 
+import utils.Input;
 import utils.Ticker;
 
 public class BaseThread extends Thread {

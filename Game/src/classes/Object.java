@@ -1,14 +1,15 @@
 package classes;
 
+import java.awt.Polygon;
+
 public class Object {
 	private int x = 0;
 	private int y = 0;
-	private int indexX = 0;
-	private int indexY = 0;
-	private int indexZ = 0;
+	private Index index;
 	private String model = "TILE";
 	private String material = "GRASS";
 	private String previousMaterial = "GRASS";
+	public Polygon bounds;
 
 	public String getMaterial() {
 		return material;
@@ -23,40 +24,17 @@ public class Object {
 		return x;
 	}
 
-	public void setX(int x) {
-		this.x = x;
+	public void setPosition(int nx, int ny) {
+		this.x = nx;
+		this.y = ny;
 	}
 
 	public int getY() {
 		return y;
 	}
 
-	public void setY(int y) {
-		this.y = y;
-	}
-
-	public int getIndexX() {
-		return indexX;
-	}
-
-	public void setIndexX(int indexX) {
-		this.indexX = indexX;
-	}
-
-	public int getIndexY() {
-		return indexY;
-	}
-
-	public void setIndexY(int indexY) {
-		this.indexY = indexY;
-	}
-
-	public int getIndexZ() {
-		return indexZ;
-	}
-
-	public void setIndexZ(int indexZ) {
-		this.indexZ = indexZ;
+	public void setIndex(int nx, int nz) {
+		index = new Index(nx, nz);
 	}
 
 	public String getModel() {
@@ -75,5 +53,12 @@ public class Object {
 		this.previousMaterial = previousMaterial;
 	}
 
-}
+	public Index getIndex() {
+		return this.index;
+	}
 
+	@Override
+	public String toString() {
+		return this.index+"("+this.material+"=>"+this.model+")";
+	}
+}

@@ -6,6 +6,7 @@ import org.lwjgl.opengl.Display;
 public class FPS {
 	public static long lastFrame;
 	public static int fps;
+	public static int currentfps;
 	public static long lastFPS;
 
 	public static void setup() {
@@ -27,7 +28,7 @@ public class FPS {
 
 	public static void updateFPS() {
 		if (getTime() - lastFPS > 1000) {
-			Display.setTitle("FPS: " + fps);
+			currentfps = fps;
 			fps = 0;
 			lastFPS += 1000;
 		}

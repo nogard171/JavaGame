@@ -13,18 +13,15 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import data.EngineData;
 import threads.GameThread;
 
 public class Window {
 
-	public static int width = 800;
-	public static int height = 600;
-	public static boolean isResizable = true;
-
 	public static void create() {
 		try {
-			Display.setDisplayMode(new DisplayMode(width, height));
-			Display.setResizable(isResizable);
+			Display.setDisplayMode(new DisplayMode(EngineData.width, EngineData.height));
+			Display.setResizable(EngineData.isResizable);
 			Display.create();
 
 			setup();
@@ -35,13 +32,13 @@ public class Window {
 	}
 
 	private static void setup() {
-		width = Display.getWidth();
-		height = Display.getHeight();
+		EngineData.width = Display.getWidth();
+		EngineData.height = Display.getHeight();
 
-		GL11.glViewport(0, 0, width, height);
+		GL11.glViewport(0, 0, EngineData.width, EngineData.height);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, width, height, 0, -1, 1);
+		GL11.glOrtho(0, EngineData.width, EngineData.height, 0, -1, 1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -59,13 +56,17 @@ public class Window {
 		}
 		if (Display.isCloseRequested()) {
 			GameThread.close();
-
 		}
-
 	}
 
 	public static void render() {
 		Display.update();
+		if (!Display.isActive()) {
+			Display.sync(EngineData.inactiveFPS);
+		} else if (EngineData.targetFPS != -1) {
+			Display.sync(EngineData.targetFPS);
+		}
+
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
@@ -80,45 +81,11 @@ public class Window {
 		Display.destroy();
 	}
 
-	public static int getMouseX() {
-		return Mouse.getX();
-	}
-
-	public static int getMouseY() {
-		return height - Mouse.getY();
-	}
-
-	public static boolean isKeyDown(int key) {
-
-		return Keyboard.isKeyDown(key);
-	}
-
-	public static boolean isKeyPressed(int key) {
-		boolean isPressed = false;
-		while (Keyboard.next()) {
-			if (key < 0) {
-				continue;
-			}
-			if (Keyboard.getEventKeyState()) {
-				if (!Keyboard.isRepeatEvent()) {
-					if (Keyboard.isKeyDown(key)) {
-						isPressed = true;
-					}
-				}
-			}
-		}
-		return isPressed;
-	}
-
 	public static int getWidth() {
-		return width;
+		return EngineData.width;
 	}
 
 	public static int getHeight() {
-		return height;
-	}
-
-	public static boolean isMouseDown(int i) {
-		return Mouse.isButtonDown(i);
+		return EngineData.height;
 	}
 }

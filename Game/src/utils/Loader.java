@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -18,18 +17,22 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import classes.RawFontCharacter;
 import classes.RawMaterial;
 import classes.RawModel;
-import classes.TextureData;
-import classes.TextureType;
-import data.MaterialData;
-import data.ModelData;
+import data.AssetData;
 import data.Settings;
-import data.UIData;
 
 public class Loader {
+
+	public static void load() {
+		loadMaterials();
+		loadTextures();
+
+		Settings.dataLoaded = false;
+	}
+
 	public static void loadMaterials() {
+		AssetData.materialData.clear();
 		try {
 			File fXmlFile = new File(Settings.materialsFile);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -45,7 +48,7 @@ public class Loader {
 				Element texturesElement = (Element) texturesNode;
 				String textureFile = texturesElement.getAttribute("texture_file");
 				if (textureFile != null && textureFile != "") {
-					MaterialData.texture = TextureLoader.getTexture("PNG",
+					AssetData.texture = TextureLoader.getTexture("PNG",
 							ResourceLoader.getResourceAsStream(textureFile));
 				}
 			}
@@ -71,7 +74,7 @@ public class Loader {
 						System.out.println("Name: " + name);
 						RawMaterial mat = loadMaterial(materialName);
 
-						MaterialData.materialData.put(name, mat);
+						AssetData.materialData.put(name, mat);
 					}
 				}
 			}
@@ -85,6 +88,7 @@ public class Loader {
 		RawMaterial mat = new RawMaterial();
 
 		ArrayList<Vector2f> vecs = new ArrayList<Vector2f>();
+		ArrayList<Byte> indices = new ArrayList<Byte>();
 
 		BufferedReader reader;
 		try {
@@ -92,10 +96,15 @@ public class Loader {
 			String line = reader.readLine();
 			while (line != null) {
 				String[] data = line.split(" ");
-				if (data[0].contains("tv")) {
-					vecs.add(new Vector2f(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
-
-					System.out.println(vecs.get(vecs.size() - 1));
+				if (!data[0].startsWith("#")) {
+					if (data[0].startsWith("tv")) {
+						vecs.add(new Vector2f(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
+					}
+					if (data[0].startsWith("ti")) {
+						indices.add(Byte.parseByte(data[1]));
+						indices.add(Byte.parseByte(data[2]));
+						indices.add(Byte.parseByte(data[3]));
+					}
 				}
 				line = reader.readLine();
 			}
@@ -107,11 +116,16 @@ public class Loader {
 		for (int i = 0; i < vecs.size(); i++) {
 			mat.vectors[i] = vecs.get(i);
 		}
+		mat.indices = new byte[indices.size()];
+		for (int i = 0; i < indices.size(); i++) {
+			mat.indices[i] = indices.get(i);
+		}
 
 		return mat;
 	}
 
 	public static void loadTextures() {
+		AssetData.modelData.clear();
 		try {
 			File fXmlFile = new File(Settings.textureFile);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -141,7 +155,7 @@ public class Loader {
 						String modelFile = dataNode.getAttribute("file");
 						RawModel raw = loadModel(modelFile);
 
-						ModelData.modelData.put(name, raw);
+						AssetData.modelData.put(name, raw);
 					}
 				}
 			}
@@ -155,6 +169,7 @@ public class Loader {
 		RawModel raw = new RawModel();
 
 		ArrayList<Vector2f> vecs = new ArrayList<Vector2f>();
+		ArrayList<Byte> boundIndices = new ArrayList<Byte>();
 		ArrayList<Byte> ind = new ArrayList<Byte>();
 
 		BufferedReader reader;
@@ -163,15 +178,19 @@ public class Loader {
 			String line = reader.readLine();
 			while (line != null) {
 				String[] data = line.split(" ");
-				if (data[0].contains("v")) {
-					vecs.add(new Vector2f(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
+				if (!data[0].startsWith("#")) {
 
-					System.out.println(vecs.get(vecs.size() - 1));
-				}
-				if (data[0].contains("i")) {
-					ind.add(Byte.parseByte(data[1]));
-					ind.add(Byte.parseByte(data[2]));
-					ind.add(Byte.parseByte(data[3]));
+					if (data[0].startsWith("v")) {
+						vecs.add(new Vector2f(Float.parseFloat(data[1]), Float.parseFloat(data[2])));
+					}
+					if (data[0].startsWith("bi")) {
+						boundIndices.add(Byte.parseByte(data[1]));
+					}
+					if (data[0].startsWith("i")) {
+						ind.add(Byte.parseByte(data[1]));
+						ind.add(Byte.parseByte(data[2]));
+						ind.add(Byte.parseByte(data[3]));
+					}
 				}
 				line = reader.readLine();
 			}
@@ -179,6 +198,7 @@ public class Loader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		raw.vectors = new Vector2f[vecs.size()];
 		for (int i = 0; i < vecs.size(); i++) {
 			raw.vectors[i] = vecs.get(i);
@@ -188,77 +208,14 @@ public class Loader {
 			raw.indices[i] = ind.get(i);
 		}
 
+		if (boundIndices.size() > 0) {
+			raw.boundVectors = new Vector2f[boundIndices.size()];
+			for (int i = 0; i < boundIndices.size(); i++) {
+				raw.boundVectors[i] = raw.vectors[boundIndices.get(i)];
+			}
+		}
+
 		return raw;
 	}
 
-	public static void loadFonts() {
-		try {
-			File fXmlFile = new File(Settings.fontFile);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-
-			doc.getDocumentElement().normalize();
-
-			Node texturesNode = doc.getElementsByTagName("fonts").item(0);
-
-			if (texturesNode.getNodeType() == Node.ELEMENT_NODE) {
-
-				Element texturesElement = (Element) texturesNode;
-				String textureFile = texturesElement.getAttribute("texture_file");
-				if (textureFile != null && textureFile != "") {
-					MaterialData.fontTexture = TextureLoader.getTexture("PNG",
-							ResourceLoader.getResourceAsStream(textureFile));
-				}
-			}
-			NodeList textureNodes = doc.getElementsByTagName("font");
-
-			for (int temp = 0; temp < textureNodes.getLength(); temp++) {
-
-				Node textureNode = textureNodes.item(temp);
-
-				if (textureNode.getNodeType() == Node.ELEMENT_NODE) {
-
-					Element textureElement = (Element) textureNode;
-					String name = textureElement.getAttribute("name");
-					String file = textureElement.getAttribute("file");
-
-					BufferedReader reader;
-					try {
-						reader = new BufferedReader(new FileReader(file));
-						String line = reader.readLine();
-						while (line != null) {
-							String[] data = line.split(" ");
-
-							if (data.length >= 21) {
-								String letter = data[0];
-								System.out.println("Letter: " + letter);
-								RawFontCharacter raw = new RawFontCharacter();
-
-								String[] blockData = line.replace(letter + " ", "").split(" ");
-
-								Byte[] blocks = new Byte[blockData.length];
-								for (int i = 0; i < blockData.length; i++) {
-									blocks[i] = Byte.parseByte(blockData[i]);
-								}
-								raw.setBlocks(blocks);
-								
-								UIData.fontCharacters.put(letter, raw);
-							}
-							line = reader.readLine();
-						}
-						reader.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-		} catch (
-
-		Exception e) {
-			e.printStackTrace();
-		}
-
-	}
 }

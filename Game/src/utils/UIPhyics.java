@@ -1,15 +1,25 @@
 package utils;
 
-import classes.UIButton;
+import java.awt.Point;
+
+import org.lwjgl.util.vector.Vector2f;
+
+import classes.UIControl;
 
 public class UIPhyics {
-	public static boolean isColliding(UIButton control) {
+	public static boolean inside(UIControl control, Vector2f point) {
+		return inside(control, new Point((int) point.x, (int) point.y));
+	}
+
+	public static boolean inside(UIControl control, Point point) {
 		boolean isColliding = false;
-		if (Window.getMouseX() >= control.getPosition().getX()
-				&& Window.getMouseX() <= control.getPosition().getX() + control.getSize().getWidth()
-				&& Window.getMouseY() >= control.getPosition().getY()
-				&& Window.getMouseY() <= control.getPosition().getY() + control.getSize().getHeight()) {
-			isColliding = true;
+		if (control.isVisible) {
+			if (point.x >= control.getPosition().getX()
+					&& point.x <= control.getPosition().getX() + control.getSize().getWidth()
+					&& point.y >= control.getPosition().getY()
+					&& point.y <= control.getPosition().getY() + control.getSize().getHeight()) {
+				isColliding = true;
+			}
 		}
 		return isColliding;
 	}

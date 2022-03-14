@@ -1,11 +1,14 @@
 package utils;
 
-import java.awt.Color;
 import java.awt.Font;
+import java.awt.Polygon;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.opengl.TextureImpl;
 
 import classes.Chunk;
 import classes.Index;
@@ -14,16 +17,26 @@ import classes.TextureType;
 import classes.UIButton;
 import classes.UIControl;
 import classes.UIMenu;
+import classes.UIMenuItem;
 import classes.Object;
 import classes.RawFontCharacter;
 import classes.RawMaterial;
 import classes.RawModel;
-import data.MaterialData;
-import data.ModelData;
-import data.UIData;
-import data.WorldData;
+import data.AssetData;
+import data.EngineData;
 
 public class Renderer {
+
+	public static void bindTexture() {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, AssetData.texture.getTextureID());
+	}
+
+	public static void unbindTexture() {
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
+
 	public static void renderModel(Chunk self, int x, int z) {
 		if (self != null) {
 			int carX = (self.index.getX() * 32) * 16;
@@ -34,17 +47,50 @@ public class Renderer {
 			int selfY = isoY;
 			Object obj = self.ground[x][z];
 			if (obj != null) {
-				RawModel raw = ModelData.modelData.get(obj.getModel());
+				RawModel raw = AssetData.modelData.get(obj.getModel());
 				if (raw != null) {
+					if (obj.bounds == null) {
+						obj.bounds = new Polygon();
+						for (Vector2f vec : raw.boundVectors) {
+							obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()), (int) (vec.y + selfY + obj.getY()));
 
-					RawMaterial mat = MaterialData.materialData.get(obj.getMaterial());
+						}
+					}
+					RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
 					if (mat != null) {
 						for (byte i : raw.indices) {
 							Vector2f textureVec = mat.vectors[i];
-							GL11.glTexCoord2f(textureVec.x / MaterialData.texture.getImageWidth(),
-									textureVec.y / MaterialData.texture.getImageHeight());
+							GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+									textureVec.y / AssetData.texture.getImageHeight());
 							Vector2f vec = raw.vectors[i];
 							GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
+						}
+					}
+				}
+			}
+			obj = null;
+			obj = self.objects[x][z];
+			if (obj != null) {
+				// System.out.println("Vec:" + obj.getModel());
+				RawModel raw = AssetData.modelData.get(obj.getModel());
+				if (raw != null) {
+					if (obj.bounds == null) {
+						obj.bounds = new Polygon();
+						for (Vector2f vec : raw.boundVectors) {
+							obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()), (int) (vec.y + selfY + obj.getY()));
+						}
+					}
+					RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
+					if (mat != null) {
+						int tic = 0;
+						for (byte i : raw.indices) {
+							byte ti = mat.indices[tic];
+							Vector2f textureVec = mat.vectors[ti];
+							GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+									textureVec.y / AssetData.texture.getImageHeight());
+							Vector2f vec = raw.vectors[i];
+							GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
+							tic++;
 						}
 					}
 				}
@@ -53,14 +99,14 @@ public class Renderer {
 	}
 
 	public static void renderModel(String modelName, int x, int z) {
-		RawModel raw = ModelData.modelData.get(modelName);
+		RawModel raw = AssetData.modelData.get(modelName);
 		if (raw != null) {
-			RawMaterial mat = MaterialData.materialData.get(modelName);
+			RawMaterial mat = AssetData.materialData.get(modelName);
 			if (mat != null) {
 				for (byte i : raw.indices) {
 					Vector2f textureVec = mat.vectors[i];
-					GL11.glTexCoord2f(textureVec.x / MaterialData.texture.getImageWidth(),
-							textureVec.y / MaterialData.texture.getImageHeight());
+					GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+							textureVec.y / AssetData.texture.getImageHeight());
 					Vector2f vec = raw.vectors[i];
 					GL11.glVertex2f(vec.x + x, vec.y + z);
 				}
@@ -69,14 +115,14 @@ public class Renderer {
 	}
 
 	public static void renderModel(String modelName, String materialName, int x, int z) {
-		RawModel raw = ModelData.modelData.get(modelName);
+		RawModel raw = AssetData.modelData.get(modelName);
 		if (raw != null) {
-			RawMaterial mat = MaterialData.materialData.get(materialName);
+			RawMaterial mat = AssetData.materialData.get(materialName);
 			if (mat != null) {
 				for (byte i : raw.indices) {
 					Vector2f textureVec = mat.vectors[i];
-					GL11.glTexCoord2f(textureVec.x / MaterialData.texture.getImageWidth(),
-							textureVec.y / MaterialData.texture.getImageHeight());
+					GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+							textureVec.y / AssetData.texture.getImageHeight());
 					Vector2f vec = raw.vectors[i];
 					GL11.glVertex2f(vec.x + x, vec.y + z);
 				}
@@ -102,80 +148,47 @@ public class Renderer {
 			Renderer.renderModel("BUTTON", btn.getMaterial(), control.getPosition().x, control.getPosition().y);
 
 			GL11.glEnd();
+			Renderer.renderText(control.getPosition().x, control.getPosition().y, btn.getText(), 12, Color.black);
 		}
 		if (controlName.contains("UIMenu")) {
 			UIMenu menu = (UIMenu) control;
-			float x = menu.getPosition().getX();
-			float y = menu.getPosition().getY();
-			for (UIButton btn : menu.getButtons()) {
-				// GL11.glColor3f(1, 1, 1);
-				// GL11.glBegin(GL11.GL_TRIANGLES);
+			float x = 0;
+			float y = 0;
 
-				// GL11.glEnd();
-				y += btn.getSize().getHeight();
-			}
-		}
-	}
+			Renderer.renderQuad(menu.getPosition().getX() - 1, menu.getPosition().getY() + 3,
+					menu.getSize().getWidth() + 5, menu.getSize().getHeight(), new Color(0, 0, 0, 0.5f));
 
-	public static void renderText(String text, float x, float y, int size, Color color) {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		GL11.glColor4f(1, 1, 1, 1);
-		GL11.glBegin(GL11.GL_QUADS);
-		for (int c = 0; c < text.length(); c++) {
-			float space = ((size*3) * c);
-			renderCharacter(String.valueOf(text.charAt(c)), x + space, y, size);
-		}
-
-		GL11.glEnd();
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, MaterialData.texture.getTextureID());
-	}
-
-	// private static HashMap<String, Integer> fontCharacters = new HashMap<String,
-	// Integer>();
-
-	private static void renderCharacter(String c, float x, float y, int size) {
-
-		RawFontCharacter rawChar = UIData.fontCharacters.get(c);
-		if (rawChar != null) {
-			if (rawChar.getDisplayList() == -1) {
-				int displayListGen = GL11.glGenLists(1);
-				GL11.glNewList(displayListGen, GL11.GL_COMPILE_AND_EXECUTE);
-
-				int cx = 0;
-				int cy = 0;
-				float xSize = size * 0.6f;
-				float ySize = size;
-
-				for (Byte cell : rawChar.getBlocks()) {
-					if (cell == 1) {
-						GL11.glVertex2f(x + (cx * xSize), y + (cy * ySize));
-						GL11.glVertex2f(x + xSize + (cx * xSize), y + (cy * ySize));
-						GL11.glVertex2f(x + xSize + (cx * xSize), y + ySize + (cy * ySize));
-						GL11.glVertex2f(x + (cx * xSize), y + ySize + (cy * ySize));
+			for (UIControl temp : menu.getControls()) {
+				UIMenuItem item = (UIMenuItem) temp;
+				if (item != null) {
+					Color bgColor = item.getBackgroundColor();
+					if (bgColor != null) {
+						Renderer.renderQuad(control.getPosition().x + x - 1, control.getPosition().y + y + 3,
+								menu.getSize().getWidth() + 5, 12, bgColor);
 					}
-					if (cx >= 3) {
-						cx = 0;
-						cy++;
-					} else {
-						cx++;
-					}
+					Renderer.renderText(control.getPosition().x + x, control.getPosition().y + y, item.getText(), 12,
+							Color.white);
+					y += temp.getSize().getHeight();
 				}
-
-				GL11.glEndList();
-
-				// calling display list does not work for some reason //
-				// rawChar.setDisplayList(displayListGen);
-				UIData.fontCharacters.put(c, rawChar);
-
-			} else {
-				GL11.glCallList(rawChar.getDisplayList());
 			}
 		}
+	}
 
+	public static void renderQuad(float x, float y, int width, int height, Color color) {
+		unbindTexture();
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glColor4f(color.r, color.g, color.b, color.a);
+		GL11.glVertex2f(x, y);
+		GL11.glVertex2f(x + width, y);
+		GL11.glVertex2f(x + width, y + height);
+		GL11.glVertex2f(x, y + height);
+		GL11.glEnd();
+		bindTexture();
 	}
 
 	public static void renderGrid(int indexX, int indexY) {
+		unbindTexture();
+		GL11.glBegin(GL11.GL_QUADS);
 		int cartX = indexX * 32;
 		int cartZ = indexY * 32;
 
@@ -194,5 +207,40 @@ public class Renderer {
 		isoX = (cartX) - (cartZ + 32);
 		isoZ = ((cartX) + (cartZ + 32)) / 2;
 		GL11.glVertex2i(isoX, isoZ);
+		GL11.glEnd();
+		bindTexture();
+	}
+
+	public static void renderText(float x, float y, String text, int fontSize, Color color) {
+		renderText((int) x, (int) y, text, fontSize, color);
+	}
+
+	public static void renderText(int x, int y, String text, int fontSize, Color color) {
+		unbindTexture();
+		TrueTypeFont font = EngineData.fonts.get(fontSize + "," + color);
+		if (font == null) {
+			Font awtFont = new Font("Courier", Font.PLAIN, fontSize);
+			EngineData.fonts.put(fontSize + "," + color, new TrueTypeFont(awtFont, false));
+		}
+		if (font != null) {
+			TextureImpl.bindNone();
+			font.drawString(x, y, text, color);
+
+		}
+		bindTexture();
+	}
+
+	public static int getTextWidth(String text, int fontSize, Color color) {
+		int width = -1;
+		TrueTypeFont font = EngineData.fonts.get(fontSize + "," + color);
+		if (font == null) {
+			Font awtFont = new Font("Courier", Font.PLAIN, fontSize);
+			EngineData.fonts.put(fontSize + "," + color, new TrueTypeFont(awtFont, false));
+		}
+		if (font != null) {
+			TextureImpl.bindNone();
+			width = font.getWidth(text);
+		}
+		return width;
 	}
 }

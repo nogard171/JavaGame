@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import data.WorldData;
+import data.EngineData;
 
 public class APathFinder {
 	static HashMap<Point, Point> parentList = new HashMap<Point, Point>();
@@ -56,13 +56,13 @@ public class APathFinder {
 			} else {
 				closedList.add(current);
 			}
-			if (current.x > WorldData.globalMapData.length && current.y > WorldData.globalMapData[0].length) {
+			if (current.x > EngineData.globalMapData.length && current.y > EngineData.globalMapData[0].length) {
 				return null;
 			}
 			for (Point index : indexes) {
 				Point neighborIndex = new Point(current.x + index.x, current.y + index.y);
 				if (neighborIndex.x >= 0 && neighborIndex.y >= 0) {
-					int data = WorldData.globalMapData[neighborIndex.x][neighborIndex.y];
+					int data = EngineData.globalMapData[neighborIndex.x][neighborIndex.y];
 					if (data > -10) {
 						if (!closedList.contains(neighborIndex) && !openList.contains(neighborIndex) && data >= 0) {
 							parentList.put(neighborIndex, current);

@@ -3,8 +3,14 @@ package classes;
 import org.lwjgl.util.vector.Vector2f;
 
 public class UIControl {
+	private Size size = new Size(32, 32);
 	private String name = "";
 	private Vector2f position = new Vector2f(0, 0);
+	public boolean isVisible = true;
+
+	public void update() {
+
+	}
 
 	public String getName() {
 		return name;
@@ -22,7 +28,15 @@ public class UIControl {
 		this.position = position;
 	}
 
-	public void update() {
+	public Size getSize() {
+		return size;
+	}
 
+	public void setSize(Size size) {
+		this.size = size;
+	}
+
+	public void toggle() {
+		isVisible = !isVisible;
 	}
 }

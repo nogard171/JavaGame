@@ -1,20 +1,22 @@
 package classes;
 
 import java.awt.Point;
+import java.awt.Polygon;
+import java.util.LinkedList;
+import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
-import data.WorldData;
+import data.EngineData;
+import utils.Input;
 import utils.Renderer;
+import utils.View;
 
 public class Chunk {
 	public Index index;
 	public int displayListID = -1;
 	private boolean needsUpdating = true;
-	public Size size = new Size(16, 16, 16);
+	public Polygon bounds;
 	public int[][] data;
 
 	public Object[][] ground;
@@ -29,22 +31,51 @@ public class Chunk {
 		return index;
 	}
 
+	private int maxBoundHeight = 512;
+
 	public void setup() {
-		data = new int[size.getWidth()][size.getDepth()];
-		ground = new Object[size.getWidth()][size.getDepth()];
-		for (int x = 0; x < size.getWidth(); x++) {
-			for (int z = 0; z < size.getDepth(); z++) {
+		bounds = new Polygon();
+		int carX0 = (index.getX() * 32) * 16;
+		int carY0 = (index.getY() * 32) * 16;
+		int isoX0 = carX0 - carY0;
+		int isoY0 = (carY0 + carX0) / 2;
+
+		bounds.addPoint(isoX0, isoY0 - maxBoundHeight);
+		bounds.addPoint(isoX0 + (EngineData.chunkSize.getWidth() * 32),
+				isoY0 + (EngineData.chunkSize.getDepth() * 16) - maxBoundHeight);
+		bounds.addPoint(isoX0 + (EngineData.chunkSize.getWidth() * 32), isoY0 + (EngineData.chunkSize.getDepth() * 16));
+		bounds.addPoint(isoX0, isoY0 + (EngineData.chunkSize.getDepth() * 32));
+		bounds.addPoint(isoX0 - (EngineData.chunkSize.getWidth() * 32), isoY0 + (EngineData.chunkSize.getDepth() * 16));
+		bounds.addPoint(isoX0 - (EngineData.chunkSize.getWidth() * 32),
+				isoY0 + (EngineData.chunkSize.getDepth() * 16) - maxBoundHeight);
+
+		data = new int[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
+		ground = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
+		objects = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
+		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
+			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
 				int carX = x * 32;
 				int carY = z * 32;
 				int isoX = carX - carY;
 				int isoY = (carY + carX) / 2;
 				Object obj = new Object();
-				obj.setX(isoX);
-				obj.setY(isoY);
+				obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
+						z + (index.getY() * EngineData.chunkSize.getDepth()));
+				obj.setPosition(isoX, isoY);
 				if (x == 1 && z == 1) {
 					obj.setMaterial("DIRT");
 				}
 				ground[x][z] = obj;
+				Random r = new Random();
+				if (x == 5 && z == 5 || r.nextFloat() < 0.2f) {
+					obj = new Object();
+					obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
+							z + (index.getY() * EngineData.chunkSize.getDepth()));
+					obj.setPosition(isoX, isoY);
+					obj.setModel("TREE");
+					obj.setMaterial("TREE");
+					objects[x][z] = obj;
+				}
 
 			}
 		}
@@ -56,13 +87,12 @@ public class Chunk {
 		GL11.glNewList(displayListID, GL11.GL_COMPILE);
 		GL11.glColor3f(1, 1, 1);
 		GL11.glBegin(GL11.GL_TRIANGLES);
-		for (int x = 0; x < size.getWidth(); x++) {
-			for (int z = 0; z < size.getDepth(); z++) {
-				if (WorldData.path != null) {
-					if (WorldData.path.contains(new Point(x, z))) {
+		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
+			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
+				if (EngineData.path != null) {
+					if (EngineData.path.contains(new Point(x, z))) {
 						GL11.glColor4f(1, 0, 0, 0.5f);
-					}
-					else {
+					} else {
 						GL11.glColor4f(1, 1, 1, 1f);
 					}
 				} else {
@@ -82,9 +112,46 @@ public class Chunk {
 		}
 	}
 
+	public LinkedList<Object> getHoveredObjects() {
+		LinkedList<Object> temp = new LinkedList<Object>();
+
+		int cartX = (int) Input.getMousePosition().getX() - View.x;
+		int cartY = (int) Input.getMousePosition().getY() - View.y;
+		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
+			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
+				Object obj = ground[x][z];
+				if (obj != null) {
+					if (obj.bounds.contains(new Point(cartX, cartY))) {
+						temp.add(obj);
+					}
+				}
+				obj = objects[x][z];
+				if (obj != null) {
+					if (obj.bounds != null) {
+						if (obj.bounds.contains(new Point(cartX, cartY))) {
+							temp.add(obj);
+						}
+					}
+				}
+			}
+		}
+		return temp;
+	}
+
 	public void render() {
 		if (displayListID != -1) {
 			GL11.glCallList(displayListID);
+		}
+		if (this.bounds != null) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			GL11.glColor4f(1, 0, 0, 0.5f);
+
+			GL11.glBegin(GL11.GL_POLYGON);
+			for (int p = 0; p < this.bounds.npoints; p++) {
+				GL11.glVertex2f(this.bounds.xpoints[p], this.bounds.ypoints[p]);
+			}
+			GL11.glEnd();
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 		}
 	}
 

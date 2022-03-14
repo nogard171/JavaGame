@@ -8,4 +8,7 @@
 	<model name='BUTTON_BACK'>
 		<data file="data/models/button_back.obj" />
 	</model>
+	<model name='TREE'>
+		<data file="data/models/tree.obj" />
+	</model>
 </models>

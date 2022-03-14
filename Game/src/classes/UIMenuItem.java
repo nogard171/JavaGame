@@ -1,12 +1,14 @@
 package classes;
 
+import org.newdawn.slick.Color;
+
 import utils.Input;
 import utils.UIPhyics;
 import utils.Window;
 
-public class UIButton extends UIControl {
-	private String material = "GRASS";
+public class UIMenuItem extends UIControl {
 	private String text = "";
+	private Color backgroundColor = null;
 
 	private Action eventAction;
 	private int mouseClickCount = 0;
@@ -14,19 +16,12 @@ public class UIButton extends UIControl {
 	private int mouseEnterCount = 0;
 	private int mouseExitCount = 0;
 
-	public String getMaterial() {
-		return material;
-	}
-
-	public void setMaterial(String material) {
-		this.material = material;
-	}
-
 	@Override
 	public void update() {
 		if (this.eventAction != null) {
 			boolean hover = UIPhyics.inside(this, Input.getMousePosition());
 			if (hover) {
+				this.eventAction.onMouseHover(this);
 				if (mouseEnterCount == 0) {
 					this.eventAction.onMouseEnter(this);
 					mouseExitCount = 0;
@@ -40,24 +35,18 @@ public class UIButton extends UIControl {
 				}
 				mouseExitCount++;
 			}
-			boolean mouseDown = false;
-			int mouseButtonIndex = -1;
 			int mouseWheel = Input.getMouseWheel();
-			for (int b = 0; b < Input.getMouseButtonCount(); b++) {
-				if (Input.isMouseDown(b)) {
-					mouseButtonIndex = b;
-					mouseDown = true;
-				}
-			}
 			if (hover && mouseWheel > 0) {
 				this.eventAction.onMouseWheelUp(this);
 			} else if (hover && mouseWheel < 0) {
 				this.eventAction.onMouseWheelDown(this);
 			}
 
+			int mouseIndex = Input.getMouseButton();
+			boolean mouseDown = Input.isMouseDown(mouseIndex);
 			if (hover && mouseDown) {
 				if (mouseClickCount == 0) {
-					this.eventAction.onMouseClick(this, mouseButtonIndex);
+					this.eventAction.onMouseClick(this, mouseIndex);
 				}
 				mouseClickCount++;
 				mouseReleaseCount = 0;
@@ -65,12 +54,12 @@ public class UIButton extends UIControl {
 				mouseClickCount = 0;
 			}
 			if (hover && mouseDown) {
-				this.eventAction.onMouseDown(this, mouseButtonIndex);
+				this.eventAction.onMouseDown(this, mouseIndex);
 			}
 
 			if (hover && !mouseDown) {
 				if (mouseReleaseCount == 0) {
-					this.eventAction.onMouseReleased(this, mouseButtonIndex);
+					this.eventAction.onMouseReleased(this, mouseIndex);
 				}
 				mouseReleaseCount++;
 			}
@@ -89,5 +78,13 @@ public class UIButton extends UIControl {
 	public void setText(String text) {
 		this.setSize(new Size(getSize().getWidth(), 12));
 		this.text = text;
+	}
+
+	public Color getBackgroundColor() {
+		return backgroundColor;
+	}
+
+	public void setBackgroundColor(Color backgroundColor) {
+		this.backgroundColor = backgroundColor;
 	}
 }

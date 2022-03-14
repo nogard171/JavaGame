@@ -20,4 +20,9 @@ public class Index {
 	public String getString() {
 		return x + "," + y;
 	}
+
+	@Override
+	public String toString() {
+		return x + "," + y;
+	}
 }
