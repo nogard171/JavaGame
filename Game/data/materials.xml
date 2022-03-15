@@ -1,6 +1,7 @@
 <materials texture_file='data/textures/tileset.png'>
 	<material name='GRASS'>
-		<data file="data/materials/grass.mat" />
+		<data id="0" file="data/materials/grass.mat" />
+		<data id="1" file="data/materials/grass1.mat" />
 	</material>
 	<material name='DIRT'>
 		<data file="data/materials/dirt.mat" />

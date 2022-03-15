@@ -50,7 +50,7 @@ public class Window {
 	}
 
 	public static void update() {
-
+		//EngineData.targetFPS = 120;
 		if (Display.wasResized()) {
 			setup();
 		}

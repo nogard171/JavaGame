@@ -2,6 +2,8 @@ package classes;
 
 import java.awt.Polygon;
 
+import data.AssetData;
+
 public class Object {
 	private int x = 0;
 	private int y = 0;
@@ -16,8 +18,11 @@ public class Object {
 	}
 
 	public void setMaterial(String material) {
-		this.previousMaterial = this.material;
-		this.material = material;
+		RawMaterial mat = AssetData.materialData.get(material);
+		if (mat != null) {
+			this.previousMaterial = this.material;
+			this.material = material;
+		}
 	}
 
 	public int getX() {
@@ -59,6 +64,6 @@ public class Object {
 
 	@Override
 	public String toString() {
-		return this.index+"("+this.material+"=>"+this.model+")";
+		return this.index + "(" + this.material + "=>" + this.model + ")";
 	}
 }

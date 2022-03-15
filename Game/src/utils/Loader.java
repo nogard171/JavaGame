@@ -62,19 +62,24 @@ public class Loader {
 
 					Element textureElement = (Element) textureNode;
 					String name = textureElement.getAttribute("name");
+					for (int i = 0; i < textureElement.getElementsByTagName("data").getLength(); i++) {
 
-					Node dataNodes = textureElement.getElementsByTagName("data").item(0);
+						Node dataNodes = textureElement.getElementsByTagName("data").item(i);
 
-					if (dataNodes.getNodeType() == Node.ELEMENT_NODE) {
+						if (dataNodes.getNodeType() == Node.ELEMENT_NODE) {
 
-						Element dataNode = (Element) dataNodes;
+							Element dataNode = (Element) dataNodes;
 
-						String materialName = dataNode.getAttribute("file");
+							String materialName = dataNode.getAttribute("file");
+							String id = "";
+							if (dataNode.hasAttribute("id")) {
+								id = dataNode.getAttribute("id");
+							}
+							System.out.println("Name: " + name + id);
+							RawMaterial mat = loadMaterial(materialName);
 
-						System.out.println("Name: " + name);
-						RawMaterial mat = loadMaterial(materialName);
-
-						AssetData.materialData.put(name, mat);
+							AssetData.materialData.put(name + id, mat);
+						}
 					}
 				}
 			}

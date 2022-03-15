@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
+import data.EngineData;
 import utils.Input;
 import utils.Renderer;
 import utils.UIPhyics;
@@ -15,6 +16,17 @@ public class UIMenu extends UIControl {
 
 	public UIMenu(String string) {
 		this.name = string;
+		this.toggle();
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if (this.isVisible) {
+			for (UIMenuItem control : controls) {
+				control.update();
+			}
+		}
 	}
 
 	public String getName() {
@@ -39,23 +51,16 @@ public class UIMenu extends UIControl {
 		}
 		this.setSize(new Size(tempWidth, ((controls.size() + 1) * 12)));
 		ctl.setPosition(new Vector2f(this.getPosition().x, this.getPosition().y + ((controls.size()) * 12)));
+		ctl.setSize(new Size(tempWidth, 12));
 		this.controls.add(ctl);
+	}
+
+	public void clear() {
+		this.controls.clear();
 	}
 
 	public ArrayList<UIMenuItem> getControls() {
 		return this.controls;
 	}
 
-	@Override
-	public void update() {
-		if (this.isVisible) {
-			for (UIMenuItem control : controls) {
-				control.update();
-			}
-			boolean hover = UIPhyics.inside(this, Input.getMousePosition());
-			if (!hover) {
-				this.toggle();
-			}
-		}
-	}
 }

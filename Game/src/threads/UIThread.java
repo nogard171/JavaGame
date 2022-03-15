@@ -36,6 +36,13 @@ public class UIThread extends BaseThread {
 		UIMenu menu = new UIMenu("test");
 		menu.setPosition(new Vector2f(100, 100));
 		menu.setSize(new Size(0, 0));
+		menu.onEvent(new Action() {
+			@Override
+			public void onMouseExit(UIControl self) {
+				self.toggle();
+				EngineData.blockInput = false;
+			}
+		});
 
 		UIMenuItem testItem = new UIMenuItem();
 		testItem.setName("Test");
@@ -137,7 +144,6 @@ public class UIThread extends BaseThread {
 	@Override
 	public void update() {
 		super.update();
-		pollHover();
 		for (UIControl control : EngineData.controls.values()) {
 			control.update();
 		}
@@ -166,6 +172,7 @@ public class UIThread extends BaseThread {
 			Renderer.renderText(0, 12, "Data Loaded:" + Settings.dataLoaded, 12, Color.white);
 			Renderer.renderText(0, 24, "Chunks:" + EngineData.renderedChunks.size() + "/" + EngineData.chunks.size(),
 					12, Color.white);
+			Renderer.renderText(0, 36, "Blocked Input:" + EngineData.blockInput, 12, Color.white);
 
 			objectsHovered = World.getHoveredObjects();
 
@@ -183,45 +190,35 @@ public class UIThread extends BaseThread {
 		}
 	}
 
-	LinkedList<Object> objectsHovered;
+	static LinkedList<Object> objectsHovered;
 
 	public void renderOnMap() {
-		if (objectsHovered != null) {
-			if (objectsHovered.size() > 0) {
-				int i = 0;
-				for (Object obj : objectsHovered) {
-					int carX = obj.getIndex().getX() * 32;
-					int carY = obj.getIndex().getY() * 32;
-					int isoX = carX - carY;
-					int isoY = (carY + carX) / 2;
-					if (i == objectsHovered.size() - 1) {
-						GL11.glColor4f(1, 0, 0, 0.5f);
-					} else {
-						GL11.glColor4f(0.25f, 0.25f, 0.25f, 0.5f);
+		if (EngineData.showTelematry) {
+			if (objectsHovered != null) {
+				if (objectsHovered.size() > 0) {
+					int i = 0;
+					for (Object obj : objectsHovered) {
+						int carX = obj.getIndex().getX() * 32;
+						int carY = obj.getIndex().getY() * 32;
+						int isoX = carX - carY;
+						int isoY = (carY + carX) / 2;
+						if (i == objectsHovered.size() - 1) {
+							GL11.glColor4f(1, 0, 0, 0.5f);
+						} else {
+							GL11.glColor4f(0.25f, 0.25f, 0.25f, 0.5f);
+						}
+						GL11.glDisable(GL11.GL_TEXTURE_2D);
+						GL11.glBegin(GL11.GL_TRIANGLES);
+						Renderer.renderModel(obj.getModel(), obj.getMaterial(), isoX, isoY);
+						GL11.glEnd();
+						GL11.glEnable(GL11.GL_TEXTURE_2D);
+						i++;
 					}
-					GL11.glDisable(GL11.GL_TEXTURE_2D);
-					GL11.glBegin(GL11.GL_TRIANGLES);
-					Renderer.renderModel(obj.getModel(), obj.getMaterial(), isoX, isoY);
-					GL11.glEnd();
-					GL11.glEnable(GL11.GL_TEXTURE_2D);
-					i++;
 				}
 			}
 		}
-
 	}
 
-	/*
-	 * public static void renderBounds(Polygon polygon, Color newColor) {
-	 * 
-	 * if (polygon != null) { unbindTexture();
-	 * GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-	 * GL11.glColor4f(newColor.r, newColor.g, newColor.b, newColor.a);
-	 * 
-	 * GL11.glBegin(GL11.GL_POLYGON); for (int p = 0; p < polygon.npoints; p++) {
-	 * GL11.glVertex2f(polygon.xpoints[p], polygon.ypoints[p]); } GL11.glEnd();
-	 * GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL); bindTexture(); } }
-	 */
 	@Override
 	public void clean() {
 
@@ -231,28 +228,84 @@ public class UIThread extends BaseThread {
 	public static void showMenu(String string, Vector2f position) {
 		UIControl temp = EngineData.controls.get(string);
 		if (temp != null) {
+			UIMenu tempMenu = (UIMenu) temp;
+			if (tempMenu != null) {
+				tempMenu.clear();
+				for (Object obj : objectsHovered) {
+					UIMenuItem testItem = new UIMenuItem();
+					testItem.setName("Inspect:" + obj.getModel());
+					testItem.setText("Inspect:" + obj.getModel());
+					testItem.onEvent(new Action() {
+						@Override
+						public void onMouseClick(UIControl self, int mouseButton) {
+							if (mouseButton == 0) {
+								System.out.println("Mouse Click Left" + self.getName());
+							}
+							if (mouseButton == 1) {
+								System.out.println("Mouse Click Right");
+							}
+							if (mouseButton == 2) {
+								System.out.println("Mouse Click Middle");
+							}
+						}
+
+						@Override
+						public void onMouseHover(UIControl self) {
+							UIMenuItem temp = (UIMenuItem) self;
+							if (temp != null) {
+								temp.setBackgroundColor(new Color(1, 0, 0, 0.5f));
+							}
+						}
+
+						@Override
+						public void onMouseExit(UIControl self) {
+							UIMenuItem temp = (UIMenuItem) self;
+							if (temp != null) {
+								temp.setBackgroundColor(null);
+							}
+						}
+					});
+					tempMenu.add(testItem);
+					testItem = new UIMenuItem();
+					testItem.setName("Chop:" + obj.getModel());
+					testItem.setText("Chop:" + obj.getModel());
+					testItem.onEvent(new Action() {
+						@Override
+						public void onMouseClick(UIControl self, int mouseButton) {
+							if (mouseButton == 0) {
+								System.out.println("Mouse Click Left" + self.getName());
+							}
+							if (mouseButton == 1) {
+								System.out.println("Mouse Click Right");
+							}
+							if (mouseButton == 2) {
+								System.out.println("Mouse Click Middle");
+							}
+						}
+
+						@Override
+						public void onMouseHover(UIControl self) {
+							UIMenuItem temp = (UIMenuItem) self;
+							if (temp != null) {
+								temp.setBackgroundColor(new Color(1, 0, 0, 0.5f));
+							}
+						}
+
+						@Override
+						public void onMouseExit(UIControl self) {
+							UIMenuItem temp = (UIMenuItem) self;
+							if (temp != null) {
+								temp.setBackgroundColor(null);
+							}
+						}
+					});
+					tempMenu.add(testItem);
+				}
+			}
+
 			temp.setPosition(new Vector2f(position.x, position.y - 10));
 			temp.toggle();
+			EngineData.blockInput = true;
 		}
-	}
-
-	private void pollHover() {
-		int cartX = (int) Input.getMousePosition().getX() - View.x;
-		int cartY = (int) Input.getMousePosition().getY() - View.y;
-		int isoX = cartX / 2 + (cartY);
-		int isoY = cartY - cartX / 2;
-		int indexX = (int) Math.floor((float) isoX / (float) 32);
-		int indexY = (int) Math.floor((float) isoY / (float) 32);
-
-		int chunkX = (int) Math.floor(indexX / 16);
-		int chunkY = (int) Math.floor(indexY / 16);
-		if (indexX < 0) {
-			chunkX--;
-		}
-		if (indexY < 0) {
-			chunkY--;
-		}
-
-		// EngineData.hover = new MouseIndex(indexX, indexY, chunkX, chunkY);
 	}
 }

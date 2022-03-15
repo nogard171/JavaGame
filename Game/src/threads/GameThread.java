@@ -15,6 +15,7 @@ import utils.Window;
 
 public class GameThread extends BaseThread {
 	UIThread ui;
+	BackEndThread backend;
 
 	World world;
 
@@ -23,6 +24,9 @@ public class GameThread extends BaseThread {
 		super.setup();
 		Window.create();
 		Input.setup();
+		
+		backend = new BackEndThread();
+		backend.setup();
 
 		ui = new UIThread();
 		ui.setup();
@@ -44,6 +48,7 @@ public class GameThread extends BaseThread {
 		Input.poll();
 		FPS.updateFPS();
 		ui.update();
+		backend.update();
 
 		viewIndex = getChunkIndex();
 		world.update();
@@ -80,6 +85,9 @@ public class GameThread extends BaseThread {
 		 * chunk.ground[indexX][indexY]; if (ground != null) { UIThread.showMenu("test",
 		 * Input.getMousePosition()); } } }
 		 */
+		if (Input.isMousePressed(1)) {
+			UIThread.showMenu("test", Input.getMousePosition());
+		}
 	}
 
 	Point viewIndex;
