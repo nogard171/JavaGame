@@ -11,7 +11,6 @@ import org.newdawn.slick.Color;
 import data.EngineData;
 import utils.Input;
 import utils.Renderer;
-import utils.View;
 
 public class Chunk {
 	private Color boundsColor = Color.red;
@@ -151,8 +150,8 @@ public class Chunk {
 	public LinkedList<Object> getHoveredObjects() {
 		LinkedList<Object> temp = new LinkedList<Object>();
 
-		int cartX = (int) Input.getMousePosition().getX() - View.x;
-		int cartY = (int) Input.getMousePosition().getY() - View.y;
+		int cartX = (int) ((int) Input.getMousePosition().getX() - View.getX());
+		int cartY = (int) ((int) Input.getMousePosition().getY() - View.getY());
 		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
 			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
 				Object obj = ground[x][z];

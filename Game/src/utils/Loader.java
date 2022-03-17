@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import classes.RawMaterial;
 import classes.RawModel;
 import data.AssetData;
+import data.EngineData;
 import data.Settings;
 
 public class Loader {
@@ -27,8 +28,7 @@ public class Loader {
 	public static void load() {
 		loadMaterials();
 		loadTextures();
-
-		Settings.dataLoaded = false;
+		EngineData.dataLoaded = false;
 	}
 
 	public static void loadMaterials() {

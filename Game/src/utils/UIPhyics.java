@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import classes.UIControl;
+import ui.UIControl;
 
 public class UIPhyics {
 	public static boolean inside(UIControl control, Vector2f point) {

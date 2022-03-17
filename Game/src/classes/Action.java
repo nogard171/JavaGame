@@ -1,5 +1,7 @@
 package classes;
 
+import ui.UIControl;
+
 public interface Action {
 
 	public default void onMouseClick(UIControl uiButton, int mouseButton) {

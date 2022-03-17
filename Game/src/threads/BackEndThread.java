@@ -47,7 +47,7 @@ public class BackEndThread extends BaseThread {
 	}
 
 	public void load(Index index) {
-		String fileName = Settings.worldFolder + "chunks/chunk" + index.getX() + "," + index.getY() + ".chunk";
+		String fileName = EngineData.worldFolder + "chunks/chunk" + index.getX() + "," + index.getY() + ".chunk";
 		if (Files.exists(Path.of(fileName))) {
 			try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 				String line;
@@ -94,7 +94,7 @@ public class BackEndThread extends BaseThread {
 	}
 
 	public void save(Chunk chunk) {
-		String fileName = Settings.worldFolder + "chunks/chunk" + chunk.getIndex().getX() + ","
+		String fileName = EngineData.worldFolder + "chunks/chunk" + chunk.getIndex().getX() + ","
 				+ chunk.getIndex().getY() + ".chunk";
 
 		try {

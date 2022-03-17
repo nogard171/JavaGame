@@ -14,16 +14,16 @@ import classes.Chunk;
 import classes.Index;
 import classes.TextureData;
 import classes.TextureType;
-import classes.UIButton;
-import classes.UIControl;
-import classes.UIMenu;
-import classes.UIMenuItem;
 import classes.Object;
 import classes.RawFontCharacter;
 import classes.RawMaterial;
 import classes.RawModel;
 import data.AssetData;
 import data.EngineData;
+import ui.UIButton;
+import ui.UIControl;
+import ui.UIMenu;
+import ui.UIMenuItem;
 
 public class Renderer {
 
@@ -150,7 +150,10 @@ public class Renderer {
 			GL11.glEnd();
 			Renderer.renderText(control.getPosition().x, control.getPosition().y, btn.getText(), 12, Color.black);
 		}
-		if (controlName.contains("UIMenu")) {
+		if (controlName.contains("MainMenu")) {
+
+		}
+		if (controlName.contains("UIPanel")) {
 			UIMenu menu = (UIMenu) control;
 			float x = 0;
 			float y = 0;
@@ -164,11 +167,11 @@ public class Renderer {
 					Color bgColor = item.getBackgroundColor();
 					if (bgColor != null) {
 						Renderer.renderQuad(control.getPosition().x + x - 1, control.getPosition().y + y + 3,
-								menu.getSize().getWidth() + 5, 12, bgColor);
+								menu.getSize().getWidth() + 5, item.getFontSize(), bgColor);
 					}
-					Renderer.renderText(control.getPosition().x + x, control.getPosition().y + y, item.getText(), 12,
-							Color.white);
-					y += temp.getSize().getHeight();
+					Renderer.renderText(control.getPosition().x + x, control.getPosition().y + y, item.getText(),
+							item.getFontSize(), Color.white);
+					y += item.getFontSize();
 				}
 			}
 		}

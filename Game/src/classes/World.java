@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import org.newdawn.slick.Color;
 
 import data.EngineData;
+import data.Settings;
 import utils.Input;
-import utils.View;
 import utils.Window;
 
 public class World {
@@ -17,7 +17,13 @@ public class World {
 	public void setup() {
 		for (int x = 0; x < 10; x++) {
 			for (int z = 0; z < 10; z++) {
-				EngineData.loadChunks.add(new Index(x, z));
+				if (Settings.localChunks) {
+					EngineData.loadChunks.add(new Index(x, z));
+				} else {
+					Chunk newChunk = new Chunk(x, z);
+					newChunk.setup();
+					EngineData.chunks.put(newChunk.index.getString(), newChunk);
+				}
 			}
 		}
 	}
@@ -31,27 +37,29 @@ public class World {
 				String key = x + "," + y;
 				if (x >= 0 && y >= 0) {
 					Chunk chunk = EngineData.chunks.get(key);
-					if (x == (viewIndex.x - 4) || y == (viewIndex.y - 4) || x == (viewIndex.x + 5)
-							|| y == (viewIndex.y + 5)) {
-						EngineData.cleanupChunks.add(chunk);
-					} else {
-						if (chunk == null) {
-							if (x == (viewIndex.x - 3) || y == (viewIndex.y - 3) || x == (viewIndex.x + 3)
-									|| y == (viewIndex.y + 3)) {
+					if (chunk == null) {
+						if (Settings.localChunks) {
+							if ((x == (viewIndex.x - 3) || y == (viewIndex.y - 3) || x == (viewIndex.x + 3)
+									|| y == (viewIndex.y + 3))) {
 								EngineData.loadChunks.add(new Index(x, y));
-							} else {
-								Chunk newChunk = new Chunk(x, y);
-								newChunk.setup();
-								EngineData.renderedChunks.add(newChunk);
-								EngineData.chunks.put(newChunk.index.getString(), newChunk);
+							}
+						} else if (Settings.infinate) {
+							Chunk newChunk = new Chunk(x, y);
+							newChunk.setup();
+							EngineData.renderedChunks.add(newChunk);
+							EngineData.chunks.put(newChunk.index.getString(), newChunk);
+						}
+					} else {
+						if (Settings.localChunks) {
+							if ((x == (viewIndex.x - 4) || y == (viewIndex.y - 4) || x == (viewIndex.x + 5)
+									|| y == (viewIndex.y + 5))) {
+								EngineData.cleanupChunks.add(chunk);
 							}
 						} else {
-							if (chunk != null) {
-								EngineData.renderedChunks.add(chunk);
-							}
-
+							EngineData.renderedChunks.add(chunk);
 						}
 					}
+
 				}
 			}
 		}
@@ -61,13 +69,12 @@ public class World {
 	public void update() {
 		objectsHovered.clear();
 		if (!EngineData.blockInput) {
-			int cartX = (int) (Input.getMousePosition().x - View.x);
-			int cartY = (int) (Input.getMousePosition().y - View.y);
+			int cartX = (int) (Input.getMousePosition().x - View.getX());
+			int cartY = (int) (Input.getMousePosition().y - View.getY());
 			for (Chunk chunk : EngineData.renderedChunks) {
 				if (chunk.bounds.contains(new Point(cartX, cartY))) {
 					objectsHovered.addAll(chunk.getHoveredObjects());
 					chunk.setBoundsColor(Color.green);
-
 				} else {
 					chunk.setBoundsColor(Color.red);
 				}
@@ -107,9 +114,10 @@ public class World {
 				}
 			}
 		}
+
 	}
 
-	public void destroy() {
+	public void clean() {
 
 	}
 
