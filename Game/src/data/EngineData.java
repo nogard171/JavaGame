@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.TrueTypeFont;
 
 import classes.Chunk;
@@ -15,9 +16,12 @@ import ui.UIControl;
 
 public class EngineData {
 	// Window data
-	public static int width = 800;
-	public static int height = 600;
+	public static int width = -1;
+	public static int height = -1;
+	public static int frequency = -1;
 	public static boolean isResizable = true;
+	public static boolean isFullscreen = false;
+	public static LinkedList<DisplayMode> supportedDisplayModes = new LinkedList<DisplayMode>();
 
 	public static int inactiveFPS = 30;
 	public static int pauseFPS = 30;
@@ -47,12 +51,11 @@ public class EngineData {
 	public static HashMap<String, TrueTypeFont> fonts = new HashMap<String, TrueTypeFont>();
 	// too be removed
 	public static HashMap<String, UIControl> controls = new HashMap<String, UIControl>();
-	
-	//Backend Data
+
+	// Backend Data
 	public static boolean dataLoaded = false;
 
-	
-	//User based Data
+	// User based Data
 	public static String userFolder = "user/";
 	public static String worldFolder = "user/world/";
 }

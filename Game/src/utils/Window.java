@@ -22,8 +22,53 @@ public class Window {
 
 	public static void create() {
 		try {
+			// setup default display mode with width and height only
+			DisplayMode newMode = new DisplayMode(EngineData.width, EngineData.height);
+			int highestWidth = -1;
+			int highestHeight = -1;
+			int highestFreq = -1;
+			// loop through all possible display modes based on the monitor data
+			for (DisplayMode dm : Display.getAvailableDisplayModes()) {
+				// setup variables for data needed
+				int dmWidth = dm.getWidth();
+				int dmHeight = dm.getHeight();
+				int dmFreq = dm.getFrequency();
+				// load the supported display modes into the engine data for use in the
+				// settings.
+				EngineData.supportedDisplayModes.add(newMode);
+				if (EngineData.width > -1 && EngineData.height > -1) {
+					if (dmWidth == EngineData.width && dmHeight == EngineData.height && dmFreq == 60
+							&& dm.isFullscreenCapable()) {
+						// set the newMode to the found display mode
+						newMode = dm;
+						// check if fullscreen is enabled
+						if (EngineData.isFullscreen) {
+							// set fullscreen to true
+							Display.setFullscreen(true);
+						}
+					}
+				} else {
+					if ((dmFreq >= highestFreq && dmWidth >= highestWidth && dmHeight >= highestHeight)) {
+						// this will help look for highest freq supported
+						highestWidth = dmWidth;
+						highestHeight = dmHeight;
+						highestFreq = dmFreq;
+						// set the newMode to the found display mode
+						newMode = dm;
+					}
+					// check if fullscreen is enabled
+					if (EngineData.isFullscreen) {
+						// set fullscreen to true
+						Display.setFullscreen(true);
+					}
+				}
+			}
+			// set the width, height and frequency based on the displaymode selected
+			EngineData.width = newMode.getWidth();
+			EngineData.height = newMode.getHeight();
+			EngineData.frequency = newMode.getFrequency();
 			// setup basic display mode
-			Display.setDisplayMode(new DisplayMode(EngineData.width, EngineData.height));
+			Display.setDisplayMode(newMode);
 			// set is the display is resizeable
 			Display.setResizable(EngineData.isResizable);
 			// create the display

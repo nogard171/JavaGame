@@ -29,6 +29,7 @@ import classes.World;
 import data.EngineData;
 import data.Settings;
 import ui.MainMenu;
+import ui.SettingsMenu;
 import ui.UIButton;
 import ui.UIControl;
 import ui.UIMenu;
@@ -49,6 +50,7 @@ public class UIThread extends BaseThread {
 		super.setup();
 		mainMenu = new MainMenu();
 		mainMenu.setup();
+
 		// EngineData.controls.put("mainMenuControl", mainMenu);
 
 		UIButton test = new UIButton();
@@ -93,65 +95,30 @@ public class UIThread extends BaseThread {
 		}
 	}
 
-	private static final int BYTES_PER_PIXEL = 4;
-
-	public static int loadTexture(BufferedImage image) {
-
-		int[] pixels = new int[image.getWidth() * image.getHeight()];
-		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
-
-		ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * BYTES_PER_PIXEL);
-
-		for (int y = 0; y < image.getHeight(); y++) {
-			for (int x = 0; x < image.getWidth(); x++) {
-				int pixel = pixels[y * image.getWidth() + x];
-				buffer.put((byte) ((pixel >> 16) & 0xFF)); // Red component
-				buffer.put((byte) ((pixel >> 8) & 0xFF)); // Green component
-				buffer.put((byte) (pixel & 0xFF)); // Blue component
-				buffer.put((byte) ((pixel >> 24) & 0xFF)); // Alpha component. Only for RGBA
-			}
-		}
-
-		buffer.flip(); // FOR THE LOVE OF GOD DO NOT FORGET THIS
-
-		// You now have a ByteBuffer filled with the color data of each pixel.
-		// Now just create a texture ID and bind it. Then you can load it using
-		// whatever OpenGL method you want, for example:
-
-		int textureID = GL11.glGenTextures(); // Generate texture ID
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID); // Bind texture ID
-
-		// Setup wrap mode
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-
-		// Setup texture scaling filtering
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-
-		// Send texel data to OpenGL
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA,
-				GL11.GL_UNSIGNED_BYTE, buffer);
-
-		// Return the texture ID so we can bind it later again
-		return textureID;
-	}
-
 	@Override
 	public void render() {
 		super.render();
 		mainMenu.render();
+
 		objectsHovered = World.getHoveredObjects();
 		if (EngineData.showTelematry) {
 			Vector2f debugPosition = new Vector2f(Window.getWidth() - 200, 0);
 			Renderer.renderQuad(debugPosition.x, debugPosition.y, 200, 100, new Color(0, 0, 0, 0.5f));
+			int tempY = 0;
 			Renderer.renderText(debugPosition.x, debugPosition.y, "FPS:" + FPS.currentfps, 12, Color.white);
-			Renderer.renderText(debugPosition.x, debugPosition.y + 12, "Data Loaded:" + EngineData.dataLoaded, 12,
+			tempY += 12;
+			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY,
+					"Resolution:" + EngineData.width + "x" + EngineData.height + "@" + EngineData.frequency, 12,
 					Color.white);
-			Renderer.renderText(debugPosition.x, debugPosition.y + 24,
+			tempY += 12;
+			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY, "Data Loaded:" + EngineData.dataLoaded,
+					12, Color.white);
+			tempY += 12;
+			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY,
 					"Chunks:" + EngineData.renderedChunks.size() + "/" + EngineData.chunks.size(), 12, Color.white);
-			Renderer.renderText(debugPosition.x, debugPosition.y + 36, "Blocked Input:" + EngineData.blockInput, 12,
-					Color.white);
+			tempY += 12;
+			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY, "Blocked Input:" + EngineData.blockInput,
+					12, Color.white);
 
 			if (objectsHovered.size() > 0) {
 				Renderer.renderText(debugPosition.x - 200, debugPosition.y, "Hover Index:", 12, Color.white);

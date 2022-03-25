@@ -76,7 +76,7 @@ public class UIMenu extends UIControl {
 		this.setSize(new Size(tempWidth, ((controls.size() + 1) * ctl.getFontSize())));
 		ctl.setPosition(
 				new Vector2f(this.getPosition().x, this.getPosition().y + ((controls.size()) * ctl.getFontSize())));
-		ctl.setSize(new Size(tempWidth, ctl.getFontSize()));
+		ctl.setSize(new Size(this.getSize().getWidth(), ctl.getFontSize()));
 		this.controls.add(ctl);
 	}
 

@@ -86,15 +86,14 @@ public class GameThread extends BaseThread {
 	@Override
 	public void render() {
 		super.render();
-		if (!EngineData.pauseGame) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, AssetData.texture.getTextureID());
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, AssetData.texture.getTextureID());
 
-			GL11.glPushMatrix();
-			GL11.glTranslatef(View.getX(), View.getY(), 0);
-			world.render(View.getIndex());
-			ui.renderOnMap();
-			GL11.glPopMatrix();
-		}
+		GL11.glPushMatrix();
+		GL11.glTranslatef(View.getX(), View.getY(), 0);
+		world.render(View.getIndex());
+		ui.renderOnMap();
+		GL11.glPopMatrix();
+
 		ui.render();
 		Window.render();
 

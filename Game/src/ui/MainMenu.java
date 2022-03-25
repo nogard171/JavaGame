@@ -21,9 +21,16 @@ import utils.Renderer;
 import utils.Window;
 
 public class MainMenu extends UIControl {
+	SettingsMenu settingsMenu;
+
 	UIMenu mainMenu;
 
 	public void setup() {
+		settingsMenu = new SettingsMenu();
+		settingsMenu.setPosition(new Vector2f(100, 0));
+		settingsMenu.setSize(new Size(100, 100));
+		settingsMenu.setup();
+
 		mainMenu = new UIMenu("mainMenu");
 		mainMenu.setPosition(new Vector2f(0, 100));
 		mainMenu.setSize(new Size(100, 0));
@@ -136,13 +143,7 @@ public class MainMenu extends UIControl {
 			@Override
 			public void onMouseClick(UIControl self, int mouseButton) {
 				if (mouseButton == 0) {
-					System.out.println("Mouse Click Left" + self.getName());
-				}
-				if (mouseButton == 1) {
-					System.out.println("Mouse Click Right");
-				}
-				if (mouseButton == 2) {
-					System.out.println("Mouse Click Middle");
+					settingsMenu.isVisible = !settingsMenu.isVisible;
 				}
 			}
 
@@ -209,19 +210,27 @@ public class MainMenu extends UIControl {
 		}
 		if (Input.isKeyPressed(Keyboard.KEY_ESCAPE)) {
 			EngineData.showMainMenu = !EngineData.showMainMenu;
+
+			settingsMenu.isVisible = false;
 		}
 		this.isVisible = EngineData.showMainMenu;
+		if (this.isVisible) {
+			settingsMenu.update();
+		}
 
 	}
 
 	@Override
 	public void render() {
 		if (this.isVisible) {
+
+			Renderer.unbindTexture();
 			GL11.glBegin(GL11.GL_POLYGON);
-			Renderer.renderQuad(0, 0, Window.getWidth(), Window.getHeight(), new Color(0, 0, 0, 1f));
+			Renderer.renderQuad(0, 0, Window.getWidth(), Window.getHeight(), new Color(0.1f, 0.1f, 0.1f, 0.5f));
 			GL11.glEnd();
 
 			mainMenu.render();
+			settingsMenu.render();
 
 		}
 	}

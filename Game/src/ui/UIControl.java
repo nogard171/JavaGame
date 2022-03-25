@@ -12,6 +12,7 @@ public class UIControl {
 	private String name = "";
 	private Vector2f position = new Vector2f(0, 0);
 	public boolean isVisible = true;
+
 	private Action eventAction;
 	private int mouseClickCount = 0;
 	private int mouseReleaseCount = 0;
@@ -105,5 +106,8 @@ public class UIControl {
 
 	public void toggle() {
 		isVisible = !isVisible;
+	}
+	public boolean isVisible() {
+		return isVisible;
 	}
 }
