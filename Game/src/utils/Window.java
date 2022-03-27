@@ -1,11 +1,14 @@
 package utils;
 
+import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+
 import javax.imageio.ImageIO;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -41,11 +44,6 @@ public class Window {
 							&& dm.isFullscreenCapable()) {
 						// set the newMode to the found display mode
 						newMode = dm;
-						// check if fullscreen is enabled
-						if (EngineData.isFullscreen) {
-							// set fullscreen to true
-							Display.setFullscreen(true);
-						}
 					}
 				} else {
 					if ((dmFreq >= highestFreq && dmWidth >= highestWidth && dmHeight >= highestHeight)) {
@@ -56,17 +54,14 @@ public class Window {
 						// set the newMode to the found display mode
 						newMode = dm;
 					}
-					// check if fullscreen is enabled
-					if (EngineData.isFullscreen) {
-						// set fullscreen to true
-						Display.setFullscreen(true);
-					}
 				}
 			}
 			// set the width, height and frequency based on the displaymode selected
 			EngineData.width = newMode.getWidth();
 			EngineData.height = newMode.getHeight();
 			EngineData.frequency = newMode.getFrequency();
+			Display.setFullscreen(EngineData.isFullscreen);
+			Display.setVSyncEnabled(EngineData.isVsync);
 			// setup basic display mode
 			Display.setDisplayMode(newMode);
 			// set is the display is resizeable
@@ -81,7 +76,7 @@ public class Window {
 		}
 	}
 
-	private static void setup() {
+	public static void setup() {
 		// set the width and height in the engine data
 		EngineData.width = Display.getWidth();
 		EngineData.height = Display.getHeight();
@@ -137,6 +132,7 @@ public class Window {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+
 	}
 
 	// destroy the display
@@ -146,17 +142,36 @@ public class Window {
 
 	// return the width of the display
 	public static int getWidth() {
-		return EngineData.width;
+		return  Display.getWidth();
 	}
 
 	// return the height of the display
 	public static int getHeight() {
-		return EngineData.height;
+		return Display.getHeight();
 	}
 
 	// return if the display was resized
 	public static boolean wasResized() {
 		return Display.wasResized();
+	}
+
+	public static LinkedList<Point> getDisplayModes() {
+		try {
+
+			DisplayMode target = Display.getDesktopDisplayMode();
+			
+			LinkedList<Point> dms = new LinkedList<Point>();
+			// loop through all possible display modes based on the monitor data
+			for (DisplayMode dm : Display.getAvailableDisplayModes()) {
+				int dmFreq = dm.getFrequency();
+				if (dmFreq == target.getFrequency()) {
+					dms.add(new Point(dm.getWidth(),dm.getHeight()));
+				}
+			}			
+			return dms;
+		} catch (LWJGLException e) {
+			return null;
+		}
 	}
 
 	// proceed to take screenshot

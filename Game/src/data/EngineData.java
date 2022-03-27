@@ -16,11 +16,12 @@ import ui.UIControl;
 
 public class EngineData {
 	// Window data
-	public static int width = -1;
-	public static int height = -1;
+	public static int width = 800;
+	public static int height =600;
 	public static int frequency = -1;
 	public static boolean isResizable = true;
 	public static boolean isFullscreen = false;
+	public static boolean isVsync = false;
 	public static LinkedList<DisplayMode> supportedDisplayModes = new LinkedList<DisplayMode>();
 
 	public static int inactiveFPS = 30;

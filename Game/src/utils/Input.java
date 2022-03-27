@@ -86,7 +86,7 @@ public class Input {
 	}
 
 	public static Vector2f getMousePosition() {
-		return new Vector2f(Mouse.getX(), EngineData.height - Mouse.getY());
+		return new Vector2f(Mouse.getX(), Window.getHeight() - Mouse.getY());
 	}
 
 	public static int getMouseWheel() {

@@ -1,40 +1,21 @@
 package threads;
 
-import java.awt.Polygon;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.LinkedList;
-
-import javax.imageio.ImageIO;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
 import classes.Action;
-import classes.Index;
-import classes.MouseIndex;
 import classes.Size;
-import classes.View;
 import classes.World;
 import data.EngineData;
-import data.Settings;
 import ui.MainMenu;
-import ui.SettingsMenu;
 import ui.UIButton;
 import ui.UIControl;
 import ui.UIMenu;
 import ui.UIMenuItem;
-import data.EngineData;
 import utils.FPS;
 import utils.Input;
 import utils.Loader;
@@ -44,6 +25,15 @@ import utils.Window;
 
 public class UIThread extends BaseThread {
 	MainMenu mainMenu;
+
+	public static void reloadGame() {
+		Window.destroy();
+		Window.create();
+		EngineData.fonts.clear();
+		Loader.load();
+		World.rebuild();
+		EngineData.dataLoaded = true;
+	}
 
 	@Override
 	public void setup() {
@@ -105,20 +95,21 @@ public class UIThread extends BaseThread {
 			Vector2f debugPosition = new Vector2f(Window.getWidth() - 200, 0);
 			Renderer.renderQuad(debugPosition.x, debugPosition.y, 200, 100, new Color(0, 0, 0, 0.5f));
 			int tempY = 0;
-			Renderer.renderText(debugPosition.x, debugPosition.y, "FPS:" + FPS.currentfps, 12, Color.white);
+			Renderer.renderText(debugPosition.x, debugPosition.y, "FPS:" + FPS.currentfps + "(" + FPS.getDelta() + ")",
+					12, Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY,
-					"Resolution:" + EngineData.width + "x" + EngineData.height + "@" + EngineData.frequency, 12,
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
+					"Resolution:" + Display.getWidth() + "x" + Display.getHeight() + "@" + EngineData.frequency, 12,
 					Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY, "Data Loaded:" + EngineData.dataLoaded,
-					12, Color.white);
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Data Loaded:" + EngineData.dataLoaded, 12,
+					Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY,
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
 					"Chunks:" + EngineData.renderedChunks.size() + "/" + EngineData.chunks.size(), 12, Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y  + tempY, "Blocked Input:" + EngineData.blockInput,
-					12, Color.white);
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Blocked Input:" + EngineData.blockInput, 12,
+					Color.white);
 
 			if (objectsHovered.size() > 0) {
 				Renderer.renderText(debugPosition.x - 200, debugPosition.y, "Hover Index:", 12, Color.white);

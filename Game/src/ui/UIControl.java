@@ -1,5 +1,8 @@
 package ui;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
 import org.lwjgl.util.vector.Vector2f;
 
 import classes.Action;
@@ -11,17 +14,19 @@ public class UIControl {
 	private Size size = new Size(32, 32);
 	private String name = "";
 	private Vector2f position = new Vector2f(0, 0);
-	public boolean isVisible = true;
 
-	private Action eventAction;
-	private int mouseClickCount = 0;
+	public boolean isVisible = true;
+	protected boolean hover=false;
+	protected Action eventAction;
+	protected int mouseClickCount = 0;
 	private int mouseReleaseCount = 0;
 	private int mouseEnterCount = 0;
 	private int mouseExitCount = 0;
+	private Point mousePosition = new Point(-1, -1);
 
 	public void update() {
 		if (this.eventAction != null) {
-			boolean hover = UIPhyics.inside(this, Input.getMousePosition());
+			hover = UIPhyics.inside(this, Input.getMousePosition());
 			if (hover) {
 				this.eventAction.onMouseHover(this);
 				if (mouseEnterCount == 0) {
@@ -68,6 +73,23 @@ public class UIControl {
 				}
 				mouseReleaseCount++;
 			}
+			if (hover && !mouseDown) {
+				if (mouseReleaseCount == 0) {
+					this.eventAction.onMouseReleased(this, mouseIndex);
+					this.eventAction.onMouseReleased(this);
+				}
+				mouseReleaseCount++;
+			}
+			if (hover
+					&& !mousePosition
+							.equals(new Point((int) Input.getMousePosition().x, (int) Input.getMousePosition().y))
+					&& mouseDown) {
+				this.eventAction.onMouseDrag(this, mouseIndex);
+				Point mouseOffset = new Point((int) Input.getMousePosition().getX() - (int) this.getPosition().getX(),
+						(int) Input.getMousePosition().getY() - (int) this.getPosition().getY());
+				this.eventAction.onMouseDrag(this, mouseOffset);
+				mousePosition = new Point((int) Input.getMousePosition().x, (int) Input.getMousePosition().y);
+			}
 		}
 
 	}
@@ -107,6 +129,7 @@ public class UIControl {
 	public void toggle() {
 		isVisible = !isVisible;
 	}
+
 	public boolean isVisible() {
 		return isVisible;
 	}

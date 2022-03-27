@@ -5,6 +5,7 @@ import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -26,8 +27,11 @@ import data.AssetData;
 import data.EngineData;
 import ui.UIButton;
 import ui.UIControl;
+import ui.UIDropDown;
 import ui.UIMenu;
 import ui.UIMenuItem;
+import ui.UISlider;
+import ui.UIToggle;
 
 public class Renderer {
 
@@ -305,5 +309,70 @@ public class Renderer {
 
 		// Return the texture ID so we can bind it later again
 		return textureID;
+	}
+
+	public static void renderSlider(UISlider slider) {
+		Color sliderColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+		int textWidth = Renderer.getTextWidth(slider.getName(), 20, Color.white);
+		Renderer.renderText(slider.getPosition().getX() - (155) - 5, slider.getPosition().getY() - 8,
+				slider.getName(), 20, Color.white);
+		int height = slider.getSize().getHeight() - 6;
+		if (height <= 0) {
+			height = 1;
+		}
+		Renderer.renderQuad(slider.getPosition().getX(), slider.getPosition().getY() + 3, slider.getSize().getWidth(),
+				height, sliderColor);
+		float volumeInt = slider.getValue();
+		float volumeStep = ((float) (slider.getSize().getWidth() - 16)) / (float) slider.getMaxValue();
+		Renderer.renderQuad(slider.getPosition().getX() + (float) (volumeInt * (float) volumeStep),
+				slider.getPosition().getY(), 16, slider.getSize().getHeight(), new Color(0.8f, 0.8f, 0.8f, 1f));
+	}
+
+	public static void renderToggle(UIToggle toggle) {
+		int textWidth = Renderer.getTextWidth(toggle.getName(), 20, Color.white);
+		Renderer.renderText(toggle.getPosition().getX() - (155) - 5, toggle.getPosition().getY() - 8, toggle.getName(),
+				20, Color.white);
+
+		Renderer.renderQuad(toggle.getPosition().getX(), toggle.getPosition().getY(), 16, toggle.getSize().getHeight(),
+				new Color(0.8f, 0.8f, 0.8f, 1f));
+		if (toggle.getToggle()) {
+			Renderer.renderQuad(toggle.getPosition().getX() + 2, toggle.getPosition().getY() + 2, 12, 12,
+					new Color(0f, 0f, 0f, 1f));
+		}
+	}
+
+	public static void renderDropDown(UIDropDown dropdown) {
+
+		int textWidth = Renderer.getTextWidth(dropdown.getName(), 20, Color.white);
+		Renderer.renderText(dropdown.getPosition().getX() - (155) - 5, dropdown.getPosition().getY() - 8,
+				dropdown.getName(), 20, Color.white);
+
+		Renderer.renderQuad(dropdown.getPosition().getX(), dropdown.getPosition().getY(), dropdown.getSize().getWidth(),
+				dropdown.getSize().getHeight(), new Color(0.8f, 0.8f, 0.8f, 1f));
+
+		Renderer.renderText(dropdown.getPosition().getX(), dropdown.getPosition().getY() - 5, dropdown.getValue(),
+				dropdown.getSize().getHeight(), Color.black);
+
+		LinkedList<String> resolutions = dropdown.getValues();
+
+		if (dropdown.isShown()) {
+			int y = 1;
+			Renderer.renderQuad(dropdown.getPosition().getX(), dropdown.getPosition().getY() + 16,
+					dropdown.getSize().getWidth(), resolutions.size() * dropdown.getSize().getHeight(),
+					new Color(0.1f, 0.1f, 0.1f, 1f));
+			for (String s : resolutions) {
+				if (dropdown.getSelectedValue() == y) {
+					Renderer.renderQuad(dropdown.getPosition().getX(),
+							dropdown.getPosition().getY() + (y * dropdown.getSize().getHeight()),
+							dropdown.getSize().getWidth(), dropdown.getSize().getHeight(),
+							new Color(1f, 0.1f, 0.1f, 0.5f));
+				}
+
+				Renderer.renderText(dropdown.getPosition().getX(),
+						dropdown.getPosition().getY() - 5 + 16 + ((y-1) * dropdown.getSize().getHeight()), s,
+						dropdown.getSize().getHeight(), Color.white);
+				y++;
+			}
+		}
 	}
 }
