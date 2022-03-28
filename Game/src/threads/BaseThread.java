@@ -11,7 +11,7 @@ public class BaseThread extends Thread {
 	public void run() {
 		this.setup();
 		while (isRunning) {
-			this.ticker.update();
+			this.ticker.update(1000);
 			this.update(this.ticker);
 			this.update();
 			this.render();

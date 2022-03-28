@@ -40,13 +40,23 @@ public class Window {
 				// settings.
 				EngineData.supportedDisplayModes.add(newMode);
 				if (EngineData.width > -1 && EngineData.height > -1) {
-					if (dmWidth == EngineData.width && dmHeight == EngineData.height && dmFreq == 60
+					if (dmWidth == EngineData.width && dmHeight == EngineData.height && dmFreq >= highestFreq
 							&& dm.isFullscreenCapable()) {
+						highestFreq = dmFreq;
+						// set the newMode to the found display mode
+						newMode = dm;
+					} else if ((dmFreq >= highestFreq && dmWidth >= highestWidth && dmHeight >= highestHeight)
+							&& dm.isFullscreenCapable()) {
+						// this will help look for highest freq supported
+						highestWidth = dmWidth;
+						highestHeight = dmHeight;
+						highestFreq = dmFreq;
 						// set the newMode to the found display mode
 						newMode = dm;
 					}
 				} else {
-					if ((dmFreq >= highestFreq && dmWidth >= highestWidth && dmHeight >= highestHeight)) {
+					if ((dmFreq >= highestFreq && dmWidth >= highestWidth && dmHeight >= highestHeight)
+							&& dm.isFullscreenCapable()) {
 						// this will help look for highest freq supported
 						highestWidth = dmWidth;
 						highestHeight = dmHeight;
@@ -142,7 +152,7 @@ public class Window {
 
 	// return the width of the display
 	public static int getWidth() {
-		return  Display.getWidth();
+		return Display.getWidth();
 	}
 
 	// return the height of the display
@@ -159,15 +169,15 @@ public class Window {
 		try {
 
 			DisplayMode target = Display.getDesktopDisplayMode();
-			
+
 			LinkedList<Point> dms = new LinkedList<Point>();
 			// loop through all possible display modes based on the monitor data
 			for (DisplayMode dm : Display.getAvailableDisplayModes()) {
 				int dmFreq = dm.getFrequency();
-				if (dmFreq == target.getFrequency()) {
-					dms.add(new Point(dm.getWidth(),dm.getHeight()));
+				if (dmFreq == target.getFrequency() && dm.getHeight() >= 600) {
+					dms.add(new Point(dm.getWidth(), dm.getHeight()));
 				}
-			}			
+			}
 			return dms;
 		} catch (LWJGLException e) {
 			return null;

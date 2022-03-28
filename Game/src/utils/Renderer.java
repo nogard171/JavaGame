@@ -31,6 +31,7 @@ import ui.UIDropDown;
 import ui.UIMenu;
 import ui.UIMenuItem;
 import ui.UISlider;
+import ui.UITextField;
 import ui.UIToggle;
 
 public class Renderer {
@@ -314,8 +315,8 @@ public class Renderer {
 	public static void renderSlider(UISlider slider) {
 		Color sliderColor = new Color(0.4f, 0.4f, 0.4f, 1f);
 		int textWidth = Renderer.getTextWidth(slider.getName(), 20, Color.white);
-		Renderer.renderText(slider.getPosition().getX() - (155) - 5, slider.getPosition().getY() - 8,
-				slider.getName(), 20, Color.white);
+		Renderer.renderText(slider.getPosition().getX() - (155) - 5, slider.getPosition().getY() - 8, slider.getName(),
+				20, Color.white);
 		int height = slider.getSize().getHeight() - 6;
 		if (height <= 0) {
 			height = 1;
@@ -354,7 +355,6 @@ public class Renderer {
 				dropdown.getSize().getHeight(), Color.black);
 
 		LinkedList<String> resolutions = dropdown.getValues();
-
 		if (dropdown.isShown()) {
 			int y = 1;
 			Renderer.renderQuad(dropdown.getPosition().getX(), dropdown.getPosition().getY() + 16,
@@ -369,10 +369,25 @@ public class Renderer {
 				}
 
 				Renderer.renderText(dropdown.getPosition().getX(),
-						dropdown.getPosition().getY() - 5 + 16 + ((y-1) * dropdown.getSize().getHeight()), s,
+						dropdown.getPosition().getY() - 5 + 16 + ((y - 1) * dropdown.getSize().getHeight()), s,
 						dropdown.getSize().getHeight(), Color.white);
 				y++;
 			}
+		}
+	}
+
+	public static void renderTextField(UITextField field) {
+
+		Renderer.renderText(field.getPosition().getX() - (160), field.getPosition().getY() - 8, field.getName(), 20,
+				Color.white);
+		Renderer.renderQuad(field.getPosition().getX(), field.getPosition().getY(), field.getSize().getWidth(),
+				field.getSize().getHeight(), new Color(0.8f, 0.8f, 0.8f, 1f));
+		Renderer.renderText(field.getPosition().getX(), field.getPosition().getY() - 5, field.getText(), 16,
+				Color.black);
+		if (field.isCursorActive()) {
+			Renderer.renderText(
+					field.getPosition().getX() + Renderer.getTextWidth(field.getText(), 16, Color.black) - 4,
+					field.getPosition().getY() - 6, "|", 16, Color.black);
 		}
 	}
 }

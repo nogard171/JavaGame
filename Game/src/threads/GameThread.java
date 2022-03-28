@@ -12,6 +12,7 @@ import data.Settings;
 import utils.FPS;
 import utils.Input;
 import utils.Loader;
+import utils.SettingsHandler;
 import utils.Window;
 
 public class GameThread extends BaseThread {
@@ -21,9 +22,22 @@ public class GameThread extends BaseThread {
 
 	World world;
 
+	public static void reloadGame() {
+		Window.destroy();
+		SettingsHandler.load();
+		Window.create();
+		EngineData.fonts.clear();
+		Loader.load();
+		World.rebuild();
+		EngineData.dataLoaded = true;
+	}
+
 	@Override
 	public void setup() {
 		super.setup();
+		if (!SettingsHandler.load()) {
+			SettingsHandler.save();
+		}
 		Window.create();
 		view = new View();
 		Input.setup();

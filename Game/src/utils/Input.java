@@ -1,6 +1,8 @@
 package utils;
 
 import java.awt.Point;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -100,6 +102,18 @@ public class Input {
 			}
 		}
 		return -1;
+	}
+
+	public static List<Integer> getKeys() {
+		List<Integer> keys = new LinkedList<Integer>();
+		for (int k = 0; k < 256; k++) {
+			if (keysDown[k]) {
+				if (!keys.contains(k)) {
+					keys.add(k);
+				}
+			}
+		}
+		return keys;
 	}
 
 	public static int getMouseButtonCount() {

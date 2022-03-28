@@ -124,6 +124,8 @@ public class World {
 	public void refresh() {
 		for (Chunk chunk : EngineData.chunks.values()) {
 			chunk.refresh();
+			chunk.update();
+			chunk.render();
 		}
 	}
 

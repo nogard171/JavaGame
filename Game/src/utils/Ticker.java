@@ -7,10 +7,10 @@ public class Ticker {
 	public int ticks = 0;
 	public int previousTick = 0;
 
-	public void update() {
+	public void update(int tickLength) {
 		if (count > previousCount) {
 			count = System.currentTimeMillis();
-			previousCount = System.currentTimeMillis() + (1000 * tickCount);
+			previousCount = System.currentTimeMillis() + (tickLength * tickCount);
 
 			ticks++;
 		}

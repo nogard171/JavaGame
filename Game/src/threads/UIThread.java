@@ -21,19 +21,12 @@ import utils.Input;
 import utils.Loader;
 import classes.Object;
 import utils.Renderer;
+import utils.SettingsHandler;
 import utils.Window;
 
 public class UIThread extends BaseThread {
 	MainMenu mainMenu;
 
-	public static void reloadGame() {
-		Window.destroy();
-		Window.create();
-		EngineData.fonts.clear();
-		Loader.load();
-		World.rebuild();
-		EngineData.dataLoaded = true;
-	}
 
 	@Override
 	public void setup() {
@@ -76,6 +69,7 @@ public class UIThread extends BaseThread {
 			EngineData.showTelematry = !EngineData.showTelematry;
 		}
 		if (Input.isKeyPressed(Keyboard.KEY_F2)) {
+			SettingsHandler.load();
 			Loader.load();
 			World.rebuild();
 			EngineData.dataLoaded = true;

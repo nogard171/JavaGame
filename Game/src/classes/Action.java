@@ -1,6 +1,7 @@
 package classes;
 
 import java.awt.Point;
+import java.util.List;
 
 import ui.UIControl;
 
@@ -31,6 +32,8 @@ public interface Action {
 
 	public default void onMouseClick(UIControl uiButton) {
 	}
+	public default void onMouseClickOut(UIControl uiButton) {
+	}
 
 	public default void onMouseReleased(UIControl uiButton) {
 	}
@@ -58,6 +61,10 @@ public interface Action {
 	}
 
 	public default void onSelect(UIControl self) {
+
+	}
+
+	public default void onKeyPress(UIControl self, int keycode, boolean shift) {
 
 	}
 }

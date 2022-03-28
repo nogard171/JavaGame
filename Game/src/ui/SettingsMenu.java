@@ -3,7 +3,9 @@ package ui;
 import java.awt.Point;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -14,10 +16,12 @@ import classes.Action;
 import classes.Size;
 import classes.World;
 import data.EngineData;
+import threads.GameThread;
 import threads.UIThread;
 import utils.FPS;
 import utils.Loader;
 import utils.Renderer;
+import utils.SettingsHandler;
 import utils.Window;
 
 public class SettingsMenu extends UIControl {
@@ -38,6 +42,10 @@ public class SettingsMenu extends UIControl {
 
 	UIToggle vsyncToggle;
 
+	UITextField targetfpsTextField;
+	UITextField menufpsTextField;
+	UITextField inactivefpsTextField;
+
 	int panelActive = 0;
 
 	public void setup() {
@@ -57,7 +65,8 @@ public class SettingsMenu extends UIControl {
 				UIButton temp = (UIButton) self;
 				if (mouseButton == 0) {
 					graphicsChanged = false;
-					UIThread.reloadGame();
+					SettingsHandler.save();
+					GameThread.reloadGame();
 				}
 			}
 
@@ -78,6 +87,7 @@ public class SettingsMenu extends UIControl {
 			}
 		});
 		fullscreenToggle = new UIToggle();
+		fullscreenToggle.setToggle(EngineData.isFullscreen);
 		fullscreenToggle.setName("Fullscreen");
 		fullscreenToggle.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 20));
 		fullscreenToggle.setSize(new Size(16, 16));
@@ -96,9 +106,10 @@ public class SettingsMenu extends UIControl {
 		});
 
 		resolutionDropdown = new UIDropDown();
+		resolutionDropdown.setValue(EngineData.width+" x "+EngineData.height);
 		resolutionDropdown.setName("Resolution");
 		resolutionDropdown.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 50));
-		resolutionDropdown.setSize(new Size(120, 16));
+		resolutionDropdown.setSize(new Size(150, 16));
 		resolutionDropdown.onEvent(new Action() {
 			@Override
 			public void onMouseClick(UIControl self, int mouseButton) {
@@ -115,11 +126,6 @@ public class SettingsMenu extends UIControl {
 				UIDropDown dropdown = (UIDropDown) self;
 				if (dropdown != null) {
 					String temp = dropdown.getValue(index);
-					if (temp.toLowerCase().equals("auto")) {
-						EngineData.isResizable = true;
-					} else {
-						EngineData.isResizable = false;
-					}
 					String[] data = temp.split(" x ");
 					if (data.length >= 2) {
 						EngineData.width = Integer.parseInt(data[0]);
@@ -147,6 +153,7 @@ public class SettingsMenu extends UIControl {
 		}
 
 		vsyncToggle = new UIToggle();
+		vsyncToggle.setToggle(EngineData.isVsync);
 		vsyncToggle.setName("Vsync");
 		vsyncToggle.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 80));
 		vsyncToggle.setSize(new Size(16, 16));
@@ -160,6 +167,153 @@ public class SettingsMenu extends UIControl {
 					graphicsChanged = true;
 				}
 			}
+		});
+
+		targetfpsTextField = new UITextField();
+		targetfpsTextField.setText(EngineData.targetFPS + "");
+		targetfpsTextField.setName("Target FPS");
+		targetfpsTextField.setIntOnly(true);
+		targetfpsTextField.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 110));
+		targetfpsTextField.setSize(new Size(200, 16));
+		targetfpsTextField.onEvent(new Action() {
+			@Override
+			public void onMouseClick(UIControl self, int mouseButton) {
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					textField.setActive(true);
+				}
+			}
+
+			@Override
+			public void onMouseClickOut(UIControl self) {
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					textField.setActive(false);
+				}
+			}
+
+			@Override
+			public void onKeyPress(UIControl self, int keycode, boolean shift) {
+				System.out.println("back" + shift);
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					String str = Keyboard.getKeyName(keycode).toLowerCase();
+					if (str.length() == 1) {
+						textField.setText(textField.getText() + (shift ? str.toUpperCase() : str));
+						graphicsChanged = true;
+					} else if (str.equals("space")) {
+						textField.setText(textField.getText() + " ");
+						graphicsChanged = true;
+					} else if (str.equals("back")) {
+						if (textField.getText().length() > 0) {
+							textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+							graphicsChanged = true;
+						}
+					} else if (str.equals("return")) {
+						EngineData.targetFPS = Integer.parseInt(textField.getText());
+						textField.setActive(false);
+					}
+				}
+			}
+
+		});
+
+		menufpsTextField = new UITextField();
+		menufpsTextField.setText(EngineData.pauseFPS + "");
+		menufpsTextField.setName("Menu FPS");
+		menufpsTextField.setIntOnly(true);
+		menufpsTextField.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 140));
+		menufpsTextField.setSize(new Size(200, 16));
+		menufpsTextField.onEvent(new Action() {
+			@Override
+			public void onMouseClick(UIControl self, int mouseButton) {
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					textField.setActive(true);
+				}
+			}
+
+			@Override
+			public void onMouseClickOut(UIControl self) {
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					textField.setActive(false);
+				}
+			}
+
+			@Override
+			public void onKeyPress(UIControl self, int keycode, boolean shift) {
+				System.out.println("back" + shift);
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					String str = Keyboard.getKeyName(keycode).toLowerCase();
+					if (str.length() == 1) {
+						textField.setText(textField.getText() + (shift ? str.toUpperCase() : str));
+						graphicsChanged = true;
+					} else if (str.equals("space")) {
+						textField.setText(textField.getText() + " ");
+						graphicsChanged = true;
+					} else if (str.equals("back")) {
+						if (textField.getText().length() > 0) {
+							textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+							graphicsChanged = true;
+						}
+					} else if (str.equals("return")) {
+						EngineData.pauseFPS = Integer.parseInt(textField.getText());
+						textField.setActive(false);
+					}
+				}
+			}
+		});
+
+		inactivefpsTextField = new UITextField();
+		inactivefpsTextField.setName("Inactive FPS");
+		inactivefpsTextField.setText(EngineData.inactiveFPS + "");
+		inactivefpsTextField.setIntOnly(true);
+		inactivefpsTextField
+				.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 170));
+		inactivefpsTextField.setSize(new Size(200, 16));
+		inactivefpsTextField.onEvent(new Action() {
+			@Override
+			public void onMouseClick(UIControl self, int mouseButton) {
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					textField.setActive(true);
+				}
+			}
+
+			@Override
+			public void onMouseClickOut(UIControl self) {
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					textField.setActive(false);
+				}
+			}
+
+			@Override
+			public void onKeyPress(UIControl self, int keycode, boolean shift) {
+				System.out.println("back" + shift);
+				UITextField textField = (UITextField) self;
+				if (textField != null) {
+					String str = Keyboard.getKeyName(keycode).toLowerCase();
+					if (str.length() == 1) {
+						textField.setText(textField.getText() + (shift ? str.toUpperCase() : str));
+						graphicsChanged = true;
+					} else if (str.equals("space")) {
+						textField.setText(textField.getText() + " ");
+						graphicsChanged = true;
+					} else if (str.equals("back")) {
+						if (textField.getText().length() > 0) {
+							textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+							graphicsChanged = true;
+						}
+					} else if (str.equals("return")) {
+						EngineData.inactiveFPS = Integer.parseInt(textField.getText());
+						textField.setActive(false);
+					}
+				}
+			}
+
 		});
 
 		masterVolumeSlider = new UISlider();
@@ -373,6 +527,9 @@ public class SettingsMenu extends UIControl {
 				fullscreenToggle.update();
 				resolutionDropdown.update();
 				vsyncToggle.update();
+				targetfpsTextField.update();
+				menufpsTextField.update();
+				inactivefpsTextField.update();
 				break;
 			case 2:
 				/*
@@ -384,6 +541,10 @@ public class SettingsMenu extends UIControl {
 				soundEffectsVolumeSlider.update();
 				break;
 			}
+		}
+		else if(graphicsChanged)
+		{
+			graphicsChanged = false;
 		}
 	}
 
@@ -434,52 +595,32 @@ public class SettingsMenu extends UIControl {
 
 				Renderer.renderToggle(fullscreenToggle);
 				Renderer.renderToggle(vsyncToggle);
+				Renderer.renderTextField(targetfpsTextField);
+				Renderer.renderTextField(menufpsTextField);
+				Renderer.renderTextField(inactivefpsTextField);
 
 				Renderer.renderDropDown(resolutionDropdown);
+				if (resolutionDropdown.getValue().toLowerCase().equals("auto")) {
+					String resolutionString = "(" + Window.getWidth() + " x " + Window.getHeight() + ")";
+					int resolutionStringWidth = Renderer.getTextWidth(resolutionString, 12, Color.black);
+					Renderer.renderText(resolutionDropdown.getPosition().getX() + 50,
+							resolutionDropdown.getPosition().getY() - 1, resolutionString, 12, Color.black);
+				}
+				Renderer.renderText(resolutionDropdown.getPosition().getX() + resolutionDropdown.getSize().getWidth(),
+						resolutionDropdown.getPosition().getY() - 1, " @ " + EngineData.frequency + "Hz", 12,
+						Color.white);
 
-				y = 0;
+				y = 180;
 				Renderer.renderText(this.getPosition().getX(), this.getPosition().getY(), "Graphics Panel", 12,
 						Color.white);
-				/*
-				 * Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY()
-				 * + 10 + y, "Fullscreen", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 16, 16, new Color(0.8f, 0.8f, 0.8f, 1f));
-				 * y += 200; Renderer.renderText(this.getPosition().getX() + 10,
-				 * this.getPosition().getY() + 10 + y, "Resolution", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 120, 16, new Color(0.8f, 0.8f, 0.8f,
-				 * 1f)); Renderer.renderText(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 14 + y, "Auto", 16, Color.black); y += 30;
-				 * Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY()
-				 * + 10 + y, "Quality", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 120, 16, new Color(0.8f, 0.8f, 0.8f,
-				 * 1f)); Renderer.renderText(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 14 + y, "Auto", 16, Color.black); y += 30;
-				 * Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY()
-				 * + 10 + y, "Vsync", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 16, 16, new Color(0.8f, 0.8f, 0.8f, 1f));
-				 * y += 30; Renderer.renderText(this.getPosition().getX() + 10,
-				 * this.getPosition().getY() + 10 + y, "- Target FPS", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 50, 16, new Color(0.8f, 0.8f, 0.8f, 1f));
-				 * Renderer.renderText(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 14 + y, "120", 16, Color.black); y += 30;
-				 * Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY()
-				 * + 10 + y, "- Menu FPS", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 50, 16, new Color(0.8f, 0.8f, 0.8f, 1f));
-				 * Renderer.renderText(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 14 + y, "60", 16, Color.black); y += 30;
-				 * Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY()
-				 * + 10 + y, "- Inactive FPS", 20, Color.white);
-				 * Renderer.renderQuad(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 18 + y, 50, 16, new Color(0.8f, 0.8f, 0.8f, 1f));
-				 * Renderer.renderText(this.getPosition().getX() + 200,
-				 * this.getPosition().getY() + 14 + y, "30", 16, Color.black);
-				 */
+
+				Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY() + 10 + y, "Quality", 20,
+						Color.white);
+				Renderer.renderQuad(this.getPosition().getX() + 200, this.getPosition().getY() + 18 + y, 120, 16,
+						new Color(0.8f, 0.8f, 0.8f, 1f));
+				Renderer.renderText(this.getPosition().getX() + 200, this.getPosition().getY() + 14 + y, "Auto", 16,
+						Color.black);
+
 				break;
 			case 2:
 				/*

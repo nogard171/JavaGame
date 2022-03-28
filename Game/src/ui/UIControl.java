@@ -58,6 +58,12 @@ public class UIControl {
 				}
 				mouseClickCount++;
 				mouseReleaseCount = 0;
+			}else if (!hover && mouseDown) {
+				if (mouseClickCount == 0) {
+					this.eventAction.onMouseClickOut(this);
+				}
+				mouseClickCount++;
+				mouseReleaseCount = 0;
 			} else {
 				mouseClickCount = 0;
 			}
