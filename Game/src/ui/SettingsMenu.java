@@ -39,6 +39,7 @@ public class SettingsMenu extends UIControl {
 
 	UIToggle fullscreenToggle;
 	UIDropDown resolutionDropdown;
+	UIDropDown qualityDropdown;
 
 	UIToggle vsyncToggle;
 
@@ -106,7 +107,7 @@ public class SettingsMenu extends UIControl {
 		});
 
 		resolutionDropdown = new UIDropDown();
-		resolutionDropdown.setValue(EngineData.width+" x "+EngineData.height);
+		resolutionDropdown.setValue(EngineData.width + " x " + EngineData.height);
 		resolutionDropdown.setName("Resolution");
 		resolutionDropdown.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 50));
 		resolutionDropdown.setSize(new Size(150, 16));
@@ -152,10 +153,43 @@ public class SettingsMenu extends UIControl {
 			resolutionDropdown.addValue((int) dm.getX() + " x " + (int) dm.getY());
 		}
 
+		qualityDropdown = new UIDropDown();
+		qualityDropdown.setValue(EngineData.quality);
+		qualityDropdown.setName("Quality");
+		qualityDropdown.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 80));
+		qualityDropdown.setSize(new Size(150, 16));
+		qualityDropdown.onEvent(new Action() {
+			@Override
+			public void onMouseClick(UIControl self, int mouseButton) {
+				if (mouseButton == 0) {
+					UIDropDown dropdown = (UIDropDown) self;
+					if (dropdown != null) {
+						dropdown.setShown(true);
+					}
+				}
+			}
+
+			@Override
+			public void onSelect(UIControl self, int index) {
+				UIDropDown dropdown = (UIDropDown) self;
+				if (dropdown != null) {
+					String temp = dropdown.getValue(index);
+					dropdown.setValue(temp);
+					EngineData.quality = temp;
+					dropdown.setShown(false);
+					graphicsChanged = true;
+				}
+			}
+		});
+		qualityDropdown.addValue("Auto");
+		qualityDropdown.addValue("High");
+		qualityDropdown.addValue("Medium");
+		qualityDropdown.addValue("Low");
+
 		vsyncToggle = new UIToggle();
 		vsyncToggle.setToggle(EngineData.isVsync);
 		vsyncToggle.setName("Vsync");
-		vsyncToggle.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 80));
+		vsyncToggle.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 110));
 		vsyncToggle.setSize(new Size(16, 16));
 		vsyncToggle.onEvent(new Action() {
 			@Override
@@ -173,7 +207,7 @@ public class SettingsMenu extends UIControl {
 		targetfpsTextField.setText(EngineData.targetFPS + "");
 		targetfpsTextField.setName("Target FPS");
 		targetfpsTextField.setIntOnly(true);
-		targetfpsTextField.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 110));
+		targetfpsTextField.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 140));
 		targetfpsTextField.setSize(new Size(200, 16));
 		targetfpsTextField.onEvent(new Action() {
 			@Override
@@ -222,7 +256,7 @@ public class SettingsMenu extends UIControl {
 		menufpsTextField.setText(EngineData.pauseFPS + "");
 		menufpsTextField.setName("Menu FPS");
 		menufpsTextField.setIntOnly(true);
-		menufpsTextField.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 140));
+		menufpsTextField.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 170));
 		menufpsTextField.setSize(new Size(200, 16));
 		menufpsTextField.onEvent(new Action() {
 			@Override
@@ -271,7 +305,7 @@ public class SettingsMenu extends UIControl {
 		inactivefpsTextField.setText(EngineData.inactiveFPS + "");
 		inactivefpsTextField.setIntOnly(true);
 		inactivefpsTextField
-				.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 170));
+				.setPosition(new Vector2f(this.getPosition().getX() + 170, this.getPosition().getY() + 200));
 		inactivefpsTextField.setSize(new Size(200, 16));
 		inactivefpsTextField.onEvent(new Action() {
 			@Override
@@ -526,6 +560,7 @@ public class SettingsMenu extends UIControl {
 				 */
 				fullscreenToggle.update();
 				resolutionDropdown.update();
+				qualityDropdown.update();
 				vsyncToggle.update();
 				targetfpsTextField.update();
 				menufpsTextField.update();
@@ -541,9 +576,7 @@ public class SettingsMenu extends UIControl {
 				soundEffectsVolumeSlider.update();
 				break;
 			}
-		}
-		else if(graphicsChanged)
-		{
+		} else if (graphicsChanged) {
 			graphicsChanged = false;
 		}
 	}
@@ -599,6 +632,7 @@ public class SettingsMenu extends UIControl {
 				Renderer.renderTextField(menufpsTextField);
 				Renderer.renderTextField(inactivefpsTextField);
 
+				Renderer.renderDropDown(qualityDropdown);
 				Renderer.renderDropDown(resolutionDropdown);
 				if (resolutionDropdown.getValue().toLowerCase().equals("auto")) {
 					String resolutionString = "(" + Window.getWidth() + " x " + Window.getHeight() + ")";
@@ -613,13 +647,6 @@ public class SettingsMenu extends UIControl {
 				y = 180;
 				Renderer.renderText(this.getPosition().getX(), this.getPosition().getY(), "Graphics Panel", 12,
 						Color.white);
-
-				Renderer.renderText(this.getPosition().getX() + 10, this.getPosition().getY() + 10 + y, "Quality", 20,
-						Color.white);
-				Renderer.renderQuad(this.getPosition().getX() + 200, this.getPosition().getY() + 18 + y, 120, 16,
-						new Color(0.8f, 0.8f, 0.8f, 1f));
-				Renderer.renderText(this.getPosition().getX() + 200, this.getPosition().getY() + 14 + y, "Auto", 16,
-						Color.black);
 
 				break;
 			case 2:

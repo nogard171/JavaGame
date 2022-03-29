@@ -27,6 +27,7 @@ public class EngineData {
 	public static int inactiveFPS = 30;
 	public static int pauseFPS = 30;
 	public static int targetFPS = -1;
+	public static String quality = "Auto";
 
 	public static boolean allowScreenShot = false;
 

@@ -69,6 +69,9 @@ public class SettingsHandler {
 				: Settings.textureFile);
 		Settings.materialsFile = (props.containsKey("asset.materials") ? props.getProperty("asset.materials")
 				: Settings.materialsFile);
+		
+		EngineData.quality = (props.containsKey("window.quality") ? props.getProperty("window.quality")
+				: EngineData.quality);
 
 		return true;
 	}
@@ -113,5 +116,6 @@ public class SettingsHandler {
 
 		props.setProperty("asset.textures", Settings.textureFile + "");
 		props.setProperty("asset.materials", Settings.materialsFile + "");
+		props.setProperty("window.quality", EngineData.quality + "");
 	}
 }
