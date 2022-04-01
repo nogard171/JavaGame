@@ -8,13 +8,22 @@ import org.newdawn.slick.Color;
 import data.EngineData;
 import data.Settings;
 import utils.Input;
+import utils.Renderer;
 import utils.Window;
 
 public class World {
+
+	public LinkedList<Object> characters = new LinkedList<Object>();
 	boolean mapMoved = true;
 	private Point previousViewIndex = new Point(-1, -1);
 
 	public void setup() {
+		Object character0 = new Object();
+		character0.setModel("CHARACTER");
+		character0.setMaterial("CHARACTER");
+
+		characters.add(character0);
+
 		for (int x = 0; x < 10; x++) {
 			for (int z = 0; z < 10; z++) {
 				if (Settings.localChunks) {
@@ -22,6 +31,9 @@ public class World {
 				} else {
 					Chunk newChunk = new Chunk(x, z);
 					newChunk.setup();
+					if (x == 0 && z == 0) {
+						newChunk.addCharacter(new Index(5, 5), character0);
+					}
 					EngineData.chunks.put(newChunk.index.getString(), newChunk);
 				}
 			}

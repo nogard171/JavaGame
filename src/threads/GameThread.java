@@ -1,9 +1,15 @@
 package threads;
 
 import java.awt.Point;
+import java.awt.Polygon;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 
+import classes.Object;
+import classes.RawMaterial;
+import classes.RawModel;
 import classes.View;
 import classes.World;
 import data.AssetData;
@@ -12,6 +18,7 @@ import data.Settings;
 import utils.FPS;
 import utils.Input;
 import utils.Loader;
+import utils.Renderer;
 import utils.SettingsHandler;
 import utils.Window;
 
@@ -107,7 +114,6 @@ public class GameThread extends BaseThread {
 		world.render(View.getIndex());
 		ui.renderOnMap();
 		GL11.glPopMatrix();
-
 		ui.render();
 		Window.render();
 

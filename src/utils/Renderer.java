@@ -105,6 +105,7 @@ public class Renderer {
 				}
 			}
 		}
+
 	}
 
 	public static void renderModel(String modelName, int x, int z) {
@@ -119,6 +120,16 @@ public class Renderer {
 					Vector2f vec = raw.vectors[i];
 					GL11.glVertex2f(vec.x + x, vec.y + z);
 				}
+			}
+		}
+	}
+
+	public static void renderModelBounds(String modelName, String materialName, int x, int z) {
+		RawModel raw = AssetData.modelData.get(modelName);
+		if (raw != null) {
+			for (int i = 0; i < raw.boundVectors.length; i++) {
+				GL11.glVertex2f(raw.boundVectors[i].x+x,
+						(float) raw.boundVectors[i].y+z);
 			}
 		}
 	}

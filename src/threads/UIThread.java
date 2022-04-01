@@ -27,7 +27,6 @@ import utils.Window;
 public class UIThread extends BaseThread {
 	MainMenu mainMenu;
 
-
 	@Override
 	public void setup() {
 		super.setup();
@@ -139,8 +138,8 @@ public class UIThread extends BaseThread {
 							GL11.glColor4f(0.25f, 0.25f, 0.25f, 0.5f);
 						}
 						GL11.glDisable(GL11.GL_TEXTURE_2D);
-						GL11.glBegin(GL11.GL_TRIANGLES);
-						Renderer.renderModel(obj.getModel(), obj.getMaterial(), isoX, isoY);
+						GL11.glBegin(GL11.GL_POLYGON);
+						Renderer.renderModelBounds(obj.getModel(), obj.getMaterial(), isoX, isoY);
 						GL11.glEnd();
 						GL11.glEnable(GL11.GL_TEXTURE_2D);
 						i++;

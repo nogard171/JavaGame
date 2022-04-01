@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
+import data.AssetData;
 import data.EngineData;
 import utils.Input;
 import utils.Renderer;
@@ -52,6 +54,7 @@ public class Chunk {
 
 		ground = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		objects = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
+		characters = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
 			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
 				int carX = x * 32;
@@ -76,6 +79,7 @@ public class Chunk {
 					obj.setMaterial("STONE");
 				}
 				ground[x][z] = obj;
+
 				if (x == 5 && z == 5 || r.nextFloat() < 0.05f) {
 					obj = new Object();
 					obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
@@ -91,13 +95,14 @@ public class Chunk {
 	}
 
 	public void setupAsBlank() {
-		Random r = new Random();
+		//create an empty bounds for the chunk
 		bounds = new Polygon();
+		//convert the index to a x and y for the map
 		int carX0 = (index.getX() * 32) * 16;
 		int carY0 = (index.getY() * 32) * 16;
 		int isoX0 = carX0 - carY0;
 		int isoY0 = (carY0 + carX0) / 2;
-
+		//add the folowing points which outline the maps corners.
 		bounds.addPoint(isoX0, isoY0 - maxBoundHeight);
 		bounds.addPoint(isoX0 + (EngineData.chunkSize.getWidth() * 32),
 				isoY0 + (EngineData.chunkSize.getDepth() * 16) - maxBoundHeight);
@@ -107,12 +112,15 @@ public class Chunk {
 		bounds.addPoint(isoX0 - (EngineData.chunkSize.getWidth() * 32),
 				isoY0 + (EngineData.chunkSize.getDepth() * 16) - maxBoundHeight);
 
+		//clear all data including ground, objects and characters.
 		ground = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		objects = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
+		characters = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
 			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
 				ground[x][z] = null;
 				objects[x][z] = null;
+				characters[x][z] = null;
 			}
 		}
 	}
@@ -133,7 +141,101 @@ public class Chunk {
 				} else {
 					GL11.glColor4f(1, 1, 1, 1f);
 				}
-				Renderer.renderModel(this, x, z);
+				// Renderer.renderModel(this, x, z);
+				int carX = (index.getX() * 32) * 16;
+				int carY = (index.getY() * 32) * 16;
+				int isoX = carX - carY;
+				int isoY = (carY + carX) / 2;
+				int selfX = isoX;
+				int selfY = isoY;
+				Object obj = ground[x][z];
+				if (obj != null) {
+					RawModel raw = AssetData.modelData.get(obj.getModel());
+					if (raw != null) {
+						if (obj.bounds == null) {
+							obj.bounds = new Polygon();
+							for (Vector2f vec : raw.boundVectors) {
+								obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
+										(int) (vec.y + selfY + obj.getY()));
+
+							}
+						}
+						RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
+						if (mat != null) {
+							int tic = 0;
+							for (byte i : raw.indices) {
+								Vector2f textureVec = mat.vectors[i];
+								if (mat.indices.length > 0) {
+									byte ti = mat.indices[tic];
+									textureVec = mat.vectors[ti];
+								}
+								GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+										textureVec.y / AssetData.texture.getImageHeight());
+								Vector2f vec = raw.vectors[i];
+								GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
+								tic++;
+							}
+						}
+					}
+				}
+				obj = objects[x][z];
+				if (obj != null) {
+					RawModel raw = AssetData.modelData.get(obj.getModel());
+					if (raw != null) {
+						if (obj.bounds == null) {
+							obj.bounds = new Polygon();
+							for (Vector2f vec : raw.boundVectors) {
+								obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
+										(int) (vec.y + selfY + obj.getY()));
+							}
+						}
+						RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
+						if (mat != null) {
+							int tic = 0;
+							for (byte i : raw.indices) {
+								Vector2f textureVec = mat.vectors[i];
+								if (mat.indices.length > 0) {
+									byte ti = mat.indices[tic];
+									textureVec = mat.vectors[ti];
+								}
+								GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+										textureVec.y / AssetData.texture.getImageHeight());
+								Vector2f vec = raw.vectors[i];
+								GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
+								tic++;
+							}
+						}
+					}
+				}
+				obj = characters[x][z];
+				if (obj != null) {
+					RawModel raw = AssetData.modelData.get(obj.getModel());
+					if (raw != null) {
+						if (obj.bounds == null) {
+							obj.bounds = new Polygon();
+							for (Vector2f vec : raw.boundVectors) {
+								obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
+										(int) (vec.y + selfY + obj.getY()));
+							}
+						}
+						RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
+						if (mat != null) {
+							int tic = 0;
+							for (byte i : raw.indices) {
+								Vector2f textureVec = mat.vectors[i];
+								if (mat.indices.length > 0) {
+									byte ti = mat.indices[tic];
+									textureVec = mat.vectors[ti];
+								}
+								GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+										textureVec.y / AssetData.texture.getImageHeight());
+								Vector2f vec = raw.vectors[i];
+								GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
+								tic++;
+							}
+						}
+					}
+				}
 			}
 		}
 		GL11.glEnd();
@@ -161,6 +263,14 @@ public class Chunk {
 					}
 				}
 				obj = objects[x][z];
+				if (obj != null) {
+					if (obj.bounds != null) {
+						if (obj.bounds.contains(new Point(cartX, cartY))) {
+							temp.add(obj);
+						}
+					}
+				}
+				obj = characters[x][z];
 				if (obj != null) {
 					if (obj.bounds != null) {
 						if (obj.bounds.contains(new Point(cartX, cartY))) {
@@ -207,5 +317,24 @@ public class Chunk {
 
 	public void setBoundsColor(Color boundsColor) {
 		this.boundsColor = boundsColor;
+	}
+
+	public void addCharacter(Index index, Object character) {
+		if (characters != null) {
+			int x = index.getX();
+			int z = index.getY();
+			Object charc = characters[x][z];
+			if (charc == null) {
+				charc = character;
+				int carX = x * 32;
+				int carY = z * 32;
+				int isoX = carX - carY;
+				int isoY = (carY + carX) / 2;
+				charc.setIndex(x + (this.index.getX() * EngineData.chunkSize.getWidth()),
+						z + (this.index.getY() * EngineData.chunkSize.getDepth()));
+				charc.setPosition(isoX, isoY);
+			}
+			characters[index.getX()][index.getY()] = charc;
+		}
 	}
 }

@@ -106,6 +106,7 @@ public class SettingsHandler {
 
 		props.setProperty("window.inactive_fps", EngineData.inactiveFPS + "");
 		props.setProperty("window.menu_fps", EngineData.pauseFPS + "");
+		System.out.println("Save:" +  EngineData.targetFPS );
 		props.setProperty("window.target_fps", EngineData.targetFPS + "");
 
 		props.setProperty("user.folder", EngineData.userFolder + "");

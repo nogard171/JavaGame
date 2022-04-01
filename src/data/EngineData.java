@@ -1,9 +1,11 @@
 package data;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.TrueTypeFont;
@@ -15,6 +17,7 @@ import classes.Size;
 import ui.UIControl;
 
 public class EngineData {
+	public static ArrayList<String> hashes = new ArrayList<String>();
 	// Window data
 	public static int width = -1;
 	public static int height = -1;

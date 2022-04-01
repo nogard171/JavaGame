@@ -245,11 +245,11 @@ public class SettingsMenu extends UIControl {
 						}
 					} else if (str.equals("return")) {
 						EngineData.targetFPS = Integer.parseInt(textField.getText());
+						System.out.println("TargeT:"  +EngineData.targetFPS);
 						textField.setActive(false);
 					}
 				}
 			}
-
 		});
 
 		menufpsTextField = new UITextField();

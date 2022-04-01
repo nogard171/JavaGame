@@ -11,4 +11,7 @@
 	<model name='TREE'>
 		<data file="data/models/tree.obj" />
 	</model>
+	<model name='CHARACTER'>
+		<data file="data/models/character.obj" />
+	</model>
 </models>

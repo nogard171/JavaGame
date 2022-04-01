@@ -3,6 +3,8 @@ package classes;
 import java.awt.Polygon;
 
 import data.AssetData;
+import data.EngineData;
+import utils.Generator;
 
 public class Object {
 	private int x = 0;
@@ -12,6 +14,16 @@ public class Object {
 	private String material = "GRASS";
 	private String previousMaterial = "GRASS";
 	public Polygon bounds;
+	private String hash = "";
+
+	public Object() {
+		String temp = Generator.getRandom(32);
+
+		while (EngineData.hashes.contains(temp)) {
+			temp = Generator.getRandom(32);
+		}
+		this.hash = temp;
+	}
 
 	public String getMaterial() {
 		return material;
@@ -65,5 +77,9 @@ public class Object {
 	@Override
 	public String toString() {
 		return this.index + "(" + this.material + "=>" + this.model + ")";
+	}
+
+	public String getHash() {
+		return hash;
 	}
 }

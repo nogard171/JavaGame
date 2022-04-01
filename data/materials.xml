@@ -18,4 +18,7 @@
 	<material name='BUTTON'>
 		<data file="data/materials/button.mat" />
 	</material>
+	<material name='CHARACTER'>
+		<data file="data/materials/character.mat" />
+	</material>
 </materials>
