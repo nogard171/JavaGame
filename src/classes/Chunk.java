@@ -24,6 +24,7 @@ public class Chunk {
 	public Object[][] ground;
 	public Object[][] objects;
 	public Object[][] characters;
+	public boolean[][] passable;
 
 	public Chunk(int i, int j) {
 		index = new Index(i, j);
@@ -55,6 +56,7 @@ public class Chunk {
 		ground = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		objects = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		characters = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
+		passable = new boolean[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		for (int x = 0; x < EngineData.chunkSize.getWidth(); x++) {
 			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
 				int carX = x * 32;
@@ -79,7 +81,7 @@ public class Chunk {
 					obj.setMaterial("STONE");
 				}
 				ground[x][z] = obj;
-
+				passable[x][z] = true;
 				if (x == 5 && z == 5 || r.nextFloat() < 0.05f) {
 					obj = new Object();
 					obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
@@ -88,6 +90,7 @@ public class Chunk {
 					obj.setModel("TREE");
 					obj.setMaterial("TREE");
 					objects[x][z] = obj;
+					passable[x][z] = false;
 				}
 
 			}
@@ -95,14 +98,14 @@ public class Chunk {
 	}
 
 	public void setupAsBlank() {
-		//create an empty bounds for the chunk
+		// create an empty bounds for the chunk
 		bounds = new Polygon();
-		//convert the index to a x and y for the map
+		// convert the index to a x and y for the map
 		int carX0 = (index.getX() * 32) * 16;
 		int carY0 = (index.getY() * 32) * 16;
 		int isoX0 = carX0 - carY0;
 		int isoY0 = (carY0 + carX0) / 2;
-		//add the folowing points which outline the maps corners.
+		// add the folowing points which outline the maps corners.
 		bounds.addPoint(isoX0, isoY0 - maxBoundHeight);
 		bounds.addPoint(isoX0 + (EngineData.chunkSize.getWidth() * 32),
 				isoY0 + (EngineData.chunkSize.getDepth() * 16) - maxBoundHeight);
@@ -112,7 +115,7 @@ public class Chunk {
 		bounds.addPoint(isoX0 - (EngineData.chunkSize.getWidth() * 32),
 				isoY0 + (EngineData.chunkSize.getDepth() * 16) - maxBoundHeight);
 
-		//clear all data including ground, objects and characters.
+		// clear all data including ground, objects and characters.
 		ground = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		objects = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
 		characters = new Object[EngineData.chunkSize.getWidth()][EngineData.chunkSize.getDepth()];
@@ -121,6 +124,7 @@ public class Chunk {
 				ground[x][z] = null;
 				objects[x][z] = null;
 				characters[x][z] = null;
+				passable[x][z] = true;
 			}
 		}
 	}
@@ -334,7 +338,7 @@ public class Chunk {
 						z + (this.index.getY() * EngineData.chunkSize.getDepth()));
 				charc.setPosition(isoX, isoY);
 			}
-			characters[index.getX()][index.getY()] = charc;
+			characters[x][z] = charc;
 		}
 	}
 }

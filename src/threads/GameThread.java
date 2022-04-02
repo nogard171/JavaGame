@@ -49,10 +49,8 @@ public class GameThread extends BaseThread {
 		view = new View();
 		Input.setup();
 
-		if (Settings.localChunks) {
-			backend = new BackEndThread();
-			backend.setup();
-		}
+		backend = new BackEndThread();
+		backend.start();
 
 		ui = new UIThread();
 		ui.setup();
@@ -108,7 +106,6 @@ public class GameThread extends BaseThread {
 	public void render() {
 		super.render();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, AssetData.texture.getTextureID());
-
 		GL11.glPushMatrix();
 		GL11.glTranslatef(View.getX(), View.getY(), 0);
 		world.render(View.getIndex());
@@ -121,6 +118,8 @@ public class GameThread extends BaseThread {
 
 	@Override
 	public void clean() {
+		backend.isRunning = false;
+
 		ui.clean();
 		world.clean();
 		super.clean();

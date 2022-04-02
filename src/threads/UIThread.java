@@ -1,5 +1,6 @@
 package threads;
 
+import java.awt.Point;
 import java.util.LinkedList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -16,10 +17,12 @@ import ui.UIButton;
 import ui.UIControl;
 import ui.UIMenu;
 import ui.UIMenuItem;
+import utils.APathFinder;
 import utils.FPS;
 import utils.Input;
 import utils.Loader;
 import classes.Object;
+import classes.Path;
 import utils.Renderer;
 import utils.SettingsHandler;
 import utils.Window;
@@ -73,10 +76,34 @@ public class UIThread extends BaseThread {
 			World.rebuild();
 			EngineData.dataLoaded = true;
 		}
+		if (Input.isMousePressed(0)) {
+			if (objectsHovered.size() > 0) {
+				Object obj = objectsHovered.getLast();
+				if (obj != null) {
+					System.out.println("finding path");
+					path = new Path(new Point(100, 100), new Point(0,0));
+					BackEndThread.findPath(path);
+
+					// System.out.println("Path=>"+path);
+				}
+
+			}
+		}
 		if (Input.isMousePressed(1)) {
 			showMenu("test", Input.getMousePosition());
 		}
+
+		path = BackEndThread.getPath(path);
+		if (path != null) {
+			if (path.path != null) {
+				if (path.path.size() > 0) {
+					// System.out.println("Path=>" + path.path);
+				}
+			}
+		}
 	}
+
+	Path path;
 
 	@Override
 	public void render() {

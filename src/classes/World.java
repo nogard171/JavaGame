@@ -36,6 +36,7 @@ public class World {
 					}
 					EngineData.chunks.put(newChunk.index.getString(), newChunk);
 				}
+				System.out.println("Chunk:"+x+","+z);
 			}
 		}
 	}
@@ -105,7 +106,6 @@ public class World {
 			this.optimizeChunkView(viewIndex);
 		}
 		if (viewIndex != null) {
-			// buildPathFindingMap(viewIndex);
 			for (Chunk chunk : EngineData.renderedChunks) {
 				if (chunk != null) {
 					chunk.render();
@@ -113,20 +113,6 @@ public class World {
 
 			}
 		}
-	}
-
-	public void buildPathFindingMap(Point viewIndex) {
-		int max = 5 * 16;
-		EngineData.globalMapData = new int[max][max];
-		for (int x = viewIndex.x - 2; x < viewIndex.x + 3; x++) {
-			for (int y = viewIndex.y - 2; y < viewIndex.y + 3; y++) {
-				Chunk chunk = EngineData.chunks.get(x + "," + y);
-				if (chunk != null) {
-					EngineData.globalMapData[x + 2][y + 2] = 0;
-				}
-			}
-		}
-
 	}
 
 	public void clean() {
@@ -175,5 +161,21 @@ public class World {
 		for (Chunk chunk : EngineData.renderedChunks) {
 			chunk.refresh();
 		}
+	}
+
+	public static int isPassable(Index tempIndex) {
+		int chunkX = (int) Math.floor(tempIndex.getX() / EngineData.chunkSize.getWidth());
+		int chunkY = (int) Math.floor(tempIndex.getY() / EngineData.chunkSize.getDepth());
+
+		int objX = (int) Math.floor(tempIndex.getX() % EngineData.chunkSize.getWidth());
+		int objY = (int) Math.floor(tempIndex.getY() % EngineData.chunkSize.getDepth());
+
+		Chunk chunk = EngineData.chunks.get(chunkX + "," + chunkY);
+		if (chunk != null) {
+			if (objX >= 0 && objY >= 0) {
+				return (chunk.passable[objX][objY]?1:0);
+			}
+		}
+		return -1;
 	}
 }

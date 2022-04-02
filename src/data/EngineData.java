@@ -42,7 +42,6 @@ public class EngineData {
 	public static LinkedList<Chunk> renderedChunks = new LinkedList<Chunk>();
 	public static LinkedList<Chunk> cleanupChunks = new LinkedList<Chunk>();
 
-	public static int[][] globalMapData;
 	public static LinkedList<Point> path;
 
 	// UI Data
