@@ -38,15 +38,22 @@ public class BackEndThread extends BaseThread {
 
 	public static Path getPath(Path inputPath) {
 		Path path = inputPath;
+		Path removedPath = null;
 		int i = 0;
 		for (Path tempPath : completedPaths) {
 			if (tempPath.start.equals(inputPath.start) && tempPath.end.equals(inputPath.end)) {
+				removedPath = tempPath;
 				break;
 			}
 			i++;
 		}
 		if (completedPaths.size() > 0) {
-			path = completedPaths.remove(i);
+			boolean removed = completedPaths.remove(removedPath);
+			if (removed) {
+				if (removedPath != null) {
+					path = removedPath;
+				}
+			}
 		}
 		return path;
 	}
@@ -78,7 +85,7 @@ public class BackEndThread extends BaseThread {
 		if (paths.size() > 0) {
 			Path path = paths.removeFirst();
 			System.out.println("Looking for Path");
-			path.path = APathFinder.find(path.start, path.end);
+			path.steps = APathFinder.find(path.start, path.end);
 			System.out.println("Found a Path");
 			completedPaths.add(path);
 		}

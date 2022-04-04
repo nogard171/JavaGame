@@ -10,7 +10,6 @@ public class View {
 	private static Rectangle bounds = new Rectangle(0, 0, 0, 0);
 	private static Point viewIndex;
 
-
 	public void update() {
 		viewIndex = getChunkIndex();
 		bounds.width = Window.getWidth();
@@ -52,5 +51,10 @@ public class View {
 
 	public static float getY() {
 		return bounds.y;
+	}
+
+	public void setPosition(int x, int y) {
+		bounds.x = x;
+		bounds.y = y;
 	}
 }

@@ -11,6 +11,9 @@ import org.newdawn.slick.Color;
 import classes.Action;
 import classes.Index;
 import classes.Size;
+import classes.Task;
+import classes.TaskManager;
+import classes.TaskType;
 import classes.World;
 import data.EngineData;
 import ui.MainMenu;
@@ -30,14 +33,18 @@ import utils.Ticker;
 import utils.Window;
 
 public class UIThread extends BaseThread {
+	TaskManager taskMgr;
 	MainMenu mainMenu;
 
 	@Override
 	public void setup() {
 		super.setup();
+		taskMgr = new TaskManager();
+		
+		
 		mainMenu = new MainMenu();
 		mainMenu.setup();
-		ticker = new Ticker();
+		
 
 		// EngineData.controls.put("mainMenuControl", mainMenu);
 
@@ -67,7 +74,7 @@ public class UIThread extends BaseThread {
 	@Override
 	public void update() {
 		super.update();
-
+		taskMgr.update();
 		mainMenu.update();
 
 		if (Input.isKeyPressed(Keyboard.KEY_F1)) {
@@ -84,11 +91,11 @@ public class UIThread extends BaseThread {
 				Object obj = objectsHovered.getLast();
 				if (obj != null) {
 					System.out.println("finding path");
-					path = new Path(
+					Task task = new Task(TaskType.MOVE,new Path(
 							new Point(World.characters.getFirst().getIndex().getX(),
 									World.characters.getFirst().getIndex().getY()),
-							new Point(obj.getIndex().getX(), obj.getIndex().getY()));
-					BackEndThread.findPath(path);
+							new Point(obj.getIndex().getX(), obj.getIndex().getY())));
+					TaskManager.addTask(task);
 
 					// System.out.println("Path=>"+path);
 				}
@@ -98,38 +105,13 @@ public class UIThread extends BaseThread {
 		if (Input.isMousePressed(1)) {
 			showMenu("test", Input.getMousePosition());
 		}
-
-		path = BackEndThread.getPath(path);
-		if (path != null) {
-			if (path.path != null) {
-				if (path.path.size() > 0) {
-					// System.out.println("Path=>" + path.path);
-				}
-			}
-		}
 	}
 
-	Ticker ticker;
-	Path path;
 
 	@Override
 	public void render() {
 		super.render();
 		mainMenu.render();
-		ticker.update(200);
-		if (ticker.hasTicked()) {
-			if (path != null) {
-				if (path.path != null) {
-					if (path.path.size() > 0) {
-						Point index = path.path.removeFirst();
-						System.out.println("Processing: " + index);
-						Index newIndex = new Index(index.x, index.y);
-
-						World.moveCharacter(newIndex);
-					}
-				}
-			}
-		}
 
 		objectsHovered = World.getHoveredObjects();
 		if (EngineData.showTelematry) {
