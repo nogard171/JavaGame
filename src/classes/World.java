@@ -1,10 +1,14 @@
 package classes;
 
 import java.awt.Point;
+import java.awt.Polygon;
 import java.util.LinkedList;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
+import data.AssetData;
 import data.EngineData;
 import data.Settings;
 import utils.Input;
@@ -13,7 +17,7 @@ import utils.Window;
 
 public class World {
 
-	public LinkedList<Object> characters = new LinkedList<Object>();
+	public static LinkedList<Object> characters = new LinkedList<Object>();
 	boolean mapMoved = true;
 	private Point previousViewIndex = new Point(-1, -1);
 
@@ -36,9 +40,79 @@ public class World {
 					}
 					EngineData.chunks.put(newChunk.index.getString(), newChunk);
 				}
-				System.out.println("Chunk:"+x+","+z);
+				System.out.println("Chunk:" + x + "," + z);
 			}
 		}
+	}
+
+	public static void moveCharacter(Index tempIndex) {
+		Object character = characters.getFirst();
+		if (character != null) {
+			Index previousIndex = character.getIndex();
+
+			int chunkX = (int) Math.floor(previousIndex.getX() / EngineData.chunkSize.getWidth());
+			int chunkY = (int) Math.floor(previousIndex.getY() / EngineData.chunkSize.getDepth());
+			Chunk chunk = EngineData.chunks.get(chunkX + "," + chunkY);
+			if (chunk != null) {
+
+				int objX = (int) Math.floor(previousIndex.getX() % EngineData.chunkSize.getWidth());
+				int objY = (int) Math.floor(previousIndex.getY() % EngineData.chunkSize.getDepth());
+
+				Object obj = chunk.characters[objX][objY];
+
+				if (obj != null) {
+					chunk.characters[objX][objY] = null;
+					chunk.refresh();
+				}
+			}
+
+			chunk = null;
+			chunkX = 0;
+			chunkY = 0;
+			chunkX = (int) Math.floor(tempIndex.getX() / EngineData.chunkSize.getWidth());
+			chunkY = (int) Math.floor(tempIndex.getY() / EngineData.chunkSize.getDepth());
+
+			int ccarX = (chunkX * 32) * 16;
+			int ccarY = (chunkY * 32) * 16;
+			int cisoX = ccarX - ccarY;
+			int cisoY = (ccarY + ccarX) / 2;
+			int cselfX = cisoX;
+			int cselfY = cisoY;
+
+			chunk = EngineData.chunks.get(chunkX + "," + chunkY);
+			if (chunk != null) {
+
+				int objX = (int) Math.floor(tempIndex.getX() % EngineData.chunkSize.getWidth());
+				int objY = (int) Math.floor(tempIndex.getY() % EngineData.chunkSize.getDepth());
+
+				Object obj = chunk.characters[objX][objY];
+				System.out.println("characters:"+chunk.characters.length);
+				if (obj == null) {
+					int carX = objX * 32;
+					int carY = objY * 32;
+					int isoX = carX - carY;
+					int isoY = (carY + carX) / 2;
+					character.setIndex(tempIndex.getX(), tempIndex.getY());
+					character.setPosition(isoX, isoY);
+					RawModel raw = AssetData.modelData.get(character.getModel());
+					if (raw != null) {
+						character.bounds = new Polygon();
+						for (Vector2f vec : raw.boundVectors) {
+							character.bounds.addPoint((int) (vec.x + cselfX + character.getX()),
+									(int) (vec.y + cselfY + character.getY()));
+						}
+					}
+					obj = character;
+					chunk.characters[objX][objY] = obj;
+					System.out.println("Index:" +chunk.characters[objX][objY] );
+					chunk.refresh();
+
+				}
+
+			}
+
+		}
+
 	}
 
 	static LinkedList<Object> objectsHovered = new LinkedList<Object>();
@@ -173,7 +247,7 @@ public class World {
 		Chunk chunk = EngineData.chunks.get(chunkX + "," + chunkY);
 		if (chunk != null) {
 			if (objX >= 0 && objY >= 0) {
-				return (chunk.passable[objX][objY]?1:0);
+				return (chunk.passable[objX][objY] ? 1 : 0);
 			}
 		}
 		return -1;

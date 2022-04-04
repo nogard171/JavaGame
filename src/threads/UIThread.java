@@ -9,6 +9,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
 import classes.Action;
+import classes.Index;
 import classes.Size;
 import classes.World;
 import data.EngineData;
@@ -25,6 +26,7 @@ import classes.Object;
 import classes.Path;
 import utils.Renderer;
 import utils.SettingsHandler;
+import utils.Ticker;
 import utils.Window;
 
 public class UIThread extends BaseThread {
@@ -35,6 +37,7 @@ public class UIThread extends BaseThread {
 		super.setup();
 		mainMenu = new MainMenu();
 		mainMenu.setup();
+		ticker = new Ticker();
 
 		// EngineData.controls.put("mainMenuControl", mainMenu);
 
@@ -81,7 +84,10 @@ public class UIThread extends BaseThread {
 				Object obj = objectsHovered.getLast();
 				if (obj != null) {
 					System.out.println("finding path");
-					path = new Path(new Point(100, 100), new Point(0,0));
+					path = new Path(
+							new Point(World.characters.getFirst().getIndex().getX(),
+									World.characters.getFirst().getIndex().getY()),
+							new Point(obj.getIndex().getX(), obj.getIndex().getY()));
 					BackEndThread.findPath(path);
 
 					// System.out.println("Path=>"+path);
@@ -103,12 +109,27 @@ public class UIThread extends BaseThread {
 		}
 	}
 
+	Ticker ticker;
 	Path path;
 
 	@Override
 	public void render() {
 		super.render();
 		mainMenu.render();
+		ticker.update(200);
+		if (ticker.hasTicked()) {
+			if (path != null) {
+				if (path.path != null) {
+					if (path.path.size() > 0) {
+						Point index = path.path.removeFirst();
+						System.out.println("Processing: " + index);
+						Index newIndex = new Index(index.x, index.y);
+
+						World.moveCharacter(newIndex);
+					}
+				}
+			}
+		}
 
 		objectsHovered = World.getHoveredObjects();
 		if (EngineData.showTelematry) {

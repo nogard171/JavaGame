@@ -145,7 +145,6 @@ public class Chunk {
 				} else {
 					GL11.glColor4f(1, 1, 1, 1f);
 				}
-				// Renderer.renderModel(this, x, z);
 				int carX = (index.getX() * 32) * 16;
 				int carY = (index.getY() * 32) * 16;
 				int isoX = carX - carY;
@@ -153,93 +152,11 @@ public class Chunk {
 				int selfX = isoX;
 				int selfY = isoY;
 				Object obj = ground[x][z];
-				if (obj != null) {
-					RawModel raw = AssetData.modelData.get(obj.getModel());
-					if (raw != null) {
-						if (obj.bounds == null) {
-							obj.bounds = new Polygon();
-							for (Vector2f vec : raw.boundVectors) {
-								obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
-										(int) (vec.y + selfY + obj.getY()));
-
-							}
-						}
-						RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
-						if (mat != null) {
-							int tic = 0;
-							for (byte i : raw.indices) {
-								Vector2f textureVec = mat.vectors[i];
-								if (mat.indices.length > 0) {
-									byte ti = mat.indices[tic];
-									textureVec = mat.vectors[ti];
-								}
-								GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
-										textureVec.y / AssetData.texture.getImageHeight());
-								Vector2f vec = raw.vectors[i];
-								GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
-								tic++;
-							}
-						}
-					}
-				}
+				Renderer.renderObject(obj, selfX, selfY);
 				obj = objects[x][z];
-				if (obj != null) {
-					RawModel raw = AssetData.modelData.get(obj.getModel());
-					if (raw != null) {
-						if (obj.bounds == null) {
-							obj.bounds = new Polygon();
-							for (Vector2f vec : raw.boundVectors) {
-								obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
-										(int) (vec.y + selfY + obj.getY()));
-							}
-						}
-						RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
-						if (mat != null) {
-							int tic = 0;
-							for (byte i : raw.indices) {
-								Vector2f textureVec = mat.vectors[i];
-								if (mat.indices.length > 0) {
-									byte ti = mat.indices[tic];
-									textureVec = mat.vectors[ti];
-								}
-								GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
-										textureVec.y / AssetData.texture.getImageHeight());
-								Vector2f vec = raw.vectors[i];
-								GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
-								tic++;
-							}
-						}
-					}
-				}
+				Renderer.renderObject(obj, selfX, selfY);
 				obj = characters[x][z];
-				if (obj != null) {
-					RawModel raw = AssetData.modelData.get(obj.getModel());
-					if (raw != null) {
-						if (obj.bounds == null) {
-							obj.bounds = new Polygon();
-							for (Vector2f vec : raw.boundVectors) {
-								obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
-										(int) (vec.y + selfY + obj.getY()));
-							}
-						}
-						RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
-						if (mat != null) {
-							int tic = 0;
-							for (byte i : raw.indices) {
-								Vector2f textureVec = mat.vectors[i];
-								if (mat.indices.length > 0) {
-									byte ti = mat.indices[tic];
-									textureVec = mat.vectors[ti];
-								}
-								GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
-										textureVec.y / AssetData.texture.getImageHeight());
-								Vector2f vec = raw.vectors[i];
-								GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
-								tic++;
-							}
-						}
-					}
-				}
+				Renderer.renderObject(obj, selfX, selfY);
 			}
 		}
 		GL11.glEnd();

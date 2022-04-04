@@ -45,6 +45,38 @@ public class Renderer {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
+	
+	public static void renderObject(Object obj, int selfX, int selfY)
+	{
+		if (obj != null) {
+			RawModel raw = AssetData.modelData.get(obj.getModel());
+			if (raw != null) {
+				if (obj.bounds == null) {
+					obj.bounds = new Polygon();
+					for (Vector2f vec : raw.boundVectors) {
+						obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
+								(int) (vec.y + selfY + obj.getY()));
+					}
+				}
+				RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
+				if (mat != null) {
+					int tic = 0;
+					for (byte i : raw.indices) {
+						Vector2f textureVec = mat.vectors[i];
+						if (mat.indices.length > 0) {
+							byte ti = mat.indices[tic];
+							textureVec = mat.vectors[ti];
+						}
+						GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+								textureVec.y / AssetData.texture.getImageHeight());
+						Vector2f vec = raw.vectors[i];
+						GL11.glVertex2f(vec.x + selfX + obj.getX(), vec.y + selfY + obj.getY());
+						tic++;
+					}
+				}
+			}
+		}
+	}
 
 	public static void renderModel(Chunk self, int x, int z) {
 		if (self != null) {
