@@ -1,4 +1,7 @@
 <models>
+	<model name='ITEM'>
+		<data file="data/models/item.obj" />
+	</model>
 	<model name='TILE'>
 		<data file="data/models/tile.obj" />
 	</model>

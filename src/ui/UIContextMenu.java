@@ -1,26 +1,21 @@
 package ui;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 
 import classes.Size;
-import data.EngineData;
-import utils.Input;
 import utils.Renderer;
-import utils.UIPhyics;
-import utils.Window;
 
-public class UIMenu extends UIControl {
+public class UIContextMenu extends UIControl {
+	UIMenu menu;
 	private String name = "";
-	private LinkedList<UIMenuItem> controls = new LinkedList<UIMenuItem>();
+	private ArrayList<UIMenuItem> controls = new ArrayList<UIMenuItem>();
 	private Color backgroundColor = null;
 
-	public UIMenu(String string) {
-		this.name = string;
+	public void setup() {
+
 	}
 
 	@Override
@@ -33,37 +28,23 @@ public class UIMenu extends UIControl {
 		}
 	}
 
-	public void removeNonDefault() {
-		ArrayList<UIControl> controlsToRemove = new ArrayList<UIControl>();
-		for (UIControl temp : this.getControls()) {
-			if (!temp.isDefault()) {
-				controlsToRemove.add(temp);
-			}
-		}
-		controls.removeAll(controlsToRemove);
-	}
-
 	@Override
 	public void render() {
-		if (this.isVisible) {
-			float x = 0;
-			float y = 0;
-			Renderer.renderQuad(this.getPosition().getX() , this.getPosition().getY() ,
-					this.getSize().getWidth() + 5, this.getSize().getHeight(), new Color(0, 0, 0, 0.5f));
-			for (UIControl temp : this.getControls()) {
-				UIMenuItem item = (UIMenuItem) temp;
-				if (item != null) {
-					item.setSize(new Size(this.getSize().getWidth(), item.getFontSize()));
-					Color bgColor = item.getBackgroundColor();
-					if (bgColor != null) {
-						Renderer.renderQuad(this.getPosition().x + x , this.getPosition().y + y,
-								this.getSize().getWidth() + 5, item.getFontSize(), bgColor);
-					}
-					Renderer.renderText(this.getPosition().x + x, this.getPosition().y + y-2, item.getText(),
-							item.getFontSize(), Color.white);
-					y += item.getFontSize();
+		float x = 0;
+		float y = 0;
+		Renderer.renderQuad(this.getPosition().getX() - 1, this.getPosition().getY() + 3, this.getSize().getWidth() + 5,
+				this.getSize().getHeight(), new Color(0, 0, 0, 0.5f));
+		for (UIControl temp : this.getControls()) {
+			UIMenuItem item = (UIMenuItem) temp;
+			if (item != null) {
+				Color bgColor = item.getBackgroundColor();
+				if (bgColor != null) {
+					Renderer.renderQuad(this.getPosition().x + x - 1, this.getPosition().y + y + 3,
+							this.getSize().getWidth() + 5, item.getFontSize(), bgColor);
 				}
-
+				Renderer.renderText(this.getPosition().x + x, this.getPosition().y + y - 5, item.getText(),
+						item.getFontSize(), Color.white);
+				y += item.getFontSize();
 			}
 		}
 	}
@@ -99,7 +80,7 @@ public class UIMenu extends UIControl {
 		this.controls.clear();
 	}
 
-	public LinkedList<UIMenuItem> getControls() {
+	public ArrayList<UIMenuItem> getControls() {
 		return this.controls;
 	}
 

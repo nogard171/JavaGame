@@ -65,7 +65,6 @@ public class APathFinder {
 				double dist1 = calculateDistanceBetweenPointsWithHypot(neighborIndex.x,neighborIndex.y,endIndex.x,endIndex.y);
 				double distV = (dist0 - dist1);
 				int dist = (int) Math.round(distV);
-				//System.out.println("Node:" + current + neighborIndex + "=>" + dist0 + "," + dist1+"="+dist+"("+distV+")");
 				if (dist>=0) {
 					if (neighborIndex.x >= 0 && neighborIndex.y >= 0) {
 						int passable = World.isPassable(new Index(neighborIndex.x, neighborIndex.y));

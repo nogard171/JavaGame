@@ -113,6 +113,7 @@ public class GameThread extends BaseThread {
 		world.render(View.getIndex());
 		ui.renderOnMap();
 		GL11.glPopMatrix();
+		
 		ui.render();
 		Window.render();
 

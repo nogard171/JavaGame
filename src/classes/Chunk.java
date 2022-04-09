@@ -83,7 +83,7 @@ public class Chunk {
 				ground[x][z] = obj;
 				passable[x][z] = true;
 				if (x == 5 && z == 5 || r.nextFloat() < 0.05f) {
-					obj = new Object();
+					obj = new Resource();
 					obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
 							z + (index.getY() * EngineData.chunkSize.getDepth()));
 					obj.setPosition(isoX, isoY);
@@ -179,8 +179,10 @@ public class Chunk {
 			for (int z = 0; z < EngineData.chunkSize.getDepth(); z++) {
 				Object obj = ground[x][z];
 				if (obj != null) {
-					if (obj.bounds.contains(new Point(cartX, cartY))) {
-						temp.add(obj);
+					if (obj.bounds != null) {
+						if (obj.bounds.contains(new Point(cartX, cartY))) {
+							temp.add(obj);
+						}
 					}
 				}
 				obj = objects[x][z];

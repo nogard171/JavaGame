@@ -45,17 +45,15 @@ public class Renderer {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
-	
-	public static void renderObject(Object obj, int selfX, int selfY)
-	{
+
+	public static void renderObject(Object obj, int selfX, int selfY) {
 		if (obj != null) {
 			RawModel raw = AssetData.modelData.get(obj.getModel());
 			if (raw != null) {
 				if (obj.bounds == null) {
 					obj.bounds = new Polygon();
 					for (Vector2f vec : raw.boundVectors) {
-						obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()),
-								(int) (vec.y + selfY + obj.getY()));
+						obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()), (int) (vec.y + selfY + obj.getY()));
 					}
 				}
 				RawMaterial mat = AssetData.materialData.get(obj.getMaterial());
@@ -160,13 +158,14 @@ public class Renderer {
 		RawModel raw = AssetData.modelData.get(modelName);
 		if (raw != null) {
 			for (int i = 0; i < raw.boundVectors.length; i++) {
-				GL11.glVertex2f(raw.boundVectors[i].x+x,
-						(float) raw.boundVectors[i].y+z);
+				GL11.glVertex2f(raw.boundVectors[i].x + x, (float) raw.boundVectors[i].y + z);
 			}
 		}
 	}
 
 	public static void renderModel(String modelName, String materialName, int x, int z) {
+
+		GL11.glColor4f(1, 1, 1, 1);
 		RawModel raw = AssetData.modelData.get(modelName);
 		if (raw != null) {
 			RawMaterial mat = AssetData.materialData.get(materialName);

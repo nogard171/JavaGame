@@ -15,8 +15,9 @@ public class UIControl {
 	private String name = "";
 	private Vector2f position = new Vector2f(0, 0);
 
+	private boolean isDefault = false;
 	public boolean isVisible = true;
-	protected boolean hover=false;
+	protected boolean hover = false;
 	protected Action eventAction;
 	protected int mouseClickCount = 0;
 	private int mouseReleaseCount = 0;
@@ -58,7 +59,7 @@ public class UIControl {
 				}
 				mouseClickCount++;
 				mouseReleaseCount = 0;
-			}else if (!hover && mouseDown) {
+			} else if (!hover && mouseDown) {
 				if (mouseClickCount == 0) {
 					this.eventAction.onMouseClickOut(this);
 				}
@@ -138,5 +139,13 @@ public class UIControl {
 
 	public boolean isVisible() {
 		return isVisible;
+	}
+
+	public boolean isDefault() {
+		return isDefault;
+	}
+
+	public void setDefault(boolean isDefault) {
+		this.isDefault = isDefault;
 	}
 }

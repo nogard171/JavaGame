@@ -17,8 +17,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import classes.ItemData;
+import classes.ItemDrop;
 import classes.RawMaterial;
 import classes.RawModel;
+import classes.ResourceData;
+import classes.TextureType;
 import data.AssetData;
 import data.EngineData;
 import data.Settings;
@@ -26,9 +30,126 @@ import data.Settings;
 public class Loader {
 
 	public static void load() {
+		loadResources();
+		loadItems();
 		loadMaterials();
 		loadTextures();
 		EngineData.dataLoaded = false;
+	}
+
+	private static void loadItems() {
+		// AssetData.itemData.put("TEST_ITEM", new ItemData(TextureType.TEST_ITEM));
+
+		AssetData.itemData.clear();
+		try {
+			File fXmlFile = new File(Settings.itemsFile);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+
+			NodeList itemNodes = doc.getElementsByTagName("item");
+
+			for (int temp = 0; temp < itemNodes.getLength(); temp++) {
+				Node itemNode = itemNodes.item(temp);
+				if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element itemElement = (Element) itemNode;
+					ItemData data = new ItemData();
+					String itemName = itemElement.getAttribute("name");
+					data.type = TextureType.getType(itemName);
+					for (int i = 0; i < itemElement.getElementsByTagName("attribute").getLength(); i++) {
+
+						Node dataNodes = itemElement.getElementsByTagName("attribute").item(i);
+
+						if (dataNodes.getNodeType() == Node.ELEMENT_NODE) {
+
+							Element dataNode = (Element) dataNodes;
+
+							String attributeName = "";
+							if (dataNode.hasAttribute("name")) {
+								attributeName = dataNode.getAttribute("name");
+							}
+							String value = "";
+							if (dataNode.hasAttribute("value")) {
+								value = dataNode.getAttribute("value");
+							}
+
+						}
+					}
+					System.out.println("Dtest"+itemName);
+					AssetData.itemData.put(itemName, data);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void loadResources() {
+		/*
+		 * AssetData.resourceData.put("TREE", new ResourceData(10, new
+		 * ArrayList<ItemDrop>() { { add(new ItemDrop("TEST_ITEM")); } }));
+		 */
+
+		AssetData.resourceData.clear();
+		try {
+			File fXmlFile = new File(Settings.resourcesFile);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+
+			doc.getDocumentElement().normalize();
+
+			NodeList resourceNodes = doc.getElementsByTagName("resource");
+
+			for (int temp = 0; temp < resourceNodes.getLength(); temp++) {
+
+				Node resourceNode = resourceNodes.item(temp);
+
+				if (resourceNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element resourceElement = (Element) resourceNode;
+					ResourceData data = new ResourceData();
+					String resourceName = resourceElement.getAttribute("name");
+					int newHitPoints = 0;
+					if (resourceElement.hasAttribute("hitpoints")) {
+						newHitPoints = Integer.parseInt(resourceElement.getAttribute("hitpoints"));
+					}
+					data.hitpoints = newHitPoints;
+					ArrayList<ItemDrop> newItemDrops = new ArrayList<ItemDrop>();
+					for (int i = 0; i < resourceElement.getElementsByTagName("item").getLength(); i++) {
+
+						Node dataNodes = resourceElement.getElementsByTagName("item").item(i);
+
+						if (dataNodes.getNodeType() == Node.ELEMENT_NODE) {
+
+							Element dataNode = (Element) dataNodes;
+
+							String itemName = "";
+							if (dataNode.hasAttribute("name")) {
+								itemName = dataNode.getAttribute("name");
+							}
+							int minValue = 0;
+							if (dataNode.hasAttribute("min")) {
+								minValue = Integer.parseInt(dataNode.getAttribute("min"));
+							}
+
+							int maxValue = 0;
+							if (dataNode.hasAttribute("max")) {
+								maxValue = Integer.parseInt(dataNode.getAttribute("max"));
+							}
+							newItemDrops.add(new ItemDrop(itemName, minValue, maxValue));
+						}
+					}
+					data.itemDrops = newItemDrops;
+					AssetData.resourceData.put(resourceName, data);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void loadMaterials() {

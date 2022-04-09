@@ -40,7 +40,6 @@ public class World {
 					}
 					EngineData.chunks.put(newChunk.index.getString(), newChunk);
 				}
-				System.out.println("Chunk:" + x + "," + z);
 			}
 		}
 	}
@@ -86,7 +85,6 @@ public class World {
 				int objY = (int) Math.floor(tempIndex.getY() % EngineData.chunkSize.getDepth());
 
 				Object obj = chunk.characters[objX][objY];
-				System.out.println("characters:"+chunk.characters.length);
 				if (obj == null) {
 					int carX = objX * 32;
 					int carY = objY * 32;
@@ -104,9 +102,7 @@ public class World {
 					}
 					obj = character;
 					chunk.characters[objX][objY] = obj;
-					System.out.println("Index:" +chunk.characters[objX][objY] );
 					chunk.refresh();
-
 				}
 
 			}
@@ -251,5 +247,21 @@ public class World {
 			}
 		}
 		return -1;
+	}
+
+	public static void setObjectAtIndex(Point tempIndex, Object newObject) {
+		int chunkX = (int) Math.floor(tempIndex.getX() / EngineData.chunkSize.getWidth());
+		int chunkY = (int) Math.floor(tempIndex.getY() / EngineData.chunkSize.getDepth());
+
+		int objX = (int) Math.floor(tempIndex.getX() % EngineData.chunkSize.getWidth());
+		int objY = (int) Math.floor(tempIndex.getY() % EngineData.chunkSize.getDepth());
+
+		Chunk chunk = EngineData.chunks.get(chunkX + "," + chunkY);
+		if (chunk != null) {
+			if (objX >= 0 && objY >= 0) {
+				chunk.objects[objX][objY] = newObject;
+				chunk.refresh();
+			}
+		}
 	}
 }

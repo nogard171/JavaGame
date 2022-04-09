@@ -1,7 +1,11 @@
 package classes;
 
 public enum TextureType {
-	AIR, GRASS, DIRT;
+	// terrain textures
+	AIR, GRASS, DIRT,
+
+	// item textures
+	TEST_ITEM;
 
 	public static TextureType getType(String name) {
 		TextureType type = AIR;
@@ -12,7 +16,11 @@ public enum TextureType {
 		case "DIRT":
 			type = DIRT;
 			break;
+		case "AIR":
+			type = AIR;
+			break;
 		}
+		type = TextureType.valueOf(name);
 		return type;
 	}
 

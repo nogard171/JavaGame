@@ -6,6 +6,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
@@ -210,6 +211,7 @@ public class MainMenu extends UIControl {
 		}
 		if (Input.isKeyPressed(Keyboard.KEY_ESCAPE)) {
 			EngineData.showMainMenu = !EngineData.showMainMenu;
+			
 
 			settingsMenu.isVisible = false;
 		}

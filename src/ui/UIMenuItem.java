@@ -37,4 +37,5 @@ public class UIMenuItem extends UIControl {
 		this.fontSize = fontSize;
 		this.setSize(new Size(getSize().getWidth(), fontSize));
 	}
+
 }

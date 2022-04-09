@@ -1,0 +1,5 @@
+<items>
+	<item name='TEST_ITEM'>
+		<attribute name='value' value='0' />
+	</item>
+</items>

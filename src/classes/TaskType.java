@@ -1,5 +1,5 @@
 package classes;
 
 public enum TaskType {
-	NONE,MOVE;
+	NONE,MOVE,CHOP,MINE,PLANT,HARVEST;
 }

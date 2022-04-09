@@ -1,0 +1,5 @@
+<resources>
+	<resource name='TREE' hitpoints='10'>
+		<item name='TEST_ITEM' min='1' max='2' />
+	</resource>
+</resources>

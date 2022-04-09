@@ -37,7 +37,7 @@ public class BackEndThread extends BaseThread {
 	}
 
 	public static Path getPath(Path inputPath) {
-		Path path = inputPath;
+		Path path = null;
 		Path removedPath = null;
 		int i = 0;
 		for (Path tempPath : completedPaths) {
@@ -84,9 +84,7 @@ public class BackEndThread extends BaseThread {
 		super.update();
 		if (paths.size() > 0) {
 			Path path = paths.removeFirst();
-			System.out.println("Looking for Path");
 			path.steps = APathFinder.find(path.start, path.end);
-			System.out.println("Found a Path");
 			completedPaths.add(path);
 		}
 

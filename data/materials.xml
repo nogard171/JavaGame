@@ -21,4 +21,10 @@
 	<material name='CHARACTER'>
 		<data file="data/materials/character.mat" />
 	</material>
+	<material name='TEST_ITEM'>
+		<data file="data/materials/test_item.mat" />
+	</material>
+	<material name='CURSOR'>
+		<data file="data/materials/cursor.mat" />
+	</material>
 </materials>
