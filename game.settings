@@ -1,14 +1,14 @@
 #Game Settings
-#Mon Mar 28 13:53:25 EDT 2022
+#Sun Apr 10 16:17:49 EDT 2022
 user.world_folder=user/world/
 window.fullscreen=false
-world.infinate=false
+world.infinate=true
 asset.textures=data/models.xml
 window.height=600
 asset.materials=data/materials.xml
 window.quality=Auto
 window.menu_fps=60
-window.target_fps=120
+window.target_fps=9999
 window.inactive_fps=30
 window.vsync=false
 user.folder=user/

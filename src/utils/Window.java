@@ -7,10 +7,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -87,6 +92,8 @@ public class Window {
 	}
 
 	public static void setup() {
+		// set the cusor to an empty cursor
+		clearCursor();
 		// set the width and height in the engine data
 		EngineData.width = Display.getWidth();
 		EngineData.height = Display.getHeight();
@@ -114,6 +121,7 @@ public class Window {
 		if (Display.isCloseRequested()) {
 			BaseThread.close();
 		}
+
 	}
 
 	public static void render() {
@@ -181,6 +189,18 @@ public class Window {
 			return dms;
 		} catch (LWJGLException e) {
 			return null;
+		}
+	}
+
+	private static void clearCursor() {
+		Cursor emptyCursor;
+		int min = org.lwjgl.input.Cursor.getMinCursorSize();
+		IntBuffer tmp = BufferUtils.createIntBuffer(min * min);
+		try {
+			emptyCursor = new org.lwjgl.input.Cursor(min, min, min / 2, min / 2, 1, tmp, null);
+			Mouse.setNativeCursor(emptyCursor);
+		} catch (LWJGLException e) {
+			System.out.println("failed");
 		}
 	}
 

@@ -48,18 +48,18 @@ public class UIMenu extends UIControl {
 		if (this.isVisible) {
 			float x = 0;
 			float y = 0;
-			Renderer.renderQuad(this.getPosition().getX() , this.getPosition().getY() ,
-					this.getSize().getWidth() + 5, this.getSize().getHeight(), new Color(0, 0, 0, 0.5f));
+			Renderer.renderQuad(this.getPosition().getX(), this.getPosition().getY(), this.getSize().getWidth() + 5,
+					this.getSize().getHeight(), new Color(0, 0, 0, 0.5f));
 			for (UIControl temp : this.getControls()) {
 				UIMenuItem item = (UIMenuItem) temp;
 				if (item != null) {
 					item.setSize(new Size(this.getSize().getWidth(), item.getFontSize()));
 					Color bgColor = item.getBackgroundColor();
 					if (bgColor != null) {
-						Renderer.renderQuad(this.getPosition().x + x , this.getPosition().y + y,
+						Renderer.renderQuad(this.getPosition().x + x, this.getPosition().y + y,
 								this.getSize().getWidth() + 5, item.getFontSize(), bgColor);
 					}
-					Renderer.renderText(this.getPosition().x + x, this.getPosition().y + y-2, item.getText(),
+					Renderer.renderText(this.getPosition().x + x, this.getPosition().y + y - 6, item.getText(),
 							item.getFontSize(), Color.white);
 					y += item.getFontSize();
 				}
@@ -109,5 +109,12 @@ public class UIMenu extends UIControl {
 
 	public void setBackgroundColor(Color backgroundColor) {
 		this.backgroundColor = backgroundColor;
+	}
+
+	public void setVisible(boolean visible) {
+		for (UIMenuItem control : controls) {
+			control.isVisible = visible;
+		}
+		this.isVisible = visible;
 	}
 }

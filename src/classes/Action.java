@@ -3,6 +3,8 @@ package classes;
 import java.awt.Point;
 import java.util.List;
 
+import org.lwjgl.util.vector.Vector2f;
+
 import ui.UIControl;
 
 public interface Action {
@@ -32,6 +34,7 @@ public interface Action {
 
 	public default void onMouseClick(UIControl uiButton) {
 	}
+
 	public default void onMouseClickOut(UIControl uiButton) {
 	}
 
@@ -66,5 +69,8 @@ public interface Action {
 
 	public default void onKeyPress(UIControl self, int keycode, boolean shift) {
 
+	}
+
+	public default void onMouseMove(UIControl self, Vector2f mouseDirection) {
 	}
 }

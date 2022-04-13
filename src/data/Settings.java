@@ -3,7 +3,7 @@ package data;
 public class Settings {
 
 	public static boolean localChunks = false;
-	public static boolean infinate = false;
+	public static boolean infinate = true;
 
 	public static String settingsFile = "game.settings";
 	public static String textureFile = "data/models.xml";

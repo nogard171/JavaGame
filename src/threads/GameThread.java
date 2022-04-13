@@ -20,6 +20,7 @@ import data.Settings;
 import utils.FPS;
 import utils.Input;
 import utils.Loader;
+import utils.PerformanceTracker;
 import utils.Renderer;
 import utils.SettingsHandler;
 import utils.Window;
@@ -71,6 +72,7 @@ public class GameThread extends BaseThread {
 	@Override
 	public void update() {
 		super.update();
+		PerformanceTracker.update();
 		Window.update();
 		Input.poll();
 		FPS.updateFPS();
@@ -107,16 +109,16 @@ public class GameThread extends BaseThread {
 	@Override
 	public void render() {
 		super.render();
+		PerformanceTracker.render();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, AssetData.texture.getTextureID());
 		GL11.glPushMatrix();
 		GL11.glTranslatef(View.getX(), View.getY(), 0);
 		world.render(View.getIndex());
 		ui.renderOnMap();
 		GL11.glPopMatrix();
-		
+
 		ui.render();
 		Window.render();
-
 	}
 
 	@Override

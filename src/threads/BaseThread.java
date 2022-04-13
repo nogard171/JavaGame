@@ -1,5 +1,8 @@
 package threads;
 
+import java.util.ArrayList;
+
+import data.EngineData;
 import utils.Input;
 import utils.Ticker;
 
@@ -17,20 +20,22 @@ public class BaseThread extends Thread {
 			this.render();
 		}
 		this.clean();
-	}
+	}	
 
 	public void setup() {
 		this.ticker = new Ticker();
+
 	}
 
 	public void update(Ticker ticker) {
 	}
 
 	public void update() {
-
+		
 	}
 
 	public void render() {
+		
 
 	}
 

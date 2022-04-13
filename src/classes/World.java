@@ -2,6 +2,7 @@ package classes;
 
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 
 import org.lwjgl.opengl.GL11;
@@ -111,12 +112,13 @@ public class World {
 
 	}
 
-	static LinkedList<Object> objectsHovered = new LinkedList<Object>();
+	static LinkedList<Object> worldObjectsHovered = new LinkedList<Object>();
+	private int viewRange = 4;
 
 	private void optimizeChunkView(Point viewIndex) {
 		EngineData.renderedChunks.clear();
-		for (int x = viewIndex.x - 4; x < viewIndex.x + 5; x++) {
-			for (int y = viewIndex.y - 4; y < viewIndex.y + 5; y++) {
+		for (int x = viewIndex.x - (viewRange - 1); x < viewIndex.x + viewRange; x++) {
+			for (int y = viewIndex.y - (viewRange - 1); y < viewIndex.y + viewRange; y++) {
 				String key = x + "," + y;
 				if (x >= 0 && y >= 0) {
 					Chunk chunk = EngineData.chunks.get(key);
@@ -133,16 +135,21 @@ public class World {
 							EngineData.chunks.put(newChunk.index.getString(), newChunk);
 						}
 					} else {
-						if (Settings.localChunks) {
-							if ((x == (viewIndex.x - 4) || y == (viewIndex.y - 4) || x == (viewIndex.x + 5)
-									|| y == (viewIndex.y + 5))) {
-								EngineData.cleanupChunks.add(chunk);
+						if (chunk != null) {
+							Rectangle viewBounds = new Rectangle((int) -View.getX(), (int) -View.getY(),
+									Window.getWidth(), Window.getHeight());
+							if (viewBounds.intersects(chunk.bounds.getBounds())) {
+								if (Settings.localChunks) {
+									if ((x == (viewIndex.x - 4) || y == (viewIndex.y - 4) || x == (viewIndex.x + 5)
+											|| y == (viewIndex.y + 5))) {
+										EngineData.cleanupChunks.add(chunk);
+									}
+								} else {
+									EngineData.renderedChunks.add(chunk);
+								}
 							}
-						} else {
-							EngineData.renderedChunks.add(chunk);
 						}
 					}
-
 				}
 			}
 		}
@@ -150,13 +157,13 @@ public class World {
 	}
 
 	public void update() {
-		objectsHovered.clear();
+		worldObjectsHovered.clear();
 		if (!EngineData.blockInput) {
 			int cartX = (int) (Input.getMousePosition().x - View.getX());
 			int cartY = (int) (Input.getMousePosition().y - View.getY());
 			for (Chunk chunk : EngineData.renderedChunks) {
 				if (chunk.bounds.contains(new Point(cartX, cartY))) {
-					objectsHovered.addAll(chunk.getHoveredObjects());
+					worldObjectsHovered.addAll(chunk.getHoveredObjects());
 					chunk.setBoundsColor(Color.green);
 				} else {
 					chunk.setBoundsColor(Color.red);
@@ -198,7 +205,7 @@ public class World {
 	}
 
 	public static LinkedList<Object> getHoveredObjects() {
-		return objectsHovered;
+		return worldObjectsHovered;
 	}
 
 	public static Object getObjectAtIndex(Index tempIndex) {

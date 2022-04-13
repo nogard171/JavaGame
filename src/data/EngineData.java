@@ -18,6 +18,9 @@ import ui.UIControl;
 
 public class EngineData {
 	public static ArrayList<String> hashes = new ArrayList<String>();
+	// internal variables
+	public static HashMap<String, Long> timings = new HashMap<String, Long>();
+
 	// Window data
 	public static int width = -1;
 	public static int height = -1;
@@ -25,17 +28,18 @@ public class EngineData {
 	public static boolean isResizable = true;
 	public static boolean isFullscreen = false;
 	public static boolean isVsync = false;
-	public static LinkedList<DisplayMode> supportedDisplayModes = new LinkedList<DisplayMode>();
-
 	public static int inactiveFPS = 30;
 	public static int pauseFPS = 30;
 	public static int targetFPS = -1;
+
+	public static LinkedList<DisplayMode> supportedDisplayModes = new LinkedList<DisplayMode>();
 	public static String quality = "Auto";
 
 	public static boolean allowScreenShot = false;
 
 	// World Data
 	public static Size chunkSize = new Size(16, 16, 16);
+	
 	public static HashMap<String, Chunk> chunks = new HashMap<String, Chunk>();
 
 	public static LinkedList<Index> loadChunks = new LinkedList<Index>();

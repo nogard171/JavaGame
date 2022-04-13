@@ -1,6 +1,7 @@
 package threads;
 
 import java.awt.Point;
+import java.text.ParseException;
 import java.util.LinkedList;
 
 import org.lwjgl.input.Cursor;
@@ -22,6 +23,7 @@ import data.AssetData;
 import data.EngineData;
 import ui.MainMenu;
 import ui.UIButton;
+import ui.UIContextMenu;
 import ui.UIControl;
 import ui.UIMenu;
 import ui.UIMenuItem;
@@ -36,21 +38,30 @@ import utils.SettingsHandler;
 import utils.Ticker;
 import utils.Window;
 
-public class UIThread extends BaseThread {
+public class UIThread {
 	TaskManager taskMgr;
 	MainMenu mainMenu;
-	UIMenu contextMenu;
+	UIContextMenu contextMenu;
 
-	@Override
 	public void setup() {
-		super.setup();
 		taskMgr = new TaskManager();
 
-		contextMenu = new UIMenu("contextMenu");
+		contextMenu = new UIContextMenu("contextMenu");
 		contextMenu.onEvent(new Action() {
 			@Override
 			public void onMouseExit(UIControl self) {
 				self.isVisible = false;
+			}
+
+			@Override
+			public void onMouseMove(UIControl self, Vector2f mousePosition) {
+				if (self.getName().equals("contextMenu") && !self.isHovered()) {
+					Vector2f offset = new Vector2f(mousePosition.x, mousePosition.y);
+					if (offset.x < 0 && offset.y < 0) {
+						self.isVisible = false;
+						System.out.println("Offset:" + offset);
+					}
+				}
 			}
 		});
 
@@ -115,18 +126,77 @@ public class UIThread extends BaseThread {
 	}
 
 	public void buildContext() {
-		if (objectsWithContext.size() > 0) {
+		if (objectsHovered.size() > 0) {
 			contextMenu.removeNonDefault();
-			for (Object obj : objectsWithContext) {
+			for (Object obj : objectsHovered) {
 				UIMenuItem tempItem = new UIMenuItem();
+				tempItem.setName(obj.getIndex() + "");
 				tempItem.setFontSize(12);
-				switch (obj.getMaterial().toLowerCase()) {
+				switch (obj.getModel().toLowerCase()) {
 				case "tree":
 					tempItem.onEvent(new Action() {
 						@Override
 						public void onMouseClick(UIControl self, int mouseButton) {
 							if (mouseButton == 0) {
-								Object obj = objectsWithContext.getLast();
+								String[] data = self.getName().split(",");
+								try {
+									Index tempIndex = new Index(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+									Object obj = World.getObjectAtIndex(tempIndex);
+									if (obj != null) {
+										int dist = (int) getDistance(
+												new Point(obj.getIndex().getX(), obj.getIndex().getY()));
+										if (dist < range) {
+											Point objTemp = getClosestIndex(obj.getIndex());
+											System.out.println("nearest:" + obj.getIndex() + "=" + objTemp);
+											Task task = new Task(TaskType.MOVE,
+													new Path(
+															new Point(World.characters.getFirst().getIndex().getX(),
+																	World.characters.getFirst().getIndex().getY()),
+															objTemp));
+											TaskManager.addTask(task);
+
+											task = new Task(TaskType.CHOP,
+													new Path(
+															new Point(World.characters.getFirst().getIndex().getX(),
+																	World.characters.getFirst().getIndex().getY()),
+															new Point(obj.getIndex().getX(), obj.getIndex().getY())));
+											TaskManager.addTask(task);
+										} else {
+											System.out.println("You cannot move that far.");
+										}
+									}
+								} catch (NumberFormatException e) {
+									System.out.println("index:" + e.getMessage());
+
+								}
+							}
+						}
+
+						@Override
+						public void onMouseHover(UIControl self) {
+							UIMenuItem temp = (UIMenuItem) self;
+							if (temp != null) {
+								temp.setBackgroundColor(new Color(1, 0, 0, 0.5f));
+							}
+						}
+
+						@Override
+						public void onMouseExit(UIControl self) {
+							UIMenuItem temp = (UIMenuItem) self;
+							if (temp != null) {
+								temp.setBackgroundColor(null);
+							}
+						}
+					});
+					tempItem.setText("Chop Tree");
+					contextMenu.add(tempItem);
+					break;
+				case "tile":
+					tempItem.onEvent(new Action() {
+						@Override
+						public void onMouseClick(UIControl self, int mouseButton) {
+							if (mouseButton == 0) {
+								Object obj = UIThread.objectsHovered.getLast();
 								if (obj != null) {
 									int dist = (int) getDistance(
 											new Point(obj.getIndex().getX(), obj.getIndex().getY()));
@@ -138,13 +208,6 @@ public class UIThread extends BaseThread {
 														new Point(World.characters.getFirst().getIndex().getX(),
 																World.characters.getFirst().getIndex().getY()),
 														objTemp));
-										TaskManager.addTask(task);
-
-										task = new Task(TaskType.CHOP,
-												new Path(
-														new Point(World.characters.getFirst().getIndex().getX(),
-																World.characters.getFirst().getIndex().getY()),
-														new Point(obj.getIndex().getX(), obj.getIndex().getY())));
 										TaskManager.addTask(task);
 									} else {
 										System.out.println("You cannot move that far.");
@@ -169,7 +232,7 @@ public class UIThread extends BaseThread {
 							}
 						}
 					});
-					tempItem.setText("Chop Tree");
+					tempItem.setText("Move Here");
 					contextMenu.add(tempItem);
 					break;
 				default:
@@ -178,14 +241,12 @@ public class UIThread extends BaseThread {
 		}
 	}
 
-	@Override
 	public void update() {
-		super.update();
 		taskMgr.update();
 		mainMenu.update();
 		contextMenu.update();
-
 		objectsHovered = World.getHoveredObjects();
+
 		if (Input.isKeyPressed(Keyboard.KEY_F1)) {
 			EngineData.showTelematry = !EngineData.showTelematry;
 		}
@@ -195,7 +256,7 @@ public class UIThread extends BaseThread {
 			World.rebuild();
 			EngineData.dataLoaded = true;
 		}
-		if (Input.isMousePressed(0)) {
+		if (Input.isMousePressed(0) && !contextMenu.isVisible) {
 			if (objectsHovered.size() > 0) {
 				Object obj = objectsHovered.getLast();
 				if (obj != null) {
@@ -232,22 +293,20 @@ public class UIThread extends BaseThread {
 				}
 			}
 		}
-		if (Input.isMousePressed(1)) {
-			objectsWithContext = objectsHovered;
+		if (Input.isMousePressed(1) && !contextMenu.isVisible&&true==false) {
 			buildContext();
+			contextMenu.objectsHovered = objectsHovered;
 			contextMenu.isVisible = true;
 			contextMenu.setPosition(Input.getMousePosition());
 		}
+
 		EngineData.pauseGame = EngineData.showMainMenu;
 	}
 
-	LinkedList<Object> objectsWithContext = new LinkedList<Object>();
-
+	boolean test = false;
 	int range = 1000;
 
-	@Override
 	public void render() {
-		super.render();
 
 		GL11.glBegin(GL11.GL_POLYGON);
 		Renderer.renderModel("ITEM", "TEST_ITEM", 100, 100);
@@ -275,6 +334,14 @@ public class UIThread extends BaseThread {
 			tempY += 12;
 			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Blocked Input:" + EngineData.blockInput, 12,
 					Color.white);
+			tempY += 12;
+
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
+					"Update Time:" + EngineData.timings.get("update") + "us", 12, Color.white);
+			tempY += 12;
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
+					"Render Time:" + EngineData.timings.get("render") + "us", 12, Color.white);
+
 			if (objectsHovered.size() > 0) {
 				Renderer.renderText(debugPosition.x - 200, debugPosition.y, "Hover Index:", 12, Color.white);
 				int y = 12;
@@ -287,14 +354,26 @@ public class UIThread extends BaseThread {
 				}
 			}
 		}
-		if (!EngineData.showMainMenu) {			
-			GL11.glBegin(GL11.GL_POLYGON);
-			Renderer.renderModel("ITEM", "CURSOR", Input.getMousePosition().getX(), Input.getMousePosition().getY());
-			GL11.glEnd();
+		GL11.glBegin(GL11.GL_POLYGON);
+		Renderer.renderModel("ITEM", "CURSOR", Input.getMousePosition().getX(), Input.getMousePosition().getY());
+		GL11.glEnd();
+		
+		
+		if (objectsHovered.size() > 0) {
+			Object obj = objectsHovered.getLast();
+			if(obj!=null)
+			{
+				if(obj.getModel().toLowerCase().equals("tree"))
+				{
+					GL11.glBegin(GL11.GL_POLYGON);
+					Renderer.renderModel("ITEM", "CURSOR_CHOP", Input.getMousePosition().getX(), Input.getMousePosition().getY());
+					GL11.glEnd();
+				}
+			}
 		}
 	}
 
-	static LinkedList<Object> objectsHovered = new LinkedList<Object>();
+	public static LinkedList<Object> objectsHovered = new LinkedList<Object>();
 
 	public void renderOnMap() {
 		if (EngineData.showTelematry) {
@@ -335,9 +414,6 @@ public class UIThread extends BaseThread {
 						* (index.x - World.characters.getFirst().getIndex().getY()));
 	}
 
-	@Override
 	public void clean() {
-
-		super.clean();
 	}
 }

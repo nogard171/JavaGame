@@ -18,6 +18,10 @@ public class UIControl {
 	private boolean isDefault = false;
 	public boolean isVisible = true;
 	protected boolean hover = false;
+	public boolean isHovered() {
+		return hover;
+	}
+
 	protected Action eventAction;
 	protected int mouseClickCount = 0;
 	private int mouseReleaseCount = 0;
@@ -25,10 +29,23 @@ public class UIControl {
 	private int mouseExitCount = 0;
 	private Point mousePosition = new Point(-1, -1);
 
+	public UIControl() {
+
+	}
+
+	Vector2f previousMouse = new Vector2f(0, 0);
+
 	public void update() {
 		if (this.eventAction != null) {
+			if (!previousMouse.equals(Input.getMousePosition())) {
+				this.eventAction.onMouseMove(this, new Vector2f((float)Input.getMousePosition().x - (float)previousMouse.x,
+						(float)Input.getMousePosition().y - (float)previousMouse.y));
+				previousMouse = Input.getMousePosition();
+			}
+
 			hover = UIPhyics.inside(this, Input.getMousePosition());
 			if (hover) {
+
 				this.eventAction.onMouseHover(this);
 				if (mouseEnterCount == 0) {
 					this.eventAction.onMouseEnter(this);

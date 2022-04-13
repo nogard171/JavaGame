@@ -240,16 +240,27 @@ public class Renderer {
 		}
 	}
 
+	public static HashMap<String, Integer> quadIDs = new HashMap<String, Integer>();
+
 	public static void renderQuad(float x, float y, int width, int height, Color color) {
-		unbindTexture();
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glColor4f(color.r, color.g, color.b, color.a);
-		GL11.glVertex2f(x, y);
-		GL11.glVertex2f(x + width, y);
-		GL11.glVertex2f(x + width, y + height);
-		GL11.glVertex2f(x, y + height);
-		GL11.glEnd();
-		bindTexture();
+		String key = x + "," + y + "," + width + "," + height+","+color;
+		Integer displayList = quadIDs.get(key);
+		if (displayList == null) {
+			displayList = GL11.glGenLists(1);
+			GL11.glNewList(displayList, GL11.GL_COMPILE);
+			unbindTexture();
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glColor4f(color.r, color.g, color.b, color.a);
+			GL11.glVertex2f(x, y);
+			GL11.glVertex2f(x + width, y);
+			GL11.glVertex2f(x + width, y + height);
+			GL11.glVertex2f(x, y + height);
+			GL11.glEnd();
+			GL11.glEndList();
+			quadIDs.put(key, displayList);
+		} else {
+			GL11.glCallList(displayList);
+		}
 	}
 
 	public static void renderGrid(int indexX, int indexY) {

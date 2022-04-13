@@ -61,11 +61,12 @@ public class APathFinder {
 			}
 			for (Point index : indexes) {
 				Point neighborIndex = new Point(current.x + index.x, current.y + index.y);
-				double dist0 =  calculateDistanceBetweenPointsWithHypot(current.x,current.y,endIndex.x,endIndex.y);
-				double dist1 = calculateDistanceBetweenPointsWithHypot(neighborIndex.x,neighborIndex.y,endIndex.x,endIndex.y);
+				double dist0 = calculateDistanceBetweenPointsWithHypot(current.x, current.y, endIndex.x, endIndex.y);
+				double dist1 = calculateDistanceBetweenPointsWithHypot(neighborIndex.x, neighborIndex.y, endIndex.x,
+						endIndex.y);
 				double distV = (dist0 - dist1);
 				int dist = (int) Math.round(distV);
-				if (dist>=0) {
+				if (dist >= 0) {
 					if (neighborIndex.x >= 0 && neighborIndex.y >= 0) {
 						int passable = World.isPassable(new Index(neighborIndex.x, neighborIndex.y));
 						if (passable == 1) {
@@ -80,13 +81,10 @@ public class APathFinder {
 		}
 		return null;
 	}
-	public static double calculateDistanceBetweenPointsWithHypot(
-		    double x1, 
-		    double y1, 
-		    double x2, 
-		    double y2) {		        
-		    double ac = Math.abs(y2 - y1);
-		    double cb = Math.abs(x2 - x1);		        
-		    return Math.hypot(ac, cb);
-		}
+
+	public static double calculateDistanceBetweenPointsWithHypot(double x1, double y1, double x2, double y2) {
+		double ac = Math.abs(y2 - y1);
+		double cb = Math.abs(x2 - x1);
+		return Math.hypot(ac, cb);
+	}
 }

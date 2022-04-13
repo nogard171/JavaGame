@@ -27,4 +27,7 @@
 	<material name='CURSOR'>
 		<data file="data/materials/cursor.mat" />
 	</material>
+	<material name='CURSOR_CHOP'>
+		<data file="data/materials/cursor_chop.mat" />
+	</material>
 </materials>

@@ -212,6 +212,7 @@ public class MainMenu extends UIControl {
 		if (Input.isKeyPressed(Keyboard.KEY_ESCAPE)) {
 			EngineData.showMainMenu = !EngineData.showMainMenu;
 			
+			mainMenu.setVisible(EngineData.showMainMenu);
 
 			settingsMenu.isVisible = false;
 		}
