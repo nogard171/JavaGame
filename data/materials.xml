@@ -9,6 +9,9 @@
 	<material name='TREE'>
 		<data file="data/materials/tree.mat" />
 	</material>
+	<material name='TREE_TRUNK'>
+		<data file="data/materials/tree_trunk.mat" />
+	</material>
 	<material name='SAND'>
 		<data file="data/materials/sand.mat" />
 	</material>
@@ -24,10 +27,91 @@
 	<material name='TEST_ITEM'>
 		<data file="data/materials/test_item.mat" />
 	</material>
+	<material name='ITEM_BLOCK'>
+		<data file="data/materials/item_block.mat" />
+	</material>
+	<material name='LOG_ITEM'>
+		<data file="data/materials/log_item.mat" />
+	</material>
+	<material name='TIN_ORE_ITEM'>
+		<data file="data/materials/tin_ore_item.mat" />
+	</material>
+	<material name='COPPER_ORE_ITEM'>
+		<data file="data/materials/copper_ore_item.mat" />
+	</material>
+	<material name='COPPER_ORE'>
+		<data file="data/materials/copper_ore.mat" />
+	</material>
+	<material name='TIN_ORE'>
+		<data file="data/materials/tin_ore.mat" />
+	</material>
 	<material name='CURSOR'>
 		<data file="data/materials/cursor.mat" />
 	</material>
 	<material name='CURSOR_CHOP'>
 		<data file="data/materials/cursor_chop.mat" />
+	</material>
+	<material name='CURSOR_MINE'>
+		<data file="data/materials/cursor_mine.mat" />
+	</material>
+	<material name='MONEY_POUCH_ICON'>
+		<data file="data/materials/money_pouch_icon.mat" />
+	</material>
+
+	<material name='PANEL_TL'>
+		<data file="data/materials/panels/panel_tl.mat" />
+	</material>
+	<material name='PANEL_TM'>
+		<data file="data/materials/panels/panel_tm.mat" />
+	</material>
+	<material name='PANEL_TR'>
+		<data file="data/materials/panels/panel_tr.mat" />
+	</material>
+	<material name='PANEL_CL'>
+		<data file="data/materials/panels/panel_cl.mat" />
+	</material>
+	<material name='PANEL_CM'>
+		<data file="data/materials/panels/panel_cm.mat" />
+	</material>
+	<material name='PANEL_CR'>
+		<data file="data/materials/panels/panel_cr.mat" />
+	</material>
+	<material name='PANEL_BL'>
+		<data file="data/materials/panels/panel_bl.mat" />
+	</material>
+	<material name='PANEL_BM'>
+		<data file="data/materials/panels/panel_bm.mat" />
+	</material>
+	<material name='PANEL_BR'>
+		<data file="data/materials/panels/panel_br.mat" />
+	</material>
+
+
+	<material name='EQUIPMENT_PANEL_TL'>
+		<data file="data/materials/equipment panels/panel_tl.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_TM'>
+		<data file="data/materials/equipment panels/panel_tm.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_TR'>
+		<data file="data/materials/equipment panels/panel_tr.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_CL'>
+		<data file="data/materials/equipment panels/panel_cl.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_CM'>
+		<data file="data/materials/equipment panels/panel_cm.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_CR'>
+		<data file="data/materials/equipment panels/panel_cr.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_BL'>
+		<data file="data/materials/equipment panels/panel_bl.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_BM'>
+		<data file="data/materials/equipment panels/panel_bm.mat" />
+	</material>
+	<material name='EQUIPMENT_PANEL_BR'>
+		<data file="data/materials/equipment panels/panel_br.mat" />
 	</material>
 </materials>

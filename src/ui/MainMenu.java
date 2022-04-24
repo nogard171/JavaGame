@@ -205,19 +205,19 @@ public class MainMenu extends UIControl {
 
 	@Override
 	public void update() {
-		mainMenu.update();
 		if (Input.isKeyPressed(Keyboard.KEY_F3)) {
 			Window.takeScreenShot();
 		}
 		if (Input.isKeyPressed(Keyboard.KEY_ESCAPE)) {
 			EngineData.showMainMenu = !EngineData.showMainMenu;
-			
+
 			mainMenu.setVisible(EngineData.showMainMenu);
 
 			settingsMenu.isVisible = false;
 		}
 		this.isVisible = EngineData.showMainMenu;
 		if (this.isVisible) {
+			mainMenu.update();
 			settingsMenu.update();
 		}
 

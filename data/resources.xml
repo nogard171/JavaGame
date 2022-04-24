@@ -1,5 +1,20 @@
 <resources>
 	<resource name='TREE' hitpoints='10'>
-		<item name='TEST_ITEM' min='1' max='2' />
+		<state name='HARVEST' material='TREE_TRUNK' model='TREE_TRUNK'>
+			<item name='LOG_ITEM' min='1' max='2' />
+		</state>
+		<state name='PLANT' material='TREE' model='TREE'>
+			<item name='TREE_SEED' min='-1' max='-1' />
+		</state>
+	</resource>
+	<resource name='COPPER_ORE' hitpoints='10'>
+		<state name='HARVEST' material='AIR' model='AIR'>
+			<item name='COPPER_ORE_ITEM' min='1' max='2' />
+		</state>
+	</resource>
+	<resource name='TIN_ORE' hitpoints='10'>
+		<state name='HARVEST' material='AIR' model='AIR'>
+			<item name='TIN_ORE_ITEM' min='1' max='2' />
+		</state>
 	</resource>
 </resources>

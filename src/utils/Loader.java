@@ -22,6 +22,7 @@ import classes.ItemDrop;
 import classes.RawMaterial;
 import classes.RawModel;
 import classes.ResourceData;
+import classes.ResourceState;
 import classes.TextureType;
 import data.AssetData;
 import data.EngineData;
@@ -38,8 +39,6 @@ public class Loader {
 	}
 
 	private static void loadItems() {
-		// AssetData.itemData.put("TEST_ITEM", new ItemData(TextureType.TEST_ITEM));
-
 		AssetData.itemData.clear();
 		try {
 			File fXmlFile = new File(Settings.itemsFile);
@@ -74,10 +73,10 @@ public class Loader {
 							if (dataNode.hasAttribute("value")) {
 								value = dataNode.getAttribute("value");
 							}
-
+							data.attributes.put(attributeName, value);
 						}
 					}
-					System.out.println("Dtest"+itemName);
+					System.out.println("Dtest" + itemName);
 					AssetData.itemData.put(itemName, data);
 				}
 			}
@@ -117,32 +116,60 @@ public class Loader {
 						newHitPoints = Integer.parseInt(resourceElement.getAttribute("hitpoints"));
 					}
 					data.hitpoints = newHitPoints;
-					ArrayList<ItemDrop> newItemDrops = new ArrayList<ItemDrop>();
-					for (int i = 0; i < resourceElement.getElementsByTagName("item").getLength(); i++) {
 
-						Node dataNodes = resourceElement.getElementsByTagName("item").item(i);
+					
+					for (int s = 0; s < resourceElement.getElementsByTagName("state").getLength(); s++) {
 
-						if (dataNodes.getNodeType() == Node.ELEMENT_NODE) {
+						Node stateNodes = resourceElement.getElementsByTagName("state").item(s);
 
-							Element dataNode = (Element) dataNodes;
+						if (stateNodes.getNodeType() == Node.ELEMENT_NODE) {
 
-							String itemName = "";
-							if (dataNode.hasAttribute("name")) {
-								itemName = dataNode.getAttribute("name");
+							Element stateNode = (Element) stateNodes;
+
+							String stateName = "";
+							if (stateNode.hasAttribute("name")) {
+								stateName = stateNode.getAttribute("name");
 							}
-							int minValue = 0;
-							if (dataNode.hasAttribute("min")) {
-								minValue = Integer.parseInt(dataNode.getAttribute("min"));
+							String material = "";
+							if (stateNode.hasAttribute("material")) {
+								material = stateNode.getAttribute("material");
 							}
+							String model = "";
+							if (stateNode.hasAttribute("model")) {
+								model = stateNode.getAttribute("model");
+							}
+							ArrayList<ItemDrop> newItemDrops = new ArrayList<ItemDrop>();
+							for (int i = 0; i < stateNode.getElementsByTagName("item").getLength(); i++) {
 
-							int maxValue = 0;
-							if (dataNode.hasAttribute("max")) {
-								maxValue = Integer.parseInt(dataNode.getAttribute("max"));
+								Node dataNodes = resourceElement.getElementsByTagName("item").item(i);
+
+								if (dataNodes.getNodeType() == Node.ELEMENT_NODE) {
+
+									Element dataNode = (Element) dataNodes;
+
+									String itemName = "";
+									if (dataNode.hasAttribute("name")) {
+										itemName = dataNode.getAttribute("name");
+									}
+									int minValue = 0;
+									if (dataNode.hasAttribute("min")) {
+										minValue = Integer.parseInt(dataNode.getAttribute("min"));
+									}
+
+									int maxValue = 0;
+									if (dataNode.hasAttribute("max")) {
+										maxValue = Integer.parseInt(dataNode.getAttribute("max"));
+									}
+									newItemDrops.add(new ItemDrop(itemName, minValue, maxValue));
+								}
 							}
-							newItemDrops.add(new ItemDrop(itemName, minValue, maxValue));
+							ResourceState state = new ResourceState();
+							state.items = newItemDrops;
+							state.material = material;
+							state.model = model;
+							data.states.put(stateName, state);
 						}
 					}
-					data.itemDrops = newItemDrops;
 					AssetData.resourceData.put(resourceName, data);
 				}
 			}

@@ -1,11 +1,13 @@
 package classes;
 
 import java.awt.Point;
+import java.awt.Polygon;
 import java.util.LinkedList;
 import java.util.Random;
 
 import data.AssetData;
 import threads.BackEndThread;
+import ui.UIInventory;
 import utils.Ticker;
 
 public class TaskManager {
@@ -68,6 +70,7 @@ public class TaskManager {
 				}
 				break;
 			case CHOP:
+			case MINE:
 				Point index = workingTask.path.end;
 				Object obj = World.getObjectAtIndex(new Index(index.x, index.y));
 				if (obj != null) {
@@ -96,6 +99,7 @@ public class TaskManager {
 		if (!complete) {
 			switch (workingTask.type) {
 			case MOVE:
+				System.out.println("Move" + workingTask.path.steps.size());
 				if (workingTask.path.steps.size() > 0) {
 					Point index = workingTask.path.steps.removeFirst();
 					Index newIndex = new Index(index.x, index.y);
@@ -105,6 +109,7 @@ public class TaskManager {
 				}
 				break;
 			case CHOP:
+			case MINE:
 				if (workingTask.path.steps != null) {
 					if (workingTask.path.steps.size() > 0) {
 						workingTask.path.steps.removeFirst();
@@ -113,17 +118,24 @@ public class TaskManager {
 						Point index = workingTask.path.end;
 						Object obj = World.getObjectAtIndex(new Index(index.x, index.y));
 						if (obj != null) {
-							World.setObjectAtIndex(index, null);
+
 							ResourceData resourcedata = AssetData.resourceData.get(obj.getMaterial());
 							if (resourcedata != null) {
 								Random r = new Random();
-								for (ItemDrop drop : resourcedata.itemDrops) {
-									int dropCount = r.nextInt(drop.maxDrop - drop.minDrop + 1) + drop.minDrop;
-									for (int d = 0; d < dropCount; d++) {
-										ItemData itemData = AssetData.itemData.get(drop.item);
-										if (itemData != null) {
-											System.out.println("Dropping Item: " + drop.item + "=>" + dropCount);
-											// drop item on ground, or in inventory.
+								ResourceState state = resourcedata.states.get("HARVEST");
+								if (state != null) {
+									obj.setMaterial(state.material);
+									obj.setModel(state.model);
+									obj.bounds = new Polygon();
+									World.setObjectAtIndex(index, obj);
+									for (ItemDrop drop : state.items) {
+										int dropCount = r.nextInt(drop.maxDrop - drop.minDrop + 1) + drop.minDrop;
+										for (int d = 0; d < dropCount; d++) {
+											ItemData itemData = AssetData.itemData.get(drop.item);
+											System.out.println("test" + drop.item);
+											if (itemData != null) {
+												UIInventory.addItem(drop.item, dropCount);
+											}
 										}
 									}
 								}

@@ -18,26 +18,24 @@ import utils.Window;
 
 public class World {
 
-	public static LinkedList<Object> characters = new LinkedList<Object>();
+	public static Object character;
 	boolean mapMoved = true;
 	private Point previousViewIndex = new Point(-1, -1);
 
 	public void setup() {
-		Object character0 = new Object();
-		character0.setModel("CHARACTER");
-		character0.setMaterial("CHARACTER");
+		character = new Object();
+		character.setModel("CHARACTER");
+		character.setMaterial("CHARACTER");
 
-		characters.add(character0);
-
-		for (int x = 0; x < 10; x++) {
-			for (int z = 0; z < 10; z++) {
+		for (int x = 0; x < 1; x++) {
+			for (int z = 0; z < 1; z++) {
 				if (Settings.localChunks) {
 					EngineData.loadChunks.add(new Index(x, z));
 				} else {
 					Chunk newChunk = new Chunk(x, z);
 					newChunk.setup();
 					if (x == 0 && z == 0) {
-						newChunk.addCharacter(new Index(5, 5), character0);
+						newChunk.addCharacter(new Index(5, 5), character);
 					}
 					EngineData.chunks.put(newChunk.index.getString(), newChunk);
 				}
@@ -46,7 +44,6 @@ public class World {
 	}
 
 	public static void moveCharacter(Index tempIndex) {
-		Object character = characters.getFirst();
 		if (character != null) {
 			Index previousIndex = character.getIndex();
 
@@ -173,23 +170,30 @@ public class World {
 		}
 	}
 
+	public static int chunksRendered = 0;
+
 	public void render(Point viewIndex) {
+		chunksRendered = 0;
 		this.mapMoved = false;
 		if (!previousViewIndex.equals(viewIndex)) {
 			previousViewIndex = viewIndex;
 			this.mapMoved = true;
 		}
+
 		if (this.mapMoved) {
 			this.optimizeChunkView(viewIndex);
 		}
+
 		if (viewIndex != null) {
 			for (Chunk chunk : EngineData.renderedChunks) {
 				if (chunk != null) {
 					chunk.render();
+					chunksRendered++;
 				}
 
 			}
 		}
+
 	}
 
 	public void clean() {
@@ -266,6 +270,7 @@ public class World {
 		Chunk chunk = EngineData.chunks.get(chunkX + "," + chunkY);
 		if (chunk != null) {
 			if (objX >= 0 && objY >= 0) {
+				System.out.println("Obj:" + newObject.getModel() + "," + newObject.getMaterial());
 				chunk.objects[objX][objY] = newObject;
 				chunk.refresh();
 			}

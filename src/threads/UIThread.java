@@ -18,6 +18,7 @@ import classes.Size;
 import classes.Task;
 import classes.TaskManager;
 import classes.TaskType;
+import classes.View;
 import classes.World;
 import data.AssetData;
 import data.EngineData;
@@ -25,8 +26,11 @@ import ui.MainMenu;
 import ui.UIButton;
 import ui.UIContextMenu;
 import ui.UIControl;
+import ui.UIEquipment;
+import ui.UIInventory;
 import ui.UIMenu;
 import ui.UIMenuItem;
+import ui.UIPanel;
 import utils.APathFinder;
 import utils.FPS;
 import utils.Input;
@@ -39,11 +43,22 @@ import utils.Ticker;
 import utils.Window;
 
 public class UIThread {
+	UIInventory inventory;
+	UIEquipment equipment;
 	TaskManager taskMgr;
 	MainMenu mainMenu;
 	UIContextMenu contextMenu;
+	public static boolean uiHovered = false;
 
 	public void setup() {
+		inventory = new UIInventory();
+		inventory.setPosition(new Vector2f(0, 32));
+		inventory.setup();
+		
+		equipment = new UIEquipment();
+		equipment.setPosition(new Vector2f(0,32));
+		equipment.setup();
+		
 		taskMgr = new TaskManager();
 
 		contextMenu = new UIContextMenu("contextMenu");
@@ -95,28 +110,24 @@ public class UIThread {
 
 		Point tempPoint = new Point(index.getX() - 1, index.getY());
 		double dist = getDistance(tempPoint);
-		System.out.println("nearest:" + dist + "/" + tempPoint + "=>" + newPoint);
 		if (lowestDist >= dist) {
 			newPoint = tempPoint;
 			lowestDist = dist;
 		}
 		tempPoint = new Point(index.getX() + 1, index.getY());
 		dist = getDistance(tempPoint);
-		System.out.println("nearest:" + dist + "/" + tempPoint + "=>" + newPoint);
 		if (lowestDist >= dist) {
 			newPoint = tempPoint;
 			lowestDist = dist;
 		}
 		tempPoint = new Point(index.getX(), index.getY() - 1);
 		dist = getDistance(tempPoint);
-		System.out.println("nearest:" + dist + "/" + tempPoint + "=>" + newPoint);
 		if (lowestDist >= dist) {
 			newPoint = tempPoint;
 			lowestDist = dist;
 		}
 		tempPoint = new Point(index.getX(), index.getY() + 1);
 		dist = getDistance(tempPoint);
-		System.out.println("nearest:" + dist + "/" + tempPoint + "=>" + newPoint);
 		if (lowestDist >= dist) {
 			newPoint = tempPoint;
 			lowestDist = dist;
@@ -149,16 +160,14 @@ public class UIThread {
 											Point objTemp = getClosestIndex(obj.getIndex());
 											System.out.println("nearest:" + obj.getIndex() + "=" + objTemp);
 											Task task = new Task(TaskType.MOVE,
-													new Path(
-															new Point(World.characters.getFirst().getIndex().getX(),
-																	World.characters.getFirst().getIndex().getY()),
-															objTemp));
+													new Path(new Point(World.character.getIndex().getX(),
+															World.character.getIndex().getY()), objTemp));
 											TaskManager.addTask(task);
 
 											task = new Task(TaskType.CHOP,
 													new Path(
-															new Point(World.characters.getFirst().getIndex().getX(),
-																	World.characters.getFirst().getIndex().getY()),
+															new Point(World.character.getIndex().getX(),
+																	World.character.getIndex().getY()),
 															new Point(obj.getIndex().getX(), obj.getIndex().getY())));
 											TaskManager.addTask(task);
 										} else {
@@ -204,10 +213,8 @@ public class UIThread {
 										Point objTemp = getClosestIndex(obj.getIndex());
 										System.out.println("nearest:" + obj.getIndex() + "=" + objTemp);
 										Task task = new Task(TaskType.MOVE,
-												new Path(
-														new Point(World.characters.getFirst().getIndex().getX(),
-																World.characters.getFirst().getIndex().getY()),
-														objTemp));
+												new Path(new Point(World.character.getIndex().getX(),
+														World.character.getIndex().getY()), objTemp));
 										TaskManager.addTask(task);
 									} else {
 										System.out.println("You cannot move that far.");
@@ -242,11 +249,19 @@ public class UIThread {
 	}
 
 	public void update() {
-		taskMgr.update();
+		uiHovered = false;
+		//inventory.update();
+		equipment.update();
+		if (!EngineData.pauseGame) {
+			taskMgr.update();
+		}
 		mainMenu.update();
 		contextMenu.update();
-		objectsHovered = World.getHoveredObjects();
 
+		objectsHovered = World.getHoveredObjects();
+		if (uiHovered) {
+			objectsHovered.clear();
+		}
 		if (Input.isKeyPressed(Keyboard.KEY_F1)) {
 			EngineData.showTelematry = !EngineData.showTelematry;
 		}
@@ -267,8 +282,8 @@ public class UIThread {
 
 							Task task = new Task(TaskType.MOVE,
 									new Path(
-											new Point(World.characters.getFirst().getIndex().getX(),
-													World.characters.getFirst().getIndex().getY()),
+											new Point(World.character.getIndex().getX(),
+													World.character.getIndex().getY()),
 											new Point(obj.getIndex().getX(), obj.getIndex().getY())));
 							TaskManager.addTask(task);
 						} else {
@@ -276,16 +291,29 @@ public class UIThread {
 						}
 					} else if (obj.getModel().equals("TREE")) {
 						Point objTemp = getClosestIndex(obj.getIndex());
-						System.out.println("nearest:" + obj.getIndex() + "=" + objTemp);
 						Task task = new Task(TaskType.MOVE,
-								new Path(new Point(World.characters.getFirst().getIndex().getX(),
-										World.characters.getFirst().getIndex().getY()), objTemp));
+								new Path(
+										new Point(World.character.getIndex().getX(), World.character.getIndex().getY()),
+										objTemp));
 						TaskManager.addTask(task);
 
 						task = new Task(TaskType.CHOP,
 								new Path(
-										new Point(World.characters.getFirst().getIndex().getX(),
-												World.characters.getFirst().getIndex().getY()),
+										new Point(World.character.getIndex().getX(), World.character.getIndex().getY()),
+										new Point(obj.getIndex().getX(), obj.getIndex().getY())));
+						TaskManager.addTask(task);
+
+					} else if (obj.getModel().equals("CUBE") && obj.getMaterial().contains("ORE")) {
+						Point objTemp = getClosestIndex(obj.getIndex());
+						Task task = new Task(TaskType.MOVE,
+								new Path(
+										new Point(World.character.getIndex().getX(), World.character.getIndex().getY()),
+										objTemp));
+						TaskManager.addTask(task);
+
+						task = new Task(TaskType.MINE,
+								new Path(
+										new Point(World.character.getIndex().getX(), World.character.getIndex().getY()),
 										new Point(obj.getIndex().getX(), obj.getIndex().getY())));
 						TaskManager.addTask(task);
 
@@ -293,7 +321,7 @@ public class UIThread {
 				}
 			}
 		}
-		if (Input.isMousePressed(1) && !contextMenu.isVisible&&true==false) {
+		if (Input.isMousePressed(1) && !contextMenu.isVisible && true == false) {
 			buildContext();
 			contextMenu.objectsHovered = objectsHovered;
 			contextMenu.isVisible = true;
@@ -307,10 +335,12 @@ public class UIThread {
 	int range = 1000;
 
 	public void render() {
+		if (uiHovered) {
+			objectsHovered.clear();
+		}
+		//inventory.render();
+		equipment.render();
 
-		GL11.glBegin(GL11.GL_POLYGON);
-		Renderer.renderModel("ITEM", "TEST_ITEM", 100, 100);
-		GL11.glEnd();
 		mainMenu.render();
 
 		contextMenu.render();
@@ -326,13 +356,14 @@ public class UIThread {
 					"Resolution:" + Display.getWidth() + "x" + Display.getHeight() + "@" + EngineData.frequency, 12,
 					Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Data Loaded:" + EngineData.dataLoaded, 12,
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Chunk Count:" +World.chunksRendered+"("+EngineData.chunks.size()+")", 12,
 					Color.white);
 			tempY += 12;
 			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
-					"Chunks:" + EngineData.renderedChunks.size() + "/" + EngineData.chunks.size(), 12, Color.white);
+					"View Index:" +View.getIndex().x+","+View.getIndex().y, 12, Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Blocked Input:" + EngineData.blockInput, 12,
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
+					"Blocked Input:" + (EngineData.blockInput ? true : (UIThread.uiHovered ? true : false)), 12,
 					Color.white);
 			tempY += 12;
 
@@ -357,16 +388,21 @@ public class UIThread {
 		GL11.glBegin(GL11.GL_POLYGON);
 		Renderer.renderModel("ITEM", "CURSOR", Input.getMousePosition().getX(), Input.getMousePosition().getY());
 		GL11.glEnd();
-		
-		
-		if (objectsHovered.size() > 0) {
+
+		if (objectsHovered.size() > 0 && !EngineData.pauseGame) {
 			Object obj = objectsHovered.getLast();
-			if(obj!=null)
-			{
-				if(obj.getModel().toLowerCase().equals("tree"))
-				{
+			if (obj != null) {
+				if (obj.getModel().toLowerCase().equals("tree")) {
 					GL11.glBegin(GL11.GL_POLYGON);
-					Renderer.renderModel("ITEM", "CURSOR_CHOP", Input.getMousePosition().getX(), Input.getMousePosition().getY());
+					Renderer.renderModel("ITEM", "CURSOR_CHOP", Input.getMousePosition().getX(),
+							Input.getMousePosition().getY());
+					GL11.glEnd();
+				}
+
+				if (obj.getModel().toLowerCase().equals("cube") && obj.getMaterial().toLowerCase().contains("ore")) {
+					GL11.glBegin(GL11.GL_POLYGON);
+					Renderer.renderModel("ITEM", "CURSOR_MINE", Input.getMousePosition().getX(),
+							Input.getMousePosition().getY());
 					GL11.glEnd();
 				}
 			}
@@ -377,6 +413,9 @@ public class UIThread {
 
 	public void renderOnMap() {
 		if (EngineData.showTelematry) {
+			if (uiHovered) {
+				objectsHovered.clear();
+			}
 			if (objectsHovered != null) {
 				if (objectsHovered.size() > 0) {
 					int i = 0;
@@ -389,7 +428,7 @@ public class UIThread {
 						if (i == objectsHovered.size() - 1) {
 							int dist = (int) getDistance(new Point(obj.getIndex().getX(), obj.getIndex().getY()));
 							if (dist < range) {
-								GL11.glColor4f(0, 1, 0, 0.5f);
+								GL11.glColor4f(0, 0, 1, 0.5f);
 							} else {
 								GL11.glColor4f(1, 0, 0, 0.5f);
 							}
@@ -408,10 +447,8 @@ public class UIThread {
 	}
 
 	public double getDistance(Point index) {
-		return Math.sqrt((index.y - World.characters.getFirst().getIndex().getX())
-				* (index.y - World.characters.getFirst().getIndex().getY())
-				+ (index.x - World.characters.getFirst().getIndex().getX())
-						* (index.x - World.characters.getFirst().getIndex().getY()));
+		return Math.sqrt((index.y - World.character.getIndex().getX()) * (index.y - World.character.getIndex().getY())
+				+ (index.x - World.character.getIndex().getX()) * (index.x - World.character.getIndex().getY()));
 	}
 
 	public void clean() {

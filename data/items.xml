@@ -1,5 +1,18 @@
 <items>
 	<item name='TEST_ITEM'>
+		<attribute name='maxStack' value='1' />
+		<attribute name='value' value='0' />
+	</item>
+	<item name='LOG_ITEM'>
+		<attribute name='maxStack' value='1' />
+		<attribute name='value' value='0' />
+	</item>
+	<item name='TIN_ORE_ITEM'>
+		<attribute name='maxStack' value='1' />
+		<attribute name='value' value='0' />
+	</item>
+	<item name='COPPER_ORE_ITEM'>
+		<attribute name='maxStack' value='1' />
 		<attribute name='value' value='0' />
 	</item>
 </items>

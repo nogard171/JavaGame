@@ -47,10 +47,15 @@ public class Renderer {
 	}
 
 	public static void renderObject(Object obj, int selfX, int selfY) {
+		renderObject(obj, selfX, selfY, false);
+
+	}
+
+	public static void renderObject(Object obj, int selfX, int selfY, boolean rebound) {
 		if (obj != null) {
 			RawModel raw = AssetData.modelData.get(obj.getModel());
 			if (raw != null) {
-				if (obj.bounds == null) {
+				if (obj.bounds == null || rebound) {
 					obj.bounds = new Polygon();
 					for (Vector2f vec : raw.boundVectors) {
 						obj.bounds.addPoint((int) (vec.x + selfX + obj.getX()), (int) (vec.y + selfY + obj.getY()));
@@ -138,6 +143,38 @@ public class Renderer {
 
 	}
 
+	private static HashMap<String, Integer> modelsRendered = new HashMap<String, Integer>();
+
+	public static void renderModel(String modelName, String materialName) {
+		String key = modelName + "/" + materialName;
+		Integer displayListID = modelsRendered.get(key);
+		if (displayListID == null) {
+			displayListID = GL11.glGenLists(1);
+			GL11.glNewList(displayListID, GL11.GL_COMPILE);
+			GL11.glColor3f(1, 1, 1);
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			GL11.glColor4f(1, 1, 1, 1);
+			RawModel raw = AssetData.modelData.get(modelName);
+			if (raw != null) {
+				RawMaterial mat = AssetData.materialData.get(materialName);
+				if (mat != null) {
+					for (byte i : raw.indices) {
+						Vector2f textureVec = mat.vectors[i];
+						GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
+								textureVec.y / AssetData.texture.getImageHeight());
+						Vector2f vec = raw.vectors[i];
+						GL11.glVertex2f(vec.x, vec.y);
+					}
+				}
+			}
+			GL11.glEnd();
+			GL11.glEndList();
+			modelsRendered.put(key, displayListID);
+		} else {
+			GL11.glCallList(displayListID);
+		}
+	}
+
 	public static void renderModel(String modelName, int x, int z) {
 		RawModel raw = AssetData.modelData.get(modelName);
 		if (raw != null) {
@@ -164,7 +201,6 @@ public class Renderer {
 	}
 
 	public static void renderModel(String modelName, String materialName, int x, int z) {
-
 		GL11.glColor4f(1, 1, 1, 1);
 		RawModel raw = AssetData.modelData.get(modelName);
 		if (raw != null) {
@@ -243,7 +279,7 @@ public class Renderer {
 	public static HashMap<String, Integer> quadIDs = new HashMap<String, Integer>();
 
 	public static void renderQuad(float x, float y, int width, int height, Color color) {
-		String key = x + "," + y + "," + width + "," + height+","+color;
+		String key = x + "," + y + "," + width + "," + height + "," + color;
 		Integer displayList = quadIDs.get(key);
 		if (displayList == null) {
 			displayList = GL11.glGenLists(1);

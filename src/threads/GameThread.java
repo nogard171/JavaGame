@@ -112,8 +112,8 @@ public class GameThread extends BaseThread {
 		PerformanceTracker.render();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, AssetData.texture.getTextureID());
 		GL11.glPushMatrix();
-		GL11.glTranslatef(View.getX(), View.getY(), 0);
-		world.render(View.getIndex());
+		GL11.glTranslatef(view.getX(), view.getY(), 0);
+		world.render(View.getChunkIndex());
 		ui.renderOnMap();
 		GL11.glPopMatrix();
 

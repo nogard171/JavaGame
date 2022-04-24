@@ -12,13 +12,11 @@ public class Object {
 	private Index index;
 	private String model = "TILE";
 	private String material = "GRASS";
-	private String previousMaterial = "GRASS";
 	public Polygon bounds;
 	private String hash = "";
 
 	public Object() {
 		String temp = Generator.getRandom(32);
-
 		while (EngineData.hashes.contains(temp)) {
 			temp = Generator.getRandom(32);
 		}
@@ -30,11 +28,7 @@ public class Object {
 	}
 
 	public void setMaterial(String material) {
-		RawMaterial mat = AssetData.materialData.get(material);
-		if (mat != null) {
-			this.previousMaterial = this.material;
-			this.material = material;
-		}
+		this.material = material;
 	}
 
 	public int getX() {
@@ -60,14 +54,6 @@ public class Object {
 
 	public void setModel(String model) {
 		this.model = model;
-	}
-
-	public String getPreviousMaterial() {
-		return previousMaterial;
-	}
-
-	public void setPreviousMaterial(String previousMaterial) {
-		this.previousMaterial = previousMaterial;
 	}
 
 	public Index getIndex() {

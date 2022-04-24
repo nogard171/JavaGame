@@ -5,7 +5,7 @@ public enum TextureType {
 	AIR, GRASS, DIRT,
 
 	// item textures
-	TEST_ITEM;
+	TEST_ITEM, LOG_ITEM,TIN_ORE_ITEM,COPPER_ORE_ITEM;
 
 	public static TextureType getType(String name) {
 		TextureType type = AIR;

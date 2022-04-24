@@ -35,6 +35,7 @@ public class Chunk {
 	}
 
 	private int maxBoundHeight = 512;
+	boolean coinFlip = false;
 
 	public void setup() {
 		Random r = new Random();
@@ -77,12 +78,9 @@ public class Chunk {
 				if (r.nextFloat() < 0.1f) {
 					obj.setMaterial("SAND");
 				}
-				if (r.nextFloat() < 0.1f) {
-					obj.setMaterial("STONE");
-				}
 				ground[x][z] = obj;
 				passable[x][z] = true;
-				if (x == 5 && z == 5 || r.nextFloat() < 0.05f) {
+				if (r.nextFloat() < 0.05f) {
 					obj = new Resource();
 					obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
 							z + (index.getY() * EngineData.chunkSize.getDepth()));
@@ -91,8 +89,22 @@ public class Chunk {
 					obj.setMaterial("TREE");
 					objects[x][z] = obj;
 					passable[x][z] = false;
+				} else if (r.nextFloat() < 0.05f) {
+					obj = new Resource();
+					obj.setIndex(x + (index.getX() * EngineData.chunkSize.getWidth()),
+							z + (index.getY() * EngineData.chunkSize.getDepth()));
+					obj.setPosition(isoX, isoY);
+					obj.setModel("CUBE");
+					if (coinFlip) {
+						obj.setMaterial("COPPER_ORE");
+						coinFlip = !coinFlip;
+					} else {
+						obj.setMaterial("TIN_ORE");
+						coinFlip = !coinFlip;
+					}
+					objects[x][z] = obj;
+					passable[x][z] = false;
 				}
-
 			}
 		}
 	}
@@ -152,11 +164,11 @@ public class Chunk {
 				int selfX = isoX;
 				int selfY = isoY;
 				Object obj = ground[x][z];
-				Renderer.renderObject(obj, selfX, selfY);
+				Renderer.renderObject(obj, selfX, selfY,needsUpdating);
 				obj = objects[x][z];
-				Renderer.renderObject(obj, selfX, selfY);
+				Renderer.renderObject(obj, selfX, selfY,needsUpdating);
 				obj = characters[x][z];
-				Renderer.renderObject(obj, selfX, selfY);
+				Renderer.renderObject(obj, selfX, selfY,needsUpdating);
 			}
 		}
 		GL11.glEnd();
