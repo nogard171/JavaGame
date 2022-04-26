@@ -48,7 +48,7 @@ public class UIEquipmentSlot extends UIPanel {
 				}
 			}
 		}
-		Renderer.renderModel("EQUIPMENT_ICON", icon, this.getPosition().x+5, this.getPosition().y+5);
+		Renderer.renderModel("ITEM", icon, this.getPosition().x, this.getPosition().y );
 
 		GL11.glEnd();
 		GL11.glEndList();

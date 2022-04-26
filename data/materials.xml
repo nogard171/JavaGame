@@ -57,6 +57,24 @@
 	<material name='MONEY_POUCH_ICON'>
 		<data file="data/materials/money_pouch_icon.mat" />
 	</material>
+	<material name='BAG_ICON'>
+		<data file="data/materials/bag_icon.mat" />
+	</material>
+	<material name='HELM_ICON'>
+		<data file="data/materials/helm_icon.mat" />
+	</material>
+	<material name='CHESTPLATE_ICON'>
+		<data file="data/materials/chestplate_icon.mat" />
+	</material>
+	<material name='LEGS_ICON'>
+		<data file="data/materials/legs_icon.mat" />
+	</material>
+	<material name='CAPE_ICON'>
+		<data file="data/materials/cape_icon.mat" />
+	</material>
+	<material name='RING_ICON'>
+		<data file="data/materials/ring_icon.mat" />
+	</material>
 
 	<material name='PANEL_TL'>
 		<data file="data/materials/panels/panel_tl.mat" />

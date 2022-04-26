@@ -41,40 +41,40 @@ public class UIEquipment extends UIControl {
 		panel.setSize(new Size(128, 200));
 
 		int x = 0, y = 0;
-		UIEquipmentSlot capeSlot = new UIEquipmentSlot();
+		UIEquipmentSlot capeSlot = new UIEquipmentSlot("CAPE_ICON");
 		capeSlot.setPosition(new Vector2f(this.getPosition().x + 5, this.getPosition().y + 5));
 		equipmentSlot.put("cape_slot", capeSlot);
 		x += 32 + 5;
-		UIEquipmentSlot helmSlot = new UIEquipmentSlot();
+		UIEquipmentSlot helmSlot = new UIEquipmentSlot("HELM_ICON");
 		helmSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5));
 		equipmentSlot.put("helm_slot", helmSlot);
 		x = 32 + 5;
 		y = 37;
-		UIEquipmentSlot chestSlot = new UIEquipmentSlot();
+		UIEquipmentSlot chestSlot = new UIEquipmentSlot("CHESTPLATE_ICON");
 		chestSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("chest_slot", chestSlot);
 		x += 32 + 5;
-		UIEquipmentSlot neckalaceSlot = new UIEquipmentSlot();
+		UIEquipmentSlot neckalaceSlot = new UIEquipmentSlot("NECKALACE_ICON");
 		neckalaceSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("neckalace_slot", neckalaceSlot);
 
 		x = 0;
 		y += 37;
-		UIEquipmentSlot glovesSlot = new UIEquipmentSlot();
+		UIEquipmentSlot glovesSlot = new UIEquipmentSlot("GLOVES_ICON");
 		glovesSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("gloves_slot", glovesSlot);
 		x += 32 + 5;
-		UIEquipmentSlot legsSlot = new UIEquipmentSlot();
+		UIEquipmentSlot legsSlot = new UIEquipmentSlot("LEGS_ICON");
 		legsSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("legs_slot", legsSlot);
 		x += 32 + 5;
-		UIEquipmentSlot ringsSlot = new UIEquipmentSlot();
+		UIEquipmentSlot ringsSlot = new UIEquipmentSlot("RING_ICON");
 		ringsSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("rings_slot", ringsSlot);
 
 		x = 32 + 5;
 		y += 37;
-		UIEquipmentSlot bootsSlot = new UIEquipmentSlot();
+		UIEquipmentSlot bootsSlot = new UIEquipmentSlot("BOOT_ICON");
 		bootsSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("boots_slot", bootsSlot);
 		x += 32 + 5;
@@ -84,15 +84,15 @@ public class UIEquipment extends UIControl {
 
 		x = 0;
 		y += 37;
-		UIEquipmentSlot bagSlot1 = new UIEquipmentSlot();
+		UIEquipmentSlot bagSlot1 = new UIEquipmentSlot("BAG_ICON");
 		bagSlot1.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("bag_slot1", bagSlot1);
 		x += 32 + 5;
-		UIEquipmentSlot bagSlot2 = new UIEquipmentSlot();
+		UIEquipmentSlot bagSlot2 = new UIEquipmentSlot("BAG_ICON");
 		bagSlot2.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("bag_slot2", bagSlot2);
 		x += 32 + 5;
-		UIEquipmentSlot bagSlot3 = new UIEquipmentSlot();
+		UIEquipmentSlot bagSlot3 = new UIEquipmentSlot("BAG_ICON");
 		bagSlot3.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
 		equipmentSlot.put("bag_slot3", bagSlot3);
 
