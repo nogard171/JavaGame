@@ -32,4 +32,7 @@
 	<model name='EQUIPMENT_ICON'>
 		<data file="data/models/equipment_icon.obj" />
 	</model>
+	<model name='WOODEN_TILE'>
+		<data file="data/models/wooden_tile.obj" />
+	</model>
 </models>

@@ -223,9 +223,9 @@ public class Loader {
 							if (dataNode.hasAttribute("id")) {
 								id = dataNode.getAttribute("id");
 							}
-							System.out.println("Name: " + name + id);
+							
 							RawMaterial mat = loadMaterial(materialName);
-
+							System.out.println("Name: " + name + mat.indices.length);
 							AssetData.materialData.put(name + id, mat);
 						}
 					}

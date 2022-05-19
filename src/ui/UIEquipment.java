@@ -18,6 +18,92 @@ public class UIEquipment extends UIControl {
 	public UIPanel panel;
 
 	public HashMap<String, UIEquipmentSlot> equipmentSlot = new HashMap<String, UIEquipmentSlot>();
+	UIEquipmentSlot hoveredSlot;
+	public int openOrder = -1;
+
+	private Action getEvents() {
+		return new Action() {
+			@Override
+			public void onMouseDown(UIControl self, int mouseButton) {
+				if (mouseButton == 0) {
+					try {
+						UIEquipmentSlot tempSlot = (UIEquipmentSlot) self;
+						if (tempSlot != null) {
+							if (tempSlot.item != "") {
+								if (UIThread.draggingSlot == null) {
+									UIThread.draggingSlot = new UIItemSlot(tempSlot.item, tempSlot.count,
+											tempSlot.bagIndex, tempSlot.slotIndex, tempSlot.eventAction);
+									tempSlot.item = "";
+									tempSlot.count = 0;
+								}
+							}
+						}
+					} catch (ClassCastException e) {
+
+					}
+				}
+			}
+
+			@Override
+			public void onMouseEnter(UIControl self) {
+				try {
+					UIItemSlot tempSlot = (UIItemSlot) self;
+					if (tempSlot != null) {
+						tempSlot.backgroundColor = new Color(0, 0, 0, 0.5f);
+					}
+				} catch (ClassCastException e) {
+
+				}
+			}
+
+			@Override
+			public void onMouseExit(UIControl self) {
+				try {
+					UIItemSlot tempSlot = (UIItemSlot) self;
+					if (tempSlot != null) {
+						tempSlot.backgroundColor = null;
+					}
+				} catch (ClassCastException e) {
+
+				}
+			}
+
+			@Override
+			public void onMouseReleased(UIControl self, int mouseButton) {
+				try {
+					UIEquipmentSlot tempSlot = (UIEquipmentSlot) self;
+					if (tempSlot != null) {
+						if (tempSlot.item == "") {
+							if (UIThread.draggingSlot != null) {
+								if (tempSlot.allowItems.contains(UIThread.draggingSlot.item)) {
+									tempSlot.item = UIThread.draggingSlot.item;
+									tempSlot.count = UIThread.draggingSlot.count;
+									tempSlot.eventAction = UIThread.draggingSlot.eventAction;
+									UIThread.draggingSlot = null;
+								} else {
+
+								}
+							}
+						}
+					}
+				} catch (ClassCastException e) {
+
+				}
+			}
+
+		};
+
+	}
+
+	public UIEquipmentSlot generateSlot(String name, int x, int y) {
+		System.out.println("Order:" + name);
+		UIEquipmentSlot tempSlot = new UIEquipmentSlot();
+		tempSlot.setName(name);
+		tempSlot.setIcon(name.toUpperCase());
+		tempSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
+		tempSlot.eventAction = getEvents();
+		return tempSlot;
+	}
 
 	public void setup() {
 		panel = new UIPanel();
@@ -38,62 +124,81 @@ public class UIEquipment extends UIControl {
 			}
 		});
 		panel.setPosition(this.getPosition());
-		panel.setSize(new Size(128, 200));
+		panel.setSize(new Size(120, 195));
+		String[] names = { "cape_icon", "helm_icon", "money_pouch_icon", "chestplate_icon", "necklace_icon",
+				"glove_icon", "legs_icon", "ring_icon", "weapon_icon", "boot_icon", "shield_icon" };
 
-		int x = 0, y = 0;
-		UIEquipmentSlot capeSlot = new UIEquipmentSlot("CAPE_ICON");
-		capeSlot.setPosition(new Vector2f(this.getPosition().x + 5, this.getPosition().y + 5));
-		equipmentSlot.put("cape_slot", capeSlot);
+		int x = 0, y = 0, i = 0;
+		UIEquipmentSlot tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 		x += 32 + 5;
-		UIEquipmentSlot helmSlot = new UIEquipmentSlot("HELM_ICON");
-		helmSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5));
-		equipmentSlot.put("helm_slot", helmSlot);
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
+		x += 32 + 5;
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 		x = 32 + 5;
 		y = 37;
-		UIEquipmentSlot chestSlot = new UIEquipmentSlot("CHESTPLATE_ICON");
-		chestSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("chest_slot", chestSlot);
+
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 		x += 32 + 5;
-		UIEquipmentSlot neckalaceSlot = new UIEquipmentSlot("NECKALACE_ICON");
-		neckalaceSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("neckalace_slot", neckalaceSlot);
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 
 		x = 0;
 		y += 37;
-		UIEquipmentSlot glovesSlot = new UIEquipmentSlot("GLOVES_ICON");
-		glovesSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("gloves_slot", glovesSlot);
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 		x += 32 + 5;
-		UIEquipmentSlot legsSlot = new UIEquipmentSlot("LEGS_ICON");
-		legsSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("legs_slot", legsSlot);
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 		x += 32 + 5;
-		UIEquipmentSlot ringsSlot = new UIEquipmentSlot("RING_ICON");
-		ringsSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("rings_slot", ringsSlot);
-
-		x = 32 + 5;
-		y += 37;
-		UIEquipmentSlot bootsSlot = new UIEquipmentSlot("BOOT_ICON");
-		bootsSlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("boots_slot", bootsSlot);
-		x += 32 + 5;
-		UIEquipmentSlot moneySlot = new UIEquipmentSlot("MONEY_POUCH_ICON");
-		moneySlot.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
-		equipmentSlot.put("money_slot", moneySlot);
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
 
 		x = 0;
 		y += 37;
-		UIEquipmentSlot bagSlot1 = new UIEquipmentSlot("BAG_ICON");
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
+		x += 32 + 5;
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+		i++;
+		x += 32 + 5;
+		tempSlot = generateSlot(names[i], x, y);
+		equipmentSlot.put(tempSlot.getName(), tempSlot);
+
+		x = 0;
+		y += 37;
+		UIEquipmentSlot bagSlot1 = new UIEquipmentSlot();
+		bagSlot1.setName("bag_slot1");
+		bagSlot1.setIcon("BAG_ICON");
 		bagSlot1.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
+		bagSlot1.eventAction = getEvents();
 		equipmentSlot.put("bag_slot1", bagSlot1);
 		x += 32 + 5;
-		UIEquipmentSlot bagSlot2 = new UIEquipmentSlot("BAG_ICON");
+		UIEquipmentSlot bagSlot2 = new UIEquipmentSlot();
+		bagSlot2.setName("bag_slot2");
+		bagSlot2.setIcon("BAG_ICON");
 		bagSlot2.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
+		bagSlot2.eventAction = getEvents();
 		equipmentSlot.put("bag_slot2", bagSlot2);
 		x += 32 + 5;
-		UIEquipmentSlot bagSlot3 = new UIEquipmentSlot("BAG_ICON");
+		UIEquipmentSlot bagSlot3 = new UIEquipmentSlot();
+		bagSlot3.setName("bag_slot3");
+		bagSlot3.setIcon("BAG_ICON");
 		bagSlot3.setPosition(new Vector2f(this.getPosition().x + 5 + x, this.getPosition().y + 5 + y));
+		bagSlot3.eventAction = getEvents();
 		equipmentSlot.put("bag_slot3", bagSlot3);
 
 	}
@@ -103,6 +208,7 @@ public class UIEquipment extends UIControl {
 	public void update() {
 		super.update();
 		if (this.isVisible) {
+
 			panel.update();
 			if (panel.hover) {
 
@@ -117,10 +223,12 @@ public class UIEquipment extends UIControl {
 	}
 
 	public void render() {
-		panel.render();
+		if (this.isVisible) {
+			panel.render();
+			for (UIEquipmentSlot slot : equipmentSlot.values()) {
 
-		for (UIEquipmentSlot slot : equipmentSlot.values()) {
-			slot.render();
+				slot.render();
+			}
 		}
 	}
 

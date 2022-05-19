@@ -69,14 +69,18 @@ public class Chunk {
 						z + (index.getY() * EngineData.chunkSize.getDepth()));
 				obj.setPosition(isoX, isoY);
 				obj.setMaterial("GRASS0");
+
 				if (r.nextFloat() < 0.1f) {
 					obj.setMaterial("GRASS1");
 				}
 				if (r.nextFloat() < 0.1f) {
-					obj.setMaterial("DIRT");
+					obj.setMaterial("TILED_DIRT");
 				}
 				if (r.nextFloat() < 0.1f) {
 					obj.setMaterial("SAND");
+				}
+				if (r.nextFloat() < 0.1f) {
+					obj.setMaterial("STONE");
 				}
 				ground[x][z] = obj;
 				passable[x][z] = true;
@@ -164,11 +168,11 @@ public class Chunk {
 				int selfX = isoX;
 				int selfY = isoY;
 				Object obj = ground[x][z];
-				Renderer.renderObject(obj, selfX, selfY,needsUpdating);
+				Renderer.renderObject(obj, selfX, selfY, needsUpdating);
 				obj = objects[x][z];
-				Renderer.renderObject(obj, selfX, selfY,needsUpdating);
+				Renderer.renderObject(obj, selfX, selfY, needsUpdating);
 				obj = characters[x][z];
-				Renderer.renderObject(obj, selfX, selfY,needsUpdating);
+				Renderer.renderObject(obj, selfX, selfY, needsUpdating);
 			}
 		}
 		GL11.glEnd();

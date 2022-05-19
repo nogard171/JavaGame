@@ -3,6 +3,21 @@
 		<data id="0" file="data/materials/grass.mat" />
 		<data id="1" file="data/materials/grass1.mat" />
 	</material>
+	<material name='TILED_DIRT'>
+		<data file="data/materials/tiled_dirt.mat" />
+	</material>
+	<material name='WOODEN_TILE'>
+		<data file="data/materials/wooden_tile.mat" />
+	</material>
+	<material name='STONE_TILE'>
+		<data file="data/materials/stone_tile.mat" />
+	</material>
+	<material name='INVENTORY_ICON'>
+		<data file="data/materials/inventory_icon.mat" />
+	</material>
+	<material name='EQUIPMENT_ICON'>
+		<data file="data/materials/equipment_icon.mat" />
+	</material>
 	<material name='DIRT'>
 		<data file="data/materials/dirt.mat" />
 	</material>
@@ -54,6 +69,9 @@
 	<material name='CURSOR_MINE'>
 		<data file="data/materials/cursor_mine.mat" />
 	</material>
+	<material name='CURSOR_HOE'>
+		<data file="data/materials/cursor_hoe.mat" />
+	</material>
 	<material name='MONEY_POUCH_ICON'>
 		<data file="data/materials/money_pouch_icon.mat" />
 	</material>
@@ -74,6 +92,21 @@
 	</material>
 	<material name='RING_ICON'>
 		<data file="data/materials/ring_icon.mat" />
+	</material>
+	<material name='NECKLACE_ICON'>
+		<data file="data/materials/necklace_icon.mat" />
+	</material>
+	<material name='BOOT_ICON'>
+		<data file="data/materials/boot_icon.mat" />
+	</material>
+	<material name='GLOVE_ICON'>
+		<data file="data/materials/glove_icon.mat" />
+	</material>
+	<material name='WEAPON_ICON'>
+		<data file="data/materials/weapon_icon.mat" />
+	</material>
+	<material name='SHIELD_ICON'>
+		<data file="data/materials/shield_icon.mat" />
 	</material>
 
 	<material name='PANEL_TL'>

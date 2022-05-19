@@ -117,6 +117,13 @@ public class GameThread extends BaseThread {
 		ui.renderOnMap();
 		GL11.glPopMatrix();
 
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		Renderer.renderModel("TILE", "GRASS0", 200, 200);
+		GL11.glEnd();
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		Renderer.renderModel("WOODEN_TILE", "STONE_TILE", 200, 200);
+		GL11.glEnd();
+
 		ui.render();
 		Window.render();
 	}

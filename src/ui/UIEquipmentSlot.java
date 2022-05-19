@@ -1,56 +1,56 @@
 package ui;
 
+import java.util.ArrayList;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+import org.newdawn.slick.Color;
 
+import classes.Action;
+import classes.Size;
+import threads.UIThread;
 import utils.Renderer;
 
-public class UIEquipmentSlot extends UIPanel {
-	public String icon = "";
+public class UIEquipmentSlot extends UIItemSlot {
 
-	public UIEquipmentSlot() {
+	UIPanel panel;
+	String icon = "";
+	ArrayList<String> allowItems = new ArrayList<String>();
 
-	}
-
-	public UIEquipmentSlot(String newIcon) {
+	public void setIcon(String newIcon) {
 		this.icon = newIcon;
 	}
 
+	public UIEquipmentSlot() {
+		panel = new UIPanel();
+		panel.title = "EQUIPMENT_";
+		panel.tileSize = new Vector2f(3, 3);
+	}
+
 	@Override
-	protected void build() {
-		int width = Math.round((float) this.getSize().getWidth() / (float) 3);
-		int height = Math.round((float) this.getSize().getHeight() / (float) 3);
-		displayListID = GL11.glGenLists(1);
-		GL11.glNewList(displayListID, GL11.GL_COMPILE_AND_EXECUTE);
+	public void setPosition(Vector2f newPosition) {
+		super.setPosition(newPosition);
+		panel.setPosition(this.getPosition());
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if (panel != null) {
+			panel.update();
+		}
+	}
+
+	@Override
+	public void render() {
+		super.render();
+		if (panel != null) {
+			panel.render();
+		}
 		GL11.glColor3f(1, 1, 1);
 		GL11.glBegin(GL11.GL_TRIANGLES);
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				Vector2f position = new Vector2f((x * 3) + this.getPosition().x, (y * 3) + this.getPosition().y);
-				if (x == 0 && y == 0) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_TL", position.x, position.y);
-				} else if (x == 0 && y < height - 1) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_CL", position.x, position.y);
-				} else if (x == 0 && y == height - 1) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_BL", position.x, position.y);
-				} else if (x == width - 1 && y == 0) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_TR", position.x, position.y);
-				} else if (x == width - 1 && y < height - 1) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_CR", position.x, position.y);
-				} else if (x == width - 1 && y == height - 1) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_BR", position.x, position.y);
-				} else if (y == 0) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_TM", position.x, position.y);
-				} else if (y < height - 1) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_CM", position.x, position.y);
-				} else if (y == height - 1) {
-					Renderer.renderModel("EQUIPMENT_PANEL_TILE", "EQUIPMENT_PANEL_BM", position.x, position.y);
-				}
-			}
-		}
-		Renderer.renderModel("ITEM", icon, this.getPosition().x, this.getPosition().y );
-
+		Renderer.renderModel("ITEM", icon, this.getPosition().x - 1, this.getPosition().y - 1);
+		Renderer.renderModel("ITEM", this.item, this.getPosition().x, this.getPosition().y);
 		GL11.glEnd();
-		GL11.glEndList();
 	}
 }

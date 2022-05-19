@@ -9,6 +9,15 @@ import utils.Window;
 
 public class UIMenuItem extends UIControl {
 	private String text = "";
+	private String icon = "";
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
 	private Color backgroundColor = null;
 	private int fontSize = 12;
 

@@ -16,7 +16,7 @@ import utils.Window;
 
 public class UIMenu extends UIControl {
 	private String name = "";
-	private LinkedList<UIMenuItem> controls = new LinkedList<UIMenuItem>();
+	public LinkedList<UIMenuItem> controls = new LinkedList<UIMenuItem>();
 	private Color backgroundColor = null;
 
 	public UIMenu(String string) {

@@ -50,6 +50,9 @@ public interface Action {
 	public default void onMouseHover(UIControl uiButton) {
 	}
 
+	public default void onMouseHover(UIControl uiButton, long hoverTime) {
+	}
+
 	public default void onMouseExit(UIControl uiButton) {
 	}
 

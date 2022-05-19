@@ -23,8 +23,6 @@ public class UIButton extends UIControl {
 		this.material = material;
 	}
 
-
-
 	public String getText() {
 		return text;
 	}

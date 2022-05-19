@@ -23,6 +23,7 @@ public class UIControl {
 		return hover;
 	}
 
+	protected long hoverStartTime;
 	protected Action eventAction;
 	protected int mouseClickCount = 0;
 	private int mouseReleaseCount = 0;
@@ -48,8 +49,11 @@ public class UIControl {
 
 				hover = UIPhyics.inside(this, Input.getMousePosition());
 				if (hover) {
-
+					if (hoverStartTime == -1) {
+						hoverStartTime = System.currentTimeMillis();
+					}
 					this.eventAction.onMouseHover(this);
+					this.eventAction.onMouseHover(this, System.currentTimeMillis() - hoverStartTime);
 					if (mouseEnterCount == 0) {
 						this.eventAction.onMouseEnter(this);
 						mouseExitCount = 0;
@@ -57,6 +61,7 @@ public class UIControl {
 					mouseEnterCount++;
 				}
 				if (!hover) {
+					hoverStartTime = -1;
 					if (mouseExitCount == 0) {
 						this.eventAction.onMouseExit(this);
 						mouseEnterCount = 0;

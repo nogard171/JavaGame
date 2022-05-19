@@ -19,7 +19,19 @@ public class UIInventory extends UIControl {
 	private Size spacing = new Size(5, 5);
 	private Size itemCount = new Size(0, 0);
 	int count = 0;
+	public int openOrder = -1;
 	private static boolean needsUpdating = false;
+
+	@Override
+	public void setPosition(Vector2f newPosition) {
+		if (!this.getPosition().equals(newPosition)) {
+			super.setPosition(newPosition);
+			if (panel != null) {
+				panel.setPosition(newPosition);
+			}
+			needsUpdating = true;
+		}
+	}
 
 	public static void addItem(String item, int count) {
 		System.out.println("Count: " + count);
@@ -59,9 +71,9 @@ public class UIInventory extends UIControl {
 						UIItemSlot tempSlot = (UIItemSlot) self;
 						if (tempSlot != null) {
 							if (tempSlot.item != "") {
-								if (draggingSlot == null) {
-									draggingSlot = new UIItemSlot(tempSlot.item, tempSlot.count, tempSlot.bagIndex,
-											tempSlot.slotIndex, tempSlot.eventAction);
+								if (UIThread.draggingSlot == null) {
+									UIThread.draggingSlot = new UIItemSlot(tempSlot.item, tempSlot.count,
+											tempSlot.bagIndex, tempSlot.slotIndex, tempSlot.eventAction);
 									tempSlot.item = "";
 									tempSlot.count = 0;
 									needsUpdating = true;
@@ -106,12 +118,12 @@ public class UIInventory extends UIControl {
 					UIItemSlot tempSlot = (UIItemSlot) self;
 					if (tempSlot != null) {
 						if (tempSlot.item == "") {
-							if (draggingSlot != null) {
-								tempSlot.item = draggingSlot.item;
-								tempSlot.count = draggingSlot.count;
-								tempSlot.eventAction = draggingSlot.eventAction;
+							if (UIThread.draggingSlot != null) {
+								tempSlot.item = UIThread.draggingSlot.item;
+								tempSlot.count = UIThread.draggingSlot.count;
+								tempSlot.eventAction = UIThread.draggingSlot.eventAction;
 								needsUpdating = true;
-								draggingSlot = null;
+								UIThread.draggingSlot = null;
 							}
 						}
 					}
@@ -124,6 +136,7 @@ public class UIInventory extends UIControl {
 	}
 
 	public void setup() {
+
 		panel = new UIPanel();
 		panel.onEvent(new Action() {
 			@Override
@@ -160,8 +173,6 @@ public class UIInventory extends UIControl {
 
 	}
 
-	static UIItemSlot draggingSlot = null;
-
 	public void setItemSlot(UIItemSlot slot) {
 		if (slot != null) {
 			UIBagSlot bagSlot = bagSlots.get(slot.bagIndex + "");
@@ -170,7 +181,7 @@ public class UIInventory extends UIControl {
 				if (itemSlot != null) {
 					bagSlot.itemSlots.set(slot.slotIndex, slot);
 					needsUpdating = true;
-					draggingSlot = null;
+					UIThread.draggingSlot = null;
 				}
 			}
 		}
@@ -179,19 +190,18 @@ public class UIInventory extends UIControl {
 	static Vector2f hoveredItemPosition;
 
 	public void update() {
-		super.update();
-		panel.update();
-		if (panel.hover) {
-			for (UIBagSlot bagSlot : bagSlots.values()) {
-				if (bagSlot != null) {
-					bagSlot.update();
+
+		if (this.isVisible) {
+			super.update();
+			panel.update();
+			if (panel.hover) {
+				for (UIBagSlot bagSlot : bagSlots.values()) {
+					if (bagSlot != null) {
+						bagSlot.update();
+					}
 				}
 			}
 		}
-		if (!Input.isMouseDown(0)) {
-			setItemSlot(draggingSlot);
-		}
-
 	}
 
 	private void build() {
@@ -230,30 +240,29 @@ public class UIInventory extends UIControl {
 	}
 
 	public void render() {
+		if (this.isVisible) {
+			panel.render();
+			if (displayListID == -1 || needsUpdating) {
+				System.out.println("Building...");
+				build();
+				needsUpdating = false;
+			}
 
-		panel.render();
-		if (displayListID == -1 || needsUpdating) {
-			System.out.println("Building...");
-			build();
-			needsUpdating = false;
+			if (hoveredItemPosition != null) {
+				Renderer.renderQuad(hoveredItemPosition.x, hoveredItemPosition.y, 32, 32, new Color(0, 0, 0, 0.5f));
+			}
+			Renderer.bindTexture();
+			if (displayListID != -1) {
+				GL11.glCallList(displayListID);
+			}
 		}
-
-		if (hoveredItemPosition != null) {
-			Renderer.renderQuad(hoveredItemPosition.x, hoveredItemPosition.y, 32, 32, new Color(0, 0, 0, 0.5f));
-		}
-		Renderer.bindTexture();
-		if (displayListID != -1) {
-			GL11.glCallList(displayListID);
-		}
-		if (draggingSlot != null) {
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			Renderer.renderModel("ITEM", draggingSlot.item, Input.getMousePosition().x, Input.getMousePosition().y);
-			GL11.glEnd();
-		}
-
 	}
 
 	public void cleanup() {
 
+	}
+
+	public void resetDrag() {
+		this.setItemSlot(UIThread.draggingSlot);
 	}
 }

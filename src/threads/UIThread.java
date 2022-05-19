@@ -27,7 +27,10 @@ import ui.UIButton;
 import ui.UIContextMenu;
 import ui.UIControl;
 import ui.UIEquipment;
+import ui.UIEquipmentSlot;
+import ui.UIHUDMenu;
 import ui.UIInventory;
+import ui.UIItemSlot;
 import ui.UIMenu;
 import ui.UIMenuItem;
 import ui.UIPanel;
@@ -48,17 +51,103 @@ public class UIThread {
 	TaskManager taskMgr;
 	MainMenu mainMenu;
 	UIContextMenu contextMenu;
+	UIHUDMenu hudMenu;
 	public static boolean uiHovered = false;
+	public
+
+	static UIItemSlot draggingSlot = null;
+
+	public void getOpenedOrder() {
+		int oi = -1, oe = -1;
+
+		if (equipment.isVisible && inventory.isVisible) {
+			oe = 0;
+			oi = 1;
+		}
+
+		if (equipment.isVisible && !inventory.isVisible) {
+			oe = 0;
+			oi = -1;
+		}
+		if (!equipment.isVisible && inventory.isVisible) {
+			oe = -1;
+			oi = 0;
+		}
+		inventory.openOrder = oi;
+		equipment.openOrder = oe;
+	}
 
 	public void setup() {
+		hudMenu = new UIHUDMenu("HUDMenu");
+		UIMenuItem inventoryBtn = new UIMenuItem();
+		inventoryBtn.setIcon("INVENTORY_ICON");
+		inventoryBtn.setSize(new Size(32, 32));
+		inventoryBtn.onEvent(new Action() {
+			@Override
+			public void onMouseClick(UIControl self, int mouseButton) {
+				System.out.println("test");
+				if (mouseButton == 0) {
+					inventory.isVisible = !inventory.isVisible;
+				}
+			}
+
+			@Override
+			public void onMouseHover(UIControl self) {
+				uiHovered = true;
+				UIMenuItem temp = (UIMenuItem) self;
+				if (temp != null) {
+					temp.setBackgroundColor(new Color(1, 0, 0, 0.5f));
+				}
+			}
+
+			@Override
+			public void onMouseExit(UIControl self) {
+				UIMenuItem temp = (UIMenuItem) self;
+				if (temp != null) {
+					temp.setBackgroundColor(null);
+				}
+			}
+		});
+		hudMenu.add(inventoryBtn);
+		UIMenuItem equipmentBtn = new UIMenuItem();
+		equipmentBtn.setIcon("EQUIPMENT_ICON");
+		equipmentBtn.setSize(new Size(32, 32));
+		equipmentBtn.onEvent(new Action() {
+			@Override
+			public void onMouseClick(UIControl self, int mouseButton) {
+				System.out.println("test");
+				if (mouseButton == 0) {
+					equipment.isVisible = !equipment.isVisible;
+				}
+			}
+
+			@Override
+			public void onMouseHover(UIControl self) {
+				uiHovered = true;
+				UIMenuItem temp = (UIMenuItem) self;
+				if (temp != null) {
+					temp.setBackgroundColor(new Color(1, 0, 0, 0.5f));
+				}
+			}
+
+			@Override
+			public void onMouseExit(UIControl self) {
+				UIMenuItem temp = (UIMenuItem) self;
+				if (temp != null) {
+					temp.setBackgroundColor(null);
+				}
+			}
+		});
+		hudMenu.add(equipmentBtn);
+
 		inventory = new UIInventory();
 		inventory.setPosition(new Vector2f(0, 32));
 		inventory.setup();
-		
+
 		equipment = new UIEquipment();
-		equipment.setPosition(new Vector2f(0,32));
+		equipment.setPosition(new Vector2f(0, 32));
 		equipment.setup();
-		
+
 		taskMgr = new TaskManager();
 
 		contextMenu = new UIContextMenu("contextMenu");
@@ -250,14 +339,15 @@ public class UIThread {
 
 	public void update() {
 		uiHovered = false;
-		//inventory.update();
+		hudMenu.update();
+		inventory.update();
 		equipment.update();
 		if (!EngineData.pauseGame) {
 			taskMgr.update();
 		}
 		mainMenu.update();
 		contextMenu.update();
-
+		getOpenedOrder();
 		objectsHovered = World.getHoveredObjects();
 		if (uiHovered) {
 			objectsHovered.clear();
@@ -329,6 +419,15 @@ public class UIThread {
 		}
 
 		EngineData.pauseGame = EngineData.showMainMenu;
+
+		if (!Input.isMouseDown(0)) {
+			if (UIThread.draggingSlot instanceof UIEquipmentSlot) {
+
+			}
+			if (UIThread.draggingSlot instanceof UIItemSlot) {
+				inventory.resetDrag();
+			}
+		}
 	}
 
 	boolean test = false;
@@ -338,8 +437,13 @@ public class UIThread {
 		if (uiHovered) {
 			objectsHovered.clear();
 		}
-		//inventory.render();
+
+		hudMenu.render();
+		int eWidth = equipment.panel.getSize().getWidth() * (equipment.openOrder + 1);
 		equipment.render();
+		int iWidth = inventory.panel.getSize().getWidth() * inventory.openOrder;
+		inventory.setPosition(new Vector2f(eWidth, inventory.getSize().getHeight()));
+		inventory.render();
 
 		mainMenu.render();
 
@@ -356,11 +460,11 @@ public class UIThread {
 					"Resolution:" + Display.getWidth() + "x" + Display.getHeight() + "@" + EngineData.frequency, 12,
 					Color.white);
 			tempY += 12;
-			Renderer.renderText(debugPosition.x, debugPosition.y + tempY, "Chunk Count:" +World.chunksRendered+"("+EngineData.chunks.size()+")", 12,
-					Color.white);
+			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
+					"Chunk Count:" + World.chunksRendered + "(" + EngineData.chunks.size() + ")", 12, Color.white);
 			tempY += 12;
 			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
-					"View Index:" +View.getIndex().x+","+View.getIndex().y, 12, Color.white);
+					"View Index:" + View.getIndex().x + "," + View.getIndex().y, 12, Color.white);
 			tempY += 12;
 			Renderer.renderText(debugPosition.x, debugPosition.y + tempY,
 					"Blocked Input:" + (EngineData.blockInput ? true : (UIThread.uiHovered ? true : false)), 12,
@@ -405,7 +509,21 @@ public class UIThread {
 							Input.getMousePosition().getY());
 					GL11.glEnd();
 				}
+				if (obj.getModel().toLowerCase().equals("tile")
+						&& obj.getMaterial().toLowerCase().contains("tiled_dirt")) {
+					GL11.glBegin(GL11.GL_POLYGON);
+					Renderer.renderModel("ITEM", "CURSOR_HOE", Input.getMousePosition().getX(),
+							Input.getMousePosition().getY());
+					GL11.glEnd();
+				}
 			}
+		}
+
+		if (UIThread.draggingSlot != null) {
+			GL11.glBegin(GL11.GL_TRIANGLES);
+			Renderer.renderModel("ITEM", UIThread.draggingSlot.item, Input.getMousePosition().x,
+					Input.getMousePosition().y);
+			GL11.glEnd();
 		}
 	}
 

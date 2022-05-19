@@ -206,12 +206,15 @@ public class Renderer {
 		if (raw != null) {
 			RawMaterial mat = AssetData.materialData.get(materialName);
 			if (mat != null) {
+				int c = 0;
 				for (byte i : raw.indices) {
-					Vector2f textureVec = mat.vectors[i];
+					byte ti = (mat.indices.length > 0 ? mat.indices[c] : i);
+					Vector2f textureVec = mat.vectors[ti];
 					GL11.glTexCoord2f(textureVec.x / AssetData.texture.getImageWidth(),
 							textureVec.y / AssetData.texture.getImageHeight());
 					Vector2f vec = raw.vectors[i];
 					GL11.glVertex2f(vec.x + x, vec.y + z);
+					c++;
 				}
 			}
 		}
@@ -295,7 +298,9 @@ public class Renderer {
 			GL11.glEndList();
 			quadIDs.put(key, displayList);
 		} else {
+			unbindTexture();
 			GL11.glCallList(displayList);
+			bindTexture();
 		}
 	}
 
